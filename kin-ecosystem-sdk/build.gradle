@@ -1,0 +1,35 @@
+apply plugin: 'com.android.library'
+apply from: 'dependencies.gradle'
+
+android {
+    compileSdkVersion 26
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation devDependencies.kinStellar
+    implementation devDependencies.appCompat_v7
+    implementation devDependencies.recyclerView_v7
+    implementation devDependencies.constraintLayout
+    implementation devDependencies.picasso
+    implementation devDependencies.gson
+    implementation devDependencies.okhttp3
+    implementation devDependencies.loginInterceptor3
+
+    testImplementation testingDependencies.junit
+}

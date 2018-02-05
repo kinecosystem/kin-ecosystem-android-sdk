@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="bluePrimary">#047CFC</color>
+    <color name="bluePrimaryDark">#0365ce</color>
+
+    <color name="title">#5C6786</color>
+    <color name="subtitle">#7884A5</color>
+
+    <color name="white">#fff</color>
+
+    <color name="black">#000</color>
+
+    <color name="gray_light">#d2d2d2</color>
+    <color name="gray_darker">#aaa</color>
+
+</resources>

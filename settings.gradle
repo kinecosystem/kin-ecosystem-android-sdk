@@ -1,0 +1,1 @@
+include ':kin-ecosystem-sdk', ':app'

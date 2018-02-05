@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="main_margin">16dp</dimen>
+    <dimen name="block_margin">9dp</dimen>
+
+
+    <dimen name="title_size">18sp</dimen>
+    <dimen name="sub_title_size">13sp</dimen>
+    <dimen name="tiny_margin">2dp</dimen>
+
+</resources>
