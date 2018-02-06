@@ -13,15 +13,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.launch_marketplace).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    Kin.launchMarketplace(v.getContext());
-                } catch (TaskFailedException e) {
-                    e.printStackTrace();
-                }
-
+        findViewById(R.id.launch_marketplace).setOnClickListener(v -> {
+            try {
+                Kin.launchMarketplace(v.getContext());
+            } catch (TaskFailedException e) {
+                e.printStackTrace();
             }
         });
     }
