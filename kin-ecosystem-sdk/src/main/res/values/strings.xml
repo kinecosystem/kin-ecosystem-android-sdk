@@ -1,9 +1,17 @@
 <resources>
-    <string name="app_name">kin-echosystem-android</string>
+    <!--Activity Name-->
     <string name="kin_marketplace">Kin Marketplace</string>
+
+    <!--Button-->
     <string name="more">MORE</string>
     <string name="spend">Spend</string>
     <string name="earn">Earn</string>
+
+    <!--Sentence-->
     <string name="complete_tasks_and_earn_kin">Complete tasks and earn KIN</string>
     <string name="use_your_kin_to_enjoy_stuff_you_like">Use your KIN to enjoy stuff you like</string>
+
+    <!--Menu-->
+    <string name="info_menu">Info</string>
+
 </resources>

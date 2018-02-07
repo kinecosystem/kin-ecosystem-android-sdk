@@ -34,7 +34,8 @@ captures/
 
 # Intellij - ignore most things
 *.iml
-.idea/*
+#.idea/*
+.idea/workspace.xml
 # ...but keep these
 !.idea/codeStyleSettings.xml
 

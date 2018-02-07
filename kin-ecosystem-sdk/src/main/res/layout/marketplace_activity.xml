@@ -6,6 +6,8 @@
     android:orientation="vertical"
     android:weightSum="1">
 
+    <include layout="@layout/toolbar_layout"/>
+
     <include layout="@layout/balance_view_constraints" />
 
     <LinearLayout
