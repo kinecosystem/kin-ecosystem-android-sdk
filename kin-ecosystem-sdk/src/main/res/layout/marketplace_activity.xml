@@ -14,7 +14,7 @@
         android:id="@+id/earn_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.5"
+        android:layout_weight="0.52"
         android:orientation="vertical">
 
         <FrameLayout
@@ -32,12 +32,11 @@
 
                 <TextView
                     android:id="@+id/earn_title"
-                    style="@style/TitleBlack"
+                    style="@style/TitleBlackMedium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/tiny_margin"
-                    android:text="@string/earn"
-                    android:textStyle="bold" />
+                    android:text="@string/earn" />
 
                 <TextView
                     android:id="@+id/earn_subtitle"
@@ -53,18 +52,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
+                android:layout_marginTop="@dimen/tiny_margin"
+                style="@style/SubTitleBlackMedium"
                 android:text="@string/more"
                 android:textColor="@color/bluePrimary" />
 
         </FrameLayout>
 
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/earn_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/block_margin"
-            android:paddingLeft="@dimen/main_margin" />
+            android:layout_marginTop="@dimen/main_small_margin"/>
 
     </LinearLayout>
 
@@ -77,7 +76,8 @@
         android:id="@+id/spend_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.5"
+        android:layout_weight="0.48"
+        android:gravity="center_vertical"
         android:orientation="vertical">
 
         <FrameLayout
@@ -95,12 +95,11 @@
 
                 <TextView
                     android:id="@+id/spend_title"
-                    style="@style/TitleBlack"
+                    style="@style/TitleBlackMedium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/tiny_margin"
-                    android:text="@string/spend"
-                    android:textStyle="bold" />
+                    android:text="@string/spend" />
 
                 <TextView
                     android:id="@+id/spend_subtitle"
@@ -115,6 +114,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
+                android:layout_marginTop="@dimen/tiny_margin"
+                style="@style/SubTitleBlackMedium"
                 android:text="@string/more"
                 android:textColor="@color/bluePrimary" />
         </FrameLayout>
@@ -123,8 +124,7 @@
             android:id="@+id/spend_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/block_margin"
-            android:paddingLeft="@dimen/main_margin" />
+            android:layout_marginTop="@dimen/main_small_margin" />
     </LinearLayout>
 
 </LinearLayout>

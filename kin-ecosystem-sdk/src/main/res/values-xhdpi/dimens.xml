@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<dimen name="main_margin">15dp</dimen>
+	<dimen name="main_medium_margin">13dp</dimen>
+	<dimen name="main_small_margin">11dp</dimen>
+
+	<dimen name="block_margin">8dp</dimen>
+	<dimen name="block_medium_margin">6dp</dimen>
+	<dimen name="tiny_margin">1dp</dimen>
+
+	<dimen name="offer_item_list_space">19dp</dimen>
+
+	<!--Text size-->
+	<dimen name="title_size">15sp</dimen>
+	<dimen name="sub_title_size">12sp</dimen>
+</resources>

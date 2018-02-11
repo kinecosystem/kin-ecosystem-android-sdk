@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 public class MarketplaceModel implements IMarketplaceModel {
-    private static final String TAG = MarketplaceModel.class.getSimpleName();
 
     private ApiClient apiClient = new ApiClient();
     private DefaultApi defaultApi = new DefaultApi(apiClient);
@@ -27,7 +26,6 @@ public class MarketplaceModel implements IMarketplaceModel {
 
     @Override
     public void getOffers(final Callback<List<Offer>> callback) {
-        ArrayList<Offer> list = new ArrayList<>();
         try {
             defaultApi.getOffersAsync(new ApiCallback<OfferList>() {
                 @Override
@@ -65,8 +63,6 @@ public class MarketplaceModel implements IMarketplaceModel {
                 }
             });
         } catch (final ApiException e) {
-            Log.e(TAG, "getOffers Exception: " + e.getMessage());
-            e.printStackTrace();
             handler.post(new Runnable() {
                 @Override
                 public void run() {

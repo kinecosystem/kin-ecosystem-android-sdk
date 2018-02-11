@@ -55,7 +55,7 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 
-import com.kin.ecosystem.StringUtil;
+import com.kin.ecosystem.util.StringUtil;
 import com.kin.ecosystem.network.auth.ApiKeyAuth;
 import com.kin.ecosystem.network.auth.Authentication;
 import com.kin.ecosystem.network.auth.HttpBasicAuth;

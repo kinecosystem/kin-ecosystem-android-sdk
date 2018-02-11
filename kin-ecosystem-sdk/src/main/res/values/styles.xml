@@ -32,11 +32,27 @@
         <item name="android:ellipsize">end</item>
     </style>
 
+    <style name="TitleBlackMedium" >
+        <item name="android:textColor">@color/title</item>
+        <item name="android:textSize">@dimen/title_size</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
     <style name="SubTitleBlack">
         <item name="android:textColor">@color/subtitle</item>
         <item name="android:textSize">@dimen/sub_title_size</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="SubTitleBlackMedium">
+        <item name="android:textColor">@color/subtitle</item>
+        <item name="android:textSize">@dimen/sub_title_size</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
 </resources>

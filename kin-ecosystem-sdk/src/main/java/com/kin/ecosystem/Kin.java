@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
+import com.kin.ecosystem.util.DeviceUtils;
 
 import kin.sdk.core.Balance;
 import kin.sdk.core.KinAccount;
@@ -35,6 +36,7 @@ public class Kin {
 
     public static void start(@NonNull Context appContext, @NonNull String apiKey, String userID) throws InitializeException {
         instance = getInstance();
+        DeviceUtils.init(appContext);
         instance.kinClient = new KinClient(appContext, StellarNetwork.NETWORK_TEST.getProvider());
         try {
             instance.kinClient.createAccount(""); // blockchain-sdk should generate and take care of that passphrase.

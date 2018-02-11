@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginRight="@dimen/main_margin">
+    android:orientation="vertical">
 
     <ImageView
         android:id="@+id/image"
@@ -40,7 +40,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sub_title"
         android:textColor="@color/bluePrimary"
-        android:textStyle="bold"
+        style="@style/TitleBlackMedium"
         tools:text="6,000 KIN" />
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

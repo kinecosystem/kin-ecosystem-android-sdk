@@ -157,7 +157,7 @@ public class BaseViewHolder<T> extends RecyclerView.ViewHolder {
         if (view != null) {
             Picasso.with(view.getContext())
                     .load(Uri.parse(imageURL))
-                    .transform(new RoundedCornersTransformation(10, 0))
+                    .transform(new RoundedCornersTransformation(5, 0))
                     .resize(width, height)
                     .centerCrop()
                     .into(view);
