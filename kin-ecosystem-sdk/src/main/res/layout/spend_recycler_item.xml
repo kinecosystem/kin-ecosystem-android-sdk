@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/image"
-        android:layout_width="250dp"
-        android:layout_height="130dp"
+        android:layout_width="300dp"
+        android:layout_height="90dp"
         android:background="@drawable/item_bg_placeholder" />
 
     <FrameLayout
@@ -26,17 +26,16 @@
 
             <TextView
                 android:id="@+id/title"
-                style="@style/TitleBlack"
+                style="@style/KinecosysTitleText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="Spotify" />
 
             <TextView
                 android:id="@+id/sub_title"
-                style="@style/SubTitleBlack"
+                style="@style/KinecosysSubTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/title"
                 tools:text="1 week subscription" />
 
         </LinearLayout>
@@ -47,7 +46,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:gravity="right"
-            style="@style/TitleBlackMedium"
+            style="@style/KinecosysTitleTextMedium"
+            android:textColor="@color/gray_light_50op"
             tools:text="2,000 KIN" />
 
     </FrameLayout>

@@ -13,7 +13,7 @@
         android:layout_marginBottom="@dimen/tiny_margin"
         android:layout_marginLeft="@dimen/main_margin"
         android:text="@string/kin_balance"
-        style="@style/TitleBlack"
+        style="@style/KinecosysTitleText"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/main_margin"
-        style="@style/SubTitleBlack"
+        style="@style/KinecosysSubTitle"
         android:text="6,000 Kin on the way..."
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/balance_title"

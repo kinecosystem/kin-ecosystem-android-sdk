@@ -32,7 +32,7 @@
 
                 <TextView
                     android:id="@+id/earn_title"
-                    style="@style/TitleBlackMedium"
+                    style="@style/KinecosysTitleTextMedium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/tiny_margin"
@@ -40,7 +40,7 @@
 
                 <TextView
                     android:id="@+id/earn_subtitle"
-                    style="@style/SubTitleBlack"
+                    style="@style/KinecosysSubTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/complete_tasks_and_earn_kin" />
@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
                 android:layout_marginTop="@dimen/tiny_margin"
-                style="@style/SubTitleBlackMedium"
+                style="@style/KinecosysSubTitleMedium"
                 android:text="@string/more"
                 android:textColor="@color/bluePrimary" />
 
@@ -95,7 +95,7 @@
 
                 <TextView
                     android:id="@+id/spend_title"
-                    style="@style/TitleBlackMedium"
+                    style="@style/KinecosysTitleTextMedium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/tiny_margin"
@@ -103,7 +103,7 @@
 
                 <TextView
                     android:id="@+id/spend_subtitle"
-                    style="@style/SubTitleBlack"
+                    style="@style/KinecosysSubTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/use_your_kin_to_enjoy_stuff_you_like" />
@@ -115,7 +115,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
                 android:layout_marginTop="@dimen/tiny_margin"
-                style="@style/SubTitleBlackMedium"
+                style="@style/KinecosysSubTitleMedium"
                 android:text="@string/more"
                 android:textColor="@color/bluePrimary" />
         </FrameLayout>

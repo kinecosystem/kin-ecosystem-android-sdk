@@ -9,7 +9,7 @@
             android:name=".marketplace.view.MarketplaceActivity"
             android:label="@string/kin_marketplace"
             android:screenOrientation="portrait"
-            android:theme="@style/NoActionBar" />
+            android:theme="@style/KinecosysNoActionBar" />
 
     </application>
 

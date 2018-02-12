@@ -14,17 +14,17 @@ import static com.kin.ecosystem.util.DeviceUtils.DensityDpi.XXHDPI;
 
 class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, OfferRecyclerAdapter.ViewHolder> {
 
-    private static final float DEF_WIDTH_RATIO  = 0.38f;
-    private static final float DEF_HEIGHT_RATIO = 0.25f;
-    private static final float DEF_HIGH_RES_HEIGHT_RATIO = 0.28f;
+    private static final float NORMAL_WIDTH_RATIO = 0.38f;
+    private static final float NORMAL_HEIGHT_RATIO = 0.25f;
+    private static final float HIGH_RES_HEIGHT_RATIO = 0.28f;
 
 
     protected float getImageWidthRatio() {
-        return DEF_WIDTH_RATIO;
+        return NORMAL_WIDTH_RATIO;
     }
 
     protected float getImageHeightRatio() {
-        return DeviceUtils.isDensity(XXHDPI) ? DEF_HIGH_RES_HEIGHT_RATIO : DEF_HEIGHT_RATIO;
+        return DeviceUtils.isDensity(XXHDPI) ? HIGH_RES_HEIGHT_RATIO : NORMAL_HEIGHT_RATIO;
     }
 
     OfferRecyclerAdapter(@LayoutRes int layoutResID) {

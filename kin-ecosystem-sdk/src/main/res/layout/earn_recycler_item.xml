@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -10,37 +8,32 @@
     <ImageView
         android:id="@+id/image"
         android:layout_width="140dp"
-        android:layout_height="100dp"
+        android:layout_height="90dp"
         android:background="@drawable/item_bg_placeholder" />
 
     <TextView
         android:id="@+id/title"
-        style="@style/TitleBlack"
+        style="@style/KinecosysTitleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/block_margin"
         android:layout_marginBottom="@dimen/tiny_margin"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image"
         tools:text="Answer a Poll" />
 
     <TextView
         android:id="@+id/sub_title"
-        style="@style/SubTitleBlack"
+        style="@style/KinecosysSubTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/tiny_margin"
-        app:layout_constraintTop_toBottomOf="@+id/title"
         tools:text="Earn KIN by answering" />
 
     <TextView
         android:id="@+id/amount_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sub_title"
         android:textColor="@color/bluePrimary"
-        style="@style/TitleBlackMedium"
+        style="@style/KinecosysTitleTextMedium"
         tools:text="6,000 KIN" />
 
 </LinearLayout>
