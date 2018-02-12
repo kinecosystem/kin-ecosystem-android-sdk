@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="KinecosysNoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/bluePrimary</item>
         <item name="colorPrimaryDark">@color/bluePrimaryDark</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="ToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+    <style name="KinecosysToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:background">@color/bluePrimary</item>
         <!-- android:textColorPrimary is the color of the title text in the Toolbar  -->
         <item name="android:textColorPrimary">@color/white</item>
@@ -20,23 +20,31 @@
     </style>
 
     <!-- This configures the styles for the title within the Toolbar  -->
-    <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+    <style name="KinecosysToolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
 
-    <style name="TitleBlack" >
+    <style name="KinecosysTextBase" >
         <item name="android:textColor">@color/title</item>
-        <item name="android:textSize">@dimen/title_size</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
     </style>
 
-    <style name="SubTitleBlack">
-        <item name="android:textColor">@color/subtitle</item>
+    <style name="KinecosysTitleText" parent="KinecosysTextBase">
+        <item name="android:textSize">@dimen/title_size</item>
+    </style>
+
+    <style name="KinecosysTitleTextMedium" parent="KinecosysTitleText">
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="KinecosysSubTitle" parent="KinecosysTitleText">
         <item name="android:textSize">@dimen/sub_title_size</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="KinecosysSubTitleMedium" parent="KinecosysSubTitle">
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
 </resources>

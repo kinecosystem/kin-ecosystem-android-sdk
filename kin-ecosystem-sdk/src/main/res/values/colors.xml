@@ -11,7 +11,8 @@
 
     <color name="black">#000</color>
 
-    <color name="gray_light">#d2d2d2</color>
+    <color name="gray_light">#d7dce9</color>
+    <color name="gray_light_50op">#d7dce9</color>
     <color name="gray_darker">#aaa</color>
 
 </resources>

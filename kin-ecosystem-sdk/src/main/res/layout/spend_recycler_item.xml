@@ -1,45 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginRight="@dimen/main_margin">
+    android:orientation="vertical">
 
     <ImageView
         android:id="@+id/image"
-        android:layout_width="250dp"
-        android:layout_height="130dp"
+        android:layout_width="300dp"
+        android:layout_height="90dp"
         android:background="@drawable/item_bg_placeholder" />
 
-    <TextView
-        android:id="@+id/amount_text"
-        android:layout_width="wrap_content"
+    <FrameLayout
+        android:id="@+id/earn_title_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/block_margin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/title"
-        app:layout_constraintTop_toBottomOf="@+id/image"
-        tools:text="2,000 KIN" />
+        android:layout_marginTop="@dimen/block_medium_margin">
 
-    <TextView
-        android:id="@+id/title"
-        style="@style/TitleBlack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/block_margin"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image"
-        tools:text="Spotify" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/sub_title"
-        style="@style/SubTitleBlack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/title"
-        tools:text="1 week subscription" />
+            <TextView
+                android:id="@+id/title"
+                style="@style/KinecosysTitleText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Spotify" />
 
-</android.support.constraint.ConstraintLayout>
+            <TextView
+                android:id="@+id/sub_title"
+                style="@style/KinecosysSubTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="1 week subscription" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/amount_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:gravity="right"
+            style="@style/KinecosysTitleTextMedium"
+            android:textColor="@color/gray_light_50op"
+            tools:text="2,000 KIN" />
+
+    </FrameLayout>
+
+</LinearLayout>
