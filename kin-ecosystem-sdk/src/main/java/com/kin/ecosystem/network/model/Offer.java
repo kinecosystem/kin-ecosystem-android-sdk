@@ -176,6 +176,13 @@ public class Offer {
         return this;
     }
 
+    public boolean hasPollJsonContent() {
+        return content instanceof String;
+    }
+
+    public String getContentAsJsonString() {
+        return (String) content;
+    }
 
     /**
      * Get content

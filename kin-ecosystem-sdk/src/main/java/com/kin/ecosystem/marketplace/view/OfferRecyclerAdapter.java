@@ -1,6 +1,7 @@
 package com.kin.ecosystem.marketplace.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.LayoutRes;
 import android.view.View;
 
@@ -8,6 +9,7 @@ import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.network.model.Offer;
+import com.kin.ecosystem.poll.view.PollActivity;
 import com.kin.ecosystem.util.DeviceUtils;
 
 import static com.kin.ecosystem.util.DeviceUtils.DensityDpi.XXHDPI;
@@ -18,17 +20,19 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, OfferRecyclerAdapt
     private static final float NORMAL_HEIGHT_RATIO = 0.25f;
     private static final float HIGH_RES_HEIGHT_RATIO = 0.28f;
 
-
     protected float getImageWidthRatio() {
         return NORMAL_WIDTH_RATIO;
     }
+    private final Context context;
 
     protected float getImageHeightRatio() {
         return DeviceUtils.isDensity(XXHDPI) ? HIGH_RES_HEIGHT_RATIO : NORMAL_HEIGHT_RATIO;
     }
 
-    OfferRecyclerAdapter(@LayoutRes int layoutResID) {
+    OfferRecyclerAdapter(Context context, @LayoutRes int layoutResID) {
         super(layoutResID);
+
+        this.context = context;
         openLoadAnimation(SLIDEIN_RIGHT);
         isUseEmpty(true);
     }
@@ -63,11 +67,22 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, OfferRecyclerAdapt
         }
 
         @Override
-        protected void bindObject(Offer item) {
+        protected void bindObject(final Offer item) {
             setImageUrlResized(R.id.image, item.getImage(), imageWidth, imageHeight);
             setText(R.id.title, item.getTitle());
             setText(R.id.sub_title, item.getDescription());
             setText(R.id.amount_text, item.getAmount() + " Kin");
+
+            if (item.getOfferType() == Offer.OfferTypeEnum.EARN && item.hasPollJsonContent()) {
+                getView(R.id.image).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        final Intent intent = new Intent(context, PollActivity.class);
+                        intent.putExtra("jsondata", item.getContentAsJsonString());
+                        context.startActivity(intent);
+                    }
+                });
+            }
         }
     }
 }

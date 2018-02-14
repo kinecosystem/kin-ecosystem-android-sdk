@@ -31,5 +31,7 @@ dependencies {
     implementation devDependencies.okhttp3
     implementation devDependencies.loginInterceptor3
 
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support:design:26.1.0'
     testImplementation testingDependencies.junit
 }

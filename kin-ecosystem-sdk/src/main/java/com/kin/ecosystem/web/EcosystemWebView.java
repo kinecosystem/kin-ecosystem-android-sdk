@@ -1,0 +1,73 @@
+package com.kin.ecosystem.web;
+
+import android.content.Context;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.AttributeSet;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+
+public class EcosystemWebView extends WebView {
+    private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
+    private static final String HTML_URL = "https://s3.amazonaws.com/kinmarketplace-assets/offer_html_mocks/offer_mock_01.html";
+    private static final String JS_INTERFACE_OBJECT_NAME = "KinNative";
+
+    private final EcosystemNativeApi nativeApi;
+    private final EcosystemWebViewClient webViewClient;
+    private final EcosystemWebChromeClient webChromeClient;
+
+    public EcosystemWebView(Context context) {
+        this(context, null);
+    }
+
+    public EcosystemWebView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public EcosystemWebView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+
+        webViewClient = new EcosystemWebViewClient();
+        setWebViewClient(this.webViewClient);
+
+        webChromeClient = new EcosystemWebChromeClient(context);
+        setWebChromeClient(this.webChromeClient);
+
+        final WebSettings settings = this.getSettings();
+        settings.setJavaScriptEnabled(true);
+
+        nativeApi = new EcosystemNativeApi();
+        addJavascriptInterface(nativeApi, JS_INTERFACE_OBJECT_NAME);
+    }
+
+    public void load() {
+        loadUrl(HTML_URL);
+    }
+
+    public void setListener(final EcosystemWebPageListener listener) {
+        nativeApi.setListener(listener);
+    }
+
+    public void render(final String pollJsonData) {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            MAIN_HANDLER.post(new Runnable() {
+                @Override
+                public void run() {
+                    render(pollJsonData);
+                }
+            });
+
+            return;
+        }
+
+        final StringBuilder js = new StringBuilder("kin.renderPoll('");
+        js.append(pollJsonData).append("')");
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            evaluateJavascript(js.toString(), null);
+        } else {
+            loadUrl(js.toString());
+        }
+    }
+}
