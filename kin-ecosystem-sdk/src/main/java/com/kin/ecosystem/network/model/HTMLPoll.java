@@ -10,9 +10,9 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
- * a coupon offer
+ * a poll implemented as an HTML page
  */
-public class Coupon {
+public class HTMLPoll {
 
     /**
      * Gets or Sets contentType
@@ -20,7 +20,7 @@ public class Coupon {
     @JsonAdapter(ContentTypeEnum.Adapter.class)
     public enum ContentTypeEnum {
 
-        COUPON("Coupon");
+        HTMLPOLL("HTMLPoll");
 
         private String value;
 
@@ -62,10 +62,10 @@ public class Coupon {
 
     @SerializedName("content_type")
     private ContentTypeEnum contentType = null;
-    @SerializedName("description")
-    private String description = null;
+    @SerializedName("content")
+    private String content = null;
 
-    public Coupon contentType(ContentTypeEnum contentType) {
+    public HTMLPoll contentType(ContentTypeEnum contentType) {
         this.contentType = contentType;
         return this;
     }
@@ -84,23 +84,23 @@ public class Coupon {
         this.contentType = contentType;
     }
 
-    public Coupon description(String description) {
-        this.description = description;
+    public HTMLPoll content(String content) {
+        this.content = content;
         return this;
     }
 
 
     /**
-     * Get description
+     * Get content
      *
-     * @return description
+     * @return content
      **/
-    public String getDescription() {
-        return description;
+    public String getContent() {
+        return content;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     @Override
@@ -111,14 +111,14 @@ public class Coupon {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Coupon coupon = (Coupon) o;
-        return Objects.equals(this.contentType, coupon.contentType) &&
-                Objects.equals(this.description, coupon.description);
+        HTMLPoll htMLPoll = (HTMLPoll) o;
+        return Objects.equals(this.contentType, htMLPoll.contentType) &&
+                Objects.equals(this.content, htMLPoll.content);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(contentType, description);
+        return Objects.hash(contentType, content);
     }
 }
 

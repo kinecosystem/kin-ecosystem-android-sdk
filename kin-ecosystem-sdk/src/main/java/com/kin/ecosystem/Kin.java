@@ -14,7 +14,6 @@ import kin.sdk.core.Balance;
 import kin.sdk.core.KinAccount;
 import kin.sdk.core.KinClient;
 import kin.sdk.core.ResultCallback;
-import kin.sdk.core.exception.CreateAccountException;
 
 
 public class Kin {
@@ -38,11 +37,7 @@ public class Kin {
         instance = getInstance();
         DeviceUtils.init(appContext);
         instance.kinClient = new KinClient(appContext, StellarNetwork.NETWORK_TEST.getProvider());
-        try {
-            instance.kinClient.createAccount(""); // blockchain-sdk should generate and take care of that passphrase.
-        } catch (CreateAccountException e) {
-            throw new InitializeException(e.getMessage());
-        }
+        instance.kinClient.addAccount(""); // blockchain-sdk should generate and take care of that passphrase.
         //TODO store apiKey and use to auth
         //TODO store userID and use to auth
     }
@@ -56,13 +51,13 @@ public class Kin {
     public static void launchMarketplace(@NonNull Context context) throws TaskFailedException {
         checkInstanceNotNull();
         context.startActivity(new Intent(context, MarketplaceActivity.class));
-        ((Activity)context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        ((Activity) context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
     }
 
     public static String getPublicAddress() throws TaskFailedException {
         checkInstanceNotNull();
-        KinAccount account = instance.kinClient.getAccount();
+        KinAccount account = instance.kinClient.getAccount(0);
         if (account == null) {
             return null;
         }
@@ -71,7 +66,7 @@ public class Kin {
 
     public static void getBalance(@NonNull final ResultCallback<Integer> balanceResult) throws TaskFailedException {
         checkInstanceNotNull();
-        KinAccount account = instance.kinClient.getAccount();
+        KinAccount account = instance.kinClient.getAccount(0);
         if (account == null) {
             balanceResult.onError(new TaskFailedException("Account not found"));
         } else {

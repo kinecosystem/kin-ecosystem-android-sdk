@@ -7,12 +7,13 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
 
 /**
- * a coupon offer
+ * the result of a completed html poll
  */
-public class Coupon {
+public class HTMLPollAnswer {
 
     /**
      * Gets or Sets contentType
@@ -20,7 +21,7 @@ public class Coupon {
     @JsonAdapter(ContentTypeEnum.Adapter.class)
     public enum ContentTypeEnum {
 
-        COUPON("Coupon");
+        HTMLPOLLANSWER("HTMLPollAnswer");
 
         private String value;
 
@@ -62,10 +63,10 @@ public class Coupon {
 
     @SerializedName("content_type")
     private ContentTypeEnum contentType = null;
-    @SerializedName("description")
-    private String description = null;
+    @SerializedName("answers")
+    private Map<String, String> answers = null;
 
-    public Coupon contentType(ContentTypeEnum contentType) {
+    public HTMLPollAnswer contentType(ContentTypeEnum contentType) {
         this.contentType = contentType;
         return this;
     }
@@ -84,23 +85,32 @@ public class Coupon {
         this.contentType = contentType;
     }
 
-    public Coupon description(String description) {
-        this.description = description;
+    public HTMLPollAnswer answers(Map<String, String> answers) {
+        this.answers = answers;
         return this;
     }
 
+    public HTMLPollAnswer putAnswersItem(String key, String answersItem) {
 
-    /**
-     * Get description
-     *
-     * @return description
-     **/
-    public String getDescription() {
-        return description;
+        if (this.answers == null) {
+            this.answers = null;
+        }
+
+        this.answers.put(key, answersItem);
+        return this;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    /**
+     * Get answers
+     *
+     * @return answers
+     **/
+    public Map<String, String> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(Map<String, String> answers) {
+        this.answers = answers;
     }
 
     @Override
@@ -111,14 +121,14 @@ public class Coupon {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Coupon coupon = (Coupon) o;
-        return Objects.equals(this.contentType, coupon.contentType) &&
-                Objects.equals(this.description, coupon.description);
+        HTMLPollAnswer htMLPollAnswer = (HTMLPollAnswer) o;
+        return Objects.equals(this.contentType, htMLPollAnswer.contentType) &&
+                Objects.equals(this.answers, htMLPollAnswer.answers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(contentType, description);
+        return Objects.hash(contentType, answers);
     }
 }
 

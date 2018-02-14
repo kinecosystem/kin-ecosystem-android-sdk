@@ -506,6 +506,13 @@ public abstract class BaseRecyclerAdapter<T, VH extends BaseViewHolder> extends 
     }
 
     /**
+     * @return the size of data list.
+     */
+    public int getDataCount() {
+        return mData == null ? 0 : mData.size();
+    }
+
+    /**
      * compatible getLoadMoreViewCount and getEmptyViewCount may change
      *
      * @param size Need compatible data size

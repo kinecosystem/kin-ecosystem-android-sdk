@@ -47,7 +47,7 @@
             android:layout_gravity="right"
             android:gravity="right"
             style="@style/KinecosysTitleTextMedium"
-            android:textColor="@color/gray_light_50op"
+            android:textColor="@color/gray_light"
             tools:text="2,000 KIN" />
 
     </FrameLayout>

@@ -1,6 +1,7 @@
 package com.kin.ecosystem.base;
 
 import android.net.Uri;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
@@ -140,6 +141,19 @@ public class BaseViewHolder<T> extends RecyclerView.ViewHolder {
                 }
             });
         }
+        return this;
+    }
+
+    /**
+     * Will set the image of an ImageView from a resource id.
+     *
+     * @param viewId     The view id.
+     * @param imageResId The image resource id.
+     * @return The BaseViewHolder for chaining.
+     */
+    public BaseViewHolder setImageResource(@IdRes int viewId, @DrawableRes int imageResId) {
+        ImageView view = getView(viewId);
+        view.setImageResource(imageResId);
         return this;
     }
 

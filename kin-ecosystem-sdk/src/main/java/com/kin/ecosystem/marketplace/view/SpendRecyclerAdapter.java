@@ -1,11 +1,6 @@
 package com.kin.ecosystem.marketplace.view;
 
-import android.support.annotation.Nullable;
-
 import com.kin.ecosystem.R;
-import com.kin.ecosystem.network.model.Offer;
-
-import java.util.List;
 
 class SpendRecyclerAdapter extends OfferRecyclerAdapter {
 

@@ -7,43 +7,43 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * a list of offers
+ * a list of submitted orders
  */
-public class OfferList {
-    @SerializedName("offers")
-    private List<Offer> offers = null;
+public class OrderList {
+    @SerializedName("orders")
+    private List<Order> orders = null;
     @SerializedName("paging")
     private Paging paging = null;
 
-    public OfferList offers(List<Offer> offers) {
-        this.offers = offers;
+    public OrderList orders(List<Order> orders) {
+        this.orders = orders;
         return this;
     }
 
-    public OfferList addOffersItem(Offer offersItem) {
+    public OrderList addTransactionsItem(Order orderItem) {
 
-        if (this.offers == null) {
-            this.offers = new ArrayList<Offer>();
+        if (this.orders == null) {
+            this.orders = new ArrayList<Order>();
         }
 
-        this.offers.add(offersItem);
+        this.orders.add(orderItem);
         return this;
     }
 
     /**
-     * Get offers
+     * Get orders
      *
-     * @return offers
+     * @return orders
      **/
-    public List<Offer> getOffers() {
-        return offers;
+    public List<Order> getOrders() {
+        return orders;
     }
 
-    public void setOffers(List<Offer> offers) {
-        this.offers = offers;
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 
-    public OfferList paging(Paging paging) {
+    public OrderList paging(Paging paging) {
         this.paging = paging;
         return this;
     }
@@ -70,14 +70,14 @@ public class OfferList {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        OfferList offerList = (OfferList) o;
-        return Objects.equals(this.offers, offerList.offers) &&
-                Objects.equals(this.paging, offerList.paging);
+        OrderList orderList = (OrderList) o;
+        return Objects.equals(this.orders, orderList.orders) &&
+                Objects.equals(this.paging, orderList.paging);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(offers, paging);
+        return Objects.hash(orders, paging);
     }
 }
 

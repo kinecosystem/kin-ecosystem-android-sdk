@@ -1,25 +1,23 @@
-package com.kin.ecosystem.marketplace.model;
-
+package com.kin.ecosystem.history.model;
 
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.BaseModel;
 import com.kin.ecosystem.network.ApiCallback;
 import com.kin.ecosystem.network.ApiException;
-import com.kin.ecosystem.network.api.OffersApi;
-import com.kin.ecosystem.network.model.Offer;
-import com.kin.ecosystem.network.model.OfferList;
+import com.kin.ecosystem.network.api.OrdersApi;
+import com.kin.ecosystem.network.model.OrderList;
 
 import java.util.List;
 import java.util.Map;
 
-public class MarketplaceModel extends BaseModel implements IMarketplaceModel {
+public class OrderHistoryModel extends BaseModel implements IOrderHistoryModel {
 
-    private OffersApi offersApi = new OffersApi(apiClient);
+    private OrdersApi ordersApi = new OrdersApi(apiClient);
 
     @Override
-    public void getOffers(final Callback<List<Offer>> callback) {
+    public void getHistory(final Callback<OrderList> callback) {
         try {
-            offersApi.getOffersAsync("", 25, "", "", new ApiCallback<OfferList>() {
+            ordersApi.getHistoryAsync("", 25, "", "", new ApiCallback<OrderList>() {
                 @Override
                 public void onFailure(final ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
                     runOnMainThread(new Runnable() {
@@ -31,15 +29,11 @@ public class MarketplaceModel extends BaseModel implements IMarketplaceModel {
                 }
 
                 @Override
-                public void onSuccess(final OfferList result, int statusCode, Map<String, List<String>> responseHeaders) {
+                public void onSuccess(final OrderList result, int statusCode, Map<String, List<String>> responseHeaders) {
                     runOnMainThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (result != null) {
-                                callback.onResponse(result.getOffers());
-                            } else {
-                                callback.onResponse(null);
-                            }
+                            callback.onResponse(result);
                         }
                     });
                 }
@@ -55,6 +49,7 @@ public class MarketplaceModel extends BaseModel implements IMarketplaceModel {
                 }
             });
         } catch (final ApiException e) {
+            e.printStackTrace();
             runOnMainThread(new Runnable() {
                 @Override
                 public void run() {
@@ -67,6 +62,6 @@ public class MarketplaceModel extends BaseModel implements IMarketplaceModel {
     @Override
     public void release() {
         super.release();
-        offersApi = null;
+        ordersApi = null;
     }
 }
