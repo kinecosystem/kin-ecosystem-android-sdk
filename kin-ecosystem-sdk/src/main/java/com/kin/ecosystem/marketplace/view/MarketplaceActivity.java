@@ -67,14 +67,14 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
         RecyclerView spendRecycler = findViewById(R.id.spend_recycler);
         spendRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         spendRecycler.addItemDecoration(itemDecoration);
-        spendRecyclerAdapter = new SpendRecyclerAdapter(this);
+        spendRecyclerAdapter = new SpendRecyclerAdapter();
         spendRecyclerAdapter.bindToRecyclerView(spendRecycler);
 
         //Earn Recycler
         RecyclerView earnRecycler = findViewById(R.id.earn_recycler);
         earnRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         earnRecycler.addItemDecoration(itemDecoration);
-        earnRecyclerAdapter = new EarnRecyclerAdapter(this);
+        earnRecyclerAdapter = new EarnRecyclerAdapter();
         earnRecyclerAdapter.bindToRecyclerView(earnRecycler);
 
 

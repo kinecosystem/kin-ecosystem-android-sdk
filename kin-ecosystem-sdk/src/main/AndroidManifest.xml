@@ -14,9 +14,9 @@
             android:screenOrientation="portrait"
             android:theme="@style/KinecosysNoActionBar" />
         <activity
-            android:name=".poll.view.PollActivity"
-            android:label="@string/title_activity_poll"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:name=".poll.view.PollWebViewActivity"
+            android:label="@string/answer_a_poll"
+            android:theme="@style/KinecosysNoActionBar"></activity>
     </application>
 
 </manifest>

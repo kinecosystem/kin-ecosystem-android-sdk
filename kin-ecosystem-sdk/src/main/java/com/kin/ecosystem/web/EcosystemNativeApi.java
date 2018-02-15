@@ -3,7 +3,7 @@ package com.kin.ecosystem.web;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 
-/* package */ class EcosystemNativeApi {
+class EcosystemNativeApi {
     private EcosystemWebPageListener listener;
 
     @JavascriptInterface
@@ -30,7 +30,7 @@ import android.webkit.JavascriptInterface;
         }
     }
 
-    /* package */ void setListener(final EcosystemWebPageListener listener) {
+    void setListener(final EcosystemWebPageListener listener) {
         this.listener = listener;
     }
 }

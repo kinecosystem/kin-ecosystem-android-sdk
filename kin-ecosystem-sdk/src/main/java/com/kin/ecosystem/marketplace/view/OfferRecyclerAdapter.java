@@ -9,7 +9,8 @@ import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.network.model.Offer;
-import com.kin.ecosystem.poll.view.PollActivity;
+import com.kin.ecosystem.network.model.Offer.ContentTypeEnum;
+import com.kin.ecosystem.poll.view.PollWebViewActivity;
 import com.kin.ecosystem.util.DeviceUtils;
 
 import static com.kin.ecosystem.util.DeviceUtils.DensityDpi.XXHDPI;
@@ -23,17 +24,24 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, OfferRecyclerAdapt
     protected float getImageWidthRatio() {
         return NORMAL_WIDTH_RATIO;
     }
-    private final Context context;
 
     protected float getImageHeightRatio() {
         return DeviceUtils.isDensity(XXHDPI) ? HIGH_RES_HEIGHT_RATIO : NORMAL_HEIGHT_RATIO;
     }
 
-    OfferRecyclerAdapter(Context context, @LayoutRes int layoutResID) {
+    OfferRecyclerAdapter(@LayoutRes int layoutResID) {
         super(layoutResID);
 
-        this.context = context;
         openLoadAnimation(SLIDEIN_RIGHT);
+        setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
+                final Offer offer = (Offer) adapter.getData().get(position);
+                final Context context = view.getContext();
+
+                context.startActivity(PollWebViewActivity.createIntent(context, offer.getContent()));
+            }
+        });
         isUseEmpty(true);
     }
 
@@ -73,15 +81,9 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, OfferRecyclerAdapt
             setText(R.id.sub_title, item.getDescription());
             setText(R.id.amount_text, item.getAmount() + " Kin");
 
-            if (item.getOfferType() == Offer.OfferTypeEnum.EARN && item.hasPollJsonContent()) {
-                getView(R.id.image).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        final Intent intent = new Intent(context, PollActivity.class);
-                        intent.putExtra("jsondata", item.getContentAsJsonString());
-                        context.startActivity(intent);
-                    }
-                });
+
+            if (item.getOfferType() == Offer.OfferTypeEnum.EARN && item.getContentType() == ContentTypeEnum.POLL) {
+                setOnItemClickListener(getOnItemClickListener());
             }
         }
     }

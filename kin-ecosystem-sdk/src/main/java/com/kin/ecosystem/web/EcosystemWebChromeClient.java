@@ -11,7 +11,7 @@ import android.widget.Toast;
 public class EcosystemWebChromeClient extends WebChromeClient {
     private final Context context;
 
-    /* package */ EcosystemWebChromeClient(final Context context) {
+    EcosystemWebChromeClient(final Context context) {
         this.context = context;
     }
 

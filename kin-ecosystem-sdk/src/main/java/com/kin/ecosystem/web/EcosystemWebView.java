@@ -9,10 +9,10 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 public class EcosystemWebView extends WebView {
-    private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
     private static final String HTML_URL = "https://s3.amazonaws.com/kinmarketplace-assets/offer_html_mocks/offer_mock_01.html";
     private static final String JS_INTERFACE_OBJECT_NAME = "KinNative";
 
+    private final Handler mainThreadHandler;
     private final EcosystemNativeApi nativeApi;
     private final EcosystemWebViewClient webViewClient;
     private final EcosystemWebChromeClient webChromeClient;
@@ -27,6 +27,8 @@ public class EcosystemWebView extends WebView {
 
     public EcosystemWebView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+
+        mainThreadHandler = new Handler(Looper.getMainLooper());
 
         webViewClient = new EcosystemWebViewClient();
         setWebViewClient(this.webViewClient);
@@ -51,7 +53,7 @@ public class EcosystemWebView extends WebView {
 
     public void render(final String pollJsonData) {
         if (Looper.myLooper() != Looper.getMainLooper()) {
-            MAIN_HANDLER.post(new Runnable() {
+            mainThreadHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     render(pollJsonData);
@@ -69,5 +71,9 @@ public class EcosystemWebView extends WebView {
         } else {
             loadUrl(js.toString());
         }
+    }
+
+    public void release() {
+        mainThreadHandler.removeCallbacksAndMessages(null);
     }
 }

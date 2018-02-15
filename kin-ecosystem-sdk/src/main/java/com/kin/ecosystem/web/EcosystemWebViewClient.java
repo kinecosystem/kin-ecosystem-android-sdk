@@ -7,7 +7,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 public class EcosystemWebViewClient extends WebViewClient {
-	/* package */ EcosystemWebViewClient() {
+	EcosystemWebViewClient() {
 		super();
 	}
 
