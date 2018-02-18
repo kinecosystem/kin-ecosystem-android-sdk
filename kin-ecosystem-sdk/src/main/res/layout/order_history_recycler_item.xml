@@ -1,96 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:layout_height="@dimen/order_history_item_height">
 
-    <LinearLayout
-        android:id="@+id/time_line_container"
+    <com.kin.ecosystem.history.view.KinDashView
+        android:id="@+id/dash_line"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/transaction_time_path"
+        app:color="@color/gray_light"
+        app:layout_constraintEnd_toEndOf="@+id/dot"
+        app:layout_constraintStart_toStartOf="@+id/dot"
+        app:orientation="vertical"
+        tools:ignore="MissingConstraints" />
+
+    <ImageView
+        android:id="@+id/dot"
+        android:layout_width="@dimen/main_margin"
+        android:layout_height="@dimen/main_margin"
+        android:layout_marginLeft="@dimen/main_margin"
+        android:src="@drawable/transaction_time_dot"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/KinecosysTitleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/main_margin"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:layout_marginLeft="@dimen/block_margin"
+        app:layout_constraintBottom_toBottomOf="@+id/dot"
+        app:layout_constraintStart_toEndOf="@+id/dot"
+        app:layout_constraintTop_toTopOf="@+id/dot"
+        tools:text="Spotify - " />
 
-        <com.kin.ecosystem.history.view.KinDashView
-            android:id="@+id/first_dash_line"
-            android:layout_width="1dp"
-            android:layout_height="25dp"
-            android:src="@drawable/transaction_time_path"
-            app:color="@color/gray_light"
-            app:orientation="vertical"
-            tools:ignore="MissingConstraints" />
-
-        <ImageView
-            android:id="@+id/dot"
-            android:layout_width="@dimen/main_margin"
-            android:layout_height="@dimen/main_margin"
-            android:src="@drawable/transaction_time_dot"
-            tools:ignore="MissingConstraints" />
-
-        <com.kin.ecosystem.history.view.KinDashView
-            android:id="@+id/sec_dash_line"
-            android:layout_width="1dp"
-            android:layout_height="25dp"
-            android:src="@drawable/transaction_time_path"
-            app:color="@color/gray_light"
-            app:orientation="vertical"
-            tools:ignore="MissingConstraints" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/title_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/main_small_margin"
-        android:layout_weight="1"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/title"
-            style="@style/KinecosysTitleText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Spotify - tap to reveal your code"
-            tools:text="Spotify - tap to reveal your code" />
-
-        <TextView
-            android:id="@+id/sub_title"
-            style="@style/KinecosysSubTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Completed poll - 23.1.18"
-            tools:text="Completed poll - 23.1.18" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/amount_container"
+    <TextView
+        android:id="@+id/action_text"
+        style="@style/KinecosysSubTitle"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/title"
+        app:layout_constraintStart_toEndOf="@+id/title"
+        app:layout_constraintTop_toTopOf="@+id/title"
+        tools:text="tap to reveal your code" />
+
+    <TextView
+        android:id="@+id/sub_title"
+        style="@style/KinecosysSubTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/title"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        tools:text="Completed poll - 23.1.18" />
+
+    <ImageView
+        android:id="@+id/amount_ico"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/amount_text"
+        app:layout_constraintEnd_toEndOf="@+id/amount_text"
+        tools:src="@drawable/invoice" />
+
+    <TextView
+        android:id="@+id/amount_text"
+        style="@style/KinecosysSubTitleMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginRight="@dimen/main_margin"
-        android:gravity="center"
-        android:orientation="vertical">
+        app:layout_constraintBottom_toBottomOf="@+id/sub_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/sub_title"
+        tools:text="-8,000" />
 
-        <ImageView
-            android:id="@+id/amount_ico"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/invoice"
-            tools:src="@drawable/invoice" />
-
-        <TextView
-            android:id="@+id/amount_text"
-            style="@style/KinecosysTitleText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="-8,000"
-            tools:text="-8,000" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

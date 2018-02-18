@@ -11,8 +11,8 @@ import android.view.View;
 
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseToolbarActivity;
+import com.kin.ecosystem.base.IBasePresenter;
 import com.kin.ecosystem.history.view.OrderHistoryActivity;
-import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter;
 import com.kin.ecosystem.marketplace.presenter.MarketplaceViewPresenter;
 import com.kin.ecosystem.network.model.Offer;
 
@@ -21,7 +21,7 @@ import java.util.List;
 
 public class MarketplaceActivity extends BaseToolbarActivity implements IMarketplaceView {
 
-    private IMarketplacePresenter marketplacePresenter;
+    private IBasePresenter marketplacePresenter;
 
     private SpendRecyclerAdapter spendRecyclerAdapter;
     private EarnRecyclerAdapter earnRecyclerAdapter;
@@ -57,6 +57,11 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
         attachPresenter();
     }
 
+    private void attachPresenter() {
+        marketplacePresenter = new MarketplaceViewPresenter(this);
+        marketplacePresenter.onAttach();
+    }
+
     @Override
     protected void initViews() {
         //Space item decoration for both of the recyclers
@@ -84,11 +89,6 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
                 moveToTransactionHistory();
             }
         });
-    }
-
-    private void attachPresenter() {
-        marketplacePresenter = new MarketplaceViewPresenter(this);
-        marketplacePresenter.onAttach();
     }
 
     @Override

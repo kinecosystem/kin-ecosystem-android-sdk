@@ -23,7 +23,7 @@ ext {
     junitPackage = 'junit'
 
     devDependencies = [
-            kinStellar       : buildDependency(kinFoundationPackage, 'kin-sdk-core-stellar-android', kinStellarVersion),
+            kinStellar       : buildDependency(kinFoundationPackage, 'kin-core-android', kinStellarVersion),
             appCompat_v7     : buildDependency(supportPackage, 'appcompat-v7', supportVersion),
             recyclerView_v7  : buildDependency(supportPackage, 'recyclerview-v7', supportVersion),
             constraintLayout : buildDependency(constraintLayoutPackage, 'constraint-layout', constraintLayoutVersion),

@@ -47,6 +47,9 @@ public abstract class BaseRecyclerAdapter<T, VH extends BaseViewHolder> extends 
     private RequestLoadMoreListener mRequestLoadMoreListener;
     private boolean mEnableLoadMoreEndClick = false;
 
+    //resources initialize value -1
+    protected static final int NOT_INITIALIZED = -1;
+
     //Animation
     /**
      * Use with {@link #openLoadAnimation}

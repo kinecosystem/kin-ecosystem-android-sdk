@@ -10,10 +10,11 @@ import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
 import com.kin.ecosystem.util.DeviceUtils;
 
-import kin.sdk.core.Balance;
-import kin.sdk.core.KinAccount;
-import kin.sdk.core.KinClient;
-import kin.sdk.core.ResultCallback;
+import kin.core.Balance;
+import kin.core.KinAccount;
+import kin.core.KinClient;
+import kin.core.ResultCallback;
+import kin.core.exception.CreateAccountException;
 
 
 public class Kin {
@@ -37,7 +38,11 @@ public class Kin {
         instance = getInstance();
         DeviceUtils.init(appContext);
         instance.kinClient = new KinClient(appContext, StellarNetwork.NETWORK_TEST.getProvider());
-        instance.kinClient.addAccount(""); // blockchain-sdk should generate and take care of that passphrase.
+        try {
+            instance.kinClient.addAccount(""); // blockchain-sdk should generate and take care of that passphrase.
+        } catch (CreateAccountException e) {
+            throw new InitializeException(e.getMessage());
+        }
         //TODO store apiKey and use to auth
         //TODO store userID and use to auth
     }

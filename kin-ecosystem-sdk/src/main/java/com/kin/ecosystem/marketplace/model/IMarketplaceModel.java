@@ -6,7 +6,7 @@ import com.kin.ecosystem.network.model.Offer;
 
 import java.util.List;
 
-public interface IMarketplaceModel extends IBaseModel{
+public interface IMarketplaceModel extends IBaseModel {
 
     void getOffers(Callback<List<Offer>> callback);
 }

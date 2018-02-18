@@ -1,6 +1,7 @@
 package com.kin.ecosystem;
 
-import kin.sdk.core.ServiceProvider;
+
+import kin.core.ServiceProvider;
 
 enum StellarNetwork {
 

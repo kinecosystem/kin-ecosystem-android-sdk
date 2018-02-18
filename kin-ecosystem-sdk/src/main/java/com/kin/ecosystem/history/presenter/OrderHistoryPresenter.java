@@ -25,7 +25,7 @@ public class OrderHistoryPresenter implements IOrderHistoryPresenter {
             public void onResponse(OrderList transactionsList) {
                 if(transactionsList != null && transactionsList.getOrders() != null) {
                     transactionHistoryList = transactionsList;
-                    transactionHistoryView.addToHistoryList(transactionsList.getOrders());
+                    transactionHistoryView.addToOrderHistoryList(transactionsList.getOrders());
                 }
             }
 

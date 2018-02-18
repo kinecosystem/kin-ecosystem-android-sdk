@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface IOrderHistoryView {
 
-    void addToHistoryList(List<Order> transactions);
+    void addToOrderHistoryList(List<Order> orders);
 }

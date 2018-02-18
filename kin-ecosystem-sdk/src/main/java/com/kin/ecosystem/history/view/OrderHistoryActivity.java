@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.kin.ecosystem.R;
@@ -21,7 +23,7 @@ public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderH
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.transaction_history_activity;
+        return R.layout.order_history_activity;
     }
 
     @Override
@@ -47,7 +49,6 @@ public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderH
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initViews();
         attachPresenter();
     }
 
@@ -57,7 +58,6 @@ public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderH
         orderRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         orderHistoryRecyclerAdapter = new OrderHistoryRecyclerAdapter();
         orderHistoryRecyclerAdapter.bindToRecyclerView(orderRecyclerView);
-
     }
 
     private void attachPresenter() {
@@ -66,15 +66,29 @@ public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderH
     }
 
     @Override
-    public void addToHistoryList(List<Order> transactions) {
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_marketplace, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (R.id.info_menu == id) {
+            //TODO handle info clicked
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void addToOrderHistoryList(List<Order> orders) {
         int lastIndex = orderHistoryRecyclerAdapter.getDataCount();
-        orderHistoryRecyclerAdapter.addData(lastIndex, transactions);
+        orderHistoryRecyclerAdapter.addData(lastIndex, orders);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         transactionHistoryPresenter.onDetach();
-
     }
 }

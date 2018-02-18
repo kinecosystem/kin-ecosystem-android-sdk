@@ -48,7 +48,7 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, OfferRecyclerAdapt
         private int imageWidth;
         private int imageHeight;
 
-        public ViewHolder(View item_root) {
+        ViewHolder(View item_root) {
             super(item_root);
             getView(R.id.title);
             getView(R.id.sub_title);
@@ -57,7 +57,7 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, OfferRecyclerAdapt
         }
 
         @Override
-        protected void initSizes(Context context) {
+        protected void init(Context context) {
             imageWidth = (int) (DeviceUtils.getScreenWidth() * getImageWidthRatio());
             imageHeight = (int) (DeviceUtils.getScreenWidth() * getImageHeightRatio());
         }

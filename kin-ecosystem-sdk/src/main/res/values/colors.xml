@@ -16,4 +16,7 @@
 
     <color name="transparent">#00000000</color>
 
+    <color name="orange">#ff862e</color>
+    <color name="red">#ff5e77</color>
+
 </resources>

@@ -2,6 +2,9 @@ package com.kin.ecosystem.marketplace.presenter;
 
 
 import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.base.BaseModel;
+import com.kin.ecosystem.base.IBaseModel;
+import com.kin.ecosystem.base.IBasePresenter;
 import com.kin.ecosystem.marketplace.model.IMarketplaceModel;
 import com.kin.ecosystem.marketplace.model.MarketplaceModel;
 import com.kin.ecosystem.marketplace.view.IMarketplaceView;
@@ -10,7 +13,7 @@ import com.kin.ecosystem.network.model.Offer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MarketplaceViewPresenter implements IMarketplacePresenter {
+public class MarketplaceViewPresenter implements IBasePresenter {
 
     private final IMarketplaceModel marketplaceModel = new MarketplaceModel();
     private IMarketplaceView marketView;
@@ -56,8 +59,8 @@ public class MarketplaceViewPresenter implements IMarketplacePresenter {
     private void getOffers() {
         marketplaceModel.getOffers(new Callback<List<Offer>>() {
             @Override
-            public void onResponse(List<Offer> response) {
-                splitOffersByType(response);
+            public void onResponse(List<Offer> offerList) {
+                splitOffersByType(offerList);
             }
 
             @Override
