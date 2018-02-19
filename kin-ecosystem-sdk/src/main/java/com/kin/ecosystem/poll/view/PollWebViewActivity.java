@@ -13,6 +13,7 @@ import com.kin.ecosystem.web.EcosystemWebPageListener;
 import com.kin.ecosystem.web.EcosystemWebView;
 
 public class PollWebViewActivity extends BaseToolbarActivity implements EcosystemWebPageListener {
+
     private static final String EXTRA_JSON_DATA_KEY = "jsondata";
 
     public static Intent createIntent(final Context context, final String jsonData) {
@@ -35,7 +36,7 @@ public class PollWebViewActivity extends BaseToolbarActivity implements Ecosyste
 
     @Override
     protected int getNavigationIcon() {
-        return R.drawable.ic_back;
+        return R.drawable.ic_close_white_24dp;
     }
 
     @Override
@@ -57,7 +58,6 @@ public class PollWebViewActivity extends BaseToolbarActivity implements Ecosyste
     @Override
     protected void initViews() {
         this.webView = findViewById(R.id.webview);
-
         this.webView.setListener(this);
         this.webView.load();
     }
@@ -77,7 +77,6 @@ public class PollWebViewActivity extends BaseToolbarActivity implements Ecosyste
     public void onPageResult(String result) {
         // TODO: send result to the server 
         Log.d("PollWebViewActivity", "received result from webview: " + result);
-        final Intent intent = new Intent(this, MarketplaceActivity.class);
-        navigateToActivity(intent);
+        finish();
     }
 }

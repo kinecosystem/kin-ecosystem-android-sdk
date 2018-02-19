@@ -13,12 +13,10 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.network.model.Order;
-
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -82,6 +80,9 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
 
     class ViewHolder extends AbstractBaseViewHolder<Order> {
 
+        private static final String PLUS_SIGN = "+";
+        private static final String MINUS_SIGN = "-";
+
         public ViewHolder(View item_root) {
             super(item_root);
             getView(R.id.dash_line);
@@ -111,22 +112,22 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
                 String amount = NumberFormat.getNumberInstance(Locale.US).format(item.getAmount());
                 if (item.getOfferType() == Order.OfferTypeEnum.SPEND) {
                     setImageResource(R.id.amount_ico, R.drawable.invoice);
-                    setText(R.id.amount_text, amount);
+                    setText(R.id.amount_text, PLUS_SIGN + amount);
                 } else {
                     setImageResource(R.id.amount_ico, R.drawable.coins);
-                    setText(R.id.amount_text, "-" + amount);
+                    setText(R.id.amount_text, MINUS_SIGN + amount);
                 }
             }
         }
 
         private void setSubtitle(Order item) {
             StringBuilder subTitle = new StringBuilder(item.getDescription());
-
+            final String delimiter = " - ";
             String dateString = item.getCompletionDate();
             if (dateString != null && !TextUtils.isEmpty(dateString)) {
                 dateString = getDateFormatted(dateString);
                 if (!TextUtils.isEmpty(dateString)) {
-                    subTitle.append(" - ").append(dateString);
+                    subTitle.append(delimiter).append(dateString);
                 }
             }
             setText(R.id.sub_title, subTitle);
@@ -141,8 +142,8 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
                     case COMPLETED:
                         Spannable titleSpannable = new SpannableString(brand + delimiter);
                         titleSpannable.setSpan(new ForegroundColorSpan(colorBlue),
-                                0, brand.length(),
-                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            0, brand.length(),
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         setSpannableText(R.id.title, titleSpannable);
 
                         setText(R.id.action_text, callToAction);
@@ -210,6 +211,4 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
             }
         }
     }
-
-
 }

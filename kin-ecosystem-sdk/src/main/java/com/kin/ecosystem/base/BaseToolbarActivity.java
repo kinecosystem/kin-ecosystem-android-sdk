@@ -9,7 +9,6 @@ import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-
 import com.kin.ecosystem.R;
 
 
@@ -45,7 +44,4 @@ public abstract class BaseToolbarActivity extends AppCompatActivity {
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
-
-
-
 }

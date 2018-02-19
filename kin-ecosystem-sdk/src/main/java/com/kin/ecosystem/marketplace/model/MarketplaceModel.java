@@ -8,7 +8,6 @@ import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.api.OffersApi;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OfferList;
-
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +30,8 @@ public class MarketplaceModel extends BaseModel implements IMarketplaceModel {
                 }
 
                 @Override
-                public void onSuccess(final OfferList result, int statusCode, Map<String, List<String>> responseHeaders) {
+                public void onSuccess(final OfferList result, int statusCode,
+                    Map<String, List<String>> responseHeaders) {
                     runOnMainThread(new Runnable() {
                         @Override
                         public void run() {
