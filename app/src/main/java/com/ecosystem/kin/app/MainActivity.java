@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    Kin.launchMarketplace(v.getContext());
+                    Kin.launchMarketplace(MainActivity.this);
                 } catch (TaskFailedException e) {
                     e.printStackTrace();
                 }
