@@ -16,8 +16,10 @@ public class BaseModel {
     }
 
     protected void runOnMainThread(Runnable runnable) {
-        if (handler != null) {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
             handler.post(runnable);
+        } else {
+            runnable.run();
         }
     }
 }
