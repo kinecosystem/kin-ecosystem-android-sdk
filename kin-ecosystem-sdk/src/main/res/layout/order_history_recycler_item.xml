@@ -9,12 +9,10 @@
         android:id="@+id/dash_line"
         android:layout_width="1dp"
         android:layout_height="match_parent"
-        android:src="@drawable/transaction_time_path"
         app:color="@color/gray_light"
         app:layout_constraintEnd_toEndOf="@+id/dot"
         app:layout_constraintStart_toStartOf="@+id/dot"
-        app:orientation="vertical"
-        tools:ignore="MissingConstraints" />
+        app:orientation="vertical" />
 
     <ImageView
         android:id="@+id/dot"
