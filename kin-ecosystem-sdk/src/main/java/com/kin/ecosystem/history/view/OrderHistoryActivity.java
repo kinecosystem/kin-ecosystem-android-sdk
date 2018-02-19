@@ -23,7 +23,7 @@ public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderH
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.order_history_activity;
+        return R.layout.activity_order_history;
     }
 
     @Override

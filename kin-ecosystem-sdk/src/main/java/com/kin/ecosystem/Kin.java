@@ -4,12 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-
 import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
 import com.kin.ecosystem.util.DeviceUtils;
-
 import kin.core.Balance;
 import kin.core.KinAccount;
 import kin.core.KinClient;
@@ -18,6 +16,7 @@ import kin.core.exception.CreateAccountException;
 
 
 public class Kin {
+
     private static Kin instance;
     private KinClient kinClient;
 
@@ -34,7 +33,8 @@ public class Kin {
         return instance;
     }
 
-    public static void start(@NonNull Context appContext, @NonNull String apiKey, String userID) throws InitializeException {
+    public static void start(@NonNull Context appContext, @NonNull String apiKey, String userID)
+        throws InitializeException {
         instance = getInstance();
         DeviceUtils.init(appContext);
         instance.kinClient = new KinClient(appContext, StellarNetwork.NETWORK_TEST.getProvider());
@@ -53,10 +53,10 @@ public class Kin {
         }
     }
 
-    public static void launchMarketplace(@NonNull Context context) throws TaskFailedException {
+    public static void launchMarketplace(@NonNull Activity activity) throws TaskFailedException {
         checkInstanceNotNull();
-        context.startActivity(new Intent(context, MarketplaceActivity.class));
-        ((Activity) context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        activity.startActivity(new Intent(activity, MarketplaceActivity.class));
+        activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
     }
 

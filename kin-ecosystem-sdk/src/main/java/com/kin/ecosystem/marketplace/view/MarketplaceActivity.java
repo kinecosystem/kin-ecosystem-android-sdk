@@ -28,7 +28,7 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.marketplace_activity;
+        return R.layout.activity_marketplace;
     }
 
     @Override
