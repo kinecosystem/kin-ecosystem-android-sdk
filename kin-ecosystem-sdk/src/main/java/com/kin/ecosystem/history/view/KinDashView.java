@@ -7,13 +7,13 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
-
 import com.kin.ecosystem.R;
 
 
 public class KinDashView extends View {
-    static public int ORIENTATION_HORIZONTAL = 0;
-    static public int ORIENTATION_VERTICAL = 1;
+
+    private static int ORIENTATION_HORIZONTAL = 0;
+    private static int ORIENTATION_VERTICAL = 1;
     private Paint mPaint;
     private int orientation;
 
