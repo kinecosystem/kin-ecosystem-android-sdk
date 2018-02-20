@@ -19,6 +19,7 @@ public class Kin {
 
     private static Kin instance;
     private KinClient kinClient;
+    private static String userID;
 
     private Kin() {
     }
@@ -43,9 +44,11 @@ public class Kin {
         } catch (CreateAccountException e) {
             throw new InitializeException(e.getMessage());
         }
+        Kin.userID = userID;
         //TODO store apiKey and use to auth
         //TODO store userID and use to auth
     }
+
 
     private static void checkInstanceNotNull() throws TaskFailedException {
         if (instance == null) {
@@ -67,6 +70,10 @@ public class Kin {
             return null;
         }
         return account.getPublicAddress();
+    }
+
+    public static String getUserID() {
+        return Kin.userID;
     }
 
     public static void getBalance(@NonNull final ResultCallback<Integer> balanceResult) throws TaskFailedException {
