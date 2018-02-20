@@ -9,4 +9,6 @@ public interface IMarketplaceView {
     void updateSpendList(List<Offer> response);
 
     void updateEarnList(List<Offer> response);
+
+    void moveToTransactionHistory();
 }

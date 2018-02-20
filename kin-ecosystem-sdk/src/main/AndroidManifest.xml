@@ -2,16 +2,22 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.kin.ecosystem">
 
-
     <application>
-
         <activity
-            android:name=".marketplace.view.MarketplaceActivity"
             android:label="@string/kin_marketplace"
+            android:name=".marketplace.view.MarketplaceActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/KinecosysNoActionBar" />
-
+            android:theme="@style/KinecosysNoActionBar"/>
+        <activity
+            android:label="@string/transaction_history"
+            android:name=".history.view.OrderHistoryActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/KinecosysNoActionBar"/>
+        <activity
+            android:label="@string/answer_a_poll"
+            android:name=".poll.view.PollWebViewActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/KinecosysNoActionBar"/>
     </application>
-
 
 </manifest>

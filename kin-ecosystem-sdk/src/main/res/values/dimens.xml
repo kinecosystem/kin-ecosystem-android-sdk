@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="order_history_item_height">70dp</dimen>
+    <dimen name="stroke_width">1dp</dimen>
+    <dimen name="stroke_padding">2dp</dimen>
+</resources>

@@ -7,10 +7,10 @@ public abstract class AbstractBaseViewHolder<T> extends BaseViewHolder<T> {
 
     public AbstractBaseViewHolder(View view) {
         super(view);
-        initSizes(view.getContext());
+        init(view.getContext());
     }
 
-    protected abstract void initSizes(Context context);
+    protected abstract void init(Context context);
 
     protected abstract void bindObject(T item);
 }

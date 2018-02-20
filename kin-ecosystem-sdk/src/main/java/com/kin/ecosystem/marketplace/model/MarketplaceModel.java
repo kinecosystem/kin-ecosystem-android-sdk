@@ -1,36 +1,27 @@
 package com.kin.ecosystem.marketplace.model;
 
 
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
-
 import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.base.BaseModel;
 import com.kin.ecosystem.network.ApiCallback;
-import com.kin.ecosystem.network.ApiClient;
 import com.kin.ecosystem.network.ApiException;
-import com.kin.ecosystem.network.api.DefaultApi;
+import com.kin.ecosystem.network.api.OffersApi;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OfferList;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MarketplaceModel implements IMarketplaceModel {
+public class MarketplaceModel extends BaseModel implements IMarketplaceModel {
 
-    private ApiClient apiClient = new ApiClient();
-    private DefaultApi defaultApi = new DefaultApi(apiClient);
-
-    private final Handler handler = new Handler(Looper.getMainLooper());
+    private OffersApi offersApi = new OffersApi(apiClient);
 
     @Override
     public void getOffers(final Callback<List<Offer>> callback) {
         try {
-            defaultApi.getOffersAsync(new ApiCallback<OfferList>() {
+            offersApi.getOffersAsync("", 25, "", "", new ApiCallback<OfferList>() {
                 @Override
                 public void onFailure(final ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
-                    handler.post(new Runnable() {
+                    runOnMainThread(new Runnable() {
                         @Override
                         public void run() {
                             callback.onFailure(e);
@@ -39,8 +30,9 @@ public class MarketplaceModel implements IMarketplaceModel {
                 }
 
                 @Override
-                public void onSuccess(final OfferList result, int statusCode, Map<String, List<String>> responseHeaders) {
-                    handler.post(new Runnable() {
+                public void onSuccess(final OfferList result, int statusCode,
+                    Map<String, List<String>> responseHeaders) {
+                    runOnMainThread(new Runnable() {
                         @Override
                         public void run() {
                             if (result != null) {
@@ -63,7 +55,7 @@ public class MarketplaceModel implements IMarketplaceModel {
                 }
             });
         } catch (final ApiException e) {
-            handler.post(new Runnable() {
+            runOnMainThread(new Runnable() {
                 @Override
                 public void run() {
                     callback.onFailure(e);
@@ -73,8 +65,8 @@ public class MarketplaceModel implements IMarketplaceModel {
     }
 
     @Override
-    public void onDetach() {
-        apiClient = null;
-        defaultApi = null;
+    public void release() {
+        super.release();
+        offersApi = null;
     }
 }

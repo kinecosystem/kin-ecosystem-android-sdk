@@ -47,6 +47,9 @@ public abstract class BaseRecyclerAdapter<T, VH extends BaseViewHolder> extends 
     private RequestLoadMoreListener mRequestLoadMoreListener;
     private boolean mEnableLoadMoreEndClick = false;
 
+    //resources initialize value -1
+    protected static final int NOT_INITIALIZED = -1;
+
     //Animation
     /**
      * Use with {@link #openLoadAnimation}
@@ -503,6 +506,13 @@ public abstract class BaseRecyclerAdapter<T, VH extends BaseViewHolder> extends 
             mData.addAll(data);
         }
         notifyDataSetChanged();
+    }
+
+    /**
+     * @return the size of data list.
+     */
+    public int getDataCount() {
+        return mData == null ? 0 : mData.size();
     }
 
     /**

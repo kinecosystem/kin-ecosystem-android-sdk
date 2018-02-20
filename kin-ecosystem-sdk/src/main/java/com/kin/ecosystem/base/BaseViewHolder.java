@@ -1,8 +1,11 @@
 package com.kin.ecosystem.base;
 
 import android.net.Uri;
+import android.support.annotation.ColorInt;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,6 +79,25 @@ public class BaseViewHolder<T> extends RecyclerView.ViewHolder {
     }
 
     /**
+     * Will set the text of a TextView.
+     *
+     * @param viewId The view id.
+     * @param spannable  The spannable to put in the text view.
+     * @return The BaseViewHolder for chaining.
+     */
+    public BaseViewHolder setSpannableText(@IdRes int viewId, Spannable spannable) {
+        TextView view = getView(viewId);
+        view.setText(spannable, TextView.BufferType.SPANNABLE);
+        return this;
+    }
+
+    public BaseViewHolder setTextColor(@IdRes int viewId, @ColorInt int color) {
+        TextView view = getView(viewId);
+        view.setTextColor(color);
+        return this;
+    }
+
+    /**
      * Sets the on click listener of the view.
      *
      * @param viewId   The view id.
@@ -144,6 +166,19 @@ public class BaseViewHolder<T> extends RecyclerView.ViewHolder {
     }
 
     /**
+     * Will set the image of an ImageView from a resource id.
+     *
+     * @param viewId     The view id.
+     * @param imageResId The image resource id.
+     * @return The BaseViewHolder for chaining.
+     */
+    public BaseViewHolder setImageResource(@IdRes int viewId, @DrawableRes int imageResId) {
+        ImageView view = getView(viewId);
+        view.setImageResource(imageResId);
+        return this;
+    }
+
+    /**
      * set image url with sizes.
      *
      * @param viewId
@@ -178,6 +213,22 @@ public class BaseViewHolder<T> extends RecyclerView.ViewHolder {
         if (view != null) {
             ViewGroup.LayoutParams params = view.getLayoutParams();
             params.width = width;
+            params.height = height;
+        }
+        return this;
+    }
+
+    /**
+     * set view height.
+     *
+     * @param viewId
+     * @param height
+     * @return The BaseViewHolder for chaining.
+     */
+    protected BaseViewHolder setViewHeight(@IdRes int viewId ,int height) {
+        View view = getView(viewId);
+        if (view != null) {
+            ViewGroup.LayoutParams params = view.getLayoutParams();
             params.height = height;
         }
         return this;

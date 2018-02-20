@@ -4,20 +4,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-
 import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
 import com.kin.ecosystem.util.DeviceUtils;
-
-import kin.sdk.core.Balance;
-import kin.sdk.core.KinAccount;
-import kin.sdk.core.KinClient;
-import kin.sdk.core.ResultCallback;
-import kin.sdk.core.exception.CreateAccountException;
+import kin.core.Balance;
+import kin.core.KinAccount;
+import kin.core.KinClient;
+import kin.core.ResultCallback;
+import kin.core.exception.CreateAccountException;
 
 
 public class Kin {
+
     private static Kin instance;
     private KinClient kinClient;
 
@@ -34,12 +33,13 @@ public class Kin {
         return instance;
     }
 
-    public static void start(@NonNull Context appContext, @NonNull String apiKey, String userID) throws InitializeException {
+    public static void start(@NonNull Context appContext, @NonNull String apiKey, String userID)
+        throws InitializeException {
         instance = getInstance();
         DeviceUtils.init(appContext);
         instance.kinClient = new KinClient(appContext, StellarNetwork.NETWORK_TEST.getProvider());
         try {
-            instance.kinClient.createAccount(""); // blockchain-sdk should generate and take care of that passphrase.
+            instance.kinClient.addAccount(""); // blockchain-sdk should generate and take care of that passphrase.
         } catch (CreateAccountException e) {
             throw new InitializeException(e.getMessage());
         }
@@ -53,16 +53,16 @@ public class Kin {
         }
     }
 
-    public static void launchMarketplace(@NonNull Context context) throws TaskFailedException {
+    public static void launchMarketplace(@NonNull Activity activity) throws TaskFailedException {
         checkInstanceNotNull();
-        context.startActivity(new Intent(context, MarketplaceActivity.class));
-        ((Activity)context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        activity.startActivity(new Intent(activity, MarketplaceActivity.class));
+        activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
     }
 
     public static String getPublicAddress() throws TaskFailedException {
         checkInstanceNotNull();
-        KinAccount account = instance.kinClient.getAccount();
+        KinAccount account = instance.kinClient.getAccount(0);
         if (account == null) {
             return null;
         }
@@ -71,7 +71,7 @@ public class Kin {
 
     public static void getBalance(@NonNull final ResultCallback<Integer> balanceResult) throws TaskFailedException {
         checkInstanceNotNull();
-        KinAccount account = instance.kinClient.getAccount();
+        KinAccount account = instance.kinClient.getAccount(0);
         if (account == null) {
             balanceResult.onError(new TaskFailedException("Account not found"));
         } else {

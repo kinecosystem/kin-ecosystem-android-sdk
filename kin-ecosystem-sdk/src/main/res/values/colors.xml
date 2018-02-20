@@ -12,7 +12,11 @@
     <color name="black">#000</color>
 
     <color name="gray_light">#d7dce9</color>
-    <color name="gray_light_50op">#d7dce9</color>
     <color name="gray_darker">#aaa</color>
+
+    <color name="transparent">#00000000</color>
+
+    <color name="orange">#ff862e</color>
+    <color name="red">#ff5e77</color>
 
 </resources>
