@@ -77,6 +77,7 @@ public class Kin {
         }
     }
 
+
     private static void checkInstanceNotNull() throws TaskFailedException {
         if (instance == null) {
             throw new TaskFailedException("Kin.start(...) should be called first");
