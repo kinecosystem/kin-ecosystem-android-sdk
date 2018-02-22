@@ -4,10 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import com.kin.ecosystem.data.auth.AuthRepository;
+import com.kin.ecosystem.data.offer.OfferRepository;
+import com.kin.ecosystem.data.order.OrderHistoryRepository;
 import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
+import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.util.DeviceUtils;
+import com.kin.ecosystem.util.ExecutorsUtil;
 import kin.core.Balance;
 import kin.core.KinAccount;
 import kin.core.KinClient;
@@ -20,7 +25,10 @@ public class Kin {
     private static Kin instance;
     private KinClient kinClient;
 
+    private final ExecutorsUtil executorsUtil;
+
     private Kin() {
+        executorsUtil = new ExecutorsUtil();
     }
 
     private static Kin getInstance() {
@@ -33,18 +41,40 @@ public class Kin {
         return instance;
     }
 
-    public static void start(@NonNull Context appContext, @NonNull String apiKey, String userID)
+    public static void start(@NonNull Context appContext, @NonNull SignInData signInData)
         throws InitializeException {
         instance = getInstance();
+        appContext = appContext.getApplicationContext(); // use application context to avoid leaks.
         DeviceUtils.init(appContext);
         instance.kinClient = new KinClient(appContext, StellarNetwork.NETWORK_TEST.getProvider());
+        createKinAccountInNeeded();
+        registerAccount(appContext, signInData);
+        OrderHistoryRepository.init(instance.executorsUtil);
+        OfferRepository.init(instance.executorsUtil);
+        OfferRepository.getInstance().getOffers(null);
+    }
+
+    private static void createKinAccountInNeeded() throws InitializeException {
         try {
-            instance.kinClient.addAccount(""); // blockchain-sdk should generate and take care of that passphrase.
+            KinAccount account = instance.kinClient.getAccount(0);
+            if (account == null) {
+                instance.kinClient.addAccount(""); // blockchain-sdk should generate and take care of that passphrase.
+            }
         } catch (CreateAccountException e) {
             throw new InitializeException(e.getMessage());
         }
-        //TODO store apiKey and use to auth
-        //TODO store userID and use to auth
+    }
+
+    private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
+        throws InitializeException {
+        String publicAddress = null;
+        try {
+            publicAddress = getPublicAddress();
+            signInData.setPublicAddress(publicAddress);
+            AuthRepository.init(context, signInData, instance.executorsUtil);
+        } catch (TaskFailedException e) {
+            throw new InitializeException(e.getMessage());
+        }
     }
 
     private static void checkInstanceNotNull() throws TaskFailedException {
@@ -88,5 +118,4 @@ public class Kin {
             });
         }
     }
-
 }

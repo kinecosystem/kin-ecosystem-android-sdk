@@ -1,5 +1,7 @@
 package com.kin.ecosystem.history.view;
 
+import static com.kin.ecosystem.util.DateUtil.getDateFormatted;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
@@ -10,25 +12,17 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.network.model.Order;
-import java.text.DateFormat;
 import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
-import java.util.TimeZone;
 
 
 public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, OrderHistoryRecyclerAdapter.ViewHolder> {
-
-    private static final String TAG = OrderHistoryRecyclerAdapter.class.getSimpleName();
 
     private static int colorBlue = NOT_INITIALIZED;
     private static int colorRed = NOT_INITIALIZED;
@@ -38,10 +32,6 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
     private static int subTitleFontSize = NOT_INITIALIZED;
     private static int itemHeight = NOT_INITIALIZED;
     private static int itemHalfHeight = NOT_INITIALIZED;
-
-    private static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yy", Locale.US);
-    private static DateFormat utcDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.US);
-    private static TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
 
     OrderHistoryRecyclerAdapter() {
         super(R.layout.order_history_recycler_item);
@@ -167,17 +157,6 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
             } else {
                 setText(R.id.title, brand);
             }
-        }
-
-        private String getDateFormatted(String dateStr) {
-            utcDateFormat.setTimeZone(utcTimeZone);
-            try {
-                Date date = utcDateFormat.parse(dateStr);
-                return dateFormat.format(date);
-            } catch (ParseException e) {
-                Log.e(TAG, e.getMessage());
-            }
-            return "";
         }
 
         private void updateTimeLine(Order item) {

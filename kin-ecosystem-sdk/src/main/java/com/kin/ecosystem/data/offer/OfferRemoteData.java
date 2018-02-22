@@ -1,27 +1,48 @@
-package com.kin.ecosystem.marketplace.model;
+package com.kin.ecosystem.data.offer;
 
-
+import android.support.annotation.NonNull;
 import com.kin.ecosystem.Callback;
-import com.kin.ecosystem.base.BaseModel;
 import com.kin.ecosystem.network.ApiCallback;
 import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.api.OffersApi;
-import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OfferList;
+import com.kin.ecosystem.util.ExecutorsUtil;
 import java.util.List;
 import java.util.Map;
 
-public class MarketplaceModel extends BaseModel implements IMarketplaceModel {
+class OfferRemoteData implements OfferDataSource {
 
-    private OffersApi offersApi = new OffersApi(apiClient);
+    private static volatile OfferRemoteData instance;
+
+    private final OffersApi offersApi;
+    private final ExecutorsUtil executorsUtil;
+
+    private OfferRemoteData(@NonNull ExecutorsUtil executorsUtil) {
+        this.offersApi = new OffersApi();
+        this.executorsUtil = executorsUtil;
+    }
+
+    static OfferRemoteData getInstance(@NonNull ExecutorsUtil executorsUtil) {
+        if (instance == null) {
+            synchronized (OfferRemoteData.class) {
+                instance = new OfferRemoteData(executorsUtil);
+            }
+        }
+        return instance;
+    }
 
     @Override
-    public void getOffers(final Callback<List<Offer>> callback) {
+    public OfferList getCachedOfferList() {
+        return null;
+    }
+
+    @Override
+    public void getOffers(@NonNull final Callback<OfferList> callback) {
         try {
             offersApi.getOffersAsync("", 25, "", "", new ApiCallback<OfferList>() {
                 @Override
                 public void onFailure(final ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
-                    runOnMainThread(new Runnable() {
+                    executorsUtil.mainThread().execute(new Runnable() {
                         @Override
                         public void run() {
                             callback.onFailure(e);
@@ -32,14 +53,11 @@ public class MarketplaceModel extends BaseModel implements IMarketplaceModel {
                 @Override
                 public void onSuccess(final OfferList result, int statusCode,
                     Map<String, List<String>> responseHeaders) {
-                    runOnMainThread(new Runnable() {
+                    executorsUtil.mainThread().execute(new Runnable() {
                         @Override
                         public void run() {
-                            if (result != null) {
-                                callback.onResponse(result.getOffers());
-                            } else {
-                                callback.onResponse(null);
-                            }
+                            callback.onResponse(result);
+
                         }
                     });
                 }
@@ -55,18 +73,12 @@ public class MarketplaceModel extends BaseModel implements IMarketplaceModel {
                 }
             });
         } catch (final ApiException e) {
-            runOnMainThread(new Runnable() {
+            executorsUtil.mainThread().execute(new Runnable() {
                 @Override
                 public void run() {
                     callback.onFailure(e);
                 }
             });
         }
-    }
-
-    @Override
-    public void release() {
-        super.release();
-        offersApi = null;
     }
 }

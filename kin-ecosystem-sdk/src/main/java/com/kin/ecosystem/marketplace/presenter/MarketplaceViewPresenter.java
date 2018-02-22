@@ -3,16 +3,16 @@ package com.kin.ecosystem.marketplace.presenter;
 
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.IBasePresenter;
-import com.kin.ecosystem.marketplace.model.IMarketplaceModel;
-import com.kin.ecosystem.marketplace.model.MarketplaceModel;
+import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.marketplace.view.IMarketplaceView;
 import com.kin.ecosystem.network.model.Offer;
+import com.kin.ecosystem.network.model.OfferList;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MarketplaceViewPresenter implements IBasePresenter {
 
-    private final IMarketplaceModel marketplaceModel = new MarketplaceModel();
+    private final OfferRepository offerRepository;
     private IMarketplaceView marketView;
     private List<Offer> spendList;
     private List<Offer> earnList;
@@ -21,6 +21,7 @@ public class MarketplaceViewPresenter implements IBasePresenter {
         this.marketView = view;
         this.spendList = new ArrayList<>();
         this.earnList = new ArrayList<>();
+        this.offerRepository = OfferRepository.getInstance();
     }
 
     private void splitOffersByType(List<Offer> list) {
@@ -46,17 +47,21 @@ public class MarketplaceViewPresenter implements IBasePresenter {
     }
 
     private void release() {
-        marketplaceModel.release();
         marketView = null;
         spendList = null;
         earnList = null;
     }
 
     private void getOffers() {
-        marketplaceModel.getOffers(new Callback<List<Offer>>() {
+        OfferList cachedOfferList = offerRepository.getCachedOfferList();
+        if (cachedOfferList != null) {
+            splitOffersByType(cachedOfferList.getOffers());
+        }
+
+        offerRepository.getOffers(new Callback<OfferList>() {
             @Override
-            public void onResponse(List<Offer> offerList) {
-                splitOffersByType(offerList);
+            public void onResponse(OfferList offerList) {
+                splitOffersByType(offerList.getOffers());
             }
 
             @Override

@@ -2,30 +2,35 @@ package com.kin.ecosystem.history.presenter;
 
 
 import com.kin.ecosystem.Callback;
-import com.kin.ecosystem.history.model.IOrderHistoryModel;
-import com.kin.ecosystem.history.model.OrderHistoryModel;
+import com.kin.ecosystem.base.IBasePresenter;
+import com.kin.ecosystem.data.order.OrderHistoryRepository;
 import com.kin.ecosystem.history.view.IOrderHistoryView;
 import com.kin.ecosystem.network.model.OrderList;
 
-public class OrderHistoryPresenter implements IOrderHistoryPresenter {
+public class OrderHistoryPresenter implements IBasePresenter {
 
-    private final IOrderHistoryModel transactionHistoryModel = new OrderHistoryModel();
-    private IOrderHistoryView transactionHistoryView;
+    private final OrderHistoryRepository repository;
+    private IOrderHistoryView orderHistoryView;
 
-    private OrderList transactionHistoryList;
+    private OrderList orderHistoryList;
 
     public OrderHistoryPresenter(IOrderHistoryView view) {
-        this.transactionHistoryView = view;
+        this.orderHistoryView = view;
+        this.repository = OrderHistoryRepository.getInstance();
     }
 
     @Override
     public void onAttach() {
-        this.transactionHistoryModel.getHistory(new Callback<OrderList>() {
+        orderHistoryList = repository.getAllCachedOrderHistory();
+        if (orderHistoryList != null) {
+            orderHistoryView.addToOrderHistoryList(orderHistoryList.getOrders());
+        }
+        repository.getAllOrderHistory(new Callback<OrderList>() {
             @Override
             public void onResponse(OrderList transactionsList) {
-                if(transactionsList != null && transactionsList.getOrders() != null) {
-                    transactionHistoryList = transactionsList;
-                    transactionHistoryView.addToOrderHistoryList(transactionsList.getOrders());
+                if (transactionsList != null && transactionsList.getOrders() != null) {
+                    orderHistoryList = transactionsList;
+                    orderHistoryView.addToOrderHistoryList(orderHistoryList.getOrders());
                 }
             }
 
@@ -34,6 +39,7 @@ public class OrderHistoryPresenter implements IOrderHistoryPresenter {
 
             }
         });
+
     }
 
     @Override
@@ -42,8 +48,7 @@ public class OrderHistoryPresenter implements IOrderHistoryPresenter {
     }
 
     private void release() {
-        transactionHistoryModel.release();
-        transactionHistoryView = null;
-        transactionHistoryList = null;
+        orderHistoryView = null;
+        orderHistoryList = null;
     }
 }
