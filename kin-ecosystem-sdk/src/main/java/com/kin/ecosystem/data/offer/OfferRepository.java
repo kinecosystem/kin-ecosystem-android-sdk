@@ -20,10 +20,10 @@ public class OfferRepository implements OfferDataSource {
         this.remoteData = remoteData;
     }
 
-    public static void init(@NonNull ExecutorsUtil executorsUtil) {
+    public static void init(@NonNull OfferRemoteData remoteData) {
         if (instance == null) {
             synchronized (OfferRepository.class) {
-                instance = new OfferRepository(OfferRemoteData.getInstance(executorsUtil));
+                instance = new OfferRepository(remoteData);
             }
         }
     }

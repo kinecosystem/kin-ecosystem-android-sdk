@@ -65,8 +65,9 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     @Override
     protected void initViews() {
         //Space item decoration for both of the recyclers
+        int margin = getResources().getDimensionPixelOffset(R.dimen.main_margin);
         int space = getResources().getDimensionPixelOffset(R.dimen.offer_item_list_space);
-        SpaceItemDecoration itemDecoration = new SpaceItemDecoration(space);
+        SpaceItemDecoration itemDecoration = new SpaceItemDecoration(margin, space);
 
         //Spend Recycler
         RecyclerView spendRecycler = findViewById(R.id.spend_recycler);

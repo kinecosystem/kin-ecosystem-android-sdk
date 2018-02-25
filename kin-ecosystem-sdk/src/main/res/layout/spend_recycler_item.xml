@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -11,7 +10,7 @@
         android:id="@+id/image"
         android:layout_width="300dp"
         android:layout_height="90dp"
-        android:background="@drawable/item_bg_placeholder" />
+        android:background="@drawable/item_bg_placeholder"/>
 
     <FrameLayout
         android:id="@+id/earn_title_container"
@@ -26,29 +25,31 @@
 
             <TextView
                 android:id="@+id/title"
-                style="@style/KinecosysTitleText"
+                style="@style/KinecosysSubTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Spotify" />
+                android:maxLength="18"
+                tools:text="Spotify"/>
 
             <TextView
                 android:id="@+id/sub_title"
                 style="@style/KinecosysSubTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="1 week subscription" />
+                android:maxLength="22"
+                tools:text="1 week subscription"/>
 
         </LinearLayout>
 
         <TextView
             android:id="@+id/amount_text"
+            style="@style/KinecosysSubTitleMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:gravity="right"
-            style="@style/KinecosysTitleTextMedium"
             android:textColor="@color/gray_light"
-            tools:text="2,000 KIN" />
+            tools:text="2,000 KIN"/>
 
     </FrameLayout>
 

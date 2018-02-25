@@ -10,7 +10,7 @@ import com.kin.ecosystem.util.ExecutorsUtil;
 import java.util.List;
 import java.util.Map;
 
-class OfferRemoteData implements OfferDataSource {
+public class OfferRemoteData implements OfferDataSource {
 
     private static volatile OfferRemoteData instance;
 
@@ -22,7 +22,7 @@ class OfferRemoteData implements OfferDataSource {
         this.executorsUtil = executorsUtil;
     }
 
-    static OfferRemoteData getInstance(@NonNull ExecutorsUtil executorsUtil) {
+    public static OfferRemoteData getInstance(@NonNull ExecutorsUtil executorsUtil) {
         if (instance == null) {
             synchronized (OfferRemoteData.class) {
                 instance = new OfferRemoteData(executorsUtil);

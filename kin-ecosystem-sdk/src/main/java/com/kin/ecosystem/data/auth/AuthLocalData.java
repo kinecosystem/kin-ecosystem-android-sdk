@@ -11,21 +11,21 @@ import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.network.model.SignInData.SignInTypeEnum;
 import com.kin.ecosystem.util.ExecutorsUtil;
 
-class AuthLocalData implements AuthDataSource {
+public class AuthLocalData implements AuthDataSource {
 
     private static volatile AuthLocalData instance;
 
     private static final String SIGN_IN_PREF_NAME = "kinecosystem_sign_in_pref";
 
-    private static final String JWT = "jwt";
-    private static final String USER_ID = "user_id";
-    private static final String APP_ID = "app_id";
-    private static final String DEVICE_ID = "device_id";
-    private static final String PUBLIC_ADDRESS = "public_address";
-    private static final String TYPE = "type";
+    private static final String JWT_KEY = "jwt";
+    private static final String USER_ID_KEY = "user_id";
+    private static final String APP_ID_KEY = "app_id";
+    private static final String DEVICE_ID_KEY = "device_id";
+    private static final String PUBLIC_ADDRESS_KEY = "public_address";
+    private static final String TYPE_KEY = "type";
 
-    private static final String TOKEN = "token";
-    private static final String TOKEN_EXPIRATION_DATE = "token_expiration_date";
+    private static final String TOKEN_KEY = "token";
+    private static final String TOKEN_EXPIRATION_DATE_KEY = "token_expiration_date";
 
     private final SharedPreferences signInSharedPreferences;
     private final ExecutorsUtil executorsUtil;
@@ -35,7 +35,7 @@ class AuthLocalData implements AuthDataSource {
         this.executorsUtil = executorsUtil;
     }
 
-    static AuthLocalData getInstance(@NonNull Context context, @NonNull ExecutorsUtil executorsUtil) {
+    public static AuthLocalData getInstance(@NonNull Context context, @NonNull ExecutorsUtil executorsUtil) {
         if (instance == null) {
             synchronized (AuthLocalData.class) {
                 instance = new AuthLocalData(context, executorsUtil);
@@ -51,14 +51,14 @@ class AuthLocalData implements AuthDataSource {
             @Override
             public void run() {
                 Editor editor = signInSharedPreferences.edit();
-                editor.putString(USER_ID, signInData.getUserId());
-                editor.putString(APP_ID, signInData.getUserId());
-                editor.putString(DEVICE_ID, signInData.getUserId());
-                editor.putString(PUBLIC_ADDRESS, signInData.getUserId());
+                editor.putString(USER_ID_KEY, signInData.getUserId());
+                editor.putString(APP_ID_KEY, signInData.getUserId());
+                editor.putString(DEVICE_ID_KEY, signInData.getUserId());
+                editor.putString(PUBLIC_ADDRESS_KEY, signInData.getUserId());
                 if (signInData.getSignInType() == SignInTypeEnum.JWT) {
-                    editor.putString(TYPE, signInData.getSignInType().getValue());
+                    editor.putString(TYPE_KEY, SignInTypeEnum.JWT.getValue());
                 }
-                editor.apply();
+                editor.commit();
             }
         };
 
@@ -74,14 +74,14 @@ class AuthLocalData implements AuthDataSource {
                 if ((signInType = getType()) != null) {
 
                     final SignInData signInData = new SignInData();
-                    signInData.setUserId(signInSharedPreferences.getString(USER_ID, null));
-                    signInData.appId(signInSharedPreferences.getString(APP_ID, null));
-                    signInData.deviceId(signInSharedPreferences.getString(DEVICE_ID, null));
-                    signInData.publicAddress(signInSharedPreferences.getString(PUBLIC_ADDRESS, null));
+                    signInData.setUserId(signInSharedPreferences.getString(USER_ID_KEY, null));
+                    signInData.appId(signInSharedPreferences.getString(APP_ID_KEY, null));
+                    signInData.deviceId(signInSharedPreferences.getString(DEVICE_ID_KEY, null));
+                    signInData.publicAddress(signInSharedPreferences.getString(PUBLIC_ADDRESS_KEY, null));
                     signInData.setSignInType(signInType);
 
                     if (signInType == SignInTypeEnum.JWT) {
-                        signInData.setJwt(signInSharedPreferences.getString(JWT, null));
+                        signInData.setJwt(signInSharedPreferences.getString(JWT_KEY, null));
                     }
                     executorsUtil.mainThread().execute(new Runnable() {
                         @Override
@@ -110,9 +110,9 @@ class AuthLocalData implements AuthDataSource {
             @Override
             public void run() {
                 Editor editor = signInSharedPreferences.edit();
-                editor.putString(TOKEN, authToken.getToken());
-                editor.putString(TOKEN_EXPIRATION_DATE, authToken.getExpirationDate());
-                editor.apply();
+                editor.putString(TOKEN_KEY, authToken.getToken());
+                editor.putString(TOKEN_EXPIRATION_DATE_KEY, authToken.getExpirationDate());
+                editor.commit();
             }
         };
         executorsUtil.diskIO().execute(command);
@@ -123,8 +123,8 @@ class AuthLocalData implements AuthDataSource {
         Runnable command = new Runnable() {
             @Override
             public void run() {
-                final String token = signInSharedPreferences.getString(TOKEN, null);
-                final String expirationDate = signInSharedPreferences.getString(TOKEN_EXPIRATION_DATE, null);
+                final String token = signInSharedPreferences.getString(TOKEN_KEY, null);
+                final String expirationDate = signInSharedPreferences.getString(TOKEN_EXPIRATION_DATE_KEY, null);
                 executorsUtil.mainThread().execute(new Runnable() {
                     @Override
                     public void run() {
@@ -143,8 +143,8 @@ class AuthLocalData implements AuthDataSource {
 
     @Override
     public AuthToken getAuthTokenSync() {
-        String token = signInSharedPreferences.getString(TOKEN, null);
-        String expirationDate = signInSharedPreferences.getString(TOKEN_EXPIRATION_DATE, null);
+        String token = signInSharedPreferences.getString(TOKEN_KEY, null);
+        String expirationDate = signInSharedPreferences.getString(TOKEN_EXPIRATION_DATE_KEY, null);
         if (token != null && expirationDate != null) {
             return new AuthToken().token(token).expirationDate(expirationDate);
         } else {
@@ -153,7 +153,7 @@ class AuthLocalData implements AuthDataSource {
     }
 
     private SignInTypeEnum getType() {
-        String signInType = signInSharedPreferences.getString(TYPE, null);
+        String signInType = signInSharedPreferences.getString(TYPE_KEY, null);
 
         return SignInTypeEnum.fromValue(signInType);
     }

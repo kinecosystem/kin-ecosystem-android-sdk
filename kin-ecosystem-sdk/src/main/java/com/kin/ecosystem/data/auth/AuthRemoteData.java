@@ -13,7 +13,7 @@ import com.kin.ecosystem.util.ExecutorsUtil;
 import java.util.List;
 import java.util.Map;
 
-class AuthRemoteData implements AuthDataSource {
+public class AuthRemoteData implements AuthDataSource {
 
     /**
      * This is new api client to be different from oder apis without access token interceptor.
@@ -32,7 +32,7 @@ class AuthRemoteData implements AuthDataSource {
     }
 
 
-    static AuthRemoteData getInstance(@NonNull ExecutorsUtil executorsUtil) {
+    public static AuthRemoteData getInstance(@NonNull ExecutorsUtil executorsUtil) {
         if (instance == null) {
             synchronized (AuthRemoteData.class) {
                 instance = new AuthRemoteData(executorsUtil);

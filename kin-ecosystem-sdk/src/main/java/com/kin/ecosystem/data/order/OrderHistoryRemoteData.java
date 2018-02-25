@@ -10,7 +10,7 @@ import com.kin.ecosystem.util.ExecutorsUtil;
 import java.util.List;
 import java.util.Map;
 
-class OrderHistoryRemoteData implements OrderDataSource {
+public class OrderHistoryRemoteData implements OrderDataSource {
 
     private static volatile OrderHistoryRemoteData instance;
 
@@ -22,7 +22,7 @@ class OrderHistoryRemoteData implements OrderDataSource {
         this.executorsUtil = executorsUtil;
     }
 
-    static OrderHistoryRemoteData getInstance(@NonNull ExecutorsUtil executorsUtil) {
+    public static OrderHistoryRemoteData getInstance(@NonNull ExecutorsUtil executorsUtil) {
         if (instance == null) {
             synchronized (OrderHistoryRemoteData.class) {
                 instance = new OrderHistoryRemoteData(executorsUtil);

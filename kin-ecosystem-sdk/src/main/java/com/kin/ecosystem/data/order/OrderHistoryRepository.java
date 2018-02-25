@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.network.model.OrderList;
-import com.kin.ecosystem.util.ExecutorsUtil;
 
 public class OrderHistoryRepository implements OrderDataSource {
 
@@ -18,10 +17,10 @@ public class OrderHistoryRepository implements OrderDataSource {
         this.remoteData = remoteData;
     }
 
-    public static void init(@NonNull ExecutorsUtil executorsUtil) {
+    public static void init(@NonNull OrderHistoryRemoteData remoteData) {
         if (instance == null) {
             synchronized (OrderHistoryRepository.class) {
-                instance = new OrderHistoryRepository(OrderHistoryRemoteData.getInstance(executorsUtil));
+                instance = new OrderHistoryRepository(remoteData);
             }
         }
     }

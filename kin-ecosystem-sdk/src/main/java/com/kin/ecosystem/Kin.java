@@ -4,8 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import com.kin.ecosystem.data.auth.AuthLocalData;
+import com.kin.ecosystem.data.auth.AuthRemoteData;
 import com.kin.ecosystem.data.auth.AuthRepository;
+import com.kin.ecosystem.data.offer.OfferRemoteData;
 import com.kin.ecosystem.data.offer.OfferRepository;
+import com.kin.ecosystem.data.order.OrderHistoryRemoteData;
 import com.kin.ecosystem.data.order.OrderHistoryRepository;
 import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.exception.TaskFailedException;
@@ -49,9 +53,30 @@ public class Kin {
         instance.kinClient = new KinClient(appContext, StellarNetwork.NETWORK_TEST.getProvider());
         createKinAccountInNeeded();
         registerAccount(appContext, signInData);
-        OrderHistoryRepository.init(instance.executorsUtil);
-        OfferRepository.init(instance.executorsUtil);
+        initOrderRepository();
+        initOfferRepository();
+    }
+
+    private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
+        throws InitializeException {
+        String publicAddress = null;
+        try {
+            publicAddress = getPublicAddress();
+            signInData.setPublicAddress(publicAddress);
+            AuthRepository.init(signInData, AuthLocalData.getInstance(context, instance.executorsUtil),
+                AuthRemoteData.getInstance(instance.executorsUtil));
+        } catch (TaskFailedException e) {
+            throw new InitializeException(e.getMessage());
+        }
+    }
+
+    private static void initOfferRepository() {
+        OfferRepository.init(OfferRemoteData.getInstance(instance.executorsUtil));
         OfferRepository.getInstance().getOffers(null);
+    }
+
+    private static void initOrderRepository() {
+        OrderHistoryRepository.init(OrderHistoryRemoteData.getInstance(instance.executorsUtil));
     }
 
     private static void createKinAccountInNeeded() throws InitializeException {
@@ -64,19 +89,6 @@ public class Kin {
             throw new InitializeException(e.getMessage());
         }
     }
-
-    private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
-        throws InitializeException {
-        String publicAddress = null;
-        try {
-            publicAddress = getPublicAddress();
-            signInData.setPublicAddress(publicAddress);
-            AuthRepository.init(context, signInData, instance.executorsUtil);
-        } catch (TaskFailedException e) {
-            throw new InitializeException(e.getMessage());
-        }
-    }
-
 
     private static void checkInstanceNotNull() throws TaskFailedException {
         if (instance == null) {

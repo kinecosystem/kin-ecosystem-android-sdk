@@ -6,10 +6,13 @@ import android.view.View;
 
 
 public class SpaceItemDecoration extends RecyclerView.ItemDecoration {
-    private int space;
 
-    public SpaceItemDecoration(int space){
+    private int space;
+    private int margin;
+
+    public SpaceItemDecoration(int margin, int space) {
         this.space = space;
+        this.margin = margin;
     }
 
     @Override
@@ -19,15 +22,12 @@ public class SpaceItemDecoration extends RecyclerView.ItemDecoration {
         final int index = parent.getChildLayoutPosition(view);
 
         if (index == 0) {
-            outRect.left = space / 2;
-        }
-        else if (index == lastIndex) {
-            outRect.right = space / 2;
+            outRect.left = margin;
+        } else if (index == lastIndex) {
+            outRect.right = margin;
+            outRect.left = space;
+        } else {
             outRect.left = space;
         }
-        else {
-            outRect.left = space;
-        }
-
     }
 }

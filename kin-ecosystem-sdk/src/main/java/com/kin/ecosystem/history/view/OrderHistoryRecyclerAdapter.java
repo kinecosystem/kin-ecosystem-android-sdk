@@ -1,6 +1,7 @@
 package com.kin.ecosystem.history.view;
 
 import static com.kin.ecosystem.util.DateUtil.getDateFormatted;
+import static com.kin.ecosystem.util.StringUtil.getAmountFormatted;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -99,7 +100,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
 
         private void setAmountAndIcon(Order item) {
             if (item.getStatus() == Order.StatusEnum.COMPLETED) {
-                String amount = NumberFormat.getNumberInstance(Locale.US).format(item.getAmount());
+                String amount = getAmountFormatted(item.getAmount());
                 if (item.getOfferType() == Order.OfferTypeEnum.SPEND) {
                     setImageResource(R.id.amount_ico, R.drawable.invoice);
                     setText(R.id.amount_text, PLUS_SIGN + amount);

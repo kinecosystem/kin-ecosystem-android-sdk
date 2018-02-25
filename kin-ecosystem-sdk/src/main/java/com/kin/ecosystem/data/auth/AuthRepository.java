@@ -2,12 +2,10 @@ package com.kin.ecosystem.data.auth;
 
 import static com.kin.ecosystem.util.DateUtil.getDateFromUTCString;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.network.model.SignInData;
-import com.kin.ecosystem.util.ExecutorsUtil;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -26,12 +24,11 @@ public class AuthRepository implements AuthDataSource {
         this.remoteData = remote;
     }
 
-    public static void init(@NonNull Context context, @NonNull SignInData signInData,
-        @NonNull ExecutorsUtil executorsUtil) {
+    public static void init(@NonNull SignInData signInData, @NonNull AuthLocalData localData,
+        @NonNull AuthRemoteData remoteData) {
         if (instance == null) {
             synchronized (AuthRepository.class) {
-                instance = new AuthRepository(AuthLocalData.getInstance(context, executorsUtil),
-                    AuthRemoteData.getInstance(executorsUtil));
+                instance = new AuthRepository(localData, remoteData);
                 instance.setSignInData(signInData);
             }
         }
