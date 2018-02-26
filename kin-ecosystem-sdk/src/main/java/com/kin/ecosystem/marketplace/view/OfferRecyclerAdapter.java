@@ -1,15 +1,18 @@
 package com.kin.ecosystem.marketplace.view;
 
 import static com.kin.ecosystem.util.DeviceUtils.DensityDpi.XXHDPI;
+import static com.kin.ecosystem.util.StringUtil.getAmountFormatted;
 
 import android.content.Context;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.view.View;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.Offer.ContentTypeEnum;
+import com.kin.ecosystem.network.model.Offer.OfferTypeEnum;
 import com.kin.ecosystem.poll.view.PollWebViewActivity;
 import com.kin.ecosystem.util.DeviceUtils;
 
@@ -19,6 +22,8 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, OfferRecyclerAdapt
     private static final float NORMAL_HEIGHT_RATIO = 0.25f;
     private static final float HIGH_RES_HEIGHT_RATIO = 0.28f;
 
+    private static final String KIN = "Kin";
+
     protected float getImageWidthRatio() {
         return NORMAL_WIDTH_RATIO;
     }
@@ -27,17 +32,10 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, OfferRecyclerAdapt
         return DeviceUtils.isDensity(XXHDPI) ? HIGH_RES_HEIGHT_RATIO : NORMAL_HEIGHT_RATIO;
     }
 
-    OfferRecyclerAdapter(@LayoutRes int layoutResID) {
+    OfferRecyclerAdapter(@LayoutRes int layoutResID, @NonNull OnItemClickListener itemClickListener) {
         super(layoutResID);
         openLoadAnimation(SLIDEIN_RIGHT);
-        setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
-                final Offer offer = (Offer) adapter.getData().get(position);
-                final Context context = view.getContext();
-                context.startActivity(PollWebViewActivity.createIntent(context, offer.getContent()));
-            }
-        });
+        setOnItemClickListener(itemClickListener);
         isUseEmpty(true);
     }
 
@@ -75,10 +73,19 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, OfferRecyclerAdapt
             setImageUrlResized(R.id.image, item.getImage(), imageWidth, imageHeight);
             setText(R.id.title, item.getTitle());
             setText(R.id.sub_title, item.getDescription());
-            setText(R.id.amount_text, item.getAmount() + " Kin");
+            setAmountText(item);
 
-            if (item.getOfferType() == Offer.OfferTypeEnum.EARN && item.getContentType() == ContentTypeEnum.POLL) {
+            if (item.getOfferType() == OfferTypeEnum.EARN && item.getContentType() == ContentTypeEnum.POLL) {
                 setOnItemClickListener(getOnItemClickListener());
+            }
+        }
+
+        private void setAmountText(final Offer item) {
+            int amount = item.getAmount();
+            if (item.getOfferType() == OfferTypeEnum.EARN) {
+                setText(R.id.amount_text, "+" + getAmountFormatted(amount) + KIN);
+            } else {
+                setText(R.id.amount_text, getAmountFormatted(amount) + KIN);
             }
         }
     }

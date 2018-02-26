@@ -4,10 +4,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import com.kin.ecosystem.data.auth.AuthLocalData;
+import com.kin.ecosystem.data.auth.AuthRemoteData;
+import com.kin.ecosystem.data.auth.AuthRepository;
+import com.kin.ecosystem.data.offer.OfferRemoteData;
+import com.kin.ecosystem.data.offer.OfferRepository;
+import com.kin.ecosystem.data.order.OrderHistoryRemoteData;
+import com.kin.ecosystem.data.order.OrderHistoryRepository;
 import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
+import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.util.DeviceUtils;
+import com.kin.ecosystem.util.ExecutorsUtil;
 import kin.core.Balance;
 import kin.core.KinAccount;
 import kin.core.KinClient;
@@ -19,9 +28,11 @@ public class Kin {
 
     private static Kin instance;
     private KinClient kinClient;
-    private static String userID;
+
+    private final ExecutorsUtil executorsUtil;
 
     private Kin() {
+        executorsUtil = new ExecutorsUtil();
     }
 
     private static Kin getInstance() {
@@ -34,21 +45,50 @@ public class Kin {
         return instance;
     }
 
-    public static void start(@NonNull Context appContext, @NonNull String apiKey, String userID)
+    public static void start(@NonNull Context appContext, @NonNull SignInData signInData)
         throws InitializeException {
         instance = getInstance();
+        appContext = appContext.getApplicationContext(); // use application context to avoid leaks.
         DeviceUtils.init(appContext);
         instance.kinClient = new KinClient(appContext, StellarNetwork.NETWORK_TEST.getProvider());
+        createKinAccountInNeeded();
+        registerAccount(appContext, signInData);
+        initOrderRepository();
+        initOfferRepository();
+    }
+
+    private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
+        throws InitializeException {
+        String publicAddress = null;
         try {
-            instance.kinClient.addAccount(""); // blockchain-sdk should generate and take care of that passphrase.
+            publicAddress = getPublicAddress();
+            signInData.setPublicAddress(publicAddress);
+            AuthRepository.init(signInData, AuthLocalData.getInstance(context, instance.executorsUtil),
+                AuthRemoteData.getInstance(instance.executorsUtil));
+        } catch (TaskFailedException e) {
+            throw new InitializeException(e.getMessage());
+        }
+    }
+
+    private static void initOfferRepository() {
+        OfferRepository.init(OfferRemoteData.getInstance(instance.executorsUtil));
+        OfferRepository.getInstance().getOffers(null);
+    }
+
+    private static void initOrderRepository() {
+        OrderHistoryRepository.init(OrderHistoryRemoteData.getInstance(instance.executorsUtil));
+    }
+
+    private static void createKinAccountInNeeded() throws InitializeException {
+        try {
+            KinAccount account = instance.kinClient.getAccount(0);
+            if (account == null) {
+                instance.kinClient.addAccount(""); // blockchain-sdk should generate and take care of that passphrase.
+            }
         } catch (CreateAccountException e) {
             throw new InitializeException(e.getMessage());
         }
-        Kin.userID = userID;
-        //TODO store apiKey and use to auth
-        //TODO store userID and use to auth
     }
-
 
     private static void checkInstanceNotNull() throws TaskFailedException {
         if (instance == null) {
@@ -72,10 +112,6 @@ public class Kin {
         return account.getPublicAddress();
     }
 
-    public static String getUserID() {
-        return Kin.userID;
-    }
-
     public static void getBalance(@NonNull final ResultCallback<Integer> balanceResult) throws TaskFailedException {
         checkInstanceNotNull();
         KinAccount account = instance.kinClient.getAccount(0);
@@ -95,5 +131,4 @@ public class Kin {
             });
         }
     }
-
 }

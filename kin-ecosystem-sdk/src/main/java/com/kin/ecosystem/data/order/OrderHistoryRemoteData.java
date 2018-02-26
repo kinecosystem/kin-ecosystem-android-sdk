@@ -1,26 +1,48 @@
-package com.kin.ecosystem.history.model;
+package com.kin.ecosystem.data.order;
 
+import android.support.annotation.NonNull;
 import com.kin.ecosystem.Callback;
-import com.kin.ecosystem.base.BaseModel;
 import com.kin.ecosystem.network.ApiCallback;
 import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.api.OrdersApi;
 import com.kin.ecosystem.network.model.OrderList;
-
+import com.kin.ecosystem.util.ExecutorsUtil;
 import java.util.List;
 import java.util.Map;
 
-public class OrderHistoryModel extends BaseModel implements IOrderHistoryModel {
+public class OrderHistoryRemoteData implements OrderDataSource {
 
-    private OrdersApi ordersApi = new OrdersApi(apiClient);
+    private static volatile OrderHistoryRemoteData instance;
+
+    private final OrdersApi ordersApi;
+    private final ExecutorsUtil executorsUtil;
+
+    private OrderHistoryRemoteData(@NonNull ExecutorsUtil executorsUtil) {
+        this.ordersApi = new OrdersApi();
+        this.executorsUtil = executorsUtil;
+    }
+
+    public static OrderHistoryRemoteData getInstance(@NonNull ExecutorsUtil executorsUtil) {
+        if (instance == null) {
+            synchronized (OrderHistoryRemoteData.class) {
+                instance = new OrderHistoryRemoteData(executorsUtil);
+            }
+        }
+        return instance;
+    }
 
     @Override
-    public void getHistory(final Callback<OrderList> callback) {
+    public OrderList getAllCachedOrderHistory() {
+        return null;
+    }
+
+    @Override
+    public void getAllOrderHistory(@NonNull final Callback<OrderList> callback) {
         try {
             ordersApi.getHistoryAsync("", 25, "", "", new ApiCallback<OrderList>() {
                 @Override
                 public void onFailure(final ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
-                    runOnMainThread(new Runnable() {
+                    executorsUtil.mainThread().execute(new Runnable() {
                         @Override
                         public void run() {
                             callback.onFailure(e);
@@ -29,8 +51,9 @@ public class OrderHistoryModel extends BaseModel implements IOrderHistoryModel {
                 }
 
                 @Override
-                public void onSuccess(final OrderList result, int statusCode, Map<String, List<String>> responseHeaders) {
-                    runOnMainThread(new Runnable() {
+                public void onSuccess(final OrderList result, int statusCode,
+                    Map<String, List<String>> responseHeaders) {
+                    executorsUtil.mainThread().execute(new Runnable() {
                         @Override
                         public void run() {
                             callback.onResponse(result);
@@ -49,19 +72,12 @@ public class OrderHistoryModel extends BaseModel implements IOrderHistoryModel {
                 }
             });
         } catch (final ApiException e) {
-            e.printStackTrace();
-            runOnMainThread(new Runnable() {
+            executorsUtil.mainThread().execute(new Runnable() {
                 @Override
                 public void run() {
                     callback.onFailure(e);
                 }
             });
         }
-    }
-
-    @Override
-    public void release() {
-        super.release();
-        ordersApi = null;
     }
 }

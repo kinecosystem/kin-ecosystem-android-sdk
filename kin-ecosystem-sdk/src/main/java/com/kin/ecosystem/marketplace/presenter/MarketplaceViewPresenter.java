@@ -1,18 +1,21 @@
 package com.kin.ecosystem.marketplace.presenter;
 
 
+import android.view.View;
 import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.base.BaseRecyclerAdapter;
+import com.kin.ecosystem.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.base.IBasePresenter;
-import com.kin.ecosystem.marketplace.model.IMarketplaceModel;
-import com.kin.ecosystem.marketplace.model.MarketplaceModel;
+import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.marketplace.view.IMarketplaceView;
 import com.kin.ecosystem.network.model.Offer;
+import com.kin.ecosystem.network.model.OfferList;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MarketplaceViewPresenter implements IBasePresenter {
+public class MarketplaceViewPresenter implements IBasePresenter, OnItemClickListener {
 
-    private final IMarketplaceModel marketplaceModel = new MarketplaceModel();
+    private final OfferRepository offerRepository;
     private IMarketplaceView marketView;
     private List<Offer> spendList;
     private List<Offer> earnList;
@@ -21,6 +24,7 @@ public class MarketplaceViewPresenter implements IBasePresenter {
         this.marketView = view;
         this.spendList = new ArrayList<>();
         this.earnList = new ArrayList<>();
+        this.offerRepository = OfferRepository.getInstance();
     }
 
     private void splitOffersByType(List<Offer> list) {
@@ -31,8 +35,11 @@ public class MarketplaceViewPresenter implements IBasePresenter {
                 spendList.add(offer);
             }
         }
-        marketView.updateEarnList(earnList);
-        marketView.updateSpendList(spendList);
+
+        if (marketView != null) {
+            marketView.updateEarnList(earnList);
+            marketView.updateSpendList(spendList);
+        }
     }
 
     @Override
@@ -46,17 +53,19 @@ public class MarketplaceViewPresenter implements IBasePresenter {
     }
 
     private void release() {
-        marketplaceModel.release();
         marketView = null;
         spendList = null;
         earnList = null;
     }
 
     private void getOffers() {
-        marketplaceModel.getOffers(new Callback<List<Offer>>() {
+        OfferList cachedOfferList = offerRepository.getCachedOfferList();
+        setOfferList(cachedOfferList);
+
+        offerRepository.getOffers(new Callback<OfferList>() {
             @Override
-            public void onResponse(List<Offer> offerList) {
-                splitOffersByType(offerList);
+            public void onResponse(OfferList offerList) {
+                setOfferList(offerList);
             }
 
             @Override
@@ -64,5 +73,20 @@ public class MarketplaceViewPresenter implements IBasePresenter {
                 //TODO show error msg
             }
         });
+    }
+
+    private void setOfferList(OfferList offerList) {
+        if (offerList != null && offerList.getOffers() != null) {
+            splitOffersByType(offerList.getOffers());
+        }
+    }
+
+    @Override
+    public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
+        final Offer offer = (Offer) adapter.getData().get(position);
+        if (marketView != null) {
+            marketView.showOfferActivity(offer);
+        }
+
     }
 }

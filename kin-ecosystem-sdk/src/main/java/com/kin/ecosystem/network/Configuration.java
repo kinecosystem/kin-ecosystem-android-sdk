@@ -14,7 +14,7 @@
 package com.kin.ecosystem.network;
 
 public class Configuration {
-    private static ApiClient defaultApiClient = new ApiClient();
+    private static ApiClient defaultApiClient = new ApiClient(true);
 
     /**
      * Get the default API client, which would be used when creating API

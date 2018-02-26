@@ -9,31 +9,33 @@
         android:id="@+id/image"
         android:layout_width="140dp"
         android:layout_height="90dp"
-        android:background="@drawable/item_bg_placeholder" />
+        android:background="@drawable/item_bg_placeholder"/>
 
     <TextView
         android:id="@+id/title"
-        style="@style/KinecosysTitleText"
+        style="@style/KinecosysSubTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/block_margin"
         android:layout_marginBottom="@dimen/tiny_margin"
-        tools:text="Answer a Poll" />
+        android:maxLength="14"
+        tools:text="Answer a Poll"/>
 
     <TextView
         android:id="@+id/sub_title"
         style="@style/KinecosysSubTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:maxLength="20"
         android:layout_marginBottom="@dimen/tiny_margin"
-        tools:text="Earn KIN by answering" />
+        tools:text="Earn KIN by answering"/>
 
     <TextView
         android:id="@+id/amount_text"
+        style="@style/KinecosysSubTitleMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/bluePrimary"
-        style="@style/KinecosysTitleTextMedium"
-        tools:text="6,000 KIN" />
+        tools:text="6,000 KIN"/>
 
 </LinearLayout>

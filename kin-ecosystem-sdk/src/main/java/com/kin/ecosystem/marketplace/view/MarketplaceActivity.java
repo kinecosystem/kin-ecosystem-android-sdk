@@ -16,12 +16,13 @@ import com.kin.ecosystem.history.view.OrderHistoryActivity;
 import com.kin.ecosystem.marketplace.presenter.MarketplaceViewPresenter;
 import com.kin.ecosystem.network.model.Offer;
 
+import com.kin.ecosystem.poll.view.PollWebViewActivity;
 import java.util.List;
 
 
 public class MarketplaceActivity extends BaseToolbarActivity implements IMarketplaceView {
 
-    private IBasePresenter marketplacePresenter;
+    private MarketplaceViewPresenter marketplacePresenter;
 
     private SpendRecyclerAdapter spendRecyclerAdapter;
     private EarnRecyclerAdapter earnRecyclerAdapter;
@@ -65,21 +66,22 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     @Override
     protected void initViews() {
         //Space item decoration for both of the recyclers
+        int margin = getResources().getDimensionPixelOffset(R.dimen.main_margin);
         int space = getResources().getDimensionPixelOffset(R.dimen.offer_item_list_space);
-        SpaceItemDecoration itemDecoration = new SpaceItemDecoration(space);
+        SpaceItemDecoration itemDecoration = new SpaceItemDecoration(margin, space);
 
         //Spend Recycler
         RecyclerView spendRecycler = findViewById(R.id.spend_recycler);
         spendRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         spendRecycler.addItemDecoration(itemDecoration);
-        spendRecyclerAdapter = new SpendRecyclerAdapter();
+        spendRecyclerAdapter = new SpendRecyclerAdapter(marketplacePresenter);
         spendRecyclerAdapter.bindToRecyclerView(spendRecycler);
 
         //Earn Recycler
         RecyclerView earnRecycler = findViewById(R.id.earn_recycler);
         earnRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         earnRecycler.addItemDecoration(itemDecoration);
-        earnRecyclerAdapter = new EarnRecyclerAdapter();
+        earnRecyclerAdapter = new EarnRecyclerAdapter(marketplacePresenter);
         earnRecyclerAdapter.bindToRecyclerView(earnRecycler);
 
 
@@ -126,6 +128,11 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     public void moveToTransactionHistory() {
         Intent transactionHistory = new Intent(this, OrderHistoryActivity.class);
         navigateToActivity(transactionHistory);
+    }
+
+    @Override
+    public void showOfferActivity(Offer offer) {
+        navigateToActivity(PollWebViewActivity.createIntent(this, offer.getContent()));
     }
 
     @Override

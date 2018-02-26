@@ -100,7 +100,7 @@ public class OffersApi {
             });
         }
 
-        String[] localVarAuthNames = new String[]{"ApiKeyAuth", "BearerAuth"};
+        String[] localVarAuthNames = new String[]{"ApiKeyAuth"};
         return apiClient.buildCall(localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 

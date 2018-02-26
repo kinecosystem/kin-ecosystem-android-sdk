@@ -1,5 +1,8 @@
 package com.kin.ecosystem.util;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 public class StringUtil {
   /**
    * Join an array of strings with the given separator.
@@ -22,5 +25,9 @@ public class StringUtil {
       out.append(separator).append(array[i]);
     }
     return out.toString();
+  }
+
+  public static String getAmountFormatted(int amount) {
+    return NumberFormat.getNumberInstance(Locale.US).format(amount);
   }
 }

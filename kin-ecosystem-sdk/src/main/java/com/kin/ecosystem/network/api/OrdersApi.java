@@ -96,7 +96,7 @@ public class OrdersApi {
             });
         }
 
-        String[] localVarAuthNames = new String[]{"ApiKeyAuth", "BearerAuth"};
+        String[] localVarAuthNames = new String[]{"ApiKeyAuth", };
         return apiClient.buildCall(localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 
@@ -233,7 +233,7 @@ public class OrdersApi {
             });
         }
 
-        String[] localVarAuthNames = new String[]{"ApiKeyAuth", "BearerAuth"};
+        String[] localVarAuthNames = new String[]{"ApiKeyAuth"};
         return apiClient.buildCall(localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 
@@ -327,7 +327,7 @@ public class OrdersApi {
     }
 
     /**
-     * Build call for getHistory
+     * Build call for getAllOrderHistory
      *
      * @param X_REQUEST_ID            A unique id for the request. A retransmitted request will have the same id  (required)
      * @param limit                   maximum number of items in a list (optional)
@@ -383,7 +383,7 @@ public class OrdersApi {
             });
         }
 
-        String[] localVarAuthNames = new String[]{"ApiKeyAuth", "BearerAuth"};
+        String[] localVarAuthNames = new String[]{"ApiKeyAuth"};
         return apiClient.buildCall(localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 
@@ -393,7 +393,7 @@ public class OrdersApi {
 
         // verify the required parameter 'X_REQUEST_ID' is set
         if (X_REQUEST_ID == null) {
-            throw new ApiException("Missing the required parameter 'X_REQUEST_ID' when calling getHistory(Async)");
+            throw new ApiException("Missing the required parameter 'X_REQUEST_ID' when calling getAllOrderHistory(Async)");
         }
 
 
@@ -527,7 +527,7 @@ public class OrdersApi {
             });
         }
 
-        String[] localVarAuthNames = new String[]{"ApiKeyAuth", "BearerAuth"};
+        String[] localVarAuthNames = new String[]{"ApiKeyAuth"};
         return apiClient.buildCall(localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 
@@ -671,7 +671,7 @@ public class OrdersApi {
             });
         }
 
-        String[] localVarAuthNames = new String[]{"ApiKeyAuth", "BearerAuth"};
+        String[] localVarAuthNames = new String[]{"ApiKeyAuth"};
         return apiClient.buildCall(localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 

@@ -1,10 +1,10 @@
 package com.ecosystem.kin.app;
 
 import android.app.Application;
-
-import com.ecosystem.kin.app.model.UserRepo;
+import com.ecosystem.kin.app.model.SignInRepo;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.exception.InitializeException;
+import com.kin.ecosystem.network.model.SignInData;
 
 
 public class App extends Application {
@@ -13,11 +13,10 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         try {
-            String userID = UserRepo.getUser(this).getUserID().toString();
-            Kin.start(getApplicationContext(), "apiKey", userID);
+            SignInData signInData = SignInRepo.getSignInData(this);
+            Kin.start(getApplicationContext(), signInData);
         } catch (InitializeException e) {
             e.printStackTrace();
         }
-
     }
 }
