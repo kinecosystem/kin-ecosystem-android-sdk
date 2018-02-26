@@ -11,4 +11,6 @@ public interface IMarketplaceView {
     void updateEarnList(List<Offer> response);
 
     void moveToTransactionHistory();
+
+    void showOfferActivity(Offer offer);
 }

@@ -21,17 +21,16 @@ public class OrderHistoryPresenter implements IBasePresenter {
 
     @Override
     public void onAttach() {
+        getOrderHistoryList();
+    }
+
+    private void getOrderHistoryList() {
         orderHistoryList = repository.getAllCachedOrderHistory();
-        if (orderHistoryList != null) {
-            orderHistoryView.addToOrderHistoryList(orderHistoryList.getOrders());
-        }
+        setOrderHistoryList(orderHistoryList);
         repository.getAllOrderHistory(new Callback<OrderList>() {
             @Override
-            public void onResponse(OrderList transactionsList) {
-                if (transactionsList != null && transactionsList.getOrders() != null) {
-                    orderHistoryList = transactionsList;
-                    orderHistoryView.addToOrderHistoryList(orderHistoryList.getOrders());
-                }
+            public void onResponse(OrderList orderHistoryList) {
+                setOrderHistoryList(orderHistoryList);
             }
 
             @Override
@@ -39,7 +38,13 @@ public class OrderHistoryPresenter implements IBasePresenter {
 
             }
         });
+    }
 
+    private void setOrderHistoryList(OrderList orderHistoryList) {
+        if (orderHistoryList != null && orderHistoryList.getOrders() != null) {
+            this.orderHistoryList = orderHistoryList;
+            this.orderHistoryView.addToOrderHistoryList(orderHistoryList.getOrders());
+        }
     }
 
     @Override

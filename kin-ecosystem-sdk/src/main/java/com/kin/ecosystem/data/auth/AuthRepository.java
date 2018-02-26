@@ -112,7 +112,7 @@ public class AuthRepository implements AuthDataSource {
                 if (authToken != null && !isAuthTokenExpired(authToken)) {
                     setAuthToken(authToken);
                 } else {
-                    refreshToken();
+                    refreshTokenSync();
                 }
                 return cachedAuthToken;
             } else {
@@ -127,14 +127,14 @@ public class AuthRepository implements AuthDataSource {
         } else {
             Date expirationDate = getDateFromUTCString(authToken.getExpirationDate());
             if (expirationDate != null) {
-                return Calendar.getInstance().getTimeInMillis() < expirationDate.getTime();
+                return Calendar.getInstance().getTimeInMillis() > expirationDate.getTime();
             } else {
                 return true;
             }
         }
     }
 
-    private void refreshToken() {
+    private void refreshTokenSync() {
         AuthToken authToken = remoteData.getAuthTokenSync();
         if (authToken != null) {
             setAuthToken(authToken);

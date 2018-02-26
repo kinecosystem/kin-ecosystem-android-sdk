@@ -5,6 +5,7 @@ import static com.kin.ecosystem.util.StringUtil.getAmountFormatted;
 
 import android.content.Context;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.view.View;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
@@ -31,17 +32,10 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, OfferRecyclerAdapt
         return DeviceUtils.isDensity(XXHDPI) ? HIGH_RES_HEIGHT_RATIO : NORMAL_HEIGHT_RATIO;
     }
 
-    OfferRecyclerAdapter(@LayoutRes int layoutResID) {
+    OfferRecyclerAdapter(@LayoutRes int layoutResID, @NonNull OnItemClickListener itemClickListener) {
         super(layoutResID);
         openLoadAnimation(SLIDEIN_RIGHT);
-        setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
-                final Offer offer = (Offer) adapter.getData().get(position);
-                final Context context = view.getContext();
-                context.startActivity(PollWebViewActivity.createIntent(context, offer.getContent()));
-            }
-        });
+        setOnItemClickListener(itemClickListener);
         isUseEmpty(true);
     }
 

@@ -1,7 +1,10 @@
 package com.kin.ecosystem.marketplace.presenter;
 
 
+import android.view.View;
 import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.base.BaseRecyclerAdapter;
+import com.kin.ecosystem.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.base.IBasePresenter;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.marketplace.view.IMarketplaceView;
@@ -10,7 +13,7 @@ import com.kin.ecosystem.network.model.OfferList;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MarketplaceViewPresenter implements IBasePresenter {
+public class MarketplaceViewPresenter implements IBasePresenter, OnItemClickListener {
 
     private final OfferRepository offerRepository;
     private IMarketplaceView marketView;
@@ -32,8 +35,11 @@ public class MarketplaceViewPresenter implements IBasePresenter {
                 spendList.add(offer);
             }
         }
-        marketView.updateEarnList(earnList);
-        marketView.updateSpendList(spendList);
+
+        if (marketView != null) {
+            marketView.updateEarnList(earnList);
+            marketView.updateSpendList(spendList);
+        }
     }
 
     @Override
@@ -54,14 +60,12 @@ public class MarketplaceViewPresenter implements IBasePresenter {
 
     private void getOffers() {
         OfferList cachedOfferList = offerRepository.getCachedOfferList();
-        if (cachedOfferList != null) {
-            splitOffersByType(cachedOfferList.getOffers());
-        }
+        setOfferList(cachedOfferList);
 
         offerRepository.getOffers(new Callback<OfferList>() {
             @Override
             public void onResponse(OfferList offerList) {
-                splitOffersByType(offerList.getOffers());
+                setOfferList(offerList);
             }
 
             @Override
@@ -69,5 +73,20 @@ public class MarketplaceViewPresenter implements IBasePresenter {
                 //TODO show error msg
             }
         });
+    }
+
+    private void setOfferList(OfferList offerList) {
+        if (offerList != null && offerList.getOffers() != null) {
+            splitOffersByType(offerList.getOffers());
+        }
+    }
+
+    @Override
+    public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
+        final Offer offer = (Offer) adapter.getData().get(position);
+        if (marketView != null) {
+            marketView.showOfferActivity(offer);
+        }
+
     }
 }
