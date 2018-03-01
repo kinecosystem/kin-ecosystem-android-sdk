@@ -9,7 +9,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 public class EcosystemWebView extends WebView {
-    private static final String HTML_URL = "https://s3.amazonaws.com/kinmarketplace-assets/offer_html_mocks/offer_mock_01.html";
+//    private static final String HTML_URL = "https://s3.amazonaws.com/kinmarketplace-assets/offer_html_mocks/offer_mock_03.html";
+    private static final String HTML_URL = "http://htmlpoll.kinecosystem.com.s3-website-us-east-1.amazonaws.com/";
     private static final String JS_INTERFACE_OBJECT_NAME = "KinNative";
 
     private final Handler mainThreadHandler;
@@ -41,6 +42,7 @@ public class EcosystemWebView extends WebView {
 
         nativeApi = new EcosystemNativeApi();
         addJavascriptInterface(nativeApi, JS_INTERFACE_OBJECT_NAME);
+        setWebContentsDebuggingEnabled(true);
     }
 
     public void load() {
@@ -75,5 +77,7 @@ public class EcosystemWebView extends WebView {
 
     public void release() {
         mainThreadHandler.removeCallbacksAndMessages(null);
+        onPause();
+        destroy();
     }
 }

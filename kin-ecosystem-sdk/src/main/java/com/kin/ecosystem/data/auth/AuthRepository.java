@@ -13,13 +13,13 @@ public class AuthRepository implements AuthDataSource {
 
     private static AuthRepository instance = null;
 
-    private final AuthLocalData localData;
-    private final AuthRemoteData remoteData;
+    private final AuthDataSource localData;
+    private final AuthDataSource remoteData;
 
     private SignInData cachedSignInData;
     private AuthToken cachedAuthToken;
 
-    private AuthRepository(@NonNull AuthLocalData local, @NonNull AuthRemoteData remote) {
+    private AuthRepository(@NonNull AuthDataSource local, @NonNull AuthDataSource remote) {
         this.localData = local;
         this.remoteData = remote;
     }

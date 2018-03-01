@@ -20,13 +20,26 @@ public class OrderList {
         return this;
     }
 
-    public OrderList addTransactionsItem(Order orderItem) {
+    public OrderList addOrder(Order orderItem) {
 
         if (this.orders == null) {
-            this.orders = new ArrayList<Order>();
+            this.orders = new ArrayList<>();
         }
 
         this.orders.add(orderItem);
+        return this;
+    }
+
+    public OrderList addOrderAtIndex(int index, Order orderItem) {
+
+        if (this.orders == null) {
+            this.orders = new ArrayList<>();
+            this.orders.add(orderItem);
+        }
+        else {
+            this.orders.add(index, orderItem);
+        }
+
         return this;
     }
 

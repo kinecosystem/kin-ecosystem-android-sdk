@@ -49,7 +49,7 @@ public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderH
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        attachPresenter();
+        attachPresenter(new OrderHistoryPresenter());
     }
 
     @Override
@@ -60,9 +60,10 @@ public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderH
         orderHistoryRecyclerAdapter.bindToRecyclerView(orderRecyclerView);
     }
 
-    private void attachPresenter() {
-        transactionHistoryPresenter = new OrderHistoryPresenter(this);
-        transactionHistoryPresenter.onAttach();
+    @Override
+    public void attachPresenter(OrderHistoryPresenter presenter) {
+        transactionHistoryPresenter = presenter;
+        transactionHistoryPresenter.onAttach(this);
     }
 
     @Override
