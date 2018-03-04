@@ -9,7 +9,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 public class EcosystemWebView extends WebView {
-//    private static final String HTML_URL = "https://s3.amazonaws.com/kinmarketplace-assets/offer_html_mocks/offer_mock_03.html";
+
     private static final String HTML_URL = "http://htmlpoll.kinecosystem.com.s3-website-us-east-1.amazonaws.com/";
     private static final String JS_INTERFACE_OBJECT_NAME = "KinNative";
 
@@ -65,8 +65,8 @@ public class EcosystemWebView extends WebView {
             return;
         }
 
-        final StringBuilder js = new StringBuilder("kin.renderPoll('");
-        js.append(pollJsonData).append("')");
+        final StringBuilder js = new StringBuilder("kin.renderPoll(");
+        js.append(pollJsonData).append(")");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             evaluateJavascript(js.toString(), null);

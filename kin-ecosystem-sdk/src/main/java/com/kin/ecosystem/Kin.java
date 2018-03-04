@@ -3,6 +3,7 @@ package com.kin.ecosystem;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.data.auth.AuthLocalData;
 import com.kin.ecosystem.data.auth.AuthRemoteData;
@@ -14,6 +15,7 @@ import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
+import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.util.DeviceUtils;
 import com.kin.ecosystem.util.ExecutorsUtil;
@@ -21,6 +23,7 @@ import kin.core.Balance;
 import kin.core.KinAccount;
 import kin.core.KinClient;
 import kin.core.ResultCallback;
+import kin.core.exception.AccountNotActivatedException;
 import kin.core.exception.CreateAccountException;
 
 
@@ -65,8 +68,71 @@ public class Kin {
             signInData.setPublicAddress(publicAddress);
             AuthRepository.init(signInData, AuthLocalData.getInstance(context, instance.executorsUtil),
                 AuthRemoteData.getInstance(instance.executorsUtil));
+
+            /**
+             * Only for now, will be changed later.
+             */
+            AuthRepository.getInstance().getAuthToken(new Callback<AuthToken>() {
+                @Override
+                public void onResponse(AuthToken response) {
+                    if (response != null) {
+                        System.out.println("ACTIVATE >>> getAuthToken");
+                        createTrustLine();
+                    }
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+
+                }
+            });
         } catch (TaskFailedException e) {
             throw new InitializeException(e.getMessage());
+        }
+    }
+
+    /**
+     * Only for now, will be changed later.
+     */
+    private static void createTrustLine() {
+        final KinAccount account = instance.kinClient.getAccount(0);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                account.getBalance().run(new ResultCallback<Balance>() {
+                    @Override
+                    public void onResult(Balance result) {
+                        System.out.println("ACTIVATE >>> createTrustLine");
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        System.out.println("ACTIVATE >>> createTrustLine >>> error >> " + e.getMessage());
+                        if (e instanceof AccountNotActivatedException) {
+                            activate(account);
+                        }
+                    }
+                });
+            }
+        }, 10000);
+    }
+
+    /**
+     * Only for now, will be changed later.
+     */
+    private static void activate(KinAccount account) {
+        if (account != null) {
+            account.activate("").run(new ResultCallback<Void>() {
+                @Override
+                public void onResult(Void aVoid) {
+                    System.out.println("ACTIVATE >>> activate");
+                }
+
+                @Override
+                public void onError(Exception e) {
+
+                }
+            });
         }
     }
 
@@ -130,5 +196,9 @@ public class Kin {
                 }
             });
         }
+    }
+
+    public static KinClient getKinClient() {
+        return instance.kinClient;
     }
 }
