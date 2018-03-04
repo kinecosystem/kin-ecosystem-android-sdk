@@ -9,13 +9,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import android.widget.Toast;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseToolbarActivity;
-import com.kin.ecosystem.base.IBasePresenter;
+import com.kin.ecosystem.data.offer.OfferRepository;
+import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.history.view.OrderHistoryActivity;
 import com.kin.ecosystem.marketplace.presenter.MarketplaceViewPresenter;
 import com.kin.ecosystem.network.model.Offer;
 
+import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.poll.view.PollWebViewActivity;
 import java.util.List;
 
@@ -55,12 +58,15 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        attachPresenter();
+        attachPresenter(new MarketplaceViewPresenter(OfferRepository.getInstance(), OrderRepository.getInstance()));
     }
 
-    private void attachPresenter() {
-        marketplacePresenter = new MarketplaceViewPresenter(this);
-        marketplacePresenter.onAttach();
+    @Override
+    public void attachPresenter(MarketplaceViewPresenter presenter) {
+        marketplacePresenter = presenter;
+        marketplacePresenter.onAttach(this);
+        spendRecyclerAdapter.setOnItemClickListener(marketplacePresenter);
+        earnRecyclerAdapter.setOnItemClickListener(marketplacePresenter);
     }
 
     @Override
@@ -74,16 +80,15 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
         RecyclerView spendRecycler = findViewById(R.id.spend_recycler);
         spendRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         spendRecycler.addItemDecoration(itemDecoration);
-        spendRecyclerAdapter = new SpendRecyclerAdapter(marketplacePresenter);
+        spendRecyclerAdapter = new SpendRecyclerAdapter();
         spendRecyclerAdapter.bindToRecyclerView(spendRecycler);
 
         //Earn Recycler
         RecyclerView earnRecycler = findViewById(R.id.earn_recycler);
         earnRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         earnRecycler.addItemDecoration(itemDecoration);
-        earnRecyclerAdapter = new EarnRecyclerAdapter(marketplacePresenter);
+        earnRecyclerAdapter = new EarnRecyclerAdapter();
         earnRecyclerAdapter.bindToRecyclerView(earnRecycler);
-
 
         findViewById(R.id.balance_text).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,7 +137,7 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
 
     @Override
     public void showOfferActivity(Offer offer) {
-        navigateToActivity(PollWebViewActivity.createIntent(this, offer.getContent()));
+        navigateToActivity(PollWebViewActivity.createIntent(this, offer.getContent(), offer.getId()));
     }
 
     @Override

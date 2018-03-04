@@ -1,30 +1,34 @@
 package com.kin.ecosystem.marketplace.presenter;
 
 
+import android.support.annotation.NonNull;
 import android.view.View;
 import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.base.BaseRecyclerAdapter.OnItemClickListener;
-import com.kin.ecosystem.base.IBasePresenter;
 import com.kin.ecosystem.data.offer.OfferRepository;
+import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.marketplace.view.IMarketplaceView;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OfferList;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MarketplaceViewPresenter implements IBasePresenter, OnItemClickListener {
+public class MarketplaceViewPresenter extends BasePresenter<IMarketplaceView> implements OnItemClickListener {
 
     private final OfferRepository offerRepository;
-    private IMarketplaceView marketView;
+    private final OrderRepository orderRepository;
+
     private List<Offer> spendList;
     private List<Offer> earnList;
 
-    public MarketplaceViewPresenter(IMarketplaceView view) {
-        this.marketView = view;
+    public MarketplaceViewPresenter(@NonNull final OfferRepository offerRepository,
+        @NonNull final OrderRepository orderRepository) {
         this.spendList = new ArrayList<>();
         this.earnList = new ArrayList<>();
-        this.offerRepository = OfferRepository.getInstance();
+        this.offerRepository = offerRepository;
+        this.orderRepository = orderRepository;
     }
 
     private void splitOffersByType(List<Offer> list) {
@@ -36,24 +40,25 @@ public class MarketplaceViewPresenter implements IBasePresenter, OnItemClickList
             }
         }
 
-        if (marketView != null) {
-            marketView.updateEarnList(earnList);
-            marketView.updateSpendList(spendList);
+        if (view != null) {
+            view.updateEarnList(earnList);
+            view.updateSpendList(spendList);
         }
     }
 
     @Override
-    public void onAttach() {
+    public void onAttach(IMarketplaceView view) {
+        super.onAttach(view);
         getOffers();
     }
 
     @Override
     public void onDetach() {
+        super.onDetach();
         release();
     }
 
     private void release() {
-        marketView = null;
         spendList = null;
         earnList = null;
     }
@@ -84,9 +89,8 @@ public class MarketplaceViewPresenter implements IBasePresenter, OnItemClickList
     @Override
     public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
         final Offer offer = (Offer) adapter.getData().get(position);
-        if (marketView != null) {
-            marketView.showOfferActivity(offer);
+        if (this.view != null) {
+            this.view.showOfferActivity(offer);
         }
-
     }
 }

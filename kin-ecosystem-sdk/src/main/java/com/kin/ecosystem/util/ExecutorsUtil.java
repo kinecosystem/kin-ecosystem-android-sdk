@@ -29,7 +29,7 @@ public class ExecutorsUtil {
         return mainThread;
     }
 
-    private static class MainThreadExecutor implements Executor {
+    public static class MainThreadExecutor implements Executor {
 
         private Handler handler = new Handler(Looper.getMainLooper());
 
@@ -39,6 +39,12 @@ public class ExecutorsUtil {
                 handler.post(command);
             } else {
                 command.run();
+            }
+        }
+
+        public void removeCallbacksAndMessages(Object token) {
+            if (handler != null) {
+                handler.removeCallbacksAndMessages(token);
             }
         }
     }

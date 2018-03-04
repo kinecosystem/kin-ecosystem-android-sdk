@@ -1,8 +1,8 @@
 package com.kin.ecosystem.base;
 
-public interface IBasePresenter {
+public interface IBasePresenter<T> {
 
-    void onAttach();
+    void onAttach(T view);
 
     void onDetach();
 }

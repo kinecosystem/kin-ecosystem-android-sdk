@@ -3,26 +3,32 @@ package com.kin.ecosystem.poll.view;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.annotation.NonNull;
 import android.view.View;
 
+import android.widget.LinearLayout;
+import android.widget.Toast;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseToolbarActivity;
-import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
-import com.kin.ecosystem.web.EcosystemWebPageListener;
+import com.kin.ecosystem.data.order.OrderRepository;
+import com.kin.ecosystem.poll.presenter.PollWebViewPresenter;
 import com.kin.ecosystem.web.EcosystemWebView;
 
-public class PollWebViewActivity extends BaseToolbarActivity implements EcosystemWebPageListener {
+public class PollWebViewActivity extends BaseToolbarActivity implements IPollWebView {
 
     private static final String EXTRA_JSON_DATA_KEY = "jsondata";
+    private static final String EXTRA_OFFER_ID_KEY = "offer_id";
 
-    public static Intent createIntent(final Context context, final String jsonData) {
+    public static Intent createIntent(final Context context, @NonNull final String jsonData, @NonNull final String offerID) {
         final Intent intent = new Intent(context, PollWebViewActivity.class);
         intent.putExtra(EXTRA_JSON_DATA_KEY, jsonData);
+        intent.putExtra(EXTRA_OFFER_ID_KEY, offerID);
         return intent;
     }
 
+    private PollWebViewPresenter pollWebViewPresenter;
     private EcosystemWebView webView;
+    private LinearLayout webViewContainer;
 
     @Override
     protected int getLayoutRes() {
@@ -44,7 +50,7 @@ public class PollWebViewActivity extends BaseToolbarActivity implements Ecosyste
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                close();
             }
         };
     }
@@ -52,31 +58,51 @@ public class PollWebViewActivity extends BaseToolbarActivity implements Ecosyste
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initViews();
+        Intent intent = getIntent();
+        String pollJsonString = intent.getStringExtra(EXTRA_JSON_DATA_KEY);
+        String offerID = intent.getStringExtra(EXTRA_OFFER_ID_KEY);
+        attachPresenter(new PollWebViewPresenter(pollJsonString, offerID, OrderRepository.getInstance()));
+    }
+
+    @Override
+    public void attachPresenter(PollWebViewPresenter presenter) {
+        pollWebViewPresenter = presenter;
+        pollWebViewPresenter.onAttach(this);
     }
 
     @Override
     protected void initViews() {
-        this.webView = findViewById(R.id.webview);
-        this.webView.setListener(this);
-        this.webView.load();
+        webView = findViewById(R.id.webview);
+        webViewContainer = findViewById(R.id.webview_container);
     }
 
     @Override
-    public void onPageLoaded() {
-        String pollJsonString = getIntent().getStringExtra(EXTRA_JSON_DATA_KEY);
+    public void showToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void loadUrl() {
+        webView.setListener(pollWebViewPresenter);
+        webView.load();
+    }
+
+    @Override
+    public void renderJson(@NonNull final String pollJsonString) {
         webView.render(pollJsonString);
     }
 
     @Override
-    public void onPageCancel() {
-        // not supported yet
+    protected void onDestroy() {
+        super.onDestroy();
+        close();
+        pollWebViewPresenter.onDetach();
     }
 
     @Override
-    public void onPageResult(String result) {
-        // TODO: send result to the server 
-        Log.d("PollWebViewActivity", "received result from webview: " + result);
+    public void close() {
+        webViewContainer.removeView(webView);
+        webView.release();
         finish();
     }
 }

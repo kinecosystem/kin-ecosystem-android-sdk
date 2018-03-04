@@ -9,8 +9,8 @@ import com.kin.ecosystem.data.auth.AuthRemoteData;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.data.offer.OfferRemoteData;
 import com.kin.ecosystem.data.offer.OfferRepository;
-import com.kin.ecosystem.data.order.OrderHistoryRemoteData;
-import com.kin.ecosystem.data.order.OrderHistoryRepository;
+import com.kin.ecosystem.data.order.OrderRemoteData;
+import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
@@ -76,7 +76,7 @@ public class Kin {
     }
 
     private static void initOrderRepository() {
-        OrderHistoryRepository.init(OrderHistoryRemoteData.getInstance(instance.executorsUtil));
+        OrderRepository.init(OrderRemoteData.getInstance(instance.executorsUtil));
     }
 
     private static void createKinAccountInNeeded() throws InitializeException {
@@ -112,21 +112,21 @@ public class Kin {
         return account.getPublicAddress();
     }
 
-    public static void getBalance(@NonNull final ResultCallback<Integer> balanceResult) throws TaskFailedException {
+    public static void getBalance(@NonNull final Callback<Integer> callback) throws TaskFailedException {
         checkInstanceNotNull();
         KinAccount account = instance.kinClient.getAccount(0);
         if (account == null) {
-            balanceResult.onError(new TaskFailedException("Account not found"));
+            callback.onFailure(new TaskFailedException("Account not found"));
         } else {
             account.getBalance().run(new ResultCallback<Balance>() {
                 @Override
                 public void onResult(Balance balance) {
-                    balanceResult.onResult(balance.value().intValue());
+                    callback.onResponse(balance.value().intValue());
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    balanceResult.onError(e);
+                    callback.onFailure(e);
                 }
             });
         }
