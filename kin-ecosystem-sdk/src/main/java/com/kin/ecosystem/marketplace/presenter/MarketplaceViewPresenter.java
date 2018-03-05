@@ -34,15 +34,15 @@ public class MarketplaceViewPresenter extends BasePresenter<IMarketplaceView> im
     private void splitOffersByType(List<Offer> list) {
         for (Offer offer : list) {
             if (offer.getOfferType() == Offer.OfferTypeEnum.EARN) {
-                earnList.add(offer);
+                this.earnList.add(offer);
             } else {
-                spendList.add(offer);
+                this.spendList.add(offer);
             }
         }
 
-        if (view != null) {
-            view.updateEarnList(earnList);
-            view.updateSpendList(spendList);
+        if (this.view != null) {
+            this.view.updateEarnList(earnList);
+            this.view.updateSpendList(spendList);
         }
     }
 
@@ -67,7 +67,7 @@ public class MarketplaceViewPresenter extends BasePresenter<IMarketplaceView> im
         OfferList cachedOfferList = offerRepository.getCachedOfferList();
         setOfferList(cachedOfferList);
 
-        offerRepository.getOffers(new Callback<OfferList>() {
+        this.offerRepository.getOffers(new Callback<OfferList>() {
             @Override
             public void onResponse(OfferList offerList) {
                 setOfferList(offerList);

@@ -37,11 +37,6 @@ public class OrderRemoteData implements OrderDataSource {
     }
 
     @Override
-    public OrderList getAllCachedOrderHistory() {
-        return null;
-    }
-
-    @Override
     public void getAllOrderHistory(@NonNull final Callback<OrderList> callback) {
         try {
             ordersApi.getHistoryAsync("", ORDERS_ITEMS_LIMIT, "", "", new ApiCallback<OrderList>() {
@@ -84,11 +79,6 @@ public class OrderRemoteData implements OrderDataSource {
                 }
             });
         }
-    }
-
-    @Override
-    public ObservableData<OpenOrder> getOpenOrder() {
-        return null;
     }
 
     public void createOrder(@NonNull final String offerID, @NonNull final Callback<OpenOrder> callback) {

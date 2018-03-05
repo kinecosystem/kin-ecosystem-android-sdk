@@ -8,6 +8,7 @@ import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
+import com.kin.ecosystem.network.model.Order.StatusEnum;
 import com.kin.ecosystem.network.model.OrderList;
 
 public class OrderRepository implements OrderDataSource {
@@ -18,6 +19,7 @@ public class OrderRepository implements OrderDataSource {
 
     private OrderList cachedOrderList;
     private ObservableData<OpenOrder> cachedOpenOrder = ObservableData.create();
+    private ObservableData<Order> completedOrder = ObservableData.create();
 
     private OrderRepository(@NonNull final OrderDataSource remoteData) {
         this.remoteData = remoteData;
@@ -35,7 +37,6 @@ public class OrderRepository implements OrderDataSource {
         return instance;
     }
 
-    @Override
     public OrderList getAllCachedOrderHistory() {
         return cachedOrderList;
     }
@@ -65,8 +66,8 @@ public class OrderRepository implements OrderDataSource {
         remoteData.createOrder(offerID, new Callback<OpenOrder>() {
             @Override
             public void onResponse(OpenOrder response) {
-                cachedOpenOrder.setValue(response);
-                if(callback != null) {
+                cachedOpenOrder.postValue(response);
+                if (callback != null) {
                     callback.onResponse(response);
                 }
             }
@@ -86,6 +87,8 @@ public class OrderRepository implements OrderDataSource {
         remoteData.submitOrder(content, orderID, new Callback<Order>() {
             @Override
             public void onResponse(Order response) {
+                updateOpenOrder(response);
+                setCompletedOrder(response);
                 if (callback != null) {
                     callback.onResponse(response);
                 }
@@ -98,6 +101,16 @@ public class OrderRepository implements OrderDataSource {
                 }
             }
         });
+    }
+
+    private void setCompletedOrder(Order order) {
+        completedOrder.postValue(order);
+    }
+
+    private void updateOpenOrder(Order order) {
+        if(cachedOpenOrder.getValue().getId().equals(order.getOrderId())) {
+            cachedOpenOrder.postValue(null);
+        }
     }
 
     @Override

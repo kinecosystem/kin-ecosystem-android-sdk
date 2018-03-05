@@ -9,11 +9,7 @@ import com.kin.ecosystem.network.model.OrderList;
 
 interface OrderDataSource {
 
-    OrderList getAllCachedOrderHistory();
-
     void getAllOrderHistory(@NonNull final Callback<OrderList> callback);
-
-    ObservableData<OpenOrder> getOpenOrder();
 
     void createOrder(@NonNull final String offerID, final Callback<OpenOrder> callback);
 

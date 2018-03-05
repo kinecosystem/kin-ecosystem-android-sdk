@@ -82,9 +82,9 @@ public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderH
     }
 
     @Override
-    public void addToOrderHistoryList(List<Order> orders) {
-        int lastIndex = orderHistoryRecyclerAdapter.getDataCount();
-        orderHistoryRecyclerAdapter.addData(lastIndex, orders);
+    public void updateOrderHistoryList(List<Order> orders) {
+        orderHistoryRecyclerAdapter.setNewData(orders);
+        orderHistoryRecyclerAdapter.notifyDataSetChanged();
     }
 
     @Override

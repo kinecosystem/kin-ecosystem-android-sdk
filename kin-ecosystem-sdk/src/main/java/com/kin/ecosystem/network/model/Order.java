@@ -80,7 +80,7 @@ public class Order {
 
     @SerializedName("status")
     private StatusEnum status = null;
-    @SerializedName("order_id")
+    @SerializedName("id")
     private String orderId = null;
     @SerializedName("completion_date")
     private String completionDate = null;
@@ -344,16 +344,7 @@ public class Order {
             return false;
         }
         Order order = (Order) o;
-        return Objects.equals(this.result, order.result) &&
-                Objects.equals(this.status, order.status) &&
-                Objects.equals(this.orderId, order.orderId) &&
-                Objects.equals(this.completionDate, order.completionDate) &&
-                Objects.equals(this.blockchainData, order.blockchainData) &&
-                Objects.equals(this.offerType, order.offerType) &&
-                Objects.equals(this.title, order.title) &&
-                Objects.equals(this.description, order.description) &&
-                Objects.equals(this.callToAction, order.callToAction) &&
-                Objects.equals(this.amount, order.amount);
+        return Objects.equals(this.orderId, order.orderId);
     }
 
     @Override

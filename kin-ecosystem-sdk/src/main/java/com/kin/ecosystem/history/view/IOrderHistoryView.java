@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface IOrderHistoryView extends IBaseView<OrderHistoryPresenter>{
 
-    void addToOrderHistoryList(List<Order> orders);
+    void updateOrderHistoryList(List<Order> orders);
 }

@@ -4,6 +4,8 @@
  */
 package com.kin.ecosystem.network;
 
+import static com.kin.ecosystem.BuildConfig.DEBUG;
+
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.network.auth.ApiKeyAuth;
 import com.kin.ecosystem.network.auth.Authentication;
@@ -61,7 +63,7 @@ import okio.Okio;
 
 public class ApiClient {
 
-        private String basePath = "http://api.kinmarketplace.com/v1";
+    private String basePath = "http://api.kinmarketplace.com/v1";
 //    private String basePath = "http://10.0.2.2:3000/v1";
 
     private boolean debugging = false;
@@ -91,7 +93,9 @@ public class ApiClient {
         if (hasAccessToken) {
             addAccessTokenInterceptor();
         }
-        setDebugging(true);
+
+        //Depends on build variants
+        setDebugging(DEBUG);
 
         verifyingSsl = true;
 
