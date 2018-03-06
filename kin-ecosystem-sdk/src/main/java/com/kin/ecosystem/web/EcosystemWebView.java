@@ -1,5 +1,7 @@
 package com.kin.ecosystem.web;
 
+import static com.kin.ecosystem.BuildConfig.DEBUG;
+
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
@@ -42,7 +44,7 @@ public class EcosystemWebView extends WebView {
 
         nativeApi = new EcosystemNativeApi();
         addJavascriptInterface(nativeApi, JS_INTERFACE_OBJECT_NAME);
-        setWebContentsDebuggingEnabled(true);
+        setWebContentsDebuggingEnabled(DEBUG);
     }
 
     public void load() {

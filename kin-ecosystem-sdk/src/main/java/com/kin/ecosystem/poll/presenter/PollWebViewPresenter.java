@@ -8,14 +8,12 @@ import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.poll.view.IPollWebView;
-import com.kin.ecosystem.util.ExecutorsUtil.MainThreadExecutor;
 import com.kin.ecosystem.web.EcosystemWebPageListener;
 
 
 public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements EcosystemWebPageListener {
 
     private final OrderRepository orderRepository;
-    private final MainThreadExecutor mainThreadHandler = new MainThreadExecutor();
 
     private final String pollJsonString;
     private final String offerID;
@@ -59,7 +57,6 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
     @Override
     public void onDetach() {
         super.onDetach();
-        mainThreadHandler.removeCallbacksAndMessages(null);
         release();
     }
 
@@ -116,24 +113,15 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
     }
 
     private void showToast(final String msg) {
-        mainThreadHandler.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (view != null) {
-                    view.showToast(msg);
-                }
-            }
-        });
+        if (view != null) {
+            view.showToast(msg);
+        }
+
     }
 
     private void closeView() {
-        mainThreadHandler.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (view != null) {
-                    view.close();
-                }
-            }
-        });
+        if (view != null) {
+            view.close();
+        }
     }
 }

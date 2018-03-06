@@ -77,8 +77,13 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
     }
 
     @Override
-    public void showToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    public void showToast(final String msg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(PollWebViewActivity.this, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -101,8 +106,13 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
 
     @Override
     public void close() {
-        webViewContainer.removeView(webView);
-        webView.release();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                webViewContainer.removeView(webView);
+                webView.release();
+            }
+        });
         finish();
     }
 }
