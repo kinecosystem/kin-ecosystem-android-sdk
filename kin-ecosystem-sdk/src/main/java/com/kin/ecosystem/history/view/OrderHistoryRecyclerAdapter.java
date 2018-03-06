@@ -103,10 +103,10 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
                 String amount = getAmountFormatted(item.getAmount());
                 if (item.getOfferType() == Order.OfferTypeEnum.SPEND) {
                     setImageResource(R.id.amount_ico, R.drawable.invoice);
-                    setText(R.id.amount_text, PLUS_SIGN + amount);
+                    setText(R.id.amount_text, MINUS_SIGN + amount);
                 } else {
                     setImageResource(R.id.amount_ico, R.drawable.coins);
-                    setText(R.id.amount_text, MINUS_SIGN + amount);
+                    setText(R.id.amount_text, PLUS_SIGN + amount);
                 }
             }
         }

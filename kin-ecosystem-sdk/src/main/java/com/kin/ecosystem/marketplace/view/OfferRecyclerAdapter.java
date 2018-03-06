@@ -5,7 +5,6 @@ import static com.kin.ecosystem.util.StringUtil.getAmountFormatted;
 
 import android.content.Context;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.view.View;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
@@ -13,7 +12,6 @@ import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.Offer.ContentTypeEnum;
 import com.kin.ecosystem.network.model.Offer.OfferTypeEnum;
-import com.kin.ecosystem.poll.view.PollWebViewActivity;
 import com.kin.ecosystem.util.DeviceUtils;
 
 class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, OfferRecyclerAdapter.ViewHolder> {
@@ -32,10 +30,9 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, OfferRecyclerAdapt
         return DeviceUtils.isDensity(XXHDPI) ? HIGH_RES_HEIGHT_RATIO : NORMAL_HEIGHT_RATIO;
     }
 
-    OfferRecyclerAdapter(@LayoutRes int layoutResID, @NonNull OnItemClickListener itemClickListener) {
+    OfferRecyclerAdapter(@LayoutRes int layoutResID) {
         super(layoutResID);
         openLoadAnimation(SLIDEIN_RIGHT);
-        setOnItemClickListener(itemClickListener);
         isUseEmpty(true);
     }
 

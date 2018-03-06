@@ -4,6 +4,8 @@
  */
 package com.kin.ecosystem.network;
 
+import static com.kin.ecosystem.BuildConfig.DEBUG;
+
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.network.auth.ApiKeyAuth;
 import com.kin.ecosystem.network.auth.Authentication;
@@ -87,9 +89,13 @@ public class ApiClient {
      */
     public ApiClient(boolean hasAccessToken) {
         httpClientBuilder = new OkHttpClient.Builder();
+        httpClientBuilder.connectTimeout(30, TimeUnit.SECONDS);
         if (hasAccessToken) {
             addAccessTokenInterceptor();
         }
+
+        //Depends on build variants
+        setDebugging(DEBUG);
 
         verifyingSsl = true;
 

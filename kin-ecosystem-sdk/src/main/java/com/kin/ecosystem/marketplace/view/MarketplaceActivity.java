@@ -2,6 +2,7 @@ package com.kin.ecosystem.marketplace.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,15 +10,29 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import android.widget.TextView;
+import android.widget.Toast;
+import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseToolbarActivity;
-import com.kin.ecosystem.base.IBasePresenter;
+import com.kin.ecosystem.data.offer.OfferRepository;
+import com.kin.ecosystem.data.order.OrderRepository;
+import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.history.view.OrderHistoryActivity;
 import com.kin.ecosystem.marketplace.presenter.MarketplaceViewPresenter;
 import com.kin.ecosystem.network.model.Offer;
 
+import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.poll.view.PollWebViewActivity;
+import com.kin.ecosystem.util.StringUtil;
 import java.util.List;
+import kin.core.Balance;
+import kin.core.KinClient;
+import kin.core.PaymentInfo;
+import kin.core.PaymentWatcher;
+import kin.core.ResultCallback;
+import kin.core.WatcherListener;
 
 
 public class MarketplaceActivity extends BaseToolbarActivity implements IMarketplaceView {
@@ -26,6 +41,11 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
 
     private SpendRecyclerAdapter spendRecyclerAdapter;
     private EarnRecyclerAdapter earnRecyclerAdapter;
+
+    private TextView balanceText;
+    private KinClient kinClient;
+    private PaymentWatcher paymentWatcher;
+    private int balance;
 
     @Override
     protected int getLayoutRes() {
@@ -55,12 +75,56 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        attachPresenter();
+        attachPresenter(new MarketplaceViewPresenter(OfferRepository.getInstance(), OrderRepository.getInstance()));
+
+        /** Will be changed **/
+        kinClient = Kin.getKinClient();
+        kinClient.getAccount(0).getBalance().run(new ResultCallback<Balance>() {
+            @Override
+            public void onResult(Balance result) {
+                balance = Integer.parseInt(result.value(0));
+                String balanceString = StringUtil.getAmountFormatted(balance);
+                balanceText.setText(balanceString);
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
+        paymentWatcher = kinClient.getAccount(0).createPaymentWatcher();
+        paymentWatcher.start(new WatcherListener<PaymentInfo>() {
+            @Override
+            public void onEvent(PaymentInfo data) {
+                if(data != null) {
+                    updateBalance(data);
+                }
+            }
+        });
     }
 
-    private void attachPresenter() {
-        marketplacePresenter = new MarketplaceViewPresenter(this);
-        marketplacePresenter.onAttach();
+    /** Will be changed **/
+    private void updateBalance(final PaymentInfo data) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(balanceText != null) {
+                    float amount = data.amount().floatValue();
+                    balance += amount;
+                    System.out.println("BALANCE >>>> " + balance);
+                    String balanceString = StringUtil.getAmountFormatted(balance);
+                    balanceText.setText(balanceString);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void attachPresenter(MarketplaceViewPresenter presenter) {
+        marketplacePresenter = presenter;
+        marketplacePresenter.onAttach(this);
+        spendRecyclerAdapter.setOnItemClickListener(marketplacePresenter);
+        earnRecyclerAdapter.setOnItemClickListener(marketplacePresenter);
     }
 
     @Override
@@ -74,18 +138,18 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
         RecyclerView spendRecycler = findViewById(R.id.spend_recycler);
         spendRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         spendRecycler.addItemDecoration(itemDecoration);
-        spendRecyclerAdapter = new SpendRecyclerAdapter(marketplacePresenter);
+        spendRecyclerAdapter = new SpendRecyclerAdapter();
         spendRecyclerAdapter.bindToRecyclerView(spendRecycler);
 
         //Earn Recycler
         RecyclerView earnRecycler = findViewById(R.id.earn_recycler);
         earnRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         earnRecycler.addItemDecoration(itemDecoration);
-        earnRecyclerAdapter = new EarnRecyclerAdapter(marketplacePresenter);
+        earnRecyclerAdapter = new EarnRecyclerAdapter();
         earnRecyclerAdapter.bindToRecyclerView(earnRecycler);
 
-
-        findViewById(R.id.balance_text).setOnClickListener(new View.OnClickListener() {
+        balanceText = findViewById(R.id.balance_text);
+        balanceText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 moveToTransactionHistory();
@@ -132,12 +196,13 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
 
     @Override
     public void showOfferActivity(Offer offer) {
-        navigateToActivity(PollWebViewActivity.createIntent(this, offer.getContent()));
+        navigateToActivity(PollWebViewActivity.createIntent(this, offer.getContent(), offer.getId()));
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         marketplacePresenter.onDetach();
+        paymentWatcher.stop();
     }
 }

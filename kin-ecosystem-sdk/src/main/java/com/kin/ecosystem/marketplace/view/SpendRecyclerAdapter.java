@@ -7,8 +7,8 @@ class SpendRecyclerAdapter extends OfferRecyclerAdapter {
 
     private static final float IMAGE_WIDTH_RATIO = 0.8f;
 
-    SpendRecyclerAdapter(@NonNull OnItemClickListener itemClickListener) {
-        super(R.layout.spend_recycler_item, itemClickListener);
+    SpendRecyclerAdapter() {
+        super(R.layout.spend_recycler_item);
     }
 
     @Override
