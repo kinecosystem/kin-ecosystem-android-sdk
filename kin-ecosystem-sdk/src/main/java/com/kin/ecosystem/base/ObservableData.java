@@ -17,12 +17,10 @@ public class ObservableData<T> {
     private final Handler mainThreadHandler;
 
     private final ReadWriteLock lock;
-    private final Lock readLock;
     private final Lock writeLock;
 
     ObservableData() {
         this.lock = new ReentrantReadWriteLock();
-        this.readLock = lock.readLock();
         this.writeLock = lock.writeLock();
         this.mainThreadHandler = new Handler(Looper.getMainLooper());
         this.value = new AtomicReference<>();
