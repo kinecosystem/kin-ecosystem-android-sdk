@@ -27,7 +27,6 @@
 
     <style name="KinecosysTextBase">
         <item name="android:textColor">@color/title</item>
-        <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
     </style>
 
@@ -46,4 +45,9 @@
     <style name="KinecosysSubTitleMedium" parent="KinecosysSubTitle">
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
+
+    <style name="KinecosysSmallTitle" parent="KinecosysTitleText">
+        <item name="android:textSize">@dimen/small_title_size</item>
+    </style>
+
 </resources>

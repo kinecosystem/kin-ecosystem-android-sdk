@@ -19,4 +19,9 @@
     <color name="orange">#ff862e</color>
     <color name="red">#ff5e77</color>
 
+    <color name="dark_blue">#047efb</color>
+    <color name="light_blue">#07b6f3</color>
+
+    <color name="cyan">#82ffee</color>
+
 </resources>

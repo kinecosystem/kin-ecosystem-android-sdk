@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseToolbarActivity;
 import com.kin.ecosystem.data.order.OrderRepository;
+import com.kin.ecosystem.poll.presenter.IPollWebViewPresenter;
 import com.kin.ecosystem.poll.presenter.PollWebViewPresenter;
 import com.kin.ecosystem.web.EcosystemWebView;
 
@@ -26,7 +27,7 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
         return intent;
     }
 
-    private PollWebViewPresenter pollWebViewPresenter;
+    private IPollWebViewPresenter pollWebViewPresenter;
     private EcosystemWebView webView;
     private LinearLayout webViewContainer;
 

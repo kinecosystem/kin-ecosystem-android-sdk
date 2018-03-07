@@ -9,12 +9,34 @@ public interface AuthDataSource {
 
     void setSignInData(@NonNull final SignInData signInData);
 
-    void getSignInData(@NonNull final Callback<SignInData> callback);
-
     void setAuthToken(@NonNull final AuthToken authToken);
 
     void getAuthToken(@NonNull final Callback<AuthToken> callback);
 
     AuthToken getAuthTokenSync();
 
+    void activateAccount(@NonNull final Callback<Void> callback);
+
+    interface Local {
+
+        void setSignInData(@NonNull final SignInData signInData);
+
+        void setAuthToken(@NonNull final AuthToken authToken);
+
+        void getAuthToken(@NonNull final Callback<AuthToken> callback);
+
+        AuthToken getAuthTokenSync();
+
+    }
+
+    interface Remote {
+
+        void setSignInData(@NonNull final SignInData signInData);
+
+        void getAuthToken(@NonNull final Callback<AuthToken> callback);
+
+        AuthToken getAuthTokenSync();
+
+        void activateAccount(@NonNull final Callback<AuthToken> callback);
+    }
 }

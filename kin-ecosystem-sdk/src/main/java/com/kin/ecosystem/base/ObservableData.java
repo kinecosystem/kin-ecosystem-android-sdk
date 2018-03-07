@@ -2,23 +2,43 @@ package com.kin.ecosystem.base;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ObservableData<T> {
 
-    private T value;
+    private AtomicReference<T> value;
     private List<Observer<T>> observers = new ArrayList<>(1);
     private final Handler mainThreadHandler;
 
-    public ObservableData() {
-        mainThreadHandler = new Handler(Looper.getMainLooper());
+    private final ReadWriteLock lock;
+    private final Lock readLock;
+    private final Lock writeLock;
+
+    ObservableData() {
+        this.lock = new ReentrantReadWriteLock();
+        this.readLock = lock.readLock();
+        this.writeLock = lock.writeLock();
+        this.mainThreadHandler = new Handler(Looper.getMainLooper());
+        this.value = new AtomicReference<>();
+    }
+
+    ObservableData(@NonNull final T defaultValue) {
+        this();
+        this.value.lazySet(defaultValue);
     }
 
     public static <T> ObservableData<T> create() {
-        ObservableData<T> observableData = new ObservableData<>();
-        observableData.setValue(null);
-        return observableData;
+        return new ObservableData<>();
+    }
+
+    public static <T> ObservableData<T> create(@NonNull final T defaultValue) {
+        return new ObservableData<>(defaultValue);
     }
 
     public void addObserver(Observer<T> observer) {
@@ -30,7 +50,7 @@ public class ObservableData<T> {
     }
 
     public T getValue() {
-        return value;
+        return value.get();
     }
 
     /**
@@ -38,10 +58,16 @@ public class ObservableData<T> {
      * @param value
      */
     public void setValue(T value) {
-        this.value = value;
-        onChanged();
+        this.writeLock.lock();
+        this.value.lazySet(value);
+        this.onChanged();
+        this.writeLock.unlock();
     }
 
+    /**
+     * Set value on the main thread
+     * @param value
+     */
     public void postValue(final T value) {
         if (Looper.myLooper() != Looper.getMainLooper()) {
             mainThreadHandler.post(new Runnable() {
@@ -57,7 +83,7 @@ public class ObservableData<T> {
 
     private void onChanged() {
         for (Observer observer : observers) {
-            observer.onChanged(value);
+            observer.onChanged(value.get());
         }
     }
 }

@@ -11,7 +11,7 @@ import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.network.model.SignInData.SignInTypeEnum;
 import com.kin.ecosystem.util.ExecutorsUtil;
 
-public class AuthLocalData implements AuthDataSource {
+public class AuthLocalData implements AuthDataSource.Local {
 
     private static volatile AuthLocalData instance;
 
@@ -55,49 +55,11 @@ public class AuthLocalData implements AuthDataSource {
                 editor.putString(APP_ID_KEY, signInData.getUserId());
                 editor.putString(DEVICE_ID_KEY, signInData.getUserId());
                 editor.putString(PUBLIC_ADDRESS_KEY, signInData.getUserId());
+                editor.putString(TYPE_KEY, signInData.getSignInType().getValue());
                 if (signInData.getSignInType() == SignInTypeEnum.JWT) {
-                    editor.putString(TYPE_KEY, SignInTypeEnum.JWT.getValue());
+                    editor.putString(JWT_KEY, signInData.getJwt());
                 }
                 editor.commit();
-            }
-        };
-
-        executorsUtil.diskIO().execute(command);
-    }
-
-    @Override
-    public void getSignInData(@NonNull final Callback<SignInData> callback) {
-        Runnable command = new Runnable() {
-            @Override
-            public void run() {
-                SignInTypeEnum signInType;
-                if ((signInType = getType()) != null) {
-
-                    final SignInData signInData = new SignInData();
-                    signInData.setUserId(signInSharedPreferences.getString(USER_ID_KEY, null));
-                    signInData.appId(signInSharedPreferences.getString(APP_ID_KEY, null));
-                    signInData.deviceId(signInSharedPreferences.getString(DEVICE_ID_KEY, null));
-                    signInData.publicAddress(signInSharedPreferences.getString(PUBLIC_ADDRESS_KEY, null));
-                    signInData.setSignInType(signInType);
-
-                    if (signInType == SignInTypeEnum.JWT) {
-                        signInData.setJwt(signInSharedPreferences.getString(JWT_KEY, null));
-                    }
-                    executorsUtil.mainThread().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onResponse(signInData);
-                        }
-                    });
-
-                } else {
-                    executorsUtil.mainThread().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onFailure(new DataNotAvailableException());
-                        }
-                    });
-                }
             }
         };
 

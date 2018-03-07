@@ -12,11 +12,14 @@ import com.kin.ecosystem.data.offer.OfferRemoteData;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderRemoteData;
 import com.kin.ecosystem.data.order.OrderRepository;
+import com.kin.ecosystem.data.user.UserInfoLocalData;
+import com.kin.ecosystem.data.user.UserInfoRepository;
 import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
 import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.network.model.SignInData;
+import com.kin.ecosystem.splash.view.SplashViewActivity;
 import com.kin.ecosystem.util.DeviceUtils;
 import com.kin.ecosystem.util.ExecutorsUtil;
 import kin.core.Balance;
@@ -58,6 +61,7 @@ public class Kin {
         registerAccount(appContext, signInData);
         initOrderRepository();
         initOfferRepository();
+        initUserInfoRepository(appContext);
     }
 
     private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
@@ -145,6 +149,10 @@ public class Kin {
         OrderRepository.init(OrderRemoteData.getInstance(instance.executorsUtil));
     }
 
+    private static void initUserInfoRepository(@NonNull final Context context) {
+        UserInfoRepository.init(UserInfoLocalData.getInstance(context));
+    }
+
     private static void createKinAccountInNeeded() throws InitializeException {
         try {
             KinAccount account = instance.kinClient.getAccount(0);
@@ -162,11 +170,24 @@ public class Kin {
         }
     }
 
-    public static void launchMarketplace(@NonNull Activity activity) throws TaskFailedException {
+    public static void launchMarketplace(@NonNull final Activity activity) throws TaskFailedException {
         checkInstanceNotNull();
+        boolean isConfirmedTOS = UserInfoRepository.getInstance().isConfirmedTOS();
+        if (isConfirmedTOS) {
+            navigateToMarketplace(activity);
+        } else {
+            navigateToSplash(activity);
+        }
+    }
+
+    private static void navigateToSplash(@NonNull final Activity activity) {
+        activity.startActivity(new Intent(activity, SplashViewActivity.class));
+        activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
+
+    private static void navigateToMarketplace(@NonNull final Activity activity) {
         activity.startActivity(new Intent(activity, MarketplaceActivity.class));
         activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
     }
 
     public static String getPublicAddress() throws TaskFailedException {

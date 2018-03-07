@@ -4,6 +4,10 @@
 
     <application>
         <activity
+            android:name=".splash.view.SplashViewActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/KinecosysNoActionBar"/>
+        <activity
             android:label="@string/kin_marketplace"
             android:name=".marketplace.view.MarketplaceActivity"
             android:screenOrientation="portrait"
