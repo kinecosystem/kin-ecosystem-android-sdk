@@ -20,5 +20,6 @@
 
     <!--Menu-->
     <string name="info_menu">Info</string>
+    <string name="digging_for_gems">Digging for Gems...</string>
 
 </resources>

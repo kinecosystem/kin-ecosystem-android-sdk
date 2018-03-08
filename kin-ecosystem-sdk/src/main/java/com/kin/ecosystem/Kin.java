@@ -173,11 +173,11 @@ public class Kin {
     public static void launchMarketplace(@NonNull final Activity activity) throws TaskFailedException {
         checkInstanceNotNull();
         boolean isConfirmedTOS = UserInfoRepository.getInstance().isConfirmedTOS();
-        if (isConfirmedTOS) {
-            navigateToMarketplace(activity);
-        } else {
+//        if (isConfirmedTOS) {
+//            navigateToMarketplace(activity);
+//        } else {
             navigateToSplash(activity);
-        }
+//        }
     }
 
     private static void navigateToSplash(@NonNull final Activity activity) {

@@ -65,18 +65,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.8"/>
 
-    <Button
+    <com.kin.ecosystem.splash.view.SplashScreenButton
         android:id="@+id/lets_get_started"
-        android:layout_width="@dimen/round_button_width"
-        android:layout_height="@dimen/round_button_height"
-        android:layout_marginBottom="@dimen/main_margin"
-        android:background="@drawable/button_background_white_rounded"
-        android:text="@string/let_s_get_started"
-        android:textAllCaps="false"
-        android:textColor="@color/bluePrimary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/tos_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="visible"/>
 
     <TextView
         android:id="@+id/tos_text"
@@ -92,15 +88,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <ProgressBar
-        android:id="@+id/loader"
+    <TextView
+        android:id="@+id/loading_text"
+        style="@style/KinecosysSubTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:layout_marginBottom="@dimen/main_margin"
-        app:layout_constraintBottom_toTopOf="@id/tos_text"
+        android:text="@string/digging_for_gems"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lets_get_started"
         android:visibility="gone"/>
 
 

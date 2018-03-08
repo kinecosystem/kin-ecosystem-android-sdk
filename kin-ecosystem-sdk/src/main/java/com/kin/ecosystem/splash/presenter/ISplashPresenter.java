@@ -8,4 +8,6 @@ public interface ISplashPresenter extends IBasePresenter<ISplashView> {
     void getStartedClicked();
 
     void backButtonPressed();
+
+    void onAnimationEnded();
 }

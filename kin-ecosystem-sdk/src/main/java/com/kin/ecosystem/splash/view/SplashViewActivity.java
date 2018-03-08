@@ -1,17 +1,16 @@
 package com.kin.ecosystem.splash.view;
 
 import android.content.Intent;
-import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.kin.ecosystem.R;
@@ -20,13 +19,22 @@ import com.kin.ecosystem.data.user.UserInfoRepository;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
 import com.kin.ecosystem.splash.presenter.ISplashPresenter;
 import com.kin.ecosystem.splash.presenter.SplashPresenter;
+import com.kin.ecosystem.splash.view.SplashScreenButton.LoadAnimationListener;
 
 public class SplashViewActivity extends AppCompatActivity implements ISplashView {
 
     private ISplashPresenter splashPresenter;
 
-    private Button letsGetStartedBtn;
-    private ProgressBar loader;
+    private SplashScreenButton letsGetStartedBtn;
+    private TextView tosText;
+    private TextView loadingText;
+
+    private static final int FADE_DURATION = 250;
+    private static final float ZERO_FLOAT = 0f;
+    private static final float ONE_FLOAT = 1f;
+    private Animation fadeIn = new AlphaAnimation(ZERO_FLOAT, ONE_FLOAT);
+    private Animation fadeOutTos = new AlphaAnimation(ONE_FLOAT, ZERO_FLOAT);
+    private Animation fadeOutLoading = new AlphaAnimation(ONE_FLOAT, ZERO_FLOAT);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,28 +42,68 @@ public class SplashViewActivity extends AppCompatActivity implements ISplashView
         setContentView(R.layout.activity_splash);
         attachPresenter(new SplashPresenter(UserInfoRepository.getInstance(), AuthRepository.getInstance()));
         initViews();
+        initAnimations();
+    }
+
+    private void initAnimations() {
+        fadeIn.setDuration(FADE_DURATION);
+        fadeOutTos.setDuration(FADE_DURATION);
+        fadeOutLoading.setDuration(FADE_DURATION);
+        fadeOutTos.setAnimationListener(new AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                tosText.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        fadeOutLoading.setAnimationListener(new AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                loadingText.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
     }
 
     private void initViews() {
         letsGetStartedBtn = findViewById(R.id.lets_get_started);
-        setUpLoader();
+        loadingText = findViewById(R.id.loading_text);
         setUpTosText();
         setUpBackButton();
         setUpLetsGetStartedButton();
     }
 
-    private void setUpLoader() {
-        loader = findViewById(R.id.loader);
-        int color = ContextCompat.getColor(this, R.color.cyan);
-        loader.getIndeterminateDrawable().setColorFilter(color, Mode.SRC_IN);
-    }
-
     private void setUpLetsGetStartedButton() {
-        final Button backButton = findViewById(R.id.lets_get_started);
-        backButton.setOnClickListener(new OnClickListener() {
+        letsGetStartedBtn = findViewById(R.id.lets_get_started);
+        letsGetStartedBtn.setButtonListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 splashPresenter.getStartedClicked();
+            }
+        });
+        letsGetStartedBtn.setLoadAnimationListener(new LoadAnimationListener() {
+            @Override
+            public void onAnimationEnd() {
+                splashPresenter.onAnimationEnded();
             }
         });
     }
@@ -71,7 +119,7 @@ public class SplashViewActivity extends AppCompatActivity implements ISplashView
     }
 
     private void setUpTosText() {
-        final TextView tosText = findViewById(R.id.tos_text);
+        tosText = findViewById(R.id.tos_text);
         tosText.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
@@ -94,13 +142,32 @@ public class SplashViewActivity extends AppCompatActivity implements ISplashView
     }
 
     @Override
-    public void setLetsGetStartedVisibility(boolean isVisible) {
-        letsGetStartedBtn.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+    public void animateLoading() {
+        letsGetStartedBtn.animateLoading();
+        fadeInView(loadingText);
+        fadeOutTos();
     }
 
     @Override
-    public void setLoaderVisibility(boolean isVisible) {
-        loader.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    public void stopLoading(boolean reset) {
+        letsGetStartedBtn.stopLoading(reset);
+        fadeOutLoading();
+        if (reset) {
+            fadeInView(tosText);
+        }
+    }
+
+    private void fadeInView(View view) {
+        view.setVisibility(View.VISIBLE);
+        view.startAnimation(fadeIn);
+    }
+
+    private void fadeOutTos() {
+        tosText.startAnimation(fadeOutTos);
+    }
+
+    private void fadeOutLoading() {
+        loadingText.startAnimation(fadeOutLoading);
     }
 
     @Override

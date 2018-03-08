@@ -52,9 +52,9 @@ public class AuthLocalData implements AuthDataSource.Local {
             public void run() {
                 Editor editor = signInSharedPreferences.edit();
                 editor.putString(USER_ID_KEY, signInData.getUserId());
-                editor.putString(APP_ID_KEY, signInData.getUserId());
-                editor.putString(DEVICE_ID_KEY, signInData.getUserId());
-                editor.putString(PUBLIC_ADDRESS_KEY, signInData.getUserId());
+                editor.putString(APP_ID_KEY, signInData.getAppId());
+                editor.putString(DEVICE_ID_KEY, signInData.getDeviceId());
+                editor.putString(PUBLIC_ADDRESS_KEY, signInData.getPublicAddress());
                 editor.putString(TYPE_KEY, signInData.getSignInType().getValue());
                 if (signInData.getSignInType() == SignInTypeEnum.JWT) {
                     editor.putString(JWT_KEY, signInData.getJwt());
@@ -113,11 +113,4 @@ public class AuthLocalData implements AuthDataSource.Local {
             return null;
         }
     }
-
-    private SignInTypeEnum getType() {
-        String signInType = signInSharedPreferences.getString(TYPE_KEY, null);
-
-        return SignInTypeEnum.fromValue(signInType);
-    }
-
 }

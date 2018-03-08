@@ -9,9 +9,9 @@ public interface ISplashView extends IBaseView<SplashPresenter> {
 
     void navigateBack();
 
-    void setLetsGetStartedVisibility(boolean isVisible);
+    void animateLoading();
 
-    void setLoaderVisibility(boolean isVisible);
+    void stopLoading(boolean reset);
 
     void showToast(String msg);
 }

@@ -12,6 +12,9 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
     private final UserInfoDataSource userInfoRepository;
     private final AuthDataSource authRepository;
 
+    private boolean animationEnded = false;
+    private boolean confirmedSucceed = false;
+
     public SplashPresenter(@NonNull final UserInfoDataSource userInfoRepository,
         @NonNull final AuthDataSource authRepository) {
         this.userInfoRepository = userInfoRepository;
@@ -20,9 +23,14 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 
     @Override
     public void getStartedClicked() {
-        setLetsGetStartedVisibility(false);
-        setLoaderVisibility(true);
+        animateLoading();
         activateAccount();
+    }
+
+    private void animateLoading() {
+        if(view != null) {
+            view.animateLoading();
+        }
     }
 
     private void activateAccount() {
@@ -30,28 +38,21 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
             @Override
             public void onResponse(Void response) {
                 userInfoRepository.setConfirmedTOS(true);
-                setLoaderVisibility(false);
+                confirmedSucceed = true;
                 navigateToMarketplace();
             }
 
             @Override
             public void onFailure(Throwable t) {
-                setLoaderVisibility(false);
-                setLetsGetStartedVisibility(true);
                 showToast("Oops something went wrong...");
+                stopLoading(true);
             }
         });
     }
 
-    private void setLetsGetStartedVisibility(boolean isVisible) {
-        if (view != null) {
-            view.setLetsGetStartedVisibility(isVisible);
-        }
-    }
-
-    private void setLoaderVisibility(boolean isVisible) {
-        if (view != null) {
-            view.setLoaderVisibility(isVisible);
+    private void stopLoading(boolean reset) {
+        if(view != null) {
+            view.stopLoading(reset);
         }
     }
 
@@ -62,8 +63,10 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
     }
 
     private void navigateToMarketplace() {
-        if (view != null) {
-            view.navigateToMarketPlace();
+        if(animationEnded && confirmedSucceed) {
+            if (view != null) {
+                view.navigateToMarketPlace();
+            }
         }
     }
 
@@ -72,5 +75,11 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
         if (view != null) {
             view.navigateBack();
         }
+    }
+
+    @Override
+    public void onAnimationEnded() {
+        animationEnded = true;
+        navigateToMarketplace();
     }
 }
