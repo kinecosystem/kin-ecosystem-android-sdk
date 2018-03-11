@@ -13,19 +13,19 @@ public class AuthRepository implements AuthDataSource {
 
     private static AuthRepository instance = null;
 
-    private final AuthDataSource localData;
-    private final AuthDataSource remoteData;
+    private final AuthDataSource.Local localData;
+    private final AuthDataSource.Remote remoteData;
 
     private SignInData cachedSignInData;
     private AuthToken cachedAuthToken;
 
-    private AuthRepository(@NonNull AuthDataSource local, @NonNull AuthDataSource remote) {
+    private AuthRepository(@NonNull AuthDataSource.Local local, @NonNull AuthDataSource.Remote remote) {
         this.localData = local;
         this.remoteData = remote;
     }
 
-    public static void init(@NonNull SignInData signInData, @NonNull AuthLocalData localData,
-        @NonNull AuthRemoteData remoteData) {
+    public static void init(@NonNull SignInData signInData, @NonNull AuthDataSource.Local localData,
+        @NonNull AuthDataSource.Remote remoteData) {
         if (instance == null) {
             synchronized (AuthRepository.class) {
                 instance = new AuthRepository(localData, remoteData);
@@ -43,27 +43,6 @@ public class AuthRepository implements AuthDataSource {
         cachedSignInData = signInData;
         localData.setSignInData(signInData);
         remoteData.setSignInData(signInData);
-    }
-
-    @Override
-    public void getSignInData(@NonNull final Callback<SignInData> callback) {
-        if (cachedSignInData != null) {
-            callback.onResponse(cachedSignInData);
-        } else {
-            localData.getSignInData(new Callback<SignInData>() {
-                @Override
-                public void onResponse(final SignInData response) {
-                    setSignInData(response);
-                    callback.onResponse(response);
-
-                }
-
-                @Override
-                public void onFailure(final Throwable t) {
-                    callback.onFailure(t);
-                }
-            });
-        }
     }
 
     @Override
@@ -119,6 +98,28 @@ public class AuthRepository implements AuthDataSource {
                 return null;
             }
         }
+    }
+
+    @Override
+    public boolean isActivated() {
+        return localData.isActivated();
+    }
+
+    @Override
+    public void activateAccount(@NonNull final Callback<Void> callback) {
+        localData.activateAccount();
+        remoteData.activateAccount(new Callback<AuthToken>() {
+            @Override
+            public void onResponse(AuthToken response) {
+                setAuthToken(response);
+                callback.onResponse(null);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                callback.onFailure(t);
+            }
+        });
     }
 
     private boolean isAuthTokenExpired(AuthToken authToken) {

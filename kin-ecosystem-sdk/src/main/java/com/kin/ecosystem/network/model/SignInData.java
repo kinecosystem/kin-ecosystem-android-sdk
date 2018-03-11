@@ -32,6 +32,8 @@ public class SignInData {
     private String appId = null;
     @SerializedName("device_id")
     private String deviceId = null;
+    @SerializedName("api_key")
+    private String apiKey = null;
     @SerializedName("public_address")
     private String publicAddress = null;
 
@@ -148,7 +150,6 @@ public class SignInData {
         return this;
     }
 
-
     /**
      * Get deviceId
      *
@@ -158,6 +159,18 @@ public class SignInData {
         return deviceId;
     }
 
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
+    public SignInData apiKey(String apiKey) {
+        this.apiKey = apiKey;
+        return this;
+    }
+
+    public String getApiKey() {
+        return this.apiKey;
+    }
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
     }

@@ -11,7 +11,7 @@ import com.kin.ecosystem.poll.view.IPollWebView;
 import com.kin.ecosystem.web.EcosystemWebPageListener;
 
 
-public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements EcosystemWebPageListener {
+public class PollWebViewPresenter extends BasePresenter<IPollWebView>  implements IPollWebViewPresenter {
 
     private final OrderRepository orderRepository;
 

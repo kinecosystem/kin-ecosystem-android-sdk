@@ -3,13 +3,14 @@ package com.kin.ecosystem.history.presenter;
 
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.BasePresenter;
+import com.kin.ecosystem.base.IBasePresenter;
 import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.history.view.IOrderHistoryView;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.OrderList;
 import java.util.List;
 
-public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> {
+public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> implements IBasePresenter<IOrderHistoryView> {
 
     private static final int NOT_FOUND = -1;
     private final OrderRepository repository;

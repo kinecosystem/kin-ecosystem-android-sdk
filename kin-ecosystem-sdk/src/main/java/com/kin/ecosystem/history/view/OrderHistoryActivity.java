@@ -10,6 +10,7 @@ import android.view.View;
 
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseToolbarActivity;
+import com.kin.ecosystem.base.IBasePresenter;
 import com.kin.ecosystem.history.presenter.OrderHistoryPresenter;
 import com.kin.ecosystem.network.model.Order;
 
@@ -18,7 +19,7 @@ import java.util.List;
 
 public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderHistoryView {
 
-    private OrderHistoryPresenter transactionHistoryPresenter;
+    private IBasePresenter<IOrderHistoryView> orderHistoryPresenter;
     private OrderHistoryRecyclerAdapter orderHistoryRecyclerAdapter;
 
     @Override
@@ -62,8 +63,8 @@ public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderH
 
     @Override
     public void attachPresenter(OrderHistoryPresenter presenter) {
-        transactionHistoryPresenter = presenter;
-        transactionHistoryPresenter.onAttach(this);
+        orderHistoryPresenter = presenter;
+        orderHistoryPresenter.onAttach(this);
     }
 
     @Override
@@ -90,6 +91,6 @@ public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderH
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        transactionHistoryPresenter.onDetach();
+        orderHistoryPresenter.onDetach();
     }
 }

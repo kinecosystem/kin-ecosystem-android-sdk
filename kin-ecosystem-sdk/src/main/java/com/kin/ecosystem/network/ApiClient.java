@@ -7,9 +7,7 @@ package com.kin.ecosystem.network;
 import static com.kin.ecosystem.BuildConfig.DEBUG;
 
 import com.kin.ecosystem.data.auth.AuthRepository;
-import com.kin.ecosystem.network.auth.ApiKeyAuth;
 import com.kin.ecosystem.network.auth.Authentication;
-import com.kin.ecosystem.network.auth.OAuth;
 import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.util.StringUtil;
 import java.io.File;
@@ -84,15 +82,15 @@ public class ApiClient {
     private static final String BEARER = "Bearer ";
     private static final String AUTHORIZATION = "Authorization";
 
+    private static final String USERS_PATH = "/v1/users";
+
     /*
      * Constructor for ApiClient
      */
-    public ApiClient(boolean hasAccessToken) {
+    public ApiClient() {
         httpClientBuilder = new OkHttpClient.Builder();
         httpClientBuilder.connectTimeout(30, TimeUnit.SECONDS);
-        if (hasAccessToken) {
-            addAccessTokenInterceptor();
-        }
+        addAccessTokenInterceptor();
 
         //Depends on build variants
         setDebugging(DEBUG);
@@ -103,7 +101,6 @@ public class ApiClient {
 
         // Setup authentications (key: authentication name, value: authentication).
         authentications = new HashMap<>();
-        authentications.put("ApiKeyAuth", new ApiKeyAuth("header", "X-API-KEY"));
         // Prevent the authentications from being modified.
         authentications = Collections.unmodifiableMap(authentications);
     }
@@ -235,71 +232,6 @@ public class ApiClient {
     }
 
     /**
-     * Get authentications (key: authentication name, value: authentication).
-     *
-     * @return Map of authentication objects
-     */
-    public Map<String, Authentication> getAuthentications() {
-        return authentications;
-    }
-
-    /**
-     * Get authentication for the given name.
-     *
-     * @param authName The authentication name
-     * @return The authentication, null if not found
-     */
-    public Authentication getAuthentication(String authName) {
-        return authentications.get(authName);
-    }
-
-
-    /**
-     * Helper method to set API key value for the first API key authentication.
-     *
-     * @param apiKey API key
-     */
-    public void setApiKey(String apiKey) {
-        for (Authentication auth : authentications.values()) {
-            if (auth instanceof ApiKeyAuth) {
-                ((ApiKeyAuth) auth).setApiKey(apiKey);
-                return;
-            }
-        }
-        throw new RuntimeException("No API key authentication configured!");
-    }
-
-    /**
-     * Helper method to set API key prefix for the first API key authentication.
-     *
-     * @param apiKeyPrefix API key prefix
-     */
-    public void setApiKeyPrefix(String apiKeyPrefix) {
-        for (Authentication auth : authentications.values()) {
-            if (auth instanceof ApiKeyAuth) {
-                ((ApiKeyAuth) auth).setApiKeyPrefix(apiKeyPrefix);
-                return;
-            }
-        }
-        throw new RuntimeException("No API key authentication configured!");
-    }
-
-    /**
-     * Helper method to set access token for the first OAuth2 authentication.
-     *
-     * @param accessToken Access token
-     */
-    public void setAccessToken(String accessToken) {
-        for (Authentication auth : authentications.values()) {
-            if (auth instanceof OAuth) {
-                ((OAuth) auth).setAccessToken(accessToken);
-                return;
-            }
-        }
-        throw new RuntimeException("No OAuth2 authentication configured!");
-    }
-
-    /**
      * Set the User-Agent header's value (by adding to the default header map).
      *
      * @param userAgent HTTP request's user agent
@@ -342,7 +274,13 @@ public class ApiClient {
             @Override
             public Response intercept(Chain chain) throws IOException {
                 Request originalRequest = chain.request();
-                final AuthToken authToken = AuthRepository.getInstance().getAuthTokenSync();
+
+                final String path = originalRequest.url().encodedPath();
+                AuthToken authToken = null;
+                if (!path.equals(USERS_PATH)) {
+                    authToken = AuthRepository.getInstance().getAuthTokenSync();
+                }
+
                 if (authToken != null) {
                     Request authorisedRequest = originalRequest.newBuilder()
                         .header(AUTHORIZATION, BEARER + authToken.getToken())

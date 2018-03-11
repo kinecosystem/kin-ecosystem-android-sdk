@@ -2,20 +2,19 @@ package com.kin.ecosystem.marketplace.presenter;
 
 
 import android.support.annotation.NonNull;
-import android.view.View;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
-import com.kin.ecosystem.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.marketplace.view.IMarketplaceView;
 import com.kin.ecosystem.network.model.Offer;
+import com.kin.ecosystem.network.model.Offer.OfferTypeEnum;
 import com.kin.ecosystem.network.model.OfferList;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MarketplaceViewPresenter extends BasePresenter<IMarketplaceView> implements OnItemClickListener {
+public class MarketplaceViewPresenter extends BasePresenter<IMarketplaceView> implements IMarketplaceViewPresenter {
 
     private final OfferRepository offerRepository;
     private final OrderRepository orderRepository;
@@ -87,8 +86,8 @@ public class MarketplaceViewPresenter extends BasePresenter<IMarketplaceView> im
     }
 
     @Override
-    public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
-        final Offer offer = (Offer) adapter.getData().get(position);
+    public void onItemClicked(int position, OfferTypeEnum offerType) {
+        final Offer offer = offerType == OfferTypeEnum.SPEND ? spendList.get(position) : earnList.get(position);
         if (this.view != null) {
             this.view.showOfferActivity(offer);
         }

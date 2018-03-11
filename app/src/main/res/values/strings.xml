@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Kin Ecosystem</string>
+
+    <string name="kin_ecosystem_api_key">A1234567890</string>
 </resources>
