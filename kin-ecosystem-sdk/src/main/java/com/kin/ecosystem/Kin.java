@@ -12,8 +12,6 @@ import com.kin.ecosystem.data.offer.OfferRemoteData;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderRemoteData;
 import com.kin.ecosystem.data.order.OrderRepository;
-import com.kin.ecosystem.data.user.UserInfoLocalData;
-import com.kin.ecosystem.data.user.UserInfoRepository;
 import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
@@ -61,7 +59,6 @@ public class Kin {
         registerAccount(appContext, signInData);
         initOrderRepository();
         initOfferRepository();
-        initUserInfoRepository(appContext);
     }
 
     private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
@@ -149,10 +146,6 @@ public class Kin {
         OrderRepository.init(OrderRemoteData.getInstance(instance.executorsUtil));
     }
 
-    private static void initUserInfoRepository(@NonNull final Context context) {
-        UserInfoRepository.init(UserInfoLocalData.getInstance(context));
-    }
-
     private static void createKinAccountInNeeded() throws InitializeException {
         try {
             KinAccount account = instance.kinClient.getAccount(0);
@@ -172,12 +165,12 @@ public class Kin {
 
     public static void launchMarketplace(@NonNull final Activity activity) throws TaskFailedException {
         checkInstanceNotNull();
-        boolean isConfirmedTOS = UserInfoRepository.getInstance().isConfirmedTOS();
-//        if (isConfirmedTOS) {
-//            navigateToMarketplace(activity);
-//        } else {
+        boolean isActivated = AuthRepository.getInstance().isActivated();
+        if (isActivated) {
+            navigateToMarketplace(activity);
+        } else {
             navigateToSplash(activity);
-//        }
+        }
     }
 
     private static void navigateToSplash(@NonNull final Activity activity) {

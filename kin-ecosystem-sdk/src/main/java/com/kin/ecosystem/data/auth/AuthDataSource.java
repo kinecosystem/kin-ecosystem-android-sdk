@@ -15,6 +15,8 @@ public interface AuthDataSource {
 
     AuthToken getAuthTokenSync();
 
+    boolean isActivated();
+
     void activateAccount(@NonNull final Callback<Void> callback);
 
     interface Local {
@@ -26,6 +28,10 @@ public interface AuthDataSource {
         void getAuthToken(@NonNull final Callback<AuthToken> callback);
 
         AuthToken getAuthTokenSync();
+
+        boolean isActivated();
+
+        void activateAccount();
 
     }
 

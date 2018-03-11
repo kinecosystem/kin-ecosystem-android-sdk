@@ -27,6 +27,8 @@ public class AuthLocalData implements AuthDataSource.Local {
     private static final String TOKEN_KEY = "token";
     private static final String TOKEN_EXPIRATION_DATE_KEY = "token_expiration_date";
 
+    private static final String IS_ACTIVATED_KEY = "is_activated";
+
     private final SharedPreferences signInSharedPreferences;
     private final ExecutorsUtil executorsUtil;
 
@@ -113,4 +115,22 @@ public class AuthLocalData implements AuthDataSource.Local {
             return null;
         }
     }
+
+    @Override
+    public boolean isActivated() {
+        return signInSharedPreferences.getBoolean(IS_ACTIVATED_KEY, false);
+    }
+
+    @Override
+    public void activateAccount() {
+        Runnable command = new Runnable() {
+            @Override
+            public void run() {
+                Editor editor = signInSharedPreferences.edit();
+                editor.putBoolean(IS_ACTIVATED_KEY, true).commit();
+            }
+        };
+        executorsUtil.diskIO().execute(command);
+    }
 }
+

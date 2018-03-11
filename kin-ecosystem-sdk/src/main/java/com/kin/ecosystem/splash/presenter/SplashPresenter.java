@@ -4,20 +4,16 @@ import android.support.annotation.NonNull;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.data.auth.AuthDataSource;
-import com.kin.ecosystem.data.user.UserInfoDataSource;
 import com.kin.ecosystem.splash.view.ISplashView;
 
 public class SplashPresenter extends BasePresenter<ISplashView> implements ISplashPresenter {
 
-    private final UserInfoDataSource userInfoRepository;
     private final AuthDataSource authRepository;
 
     private boolean animationEnded = false;
     private boolean confirmedSucceed = false;
 
-    public SplashPresenter(@NonNull final UserInfoDataSource userInfoRepository,
-        @NonNull final AuthDataSource authRepository) {
-        this.userInfoRepository = userInfoRepository;
+    public SplashPresenter(@NonNull final AuthDataSource authRepository) {
         this.authRepository = authRepository;
     }
 
@@ -28,7 +24,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
     }
 
     private void animateLoading() {
-        if(view != null) {
+        if (view != null) {
             view.animateLoading();
         }
     }
@@ -37,7 +33,6 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
         authRepository.activateAccount(new Callback<Void>() {
             @Override
             public void onResponse(Void response) {
-                userInfoRepository.setConfirmedTOS(true);
                 confirmedSucceed = true;
                 navigateToMarketplace();
             }
@@ -51,7 +46,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
     }
 
     private void stopLoading(boolean reset) {
-        if(view != null) {
+        if (view != null) {
             view.stopLoading(reset);
         }
     }
@@ -63,7 +58,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
     }
 
     private void navigateToMarketplace() {
-        if(animationEnded && confirmedSucceed) {
+        if (animationEnded && confirmedSucceed) {
             if (view != null) {
                 view.navigateToMarketPlace();
             }
