@@ -14,6 +14,7 @@
 	<dimen name="round_button_width">300dp</dimen>
 
 	<dimen name="margin_large">30dp</dimen>
+	<dimen name="margin_xlarge">60dp</dimen>
 
 
 	<!--Text size-->

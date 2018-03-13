@@ -13,6 +13,9 @@
 	<dimen name="round_button_height">45dp</dimen>
 	<dimen name="round_button_width">270dp</dimen>
 
+	<dimen name="margin_large">25dp</dimen>
+	<dimen name="margin_xlarge">55dp</dimen>
+
 	<!--Text size-->
 	<dimen name="welcome_text_size">27sp</dimen>
 	<dimen name="title_large_size">19sp</dimen>
