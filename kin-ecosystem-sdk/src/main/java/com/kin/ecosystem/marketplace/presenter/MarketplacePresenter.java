@@ -2,32 +2,37 @@ package com.kin.ecosystem.marketplace.presenter;
 
 
 import android.support.annotation.NonNull;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.BasePresenter;
-import com.kin.ecosystem.base.BaseRecyclerAdapter;
-import com.kin.ecosystem.data.offer.OfferRepository;
-import com.kin.ecosystem.data.order.OrderRepository;
+import com.kin.ecosystem.data.offer.OfferDataSource;
+import com.kin.ecosystem.data.order.OrderDataSource;
 import com.kin.ecosystem.marketplace.view.IMarketplaceView;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.Offer.OfferTypeEnum;
+import com.kin.ecosystem.network.model.OfferInfo;
 import com.kin.ecosystem.network.model.OfferList;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MarketplaceViewPresenter extends BasePresenter<IMarketplaceView> implements IMarketplaceViewPresenter {
+public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implements IMarketplacePresenter {
 
-    private final OfferRepository offerRepository;
-    private final OrderRepository orderRepository;
+    private final OfferDataSource offerRepository;
+    private final OrderDataSource orderRepository;
 
     private List<Offer> spendList;
     private List<Offer> earnList;
 
-    public MarketplaceViewPresenter(@NonNull final OfferRepository offerRepository,
-        @NonNull final OrderRepository orderRepository) {
+    private final Gson gson;
+
+    public MarketplacePresenter(@NonNull final OfferDataSource offerRepository,
+        @NonNull final OrderDataSource orderRepository) {
         this.spendList = new ArrayList<>();
         this.earnList = new ArrayList<>();
         this.offerRepository = offerRepository;
         this.orderRepository = orderRepository;
+        this.gson = new Gson();
     }
 
     private void splitOffersByType(List<Offer> list) {
@@ -87,9 +92,40 @@ public class MarketplaceViewPresenter extends BasePresenter<IMarketplaceView> im
 
     @Override
     public void onItemClicked(int position, OfferTypeEnum offerType) {
-        final Offer offer = offerType == OfferTypeEnum.SPEND ? spendList.get(position) : earnList.get(position);
+        final Offer offer;
+        if (offerType == OfferTypeEnum.EARN) {
+            offer = earnList.get(position);
+            if (this.view != null) {
+                this.view.showOfferActivity(offer.getContent(), offer.getId());
+            }
+        } else {
+            offer = spendList.get(position);
+            OfferInfo offerInfo = deserializeOfferInfo(offer.getContent());
+            if (offerInfo != null) {
+                showSpendDialog(offerInfo);
+            } else {
+                showToast("Oops something went wrong...");
+            }
+        }
+    }
+
+    private void showSpendDialog(@NonNull final OfferInfo offerInfo) {
         if (this.view != null) {
-            this.view.showOfferActivity(offer);
+            this.view.showSpendDialog(new SpendDialogPresenter(offerInfo));
+        }
+    }
+
+    private OfferInfo deserializeOfferInfo(final String content) {
+        try {
+            return gson.fromJson(content, OfferInfo.class);
+        } catch (JsonSyntaxException t) {
+            return null;
+        }
+    }
+
+    private void showToast(String msg) {
+        if (view != null) {
+            view.showToast(msg);
         }
     }
 }

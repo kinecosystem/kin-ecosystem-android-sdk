@@ -30,6 +30,10 @@
         <item name="android:ellipsize">end</item>
     </style>
 
+    <style name="KinecosysLargeTitleText" parent="KinecosysTextBase">
+        <item name="android:textSize">@dimen/title_large_size</item>
+    </style>
+
     <style name="KinecosysTitleText" parent="KinecosysTextBase">
         <item name="android:textSize">@dimen/title_size</item>
     </style>
@@ -50,4 +54,16 @@
         <item name="android:textSize">@dimen/small_title_size</item>
     </style>
 
+    <style name="FullScreenDialogStyle">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.7</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
+
+    <style name="BottomAnimationDialog">
+        <item name="android:windowEnterAnimation">@anim/slide_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_down</item>
+    </style>
 </resources>

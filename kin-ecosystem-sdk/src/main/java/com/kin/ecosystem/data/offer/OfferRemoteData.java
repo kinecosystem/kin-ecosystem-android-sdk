@@ -5,6 +5,7 @@ import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.network.ApiCallback;
 import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.api.OffersApi;
+import com.kin.ecosystem.network.model.OfferInfo;
 import com.kin.ecosystem.network.model.OfferList;
 import com.kin.ecosystem.util.ExecutorsUtil;
 import java.util.List;

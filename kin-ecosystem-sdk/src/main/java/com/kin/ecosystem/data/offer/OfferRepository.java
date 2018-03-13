@@ -5,22 +5,21 @@ import android.support.annotation.Nullable;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.network.model.OfferList;
-import com.kin.ecosystem.util.ExecutorsUtil;
 
 public class OfferRepository implements OfferDataSource {
 
     private static OfferRepository instance = null;
 
-    private final OfferRemoteData remoteData;
+    private final OfferDataSource remoteData;
 
     private OfferList cachedOfferList;
 
 
-    private OfferRepository(@NonNull OfferRemoteData remoteData) {
+    private OfferRepository(@NonNull OfferDataSource remoteData) {
         this.remoteData = remoteData;
     }
 
-    public static void init(@NonNull OfferRemoteData remoteData) {
+    public static void init(@NonNull OfferDataSource remoteData) {
         if (instance == null) {
             synchronized (OfferRepository.class) {
                 instance = new OfferRepository(remoteData);
