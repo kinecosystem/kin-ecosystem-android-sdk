@@ -3,6 +3,7 @@ package com.kin.ecosystem.marketplace.presenter;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.marketplace.view.ISpendDialog;
 import com.kin.ecosystem.network.model.OfferInfo;
+import com.kin.ecosystem.network.model.OfferInfo.Confirmation;
 
 public class SpendDialogPresenter extends BasePresenter<ISpendDialog> implements ISpendDialogPresenter {
 
@@ -17,8 +18,14 @@ public class SpendDialogPresenter extends BasePresenter<ISpendDialog> implements
     public void onAttach(ISpendDialog view) {
         super.onAttach(view);
         isDismissed = false;
+        loadInfo();
+    }
+
+    private void loadInfo() {
         if(view != null) {
-            view.loadInfo(offerInfo);
+            view.setupImage(offerInfo.getImage());
+            view.setupTitle(offerInfo.getTitle(), offerInfo.getAmount());
+            view.setupDescription(offerInfo.getDescription());
         }
     }
 
@@ -39,7 +46,8 @@ public class SpendDialogPresenter extends BasePresenter<ISpendDialog> implements
     @Override
     public void confirmClicked() {
         if(view != null) {
-            view.showThankYouLayout(offerInfo.getConfirmation());
+            Confirmation confirmation = offerInfo.getConfirmation();
+            view.showThankYouLayout(confirmation.getTitle(), confirmation.getDescription());
         }
     }
 }

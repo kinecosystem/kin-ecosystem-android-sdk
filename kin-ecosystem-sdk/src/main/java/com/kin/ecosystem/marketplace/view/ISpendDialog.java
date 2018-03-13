@@ -9,7 +9,11 @@ public interface ISpendDialog extends IBaseView<ISpendDialogPresenter> {
 
     void closeDialog();
 
-    void loadInfo(@NonNull final OfferInfo info);
+    void setupImage(String image);
 
-    void showThankYouLayout(@NonNull final OfferInfo.Confirmation confirmation);
+    void setupTitle(String titleText, int amount);
+
+    void setupDescription(String descriptionText);
+
+    void showThankYouLayout(@NonNull final String title, @NonNull final String description);
 }

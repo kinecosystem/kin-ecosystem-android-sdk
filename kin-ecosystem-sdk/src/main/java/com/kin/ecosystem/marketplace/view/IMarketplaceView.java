@@ -1,6 +1,7 @@
 package com.kin.ecosystem.marketplace.view;
 
 import com.kin.ecosystem.base.IBaseView;
+import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
 import com.kin.ecosystem.marketplace.presenter.MarketplacePresenter;
 import com.kin.ecosystem.network.model.OfferInfo;
 import com.kin.ecosystem.network.model.Offer;
@@ -14,9 +15,9 @@ public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
 
     void moveToTransactionHistory();
 
-    void showOfferActivity(Offer offer);
+    void showOfferActivity(String content , String offerID);
 
-    void showSpendDialog(OfferInfo offerInfo);
+    void showSpendDialog(ISpendDialogPresenter spendDialogPresenter);
 
     void showToast(String msg);
 }

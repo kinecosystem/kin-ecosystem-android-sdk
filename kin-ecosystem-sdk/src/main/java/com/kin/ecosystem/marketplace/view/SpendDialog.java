@@ -39,16 +39,19 @@ public class SpendDialog extends Dialog implements ISpendDialog, OnClickListener
     private ImageView brandImage;
 
 
+    private static final float WIDTH_RATIO = 0.422f;
+    private static final float HEIGHT_RATIO = 0.733f;
+
     private static final int NOT_INITIALIZED = -1;
     private static int imageWidth = NOT_INITIALIZED;
     private static int imageHeight = NOT_INITIALIZED;
     private static int colorBlue = NOT_INITIALIZED;
 
-    public SpendDialog(@NonNull Context context, OfferInfo offerInfo) {
+    public SpendDialog(@NonNull Context context, @NonNull ISpendDialogPresenter presenter) {
         super(context, R.style.FullScreenDialogStyle);
         setUpWindowLayout();
         updateSizes();
-        spendDialogPresenter = new SpendDialogPresenter(offerInfo);
+        spendDialogPresenter = presenter;
     }
 
     private void setUpWindowLayout() {
@@ -97,14 +100,7 @@ public class SpendDialog extends Dialog implements ISpendDialog, OnClickListener
         dismiss();
     }
 
-    @Override
-    public void loadInfo(@NonNull final OfferInfo info) {
-        setupImage(info.getImage());
-        setupTitle(info.getTitle(), info.getAmount());
-        setupDescription(info.getDescription());
-    }
-
-    private void setupImage(String image) {
+    public void setupImage(String image) {
         Picasso.with(getContext())
             .load(image)
             .placeholder(R.drawable.placeholder)
@@ -112,7 +108,7 @@ public class SpendDialog extends Dialog implements ISpendDialog, OnClickListener
             .into(brandImage);
     }
 
-    private void setupTitle(String titleText, int amount) {
+    public void setupTitle(String titleText, int amount) {
         if (colorBlue == NOT_INITIALIZED) {
             colorBlue = ContextCompat.getColor(getContext(), R.color.bluePrimary);
         }
@@ -126,26 +122,26 @@ public class SpendDialog extends Dialog implements ISpendDialog, OnClickListener
         title.setText(spannableTitleBuilder);
     }
 
-    private void setupDescription(String descriptionText) {
+    public void setupDescription(String descriptionText) {
         description.setText(descriptionText);
     }
 
     private void updateSizes() {
         if (imageWidth == -1) {
-            imageWidth = (int) (DeviceUtils.getScreenWidth() * 0.422f);
+            imageWidth = (int) (DeviceUtils.getScreenWidth() * WIDTH_RATIO);
         }
         if (imageHeight == -1) {
-            imageHeight = (int) (imageWidth * 0.733f);
+            imageHeight = (int) (imageWidth * HEIGHT_RATIO);
         }
     }
 
     @Override
-    public void showThankYouLayout(@NonNull final OfferInfo.Confirmation confirmation) {
-        title.setText(confirmation.getTitle());
-        description.setText(confirmation.getDescription());
-        confirmButton.setVisibility(View.INVISIBLE);
-        confirmationImage.setVisibility(View.VISIBLE);
-        closeButton.setVisibility(View.INVISIBLE);
+    public void showThankYouLayout(@NonNull final String title, @NonNull final String description) {
+        this.title.setText(title);
+        this.description.setText(description);
+        this.confirmButton.setVisibility(View.INVISIBLE);
+        this.confirmationImage.setVisibility(View.VISIBLE);
+        this.closeButton.setVisibility(View.INVISIBLE);
     }
 
     @Override

@@ -96,7 +96,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
         if (offerType == OfferTypeEnum.EARN) {
             offer = earnList.get(position);
             if (this.view != null) {
-                this.view.showOfferActivity(offer);
+                this.view.showOfferActivity(offer.getContent(), offer.getId());
             }
         } else {
             offer = spendList.get(position);
@@ -111,7 +111,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
     private void showSpendDialog(@NonNull final OfferInfo offerInfo) {
         if (this.view != null) {
-            this.view.showSpendDialog(offerInfo);
+            this.view.showSpendDialog(new SpendDialogPresenter(offerInfo));
         }
     }
 

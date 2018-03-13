@@ -19,8 +19,8 @@ import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.history.view.OrderHistoryActivity;
 import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter;
+import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
 import com.kin.ecosystem.marketplace.presenter.MarketplacePresenter;
-import com.kin.ecosystem.network.model.OfferInfo;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.Offer.OfferTypeEnum;
 import com.kin.ecosystem.poll.view.PollWebViewActivity;
@@ -206,13 +206,13 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     }
 
     @Override
-    public void showOfferActivity(Offer offer) {
-        navigateToActivity(PollWebViewActivity.createIntent(this, offer.getContent(), offer.getId()));
+    public void showOfferActivity(String content, String offerID) {
+        navigateToActivity(PollWebViewActivity.createIntent(this, content, offerID));
     }
 
     @Override
-    public void showSpendDialog(OfferInfo offerInfo) {
-        SpendDialog spendDialog = new SpendDialog(this, offerInfo);
+    public void showSpendDialog(ISpendDialogPresenter spendDialogPresenter) {
+        SpendDialog spendDialog = new SpendDialog(this, spendDialogPresenter);
         spendDialog.show();
     }
 
