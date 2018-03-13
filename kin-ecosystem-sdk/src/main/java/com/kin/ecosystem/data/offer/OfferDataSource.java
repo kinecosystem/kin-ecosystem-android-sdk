@@ -1,9 +1,10 @@
 package com.kin.ecosystem.data.offer;
 
 import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.network.model.OfferInfo;
 import com.kin.ecosystem.network.model.OfferList;
 
-interface OfferDataSource {
+public interface OfferDataSource {
 
     OfferList getCachedOfferList();
 

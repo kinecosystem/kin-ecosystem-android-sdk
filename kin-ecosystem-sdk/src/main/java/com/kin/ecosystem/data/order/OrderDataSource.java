@@ -7,7 +7,7 @@ import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.OrderList;
 
-interface OrderDataSource {
+public interface OrderDataSource {
 
     void getAllOrderHistory(@NonNull final Callback<OrderList> callback);
 

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/spend_dialog_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:animateLayoutChanges="true">
+
+    <ImageView
+        android:id="@+id/close_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/main_margin"
+        android:layout_marginRight="@dimen/main_margin"
+        android:src="@drawable/close_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <ImageView
+        android:id="@+id/brand_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/main_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/close_button"
+        tools:layout_height="110dp"
+        tools:layout_width="152dp"/>
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/KinecosysLargeTitleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/main_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/brand_image"
+        tools:text="Redeem code - 8,000 Kin"/>
+
+    <TextView
+        android:id="@+id/description"
+        style="@style/KinecosysSubTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="2"
+        android:layout_marginTop="@dimen/block_margin"
+        android:paddingLeft="@dimen/margin_large"
+        android:paddingRight="@dimen/margin_large"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        tools:text="Once you have confirmed this purchase,  you can go to your balance to get your code"/>
+
+
+    <Button
+        android:id="@+id/confirm_button"
+        android:layout_width="@dimen/round_button_width"
+        android:layout_height="@dimen/round_button_height"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="@dimen/margin_large"
+        android:background="@drawable/button_blue_rounded"
+        android:gravity="center"
+        android:text="@string/confirm"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title"/>
+
+    <ImageView
+        android:id="@+id/confirmation_image"
+        android:layout_width="@dimen/round_button_height"
+        android:layout_height="@dimen/round_button_height"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="@dimen/margin_large"
+        android:src="@drawable/v_mark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title"/>
+
+
+</android.support.constraint.ConstraintLayout>

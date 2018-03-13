@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
@@ -17,8 +18,9 @@ import com.kin.ecosystem.base.BaseToolbarActivity;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.history.view.OrderHistoryActivity;
-import com.kin.ecosystem.marketplace.presenter.IMarketplaceViewPresenter;
-import com.kin.ecosystem.marketplace.presenter.MarketplaceViewPresenter;
+import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter;
+import com.kin.ecosystem.marketplace.presenter.MarketplacePresenter;
+import com.kin.ecosystem.network.model.OfferInfo;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.Offer.OfferTypeEnum;
 import com.kin.ecosystem.poll.view.PollWebViewActivity;
@@ -34,7 +36,7 @@ import kin.core.WatcherListener;
 
 public class MarketplaceActivity extends BaseToolbarActivity implements IMarketplaceView {
 
-    private IMarketplaceViewPresenter marketplacePresenter;
+    private IMarketplacePresenter marketplacePresenter;
 
     private SpendRecyclerAdapter spendRecyclerAdapter;
     private EarnRecyclerAdapter earnRecyclerAdapter;
@@ -72,7 +74,7 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        attachPresenter(new MarketplaceViewPresenter(OfferRepository.getInstance(), OrderRepository.getInstance()));
+        attachPresenter(new MarketplacePresenter(OfferRepository.getInstance(), OrderRepository.getInstance()));
 
         /** Will be changed **/
         kinClient = Kin.getKinClient();
@@ -119,7 +121,7 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     }
 
     @Override
-    public void attachPresenter(MarketplaceViewPresenter presenter) {
+    public void attachPresenter(MarketplacePresenter presenter) {
         marketplacePresenter = presenter;
         marketplacePresenter.onAttach(this);
     }
@@ -206,6 +208,17 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     @Override
     public void showOfferActivity(Offer offer) {
         navigateToActivity(PollWebViewActivity.createIntent(this, offer.getContent(), offer.getId()));
+    }
+
+    @Override
+    public void showSpendDialog(OfferInfo offerInfo) {
+        SpendDialog spendDialog = new SpendDialog(this, offerInfo);
+        spendDialog.show();
+    }
+
+    @Override
+    public void showToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     @Override

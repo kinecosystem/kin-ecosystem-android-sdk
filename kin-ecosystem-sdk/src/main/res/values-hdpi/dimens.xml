@@ -15,6 +15,7 @@
 
 	<!--Text size-->
 	<dimen name="welcome_text_size">25sp</dimen>
+	<dimen name="title_large_size">17sp</dimen>
 	<dimen name="title_size">13sp</dimen>
 	<dimen name="sub_title_size">11sp</dimen>
 	<dimen name="small_title_size">9sp</dimen>
