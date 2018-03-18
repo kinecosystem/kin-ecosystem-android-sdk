@@ -30,7 +30,7 @@ public class SpendDialogPresenter extends BasePresenter<ISpendDialog> implements
     private OpenOrder openOrder;
     private boolean isDismissed;
 
-    private static final int CLOSE_DELAY = 300;
+    private static final int CLOSE_DELAY = 2000;
 
     public SpendDialogPresenter(OfferInfo offerInfo, Offer offer, BlockchainSource blockchainSource,
         OrderDataSource orderRepository) {
@@ -95,7 +95,8 @@ public class SpendDialogPresenter extends BasePresenter<ISpendDialog> implements
 
             if (openOrder != null) {
                 final String addressee = offer.getBlockchainData().getRecipientAddress();
-                final BigDecimal amount = new BigDecimal(offer.getAmount());
+//                final BigDecimal amount = new BigDecimal(offer.getAmount());
+                final BigDecimal amount = new BigDecimal(1);
                 final String orderID = openOrder.getId();
 
                 sendTransaction(addressee, amount, orderID);
