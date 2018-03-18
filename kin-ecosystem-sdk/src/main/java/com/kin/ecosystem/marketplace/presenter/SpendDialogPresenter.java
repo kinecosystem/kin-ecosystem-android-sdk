@@ -95,8 +95,7 @@ public class SpendDialogPresenter extends BasePresenter<ISpendDialog> implements
 
             if (openOrder != null) {
                 final String addressee = offer.getBlockchainData().getRecipientAddress();
-//                final BigDecimal amount = new BigDecimal(offer.getAmount());
-                final BigDecimal amount = new BigDecimal(1);
+                final BigDecimal amount = new BigDecimal(offer.getAmount());
                 final String orderID = openOrder.getId();
 
                 sendTransaction(addressee, amount, orderID);
