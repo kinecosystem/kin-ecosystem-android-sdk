@@ -90,13 +90,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
     private Coupon deserializeCoupon(Order order) {
         try {
             CouponInfo couponInfo = gson.fromJson(order.getContent(), CouponInfo.class);
-
-            // Going to change server isn't populate it right
-            LinkedTreeMap<String, String> couponCode = (LinkedTreeMap) order.getResult();
-
-            return new Coupon(couponInfo, new CouponCode(couponCode.get("coupon_code")));
+            CouponCode couponCode = gson.fromJson(order.getResult().toString(), CouponCode.class);
+            return new Coupon(couponInfo, couponCode);
         } catch (Exception t) {
-            Log.e("Marketplace", "deserializeCoupon: " + t.getMessage() );
             return null;
         }
     }

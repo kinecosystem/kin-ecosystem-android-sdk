@@ -61,8 +61,8 @@ import okio.Okio;
 
 public class ApiClient {
 
-    private String basePath = "http://api.kinmarketplace.com/v1";
-//    private String basePath = "http://10.0.2.2:3000/v1";
+//    private String basePath = "http://api.kinmarketplace.com/v1";
+    private String basePath = "http://10.0.2.2:3000/v1";
 
     private boolean debugging = false;
     private Map<String, String> defaultHeaderMap = new HashMap<>();
