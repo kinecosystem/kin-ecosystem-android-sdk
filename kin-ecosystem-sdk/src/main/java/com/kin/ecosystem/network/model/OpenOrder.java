@@ -10,6 +10,10 @@ package com.kin.ecosystem.network.model;/*
  * Do not edit the class manually.
  */
 
+
+
+import static com.kin.ecosystem.util.StringUtil.toIndentedString;
+
 import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
@@ -17,13 +21,10 @@ import java.util.Objects;
  * an open order that hasn&#x27;t been submitted yet
  */
 public class OpenOrder {
-
     @SerializedName("id")
     private String id = null;
     @SerializedName("expiration_date")
     private String expirationDate = null;
-    @SerializedName("blockchain_data")
-    private BlockchainData blockchainData = null;
 
     public OpenOrder id(String id) {
         this.id = id;
@@ -33,13 +34,11 @@ public class OpenOrder {
 
     /**
      * Get id
-     *
      * @return id
      **/
     public String getId() {
         return id;
     }
-
     public void setId(String id) {
         this.id = id;
     }
@@ -52,34 +51,13 @@ public class OpenOrder {
 
     /**
      * Get expirationDate
-     *
      * @return expirationDate
      **/
     public String getExpirationDate() {
         return expirationDate;
     }
-
     public void setExpirationDate(String expirationDate) {
         this.expirationDate = expirationDate;
-    }
-
-    public OpenOrder blockchainData(BlockchainData blockchainData) {
-        this.blockchainData = blockchainData;
-        return this;
-    }
-
-
-    /**
-     * Get blockchainData
-     *
-     * @return blockchainData
-     **/
-    public BlockchainData getBlockchainData() {
-        return blockchainData;
-    }
-
-    public void setBlockchainData(BlockchainData blockchainData) {
-        this.blockchainData = blockchainData;
     }
 
     @Override
@@ -92,13 +70,23 @@ public class OpenOrder {
         }
         OpenOrder openOrder = (OpenOrder) o;
         return Objects.equals(this.id, openOrder.id) &&
-            Objects.equals(this.expirationDate, openOrder.expirationDate) &&
-            Objects.equals(this.blockchainData, openOrder.blockchainData);
+            Objects.equals(this.expirationDate, openOrder.expirationDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, expirationDate, blockchainData);
+        return Objects.hash(id, expirationDate);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("class OpenOrder {\n");
+
+        sb.append("    id: ").append(toIndentedString(id)).append("\n");
+        sb.append("    expirationDate: ").append(toIndentedString(expirationDate)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
 }
 

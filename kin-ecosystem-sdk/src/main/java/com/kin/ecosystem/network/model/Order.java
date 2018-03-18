@@ -13,6 +13,8 @@
 
 package com.kin.ecosystem.network.model;
 
+import static com.kin.ecosystem.util.StringUtil.toIndentedString;
+
 import java.util.Objects;
 
 import com.google.gson.TypeAdapter;
@@ -29,6 +31,9 @@ import java.io.IOException;
 public class Order {
     @SerializedName("result")
     private Object result = null;
+
+    @SerializedName("content")
+    private String content;
 
     /**
      * Gets or Sets status
@@ -335,6 +340,10 @@ public class Order {
         this.amount = amount;
     }
 
+    public String getContent() {
+        return content;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -350,6 +359,25 @@ public class Order {
     @Override
     public int hashCode() {
         return Objects.hash(result, status, orderId, completionDate, blockchainData, offerType, title, description, callToAction, amount);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("class Order {\n");
+
+        sb.append("    id: ").append(toIndentedString(orderId)).append("\n");
+        sb.append("    result: ").append(toIndentedString(result)).append("\n");
+        sb.append("    status: ").append(toIndentedString(status)).append("\n");
+        sb.append("    completionDate: ").append(toIndentedString(completionDate)).append("\n");
+        sb.append("    blockchainData: ").append(toIndentedString(blockchainData)).append("\n");
+        sb.append("    offerType: ").append(toIndentedString(offerType)).append("\n");
+        sb.append("    title: ").append(toIndentedString(title)).append("\n");
+        sb.append("    description: ").append(toIndentedString(description)).append("\n");
+        sb.append("    callToAction: ").append(toIndentedString(callToAction)).append("\n");
+        sb.append("    amount: ").append(toIndentedString(amount)).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
 }
 

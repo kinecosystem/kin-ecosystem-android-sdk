@@ -10,11 +10,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.base.BaseToolbarActivity;
+import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.history.view.OrderHistoryActivity;
@@ -26,12 +27,6 @@ import com.kin.ecosystem.network.model.Offer.OfferTypeEnum;
 import com.kin.ecosystem.poll.view.PollWebViewActivity;
 import com.kin.ecosystem.util.StringUtil;
 import java.util.List;
-import kin.core.Balance;
-import kin.core.KinClient;
-import kin.core.PaymentInfo;
-import kin.core.PaymentWatcher;
-import kin.core.ResultCallback;
-import kin.core.WatcherListener;
 
 
 public class MarketplaceActivity extends BaseToolbarActivity implements IMarketplaceView {
@@ -42,9 +37,7 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     private EarnRecyclerAdapter earnRecyclerAdapter;
 
     private TextView balanceText;
-    private KinClient kinClient;
-    private PaymentWatcher paymentWatcher;
-    private int balance;
+    private Observer<Integer> balanceObserver;
 
     @Override
     protected int getLayoutRes() {
@@ -75,43 +68,24 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         attachPresenter(new MarketplacePresenter(OfferRepository.getInstance(), OrderRepository.getInstance()));
-
         /** Will be changed **/
-        kinClient = Kin.getKinClient();
-        kinClient.getAccount(0).getBalance().run(new ResultCallback<Balance>() {
+        balanceObserver = new Observer<Integer>() {
             @Override
-            public void onResult(Balance result) {
-                balance = Integer.parseInt(result.value(0));
-                String balanceString = StringUtil.getAmountFormatted(balance);
-                balanceText.setText(balanceString);
+            public void onChanged(Integer value) {
+                updateBalance(value);
             }
-
-            @Override
-            public void onError(Exception e) {
-
-            }
-        });
-        paymentWatcher = kinClient.getAccount(0).createPaymentWatcher();
-        paymentWatcher.start(new WatcherListener<PaymentInfo>() {
-            @Override
-            public void onEvent(PaymentInfo data) {
-                if (data != null) {
-                    updateBalance(data);
-                }
-            }
-        });
+        };
+        BlockchainSource.getInstance().addBalanceObserver(balanceObserver);
     }
 
     /**
      * Will be changed
      **/
-    private void updateBalance(final PaymentInfo data) {
+    private void updateBalance(final int balance) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (balanceText != null) {
-                    float amount = data.amount().floatValue();
-                    balance += amount;
                     System.out.println("BALANCE >>>> " + balance);
                     String balanceString = StringUtil.getAmountFormatted(balance);
                     balanceText.setText(balanceString);
@@ -225,6 +199,6 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     protected void onDestroy() {
         super.onDestroy();
         marketplacePresenter.onDetach();
-        paymentWatcher.stop();
+        BlockchainSource.getInstance().removeBalanceObserver(balanceObserver);
     }
 }

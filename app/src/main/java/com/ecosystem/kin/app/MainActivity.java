@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     Kin.launchMarketplace(MainActivity.this);
+                    System.out.println("Public address : " + Kin.getPublicAddress());
                 } catch (TaskFailedException e) {
                     e.printStackTrace();
                 }

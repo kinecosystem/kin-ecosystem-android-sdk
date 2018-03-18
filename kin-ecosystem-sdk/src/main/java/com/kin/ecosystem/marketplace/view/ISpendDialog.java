@@ -16,4 +16,6 @@ public interface ISpendDialog extends IBaseView<ISpendDialogPresenter> {
     void setupDescription(String descriptionText);
 
     void showThankYouLayout(@NonNull final String title, @NonNull final String description);
+
+    void showToast(String msg);
 }

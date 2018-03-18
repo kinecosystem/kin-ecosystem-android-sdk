@@ -11,7 +11,7 @@ import com.kin.ecosystem.util.ExecutorsUtil;
 import java.util.List;
 import java.util.Map;
 
-public class OfferRemoteData implements OfferDataSource {
+public class OfferRemoteData implements OfferDataSource.Remote {
 
     private static volatile OfferRemoteData instance;
 
@@ -30,11 +30,6 @@ public class OfferRemoteData implements OfferDataSource {
             }
         }
         return instance;
-    }
-
-    @Override
-    public OfferList getCachedOfferList() {
-        return null;
     }
 
     @Override
