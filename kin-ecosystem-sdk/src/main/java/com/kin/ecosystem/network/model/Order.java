@@ -87,6 +87,8 @@ public class Order {
     private StatusEnum status = null;
     @SerializedName("id")
     private String orderId = null;
+    @SerializedName("offer_id")
+    private String offerId = null;
     @SerializedName("completion_date")
     private String completionDate = null;
     @SerializedName("blockchain_data")
@@ -205,6 +207,10 @@ public class Order {
 
     public void setOrderId(String orderId) {
         this.orderId = orderId;
+    }
+
+    public String getOfferId() {
+        return offerId;
     }
 
     public Order completionDate(String completionDate) {
@@ -367,6 +373,7 @@ public class Order {
         sb.append("class Order {\n");
 
         sb.append("    id: ").append(toIndentedString(orderId)).append("\n");
+        sb.append("    offerId: ").append(toIndentedString(offerId)).append("\n");
         sb.append("    result: ").append(toIndentedString(result)).append("\n");
         sb.append("    status: ").append(toIndentedString(status)).append("\n");
         sb.append("    completionDate: ").append(toIndentedString(completionDate)).append("\n");

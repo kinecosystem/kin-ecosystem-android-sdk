@@ -2,6 +2,7 @@ package com.kin.ecosystem.data.order;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
@@ -13,8 +14,11 @@ import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.OrderList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrderRepository implements OrderDataSource {
+
+    private static final String TAG = OrderRepository.class.getSimpleName();
 
     private static OrderRepository instance = null;
     private final OrderDataSource.Remote remoteData;
@@ -25,38 +29,15 @@ public class OrderRepository implements OrderDataSource {
     private OrderList cachedOrderList;
     private ObservableData<OpenOrder> cachedOpenOrder = ObservableData.create();
     private ObservableData<Order> completedOrder = ObservableData.create();
+    private Observer<Payment> paymentObserver;
+
+    private static volatile AtomicInteger pendingOrdersCount = new AtomicInteger(0);
 
     private OrderRepository(@NonNull final IBlockchainSource blockchainSource,
         @NonNull final OfferDataSource offerRepository, @NonNull final OrderDataSource.Remote remoteData) {
         this.remoteData = remoteData;
         this.offerRepository = offerRepository;
         this.blockchainSource = blockchainSource;
-        listenForCompletedPayment();
-    }
-
-    private void listenForCompletedPayment() {
-        blockchainSource.addPaymentObservable(new Observer<Payment>() {
-            @Override
-            public void onChanged(Payment value) {
-                //TODO check failed/succeed
-                getOrder(value.getOrderID());
-            }
-        });
-    }
-
-    private void getOrder(String orderID) {
-        //TODO handle polling server, error
-        remoteData.getOrder(orderID, new Callback<Order>() {
-            @Override
-            public void onResponse(Order order) {
-                setCompletedOrder(order);
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-
-            }
-        });
     }
 
     public static void init(@NonNull final IBlockchainSource blockchainSource,
@@ -119,6 +100,7 @@ public class OrderRepository implements OrderDataSource {
     @Override
     public void submitOrder(@NonNull final String offerID, @Nullable String content, @NonNull final String orderID,
         @Nullable final Callback<Order> callback) {
+        listenForCompletedPayment();
         offerRepository.setPendingOffer(offerID);
         remoteData.submitOrder(content, orderID, new Callback<Order>() {
             @Override
@@ -137,16 +119,66 @@ public class OrderRepository implements OrderDataSource {
         });
     }
 
-    private void setCompletedOrder(Order order) {
-        completedOrder.postValue(order);
-        if (cachedOpenOrder.getValue().getId().equals(order.getOrderId())) {
-            cachedOpenOrder.postValue(null);
+    private void listenForCompletedPayment() {
+        if (pendingOrdersCount.getAndIncrement() == 0) {
+            paymentObserver = new Observer<Payment>() {
+                @Override
+                public void onChanged(Payment value) {
+                    getOrder(value.getOrderID());
+                    decrementPendingOrdersCount();
+                }
+            };
+            blockchainSource.addPaymentObservable(paymentObserver);
+            Log.d(TAG, "listenForCompletedPayment: addPaymentObservable");
         }
+    }
+
+    private void getOrder(String orderID) {
+        //TODO handle polling server, error
+        remoteData.getOrder(orderID, new Callback<Order>() {
+            @Override
+            public void onResponse(Order order) {
+                setCompletedOrder(order);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
+            }
+        });
+    }
+
+    private void decrementPendingOrdersCount() {
+        if (hasMorePendingOffers()) {
+            pendingOrdersCount.decrementAndGet();
+        }
+        if (!hasMorePendingOffers()) {
+            blockchainSource.removePaymentObserver(paymentObserver);
+            Log.d(TAG, "decrementPendingOrdersCount: removePaymentObserver");
+        }
+    }
+
+    private void setCompletedOrder(Order order) {
+        Log.i(TAG, "setCompletedOrder: " + order);
+        completedOrder.postValue(order);
+        if (!hasMorePendingOffers()) {
+            if (cachedOpenOrder.getValue().getId().equals(order.getOrderId())) {
+                cachedOpenOrder.postValue(null);
+            }
+            if (offerRepository.getPendingOfferID().getValue().equals(order.getOfferId())) {
+                offerRepository.setPendingOffer(null);
+            }
+        }
+    }
+
+    private boolean hasMorePendingOffers() {
+        return pendingOrdersCount.get() > 0;
     }
 
     @Override
     public void cancelOrder(@NonNull final String offerID, @NonNull final String orderID,
         @Nullable final Callback<Void> callback) {
+        decrementPendingOrdersCount();
         remoteData.cancelOrder(orderID, new Callback<Void>() {
             @Override
             public void onResponse(Void response) {

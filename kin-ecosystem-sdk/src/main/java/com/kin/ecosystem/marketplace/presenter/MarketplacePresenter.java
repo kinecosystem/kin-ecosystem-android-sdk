@@ -101,7 +101,11 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
         pendingOfferObserver = new Observer<String>() {
             @Override
             public void onChanged(String value) {
-                showToast("New pending offer: " + value);
+                if (value != null) {
+                    showToast("New pending offer: " + value);
+                } else {
+                    showToast("No more pending offers");
+                }
             }
         };
         offerRepository.getPendingOfferID().addObserver(pendingOfferObserver);

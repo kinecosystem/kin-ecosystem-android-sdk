@@ -98,8 +98,8 @@ public class SpendDialogPresenter extends BasePresenter<ISpendDialog> implements
                 final BigDecimal amount = new BigDecimal(offer.getAmount());
                 final String orderID = openOrder.getId();
 
-                sendTransaction(addressee, amount, orderID);
                 submitOrder(offer.getId(), orderID);
+                sendTransaction(addressee, amount, orderID);
             }
 
             Confirmation confirmation = offerInfo.getConfirmation();

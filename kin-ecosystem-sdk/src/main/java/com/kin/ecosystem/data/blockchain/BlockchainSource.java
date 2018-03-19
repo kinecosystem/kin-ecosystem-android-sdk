@@ -11,6 +11,7 @@ import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.util.ExecutorsUtil.MainThreadExecutor;
 import java.math.BigDecimal;
+import java.util.concurrent.atomic.AtomicInteger;
 import kin.core.Balance;
 import kin.core.KinAccount;
 import kin.core.KinClient;
@@ -35,56 +36,28 @@ public class BlockchainSource implements IBlockchainSource {
      * the blockchain, it could failed or succeed.
      */
     private ObservableData<Payment> completedPayment = ObservableData.create();
+    private static volatile AtomicInteger paymentObserversCount = new AtomicInteger(0);
 
+    private PaymentWatcher paymentWatcher;
     private final MainThreadExecutor mainThread = new MainThreadExecutor();
 
     private String appID;
-    private static final int VERSION = 1;
+    private static final int MEMO_FORMAT_VERSION = 1;
     private static final String PASSPHRASE = "";
-    private static final String MEMO_FORMAT = "%d-%s-%s"; // version-appID-orderID
+    private static final String MEMO_DELIMITER = "-";
+    private static final String MEMO_FORMAT =
+        "%d" + MEMO_DELIMITER + "%s" + MEMO_DELIMITER + "%s"; // version-appID-orderID
+
+    private static final int APP_ID_INDEX = 1;
+    private static final int ORDER_ID_INDEX = 2;
+    private static final int MEMO_SPLIT_LENGTH = 3;
 
     private BlockchainSource(@NonNull final Context context, @NonNull final String appID)
         throws InitializeException {
         this.kinClient = new KinClient(context, StellarNetwork.NETWORK_TEST.getProvider());
         this.appID = appID;
         createKinAccountIfNeeded();
-        listenForBalanceUpdates();
         getCurrentBalance();
-    }
-
-    private void createKinAccountIfNeeded() throws InitializeException {
-        account = kinClient.getAccount(0);
-        if (account == null) {
-            try {
-                account = kinClient.addAccount(""); // blockchain-sdk should generate and take care of that passphrase.
-            } catch (CreateAccountException e) {
-                throw new InitializeException(e.getMessage());
-            }
-        }
-    }
-
-    private void listenForBalanceUpdates() {
-        PaymentWatcher paymentWatcher = account.createPaymentWatcher();
-        paymentWatcher.start(new WatcherListener<PaymentInfo>() {
-            @Override
-            public void onEvent(PaymentInfo data) {
-                updateBalance(data);
-            }
-        });
-    }
-
-    private void updateBalance(PaymentInfo data) {
-        int balanceAmount = balance.getValue();
-        if (data.sourcePublicKey().equals(account.getPublicAddress())) {
-            int spendAmount = data.amount().intValue();
-            balanceAmount -= spendAmount;
-            Log.i(TAG, "updateBalance: Spend " + spendAmount);
-        } else {
-            int earnAmount = data.amount().intValue();
-            balanceAmount += earnAmount;
-            Log.i(TAG, "updateBalance: Earn " + earnAmount);
-        }
-        balance.setValue(balanceAmount);
     }
 
     public static void init(@NonNull final Context context, @NonNull final String appID) throws InitializeException {
@@ -99,6 +72,17 @@ public class BlockchainSource implements IBlockchainSource {
         return instance;
     }
 
+    private void createKinAccountIfNeeded() throws InitializeException {
+        account = kinClient.getAccount(0);
+        if (account == null) {
+            try {
+                account = kinClient.addAccount(""); // blockchain-sdk should generate and take care of that passphrase.
+            } catch (CreateAccountException e) {
+                throw new InitializeException(e.getMessage());
+            }
+        }
+    }
+
     @Override
     public void sendTransaction(@NonNull String publicAddress, @NonNull BigDecimal amount,
         @NonNull final String orderID) {
@@ -106,21 +90,20 @@ public class BlockchainSource implements IBlockchainSource {
             new ResultCallback<TransactionId>() {
                 @Override
                 public void onResult(TransactionId result) {
-                    completedPayment.setValue(new Payment(orderID, result.id()));
-                    Log.i(TAG, "onResult: " + result.id());
+                    Log.i(TAG, "sendTransaction onResult: " + result.id());
                 }
 
                 @Override
                 public void onError(Exception e) {
                     completedPayment.setValue(new Payment(orderID, false, e.getMessage()));
-                    Log.i(TAG, "onError: " + e.getMessage());
+                    Log.i(TAG, "sendTransaction onError: " + e.getMessage());
                 }
             });
     }
 
     @SuppressLint("DefaultLocale")
     private String generateMemo(@NonNull final String orderID) {
-        return String.format(MEMO_FORMAT, VERSION, appID, orderID);
+        return String.format(MEMO_FORMAT, MEMO_FORMAT_VERSION, appID, orderID);
     }
 
 
@@ -203,10 +186,61 @@ public class BlockchainSource implements IBlockchainSource {
     @Override
     public void addPaymentObservable(Observer<Payment> observer) {
         completedPayment.addObserver(observer);
+        if (paymentObserversCount.getAndIncrement() == 0) {
+            startPaymentWatcher();
+        }
     }
 
     @Override
     public void removePaymentObserver(Observer<Payment> observer) {
         completedPayment.removeObserver(observer);
+        if (paymentObserversCount.decrementAndGet() == 0) {
+            stopPaymentWatcher();
+        }
+    }
+
+    private void startPaymentWatcher() {
+        paymentWatcher = account.createPaymentWatcher();
+        paymentWatcher.start(new WatcherListener<PaymentInfo>() {
+            @Override
+            public void onEvent(PaymentInfo data) {
+                String orderID = extractOrderId(data.memo());
+                if (orderID != null) {
+                    completedPayment.setValue(new Payment(orderID, data.hash().id()));
+                    Log.i(TAG, "completedPayment order id: " + orderID);
+                }
+                updateBalance(data);
+            }
+        });
+    }
+
+    private void stopPaymentWatcher() {
+        if (paymentWatcher != null) {
+            paymentWatcher.stop();
+            paymentWatcher = null;
+        }
+    }
+
+    private String extractOrderId(String memo) {
+        String[] memoParts = memo.split(MEMO_DELIMITER);
+        String orderID = null;
+        if (memoParts.length == MEMO_SPLIT_LENGTH && memoParts[APP_ID_INDEX].equals(appID)) {
+            orderID = memoParts[ORDER_ID_INDEX];
+        }
+        return orderID;
+    }
+
+    private void updateBalance(PaymentInfo data) {
+        int balanceAmount = balance.getValue();
+        if (data.sourcePublicKey().equals(account.getPublicAddress())) {
+            int spendAmount = data.amount().intValue();
+            balanceAmount -= spendAmount;
+            Log.i(TAG, "updateBalance: Spend " + spendAmount);
+        } else {
+            int earnAmount = data.amount().intValue();
+            balanceAmount += earnAmount;
+            Log.i(TAG, "updateBalance: Earn " + earnAmount);
+        }
+        balance.setValue(balanceAmount);
     }
 }
