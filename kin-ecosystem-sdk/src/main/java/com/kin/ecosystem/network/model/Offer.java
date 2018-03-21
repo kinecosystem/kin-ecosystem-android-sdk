@@ -1,6 +1,4 @@
-package com.kin.ecosystem.network.model;
-
-/*
+package com.kin.ecosystem.network.model;/*
  * Kin Ecosystem
  * Apis for client to server interaction
  *
@@ -137,6 +135,8 @@ public class Offer {
     private ContentTypeEnum contentType = null;
     @SerializedName("content")
     private String content = null;
+    @SerializedName("blockchain_data")
+    private BlockchainData blockchainData = null;
 
     public Offer id(String id) {
         this.id = id;
@@ -264,7 +264,7 @@ public class Offer {
 
 
     /**
-     * The coupon description or the poll payload
+     * The coupon description or the poll payload - as serialized json
      * @return content
      **/
     public String getContent() {
@@ -272,6 +272,23 @@ public class Offer {
     }
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Offer blockchainData(BlockchainData blockchainData) {
+        this.blockchainData = blockchainData;
+        return this;
+    }
+
+
+    /**
+     * Get blockchainData
+     * @return blockchainData
+     **/
+    public BlockchainData getBlockchainData() {
+        return blockchainData;
+    }
+    public void setBlockchainData(BlockchainData blockchainData) {
+        this.blockchainData = blockchainData;
     }
 
     @Override
@@ -290,13 +307,43 @@ public class Offer {
             Objects.equals(this.amount, offer.amount) &&
             Objects.equals(this.offerType, offer.offerType) &&
             Objects.equals(this.contentType, offer.contentType) &&
-            Objects.equals(this.content, offer.content);
+            Objects.equals(this.content, offer.content) &&
+            Objects.equals(this.blockchainData, offer.blockchainData);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, description, image, amount, offerType, contentType, content);
+        return Objects.hash(id, title, description, image, amount, offerType, contentType, content, blockchainData);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("class Offer {\n");
+
+        sb.append("    id: ").append(toIndentedString(id)).append("\n");
+        sb.append("    title: ").append(toIndentedString(title)).append("\n");
+        sb.append("    description: ").append(toIndentedString(description)).append("\n");
+        sb.append("    image: ").append(toIndentedString(image)).append("\n");
+        sb.append("    amount: ").append(toIndentedString(amount)).append("\n");
+        sb.append("    offerType: ").append(toIndentedString(offerType)).append("\n");
+        sb.append("    contentType: ").append(toIndentedString(contentType)).append("\n");
+        sb.append("    content: ").append(toIndentedString(content)).append("\n");
+        sb.append("    blockchainData: ").append(toIndentedString(blockchainData)).append("\n");
+        sb.append("}");
+        return sb.toString();
+    }
+
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(java.lang.Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
+
+
 }
-
-

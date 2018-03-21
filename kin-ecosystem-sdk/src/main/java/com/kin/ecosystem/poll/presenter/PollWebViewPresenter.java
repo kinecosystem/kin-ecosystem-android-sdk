@@ -8,10 +8,9 @@ import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.poll.view.IPollWebView;
-import com.kin.ecosystem.web.EcosystemWebPageListener;
 
 
-public class PollWebViewPresenter extends BasePresenter<IPollWebView>  implements IPollWebViewPresenter {
+public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements IPollWebViewPresenter {
 
     private final OrderRepository orderRepository;
 
@@ -76,7 +75,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView>  implement
     @Override
     public void onPageCancel() {
         if (openOrder != null && !isOrderSubmitted) {
-            orderRepository.cancelOrder(openOrder.getId(), null);
+            orderRepository.cancelOrder(offerID, openOrder.getId(), null);
         }
         closeView();
     }
@@ -85,7 +84,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView>  implement
     public void onPageResult(String result) {
         if (openOrder != null) {
             isOrderSubmitted = true;
-            orderRepository.submitOrder(result, openOrder.getId(), new Callback<Order>() {
+            orderRepository.submitOrder(offerID, result, openOrder.getId(), new Callback<Order>() {
                 @Override
                 public void onResponse(Order response) {
 

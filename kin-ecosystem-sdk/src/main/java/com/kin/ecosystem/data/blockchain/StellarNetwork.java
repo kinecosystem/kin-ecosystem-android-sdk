@@ -1,4 +1,4 @@
-package com.kin.ecosystem;
+package com.kin.ecosystem.data.blockchain;
 
 
 import kin.core.ServiceProvider;

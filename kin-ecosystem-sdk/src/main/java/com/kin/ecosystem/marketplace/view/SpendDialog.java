@@ -5,6 +5,8 @@ import static com.kin.ecosystem.util.StringUtil.getAmountFormatted;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.Spannable;
@@ -19,10 +21,9 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
-import com.kin.ecosystem.marketplace.presenter.SpendDialogPresenter;
-import com.kin.ecosystem.network.model.OfferInfo;
 import com.kin.ecosystem.util.DeviceUtils;
 import com.squareup.picasso.Picasso;
 
@@ -38,6 +39,7 @@ public class SpendDialog extends Dialog implements ISpendDialog, OnClickListener
     private ImageView closeButton;
     private ImageView brandImage;
 
+    private Handler mainHandler = new Handler(Looper.getMainLooper());
 
     private static final float WIDTH_RATIO = 0.422f;
     private static final float HEIGHT_RATIO = 0.733f;
@@ -142,6 +144,16 @@ public class SpendDialog extends Dialog implements ISpendDialog, OnClickListener
         this.confirmButton.setVisibility(View.INVISIBLE);
         this.confirmationImage.setVisibility(View.VISIBLE);
         this.closeButton.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void showToast(final String msg) {
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

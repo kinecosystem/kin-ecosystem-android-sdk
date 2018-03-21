@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import com.kin.ecosystem.data.auth.AuthLocalData;
 import com.kin.ecosystem.data.auth.AuthRemoteData;
 import com.kin.ecosystem.data.auth.AuthRepository;
+import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.offer.OfferRemoteData;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderRemoteData;
@@ -20,18 +21,11 @@ import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.splash.view.SplashViewActivity;
 import com.kin.ecosystem.util.DeviceUtils;
 import com.kin.ecosystem.util.ExecutorsUtil;
-import kin.core.Balance;
-import kin.core.KinAccount;
-import kin.core.KinClient;
-import kin.core.ResultCallback;
-import kin.core.exception.AccountNotActivatedException;
-import kin.core.exception.CreateAccountException;
 
 
 public class Kin {
 
     private static Kin instance;
-    private KinClient kinClient;
 
     private final ExecutorsUtil executorsUtil;
 
@@ -54,11 +48,14 @@ public class Kin {
         instance = getInstance();
         appContext = appContext.getApplicationContext(); // use application context to avoid leaks.
         DeviceUtils.init(appContext);
-        instance.kinClient = new KinClient(appContext, StellarNetwork.NETWORK_TEST.getProvider());
-        createKinAccountInNeeded();
+        initBlockchain(appContext, signInData.getAppId());
         registerAccount(appContext, signInData);
-        initOrderRepository();
         initOfferRepository();
+        initOrderRepository();
+    }
+
+    private static void initBlockchain(Context context, String appID) throws InitializeException {
+        BlockchainSource.init(context, appID);
     }
 
     private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
@@ -96,24 +93,10 @@ public class Kin {
      * Only for now, will be changed later.
      */
     private static void createTrustLine() {
-        final KinAccount account = instance.kinClient.getAccount(0);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                account.getBalance().run(new ResultCallback<Balance>() {
-                    @Override
-                    public void onResult(Balance result) {
-                        System.out.println("ACTIVATE >>> createTrustLine");
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        System.out.println("ACTIVATE >>> createTrustLine >>> error >> " + e.getMessage());
-                        if (e instanceof AccountNotActivatedException) {
-                            activate(account);
-                        }
-                    }
-                });
+                activate();
             }
         }, 10000);
     }
@@ -121,21 +104,10 @@ public class Kin {
     /**
      * Only for now, will be changed later.
      */
-    private static void activate(KinAccount account) {
-        if (account != null) {
-            account.activate("").run(new ResultCallback<Void>() {
-                @Override
-                public void onResult(Void aVoid) {
-                    System.out.println("ACTIVATE >>> activate");
-                }
-
-                @Override
-                public void onError(Exception e) {
-
-                }
-            });
-        }
+    private static void activate() {
+        BlockchainSource.getInstance().createTrustLine();
     }
+
 
     private static void initOfferRepository() {
         OfferRepository.init(OfferRemoteData.getInstance(instance.executorsUtil));
@@ -143,18 +115,8 @@ public class Kin {
     }
 
     private static void initOrderRepository() {
-        OrderRepository.init(OrderRemoteData.getInstance(instance.executorsUtil));
-    }
-
-    private static void createKinAccountInNeeded() throws InitializeException {
-        try {
-            KinAccount account = instance.kinClient.getAccount(0);
-            if (account == null) {
-                instance.kinClient.addAccount(""); // blockchain-sdk should generate and take care of that passphrase.
-            }
-        } catch (CreateAccountException e) {
-            throw new InitializeException(e.getMessage());
-        }
+        OrderRepository.init(BlockchainSource.getInstance(), OfferRepository.getInstance(),
+            OrderRemoteData.getInstance(instance.executorsUtil));
     }
 
     private static void checkInstanceNotNull() throws TaskFailedException {
@@ -185,34 +147,11 @@ public class Kin {
 
     public static String getPublicAddress() throws TaskFailedException {
         checkInstanceNotNull();
-        KinAccount account = instance.kinClient.getAccount(0);
-        if (account == null) {
-            return null;
-        }
-        return account.getPublicAddress();
+        return BlockchainSource.getInstance().getPublicAddress();
     }
 
     public static void getBalance(@NonNull final Callback<Integer> callback) throws TaskFailedException {
         checkInstanceNotNull();
-        KinAccount account = instance.kinClient.getAccount(0);
-        if (account == null) {
-            callback.onFailure(new TaskFailedException("Account not found"));
-        } else {
-            account.getBalance().run(new ResultCallback<Balance>() {
-                @Override
-                public void onResult(Balance balance) {
-                    callback.onResponse(balance.value().intValue());
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    callback.onFailure(e);
-                }
-            });
-        }
-    }
-
-    public static KinClient getKinClient() {
-        return instance.kinClient;
+        BlockchainSource.getInstance().getBalance(callback);
     }
 }
