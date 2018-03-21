@@ -1,26 +1,39 @@
 package com.kin.ecosystem.history.view;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
 import com.kin.ecosystem.R;
+import com.kin.ecosystem.base.BaseRecyclerAdapter;
+import com.kin.ecosystem.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.base.BaseToolbarActivity;
-import com.kin.ecosystem.base.IBasePresenter;
+import com.kin.ecosystem.base.IBottomDialogPresenter;
+import com.kin.ecosystem.data.order.OrderRepository;
+import com.kin.ecosystem.history.presenter.IOrderHistoryPresenter;
 import com.kin.ecosystem.history.presenter.OrderHistoryPresenter;
 import com.kin.ecosystem.network.model.Order;
-
 import java.util.List;
 
 
 public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderHistoryView {
 
-    private IBasePresenter<IOrderHistoryView> orderHistoryPresenter;
+    private IOrderHistoryPresenter orderHistoryPresenter;
     private OrderHistoryRecyclerAdapter orderHistoryRecyclerAdapter;
+
+    private static final String IS_FIRST_SPEND_ORDER = "is_first_spend_order";
+
+    public static Intent createIntent(@NonNull Context context, boolean isFirstSpendOrder) {
+        final Intent intent = new Intent(context, OrderHistoryActivity.class);
+        intent.putExtra(IS_FIRST_SPEND_ORDER, isFirstSpendOrder);
+        return intent;
+    }
 
     @Override
     protected int getLayoutRes() {
@@ -50,7 +63,8 @@ public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderH
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        attachPresenter(new OrderHistoryPresenter());
+        boolean isFirstSpendOrder = getIntent().getBooleanExtra(IS_FIRST_SPEND_ORDER, false);
+        attachPresenter(new OrderHistoryPresenter(OrderRepository.getInstance(), isFirstSpendOrder));
     }
 
     @Override
@@ -59,6 +73,12 @@ public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderH
         orderRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         orderHistoryRecyclerAdapter = new OrderHistoryRecyclerAdapter();
         orderHistoryRecyclerAdapter.bindToRecyclerView(orderRecyclerView);
+        orderHistoryRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
+                orderHistoryPresenter.onItemCLicked(position);
+            }
+        });
     }
 
     @Override
@@ -86,6 +106,22 @@ public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderH
     public void updateOrderHistoryList(List<Order> orders) {
         orderHistoryRecyclerAdapter.setNewData(orders);
         orderHistoryRecyclerAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onItemInserted() {
+        orderHistoryRecyclerAdapter.notifyItemInserted(0);
+    }
+
+    @Override
+    public void onItemUpdated(int index) {
+        orderHistoryRecyclerAdapter.notifyItemChanged(index);
+    }
+
+    @Override
+    public void showCouponDialog(@NonNull IBottomDialogPresenter<ICouponDialog> presenter) {
+        CouponDialog couponDialog = new CouponDialog(this, presenter);
+        couponDialog.show();
     }
 
     @Override

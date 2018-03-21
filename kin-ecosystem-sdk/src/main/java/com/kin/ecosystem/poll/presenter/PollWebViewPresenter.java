@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.data.order.OrderRepository;
+import com.kin.ecosystem.data.order.OrderDataSource;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.poll.view.IPollWebView;
@@ -12,7 +12,7 @@ import com.kin.ecosystem.poll.view.IPollWebView;
 
 public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements IPollWebViewPresenter {
 
-    private final OrderRepository orderRepository;
+    private final OrderDataSource orderRepository;
 
     private final String pollJsonString;
     private final String offerID;
@@ -22,7 +22,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
     private boolean isOrderSubmitted = false;
 
     public PollWebViewPresenter(@NonNull final String pollJsonString, @NonNull final String offerID,
-        @NonNull final OrderRepository orderRepository) {
+        @NonNull final OrderDataSource orderRepository) {
         this.pollJsonString = pollJsonString;
         this.offerID = offerID;
         this.orderRepository = orderRepository;
@@ -96,6 +96,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
                 }
             });
         }
+        closeView();
     }
 
     private void listenToOpenOrders() {
@@ -115,7 +116,6 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
         if (view != null) {
             view.showToast(msg);
         }
-
     }
 
     private void closeView() {

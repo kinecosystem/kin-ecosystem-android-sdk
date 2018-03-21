@@ -8,7 +8,7 @@
 
     <include layout="@layout/toolbar_layout"/>
 
-    <include layout="@layout/balance_view_constraints" />
+    <include layout="@layout/balance_view_constraints"/>
 
     <LinearLayout
         android:id="@+id/earn_container"
@@ -17,47 +17,34 @@
         android:layout_weight="0.52"
         android:orientation="vertical">
 
-        <FrameLayout
+
+        <LinearLayout
             android:id="@+id/earn_title_container"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/block_margin"
             android:layout_marginLeft="@dimen/main_margin"
             android:layout_marginRight="@dimen/main_margin"
-            android:layout_marginTop="@dimen/block_margin">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/earn_title"
-                    style="@style/KinecosysTitleTextMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/tiny_margin"
-                    android:text="@string/earn" />
-
-                <TextView
-                    android:id="@+id/earn_subtitle"
-                    style="@style/KinecosysSubTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/complete_tasks_and_earn_kin" />
-
-            </LinearLayout>
+            android:orientation="vertical"
+            >
 
             <TextView
-                android:id="@+id/earn_more"
+                android:id="@+id/earn_title"
+                style="@style/KinecosysTitleTextMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_marginTop="@dimen/tiny_margin"
-                style="@style/KinecosysSubTitleMedium"
-                android:text="@string/more"
-                android:textColor="@color/bluePrimary" />
+                android:layout_marginBottom="@dimen/tiny_margin"
+                android:text="@string/earn"/>
 
-        </FrameLayout>
+            <TextView
+                android:id="@+id/earn_subtitle"
+                style="@style/KinecosysSubTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/complete_tasks_and_earn_kin"/>
+
+        </LinearLayout>
+
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/earn_recycler"
@@ -70,7 +57,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/gray_darker" />
+        android:background="@color/gray_darker"/>
 
     <LinearLayout
         android:id="@+id/spend_container"
@@ -80,51 +67,37 @@
         android:gravity="center_vertical"
         android:orientation="vertical">
 
-        <FrameLayout
+        <LinearLayout
             android:id="@+id/spend_title_container"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/block_margin"
             android:layout_marginLeft="@dimen/main_margin"
             android:layout_marginRight="@dimen/main_margin"
-            android:layout_marginTop="@dimen/block_margin">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/spend_title"
-                    style="@style/KinecosysTitleTextMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/tiny_margin"
-                    android:text="@string/spend" />
-
-                <TextView
-                    android:id="@+id/spend_subtitle"
-                    style="@style/KinecosysSubTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/use_your_kin_to_enjoy_stuff_you_like" />
-            </LinearLayout>
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/spend_more"
+                android:id="@+id/spend_title"
+                style="@style/KinecosysTitleTextMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_marginTop="@dimen/tiny_margin"
-                style="@style/KinecosysSubTitleMedium"
-                android:text="@string/more"
-                android:textColor="@color/bluePrimary" />
-        </FrameLayout>
+                android:layout_marginBottom="@dimen/tiny_margin"
+                android:text="@string/spend"/>
+
+            <TextView
+                android:id="@+id/spend_subtitle"
+                style="@style/KinecosysSubTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/use_your_kin_to_enjoy_stuff_you_like"/>
+        </LinearLayout>
+
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/spend_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/main_small_margin" />
+            android:layout_marginTop="@dimen/main_small_margin"/>
     </LinearLayout>
 
 </LinearLayout>

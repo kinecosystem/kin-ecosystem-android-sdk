@@ -4,4 +4,5 @@
     <dimen name="stroke_width">1dp</dimen>
     <dimen name="stroke_padding">2dp</dimen>
     <dimen name="button_corners_radius">25dp</dimen>
+    <dimen name="text_box_radius">5dp</dimen>
 </resources>

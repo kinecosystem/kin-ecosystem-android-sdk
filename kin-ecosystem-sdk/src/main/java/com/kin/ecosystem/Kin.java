@@ -11,6 +11,7 @@ import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.offer.OfferRemoteData;
 import com.kin.ecosystem.data.offer.OfferRepository;
+import com.kin.ecosystem.data.order.OrderLocalData;
 import com.kin.ecosystem.data.order.OrderRemoteData;
 import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.exception.InitializeException;
@@ -51,7 +52,7 @@ public class Kin {
         initBlockchain(appContext, signInData.getAppId());
         registerAccount(appContext, signInData);
         initOfferRepository();
-        initOrderRepository();
+        initOrderRepository(appContext);
     }
 
     private static void initBlockchain(Context context, String appID) throws InitializeException {
@@ -114,9 +115,9 @@ public class Kin {
         OfferRepository.getInstance().getOffers(null);
     }
 
-    private static void initOrderRepository() {
+    private static void initOrderRepository(@NonNull final Context context) {
         OrderRepository.init(BlockchainSource.getInstance(), OfferRepository.getInstance(),
-            OrderRemoteData.getInstance(instance.executorsUtil));
+            OrderRemoteData.getInstance(instance.executorsUtil), OrderLocalData.getInstance(context, instance.executorsUtil));
     }
 
     private static void checkInstanceNotNull() throws TaskFailedException {

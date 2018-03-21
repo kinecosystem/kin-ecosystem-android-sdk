@@ -10,6 +10,7 @@
     <string name="earn">Earn</string>
     <string name="let_s_get_started">Let\'s Get Started</string>
     <string name="confirm">Confirm</string>
+    <string name="copy_code">Copy Code</string>
 
     <!--Sentence-->
     <string name="kin_balance">Kin Balance</string>
@@ -18,9 +19,9 @@
     <string name="welcome_to_kin">Welcome to Kin!</string>
     <string name="welcome_kin_info">Kin is a new currency for use in everyday\ndigital services. In out Marketplace you\'ll be\nable to ean Kin by completion tasks\nand spend Kin on top brands</string>
     <string name="please_agree_tos_pp">By clicking “Let’s Get Started” you are agreeing\nto our <a href="http://kinecosystem.org/terms">Terms of Service</a> and <a href="http://kinecosystem.org/privacy">Privacy Policy</a></string>
+    <string name="digging_for_gems">Digging for Gems...</string>
 
     <!--Menu-->
     <string name="info_menu">Info</string>
-    <string name="digging_for_gems">Digging for Gems...</string>
 
 </resources>

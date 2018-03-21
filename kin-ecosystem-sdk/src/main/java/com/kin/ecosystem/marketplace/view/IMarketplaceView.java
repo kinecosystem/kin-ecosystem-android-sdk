@@ -3,7 +3,6 @@ package com.kin.ecosystem.marketplace.view;
 import com.kin.ecosystem.base.IBaseView;
 import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
 import com.kin.ecosystem.marketplace.presenter.MarketplacePresenter;
-import com.kin.ecosystem.network.model.OfferInfo;
 import com.kin.ecosystem.network.model.Offer;
 import java.util.List;
 
@@ -20,4 +19,8 @@ public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
     void showSpendDialog(ISpendDialogPresenter spendDialogPresenter);
 
     void showToast(String msg);
+
+    void notifyEarnItemRemoved(int index);
+
+    void notifySpendItemRemoved(int index);
 }

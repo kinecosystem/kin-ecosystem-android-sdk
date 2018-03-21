@@ -2,7 +2,7 @@ package com.kin.ecosystem.data.offer;
 
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
-import com.kin.ecosystem.network.model.OfferInfo;
+import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OfferList;
 
 public interface OfferDataSource {
@@ -11,9 +11,9 @@ public interface OfferDataSource {
 
     void getOffers(Callback<OfferList> callback);
 
-    ObservableData<String> getPendingOfferID();
+    ObservableData<Offer> getPendingOffer();
 
-    void setPendingOffer(String offerID);
+    void setPendingOfferByID(String offerID);
 
     interface Remote {
 

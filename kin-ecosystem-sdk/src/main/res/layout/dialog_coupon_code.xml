@@ -23,7 +23,6 @@
         android:id="@+id/brand_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/close_button"
@@ -41,6 +40,22 @@
         tools:text="Redeem code - 8,000 Kin"/>
 
     <TextView
+        android:id="@+id/coupon_code"
+        style="@style/KinecosysSubTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:layout_marginTop="@dimen/block_margin"
+        android:paddingLeft="@dimen/margin_large"
+        android:paddingRight="@dimen/margin_large"
+        android:gravity="center"
+        android:background="@drawable/text_box_border"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        tools:text="5646543216546854"/>
+
+    <TextView
         android:id="@+id/description"
         style="@style/KinecosysSubTitle"
         android:layout_width="wrap_content"
@@ -50,39 +65,26 @@
         android:paddingLeft="@dimen/margin_large"
         android:paddingRight="@dimen/margin_large"
         android:gravity="center"
+        android:textColorLink="@color/bluePrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title"
-        tools:text="Once you have confirmed this purchase,  you can go to your balance to get your code"/>
+        app:layout_constraintTop_toBottomOf="@+id/coupon_code"
+        tools:text="Redeem code by visiting: spotify.com/redeem "/>
 
 
     <Button
         android:id="@+id/confirm_button"
         android:layout_width="@dimen/round_button_width"
         android:layout_height="@dimen/round_button_height"
-        android:layout_marginTop="@dimen/margin_xlarge"
+        android:layout_marginTop="@dimen/main_margin"
         android:layout_marginBottom="@dimen/margin_large"
         android:background="@drawable/button_blue_rounded"
         android:gravity="center"
-        android:text="@string/confirm"
         android:textAllCaps="false"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title"/>
-
-    <ImageView
-        android:id="@+id/confirmation_image"
-        android:layout_width="@dimen/round_button_height"
-        android:layout_height="@dimen/round_button_height"
-        android:layout_marginTop="@dimen/margin_xlarge"
-        android:layout_marginBottom="@dimen/margin_large"
-        android:src="@drawable/v_mark"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title"/>
-
+        app:layout_constraintTop_toBottomOf="@+id/description"/>
 
 </android.support.constraint.ConstraintLayout>

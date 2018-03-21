@@ -123,6 +123,11 @@ public class BlockchainSource implements IBlockchainSource {
     }
 
     @Override
+    public int getBalance() {
+        return balance.getValue();
+    }
+
+    @Override
     public void getBalance(@NonNull final Callback<Integer> callback) {
         account.getBalance().run(new ResultCallback<Balance>() {
             @Override

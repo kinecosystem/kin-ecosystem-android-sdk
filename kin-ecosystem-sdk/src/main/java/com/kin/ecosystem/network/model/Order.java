@@ -29,6 +29,7 @@ import java.io.IOException;
  * a submitted order. it can be pending/completed/failed
  */
 public class Order {
+
     @SerializedName("result")
     private Object result = null;
 
@@ -70,6 +71,7 @@ public class Order {
         }
 
         public static class Adapter extends TypeAdapter<StatusEnum> {
+
             @Override
             public void write(final JsonWriter jsonWriter, final StatusEnum enumeration) throws IOException {
                 jsonWriter.value(enumeration.getValue());
@@ -128,6 +130,7 @@ public class Order {
         }
 
         public static class Adapter extends TypeAdapter<OfferTypeEnum> {
+
             @Override
             public void write(final JsonWriter jsonWriter, final OfferTypeEnum enumeration) throws IOException {
                 jsonWriter.value(enumeration.getValue());
@@ -159,7 +162,8 @@ public class Order {
 
 
     /**
-     * * empty when no result (pending status, completed earn) * failure_message when status is failed * coupon_code when completed spend
+     * * empty when no result (pending status, completed earn) * failure_message when status is failed * coupon_code
+     * when completed spend
      *
      * @return result
      **/
@@ -359,12 +363,15 @@ public class Order {
             return false;
         }
         Order order = (Order) o;
-        return Objects.equals(this.orderId, order.orderId);
+        return Objects.equals(this.orderId, order.orderId) &&
+            Objects.equals(this.offerId, order.offerId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(result, status, orderId, completionDate, blockchainData, offerType, title, description, callToAction, amount);
+        return Objects
+            .hash(result, status, orderId, completionDate, blockchainData, offerType, title, description, callToAction,
+                amount);
     }
 
     @Override

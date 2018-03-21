@@ -3,7 +3,7 @@ package com.kin.ecosystem.marketplace.presenter;
 import android.os.Handler;
 import android.util.Log;
 import com.kin.ecosystem.Callback;
-import com.kin.ecosystem.base.BasePresenter;
+import com.kin.ecosystem.base.BaseDialogPresenter;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.blockchain.IBlockchainSource;
 import com.kin.ecosystem.data.order.OrderDataSource;
@@ -16,7 +16,7 @@ import com.kin.ecosystem.network.model.Order;
 import java.math.BigDecimal;
 
 
-public class SpendDialogPresenter extends BasePresenter<ISpendDialog> implements ISpendDialogPresenter {
+public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements ISpendDialogPresenter {
 
     private static final String TAG = SpendDialogPresenter.class.getSimpleName();
 
@@ -28,7 +28,8 @@ public class SpendDialogPresenter extends BasePresenter<ISpendDialog> implements
     private final OfferInfo offerInfo;
     private final Offer offer;
     private OpenOrder openOrder;
-    private boolean isDismissed;
+
+    private boolean isOrderSubmitted;
 
     private static final int CLOSE_DELAY = 2000;
 
@@ -43,7 +44,6 @@ public class SpendDialogPresenter extends BasePresenter<ISpendDialog> implements
     @Override
     public void onAttach(final ISpendDialog view) {
         super.onAttach(view);
-        isDismissed = false;
         createOrder();
         loadInfo();
     }
@@ -53,7 +53,6 @@ public class SpendDialogPresenter extends BasePresenter<ISpendDialog> implements
             @Override
             public void onResponse(OpenOrder response) {
                 openOrder = response;
-                showToast("OpenOrder: " + openOrder.getId());
             }
 
             @Override
@@ -74,7 +73,7 @@ public class SpendDialogPresenter extends BasePresenter<ISpendDialog> implements
     @Override
     public void onDetach() {
         super.onDetach();
-        isDismissed = true;
+
     }
 
     @Override
@@ -82,20 +81,21 @@ public class SpendDialogPresenter extends BasePresenter<ISpendDialog> implements
         closeDialog();
     }
 
-    private void closeDialog() {
-        if (view != null && !isDismissed) {
-            isDismissed = true;
-            view.closeDialog();
-        }
-    }
-
     @Override
-    public void confirmClicked() {
+    public void bottomButtonClicked() {
         if (view != null) {
 
             if (openOrder != null) {
-                final String addressee = offer.getBlockchainData().getRecipientAddress();
+                int balance = blockchainSource.getBalance();
                 final BigDecimal amount = new BigDecimal(offer.getAmount());
+
+                if (balance < amount.intValue()) {
+                    showToast("You don't have enough Kin");
+                    closeDialog();
+                    return;
+                }
+
+                final String addressee = offer.getBlockchainData().getRecipientAddress();
                 final String orderID = openOrder.getId();
 
                 submitOrder(offer.getId(), orderID);
@@ -105,6 +105,34 @@ public class SpendDialogPresenter extends BasePresenter<ISpendDialog> implements
             Confirmation confirmation = offerInfo.getConfirmation();
             view.showThankYouLayout(confirmation.getTitle(), confirmation.getDescription());
             closeDialogWithDelay(CLOSE_DELAY);
+        }
+    }
+
+    @Override
+    public void dialogDismissed() {
+        if (isOrderSubmitted) {
+            orderRepository.isFirstSpendOrder(new Callback<Boolean>() {
+                @Override
+                public void onResponse(Boolean response) {
+                    Log.d(TAG, "isFirstSpendOrder: " + response);
+                    if (response) {
+                        navigateToOrderHistory();
+                        orderRepository.setIsFirstSpendOrder(false);
+                    }
+                    onDetach();
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    private void navigateToOrderHistory() {
+        if (view != null) {
+            view.navigateToOrderHistory();
         }
     }
 
@@ -122,6 +150,7 @@ public class SpendDialogPresenter extends BasePresenter<ISpendDialog> implements
     }
 
     private void submitOrder(String offerID, String orderID) {
+        isOrderSubmitted = true;
         orderRepository.submitOrder(offerID, null, orderID, new Callback<Order>() {
             @Override
             public void onResponse(Order response) {

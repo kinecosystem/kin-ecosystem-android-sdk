@@ -2,17 +2,12 @@ package com.kin.ecosystem.marketplace.presenter;
 
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.internal.LinkedTreeMap;
-import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.data.model.Coupon;
-import com.kin.ecosystem.data.model.Coupon.CouponCode;
-import com.kin.ecosystem.data.model.Coupon.CouponInfo;
+import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.offer.OfferDataSource;
 import com.kin.ecosystem.data.order.OrderDataSource;
 import com.kin.ecosystem.data.order.OrderRepository;
@@ -33,7 +28,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
     private List<Offer> spendList;
     private List<Offer> earnList;
 
-    private Observer<String> pendingOfferObserver;
+    private Observer<Offer> pendingOfferObserver;
     private Observer<Order> completedOrderObserver;
     private final Gson gson;
 
@@ -64,7 +59,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
     @Override
     public void onAttach(IMarketplaceView view) {
         super.onAttach(view);
-        getOffers();
         listenToPendingOffers();
         listenToCompletedOrders();
     }
@@ -73,42 +67,54 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
         completedOrderObserver = new Observer<Order>() {
             @Override
             public void onChanged(Order order) {
-                showCouponDialog(order);
+                getOffers();
             }
         };
         orderRepository.addCompletedOrderObserver(completedOrderObserver);
     }
 
-    private void showCouponDialog(Order order) {
-        //TODO create dialog presenter and show.
-        Coupon coupon = deserializeCoupon(order);
-        if (view != null && coupon != null) {
-            showToast("coupon code: " + coupon.getCouponCode().getCode());
-        }
-    }
-
-    private Coupon deserializeCoupon(Order order) {
-        try {
-            CouponInfo couponInfo = gson.fromJson(order.getContent(), CouponInfo.class);
-            CouponCode couponCode = gson.fromJson(order.getResult().toString(), CouponCode.class);
-            return new Coupon(couponInfo, couponCode);
-        } catch (Exception t) {
-            return null;
-        }
-    }
-
     private void listenToPendingOffers() {
-        pendingOfferObserver = new Observer<String>() {
+        pendingOfferObserver = new Observer<Offer>() {
             @Override
-            public void onChanged(String value) {
-                if (value != null) {
-                    showToast("New pending offer: " + value);
+            public void onChanged(Offer offer) {
+                if(offer == null) {
+                    getOffers();
                 } else {
-                    showToast("No more pending offers");
+                    removeOfferFromList(offer);
                 }
             }
         };
-        offerRepository.getPendingOfferID().addObserver(pendingOfferObserver);
+        offerRepository.getPendingOffer().addObserver(pendingOfferObserver);
+    }
+
+    private void removeOfferFromList(Offer offer) {
+        int index = -1;
+        if (offer.getOfferType() == OfferTypeEnum.EARN) {
+            index = earnList.indexOf(offer);
+            if (index != -1) {
+                earnList.remove(index);
+                notifyEarnItemRemoved(index);
+            }
+
+        } else {
+            index = spendList.indexOf(offer);
+            if (index != -1) {
+                spendList.remove(index);
+                notifySpendItemRemoved(index);
+            }
+        }
+    }
+
+    private void notifyEarnItemRemoved(int index) {
+        if(view != null) {
+            view.notifyEarnItemRemoved(index);
+        }
+    }
+
+    private void notifySpendItemRemoved(int index) {
+        if(view != null) {
+            view.notifySpendItemRemoved(index);
+        }
     }
 
     @Override
@@ -118,13 +124,14 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
     }
 
     private void release() {
-        offerRepository.getPendingOfferID().removeObserver(pendingOfferObserver);
+        offerRepository.getPendingOffer().removeObserver(pendingOfferObserver);
         orderRepository.removeCompletedOrderObserver(completedOrderObserver);
         spendList = null;
         earnList = null;
     }
 
-    private void getOffers() {
+    @Override
+    public void getOffers() {
         OfferList cachedOfferList = offerRepository.getCachedOfferList();
         setOfferList(cachedOfferList);
 

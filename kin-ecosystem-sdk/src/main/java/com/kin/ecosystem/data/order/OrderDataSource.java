@@ -11,6 +11,8 @@ import com.kin.ecosystem.network.model.OrderList;
 
 public interface OrderDataSource {
 
+    OrderList getAllCachedOrderHistory();
+
     void getAllOrderHistory(@NonNull final Callback<OrderList> callback);
 
     void createOrder(@NonNull final String offerID, final Callback<OpenOrder> callback);
@@ -20,9 +22,22 @@ public interface OrderDataSource {
 
     void cancelOrder(@NonNull final String offerID, @NonNull final String orderID, final Callback<Void> callback);
 
+    ObservableData<OpenOrder> getOpenOrder();
+
     void addCompletedOrderObserver(@NonNull final Observer<Order> observer);
 
     void removeCompletedOrderObserver(@NonNull final Observer<Order> observer);
+
+    void isFirstSpendOrder(@NonNull final Callback<Boolean> callback);
+
+    void setIsFirstSpendOrder(boolean isFirstSpendOrder);
+
+    interface Local {
+
+        void isFirstSpendOrder(@NonNull final Callback<Boolean> callback);
+
+        void setIsFirstSpendOrder(boolean isFirstSpendOrder);
+    }
 
     interface Remote {
 
