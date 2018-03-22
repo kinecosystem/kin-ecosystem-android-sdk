@@ -26,7 +26,7 @@ public class BlockchainSource implements IBlockchainSource {
 
     private static final String TAG = BlockchainSource.class.getSimpleName();
 
-    private static BlockchainSource instance;
+    private static volatile BlockchainSource instance;
 
     private KinClient kinClient;
     private KinAccount account;
@@ -63,7 +63,9 @@ public class BlockchainSource implements IBlockchainSource {
     public static void init(@NonNull final Context context, @NonNull final String appID) throws InitializeException {
         if (instance == null) {
             synchronized (BlockchainSource.class) {
-                instance = new BlockchainSource(context, appID);
+                if (instance == null) {
+                    instance = new BlockchainSource(context, appID);
+                }
             }
         }
     }

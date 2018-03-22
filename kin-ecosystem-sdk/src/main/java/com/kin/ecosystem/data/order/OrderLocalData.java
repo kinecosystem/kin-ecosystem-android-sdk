@@ -11,7 +11,7 @@ public class OrderLocalData implements OrderDataSource.Local {
 
     private static volatile OrderLocalData instance;
 
-    private static final String ORDERS_PREF_NAME = "kinecosystem_orders_pref";
+    private static final String ORDERS_PREF_NAME_FILE_KEY = "kinecosystem_orders_pref";
 
     private static final String IS_FIRST_SPEND_ORDER_KEY = "is_first_spend_order_key";
 
@@ -19,14 +19,16 @@ public class OrderLocalData implements OrderDataSource.Local {
     private final ExecutorsUtil executorsUtil;
 
     private OrderLocalData(@NonNull final Context context, @NonNull ExecutorsUtil executorsUtil) {
-        this.ordersSharedPreferences = context.getSharedPreferences(ORDERS_PREF_NAME, Context.MODE_PRIVATE);
+        this.ordersSharedPreferences = context.getSharedPreferences(ORDERS_PREF_NAME_FILE_KEY, Context.MODE_PRIVATE);
         this.executorsUtil = executorsUtil;
     }
 
     public static OrderLocalData getInstance(@NonNull final Context context, @NonNull ExecutorsUtil executorsUtil) {
         if (instance == null) {
             synchronized (OrderLocalData.class) {
-                instance = new OrderLocalData(context, executorsUtil);
+                if (instance == null) {
+                    instance = new OrderLocalData(context, executorsUtil);
+                }
             }
         }
         return instance;

@@ -32,7 +32,7 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 
     private boolean isFirstSpendOrder;
 
-    public OrderHistoryPresenter(@NonNull final OrderDataSource orderRepository, @NonNull boolean isFirstSpendOrder) {
+    public OrderHistoryPresenter(@NonNull final OrderDataSource orderRepository, boolean isFirstSpendOrder) {
         this.orderRepository = orderRepository;
         this.isFirstSpendOrder = isFirstSpendOrder;
         this.gson = new Gson();
@@ -72,7 +72,7 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
                 Order order = newList.get(i);
                 int index = oldList.indexOf(order);
                 if (index == NOT_FOUND) {
-                    //add at top
+                    //add at top (ui orientation)
                     oldList.add(0, order);
                 } else {
                     //Update

@@ -15,17 +15,18 @@ public class OfferRepository implements OfferDataSource {
     private final OfferDataSource.Remote remoteData;
 
     private OfferList cachedOfferList;
-    private ObservableData<Offer> pendingOffer;
+    private ObservableData<Offer> pendingOffer = ObservableData.create();;
 
     private OfferRepository(@NonNull OfferDataSource.Remote remoteData) {
         this.remoteData = remoteData;
-        this.pendingOffer = ObservableData.create();
     }
 
     public static void init(@NonNull OfferDataSource.Remote remoteData) {
         if (instance == null) {
             synchronized (OfferRepository.class) {
-                instance = new OfferRepository(remoteData);
+                if (instance == null) {
+                    instance = new OfferRepository(remoteData);
+                }
             }
         }
     }

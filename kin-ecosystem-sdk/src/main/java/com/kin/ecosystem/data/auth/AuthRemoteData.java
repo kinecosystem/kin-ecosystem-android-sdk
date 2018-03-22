@@ -34,7 +34,9 @@ public class AuthRemoteData implements AuthDataSource.Remote {
     public static AuthRemoteData getInstance(@NonNull ExecutorsUtil executorsUtil) {
         if (instance == null) {
             synchronized (AuthRemoteData.class) {
-                instance = new AuthRemoteData(executorsUtil);
+                if (instance == null) {
+                    instance = new AuthRemoteData(executorsUtil);
+                }
             }
         }
         return instance;

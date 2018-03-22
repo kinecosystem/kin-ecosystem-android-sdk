@@ -31,7 +31,9 @@ public class OrderRemoteData implements OrderDataSource.Remote {
     public static OrderRemoteData getInstance(@NonNull ExecutorsUtil executorsUtil) {
         if (instance == null) {
             synchronized (OrderRemoteData.class) {
-                instance = new OrderRemoteData(executorsUtil);
+                if (instance == null) {
+                    instance = new OrderRemoteData(executorsUtil);
+                }
             }
         }
         return instance;

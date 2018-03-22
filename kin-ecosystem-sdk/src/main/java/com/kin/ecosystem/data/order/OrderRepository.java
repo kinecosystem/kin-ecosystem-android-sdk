@@ -48,7 +48,9 @@ public class OrderRepository implements OrderDataSource {
         @NonNull final OrderDataSource.Local localData) {
         if (instance == null) {
             synchronized (OrderRepository.class) {
-                instance = new OrderRepository(blockchainSource, offerRepository, remoteData, localData);
+                if (instance == null) {
+                    instance = new OrderRepository(blockchainSource, offerRepository, remoteData, localData);
+                }
             }
         }
     }

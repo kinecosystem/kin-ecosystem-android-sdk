@@ -28,8 +28,10 @@ public class AuthRepository implements AuthDataSource {
         @NonNull AuthDataSource.Remote remoteData) {
         if (instance == null) {
             synchronized (AuthRepository.class) {
-                instance = new AuthRepository(localData, remoteData);
-                instance.setSignInData(signInData);
+                if (instance == null) {
+                    instance = new AuthRepository(localData, remoteData);
+                    instance.setSignInData(signInData);
+                }
             }
         }
     }

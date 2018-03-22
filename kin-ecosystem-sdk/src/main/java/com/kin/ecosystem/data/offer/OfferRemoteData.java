@@ -26,7 +26,9 @@ public class OfferRemoteData implements OfferDataSource.Remote {
     public static OfferRemoteData getInstance(@NonNull ExecutorsUtil executorsUtil) {
         if (instance == null) {
             synchronized (OfferRemoteData.class) {
-                instance = new OfferRemoteData(executorsUtil);
+                if (instance == null) {
+                    instance = new OfferRemoteData(executorsUtil);
+                }
             }
         }
         return instance;
