@@ -79,17 +79,17 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
     }
 
     private void removeOfferFromList(Offer offer) {
-        int index = -1;
+        int index;
         if (offer.getOfferType() == OfferTypeEnum.EARN) {
             index = earnList.indexOf(offer);
-            if (index != -1) {
+            if (index != NOT_FOUND) {
                 earnList.remove(index);
                 notifyEarnItemRemoved(index);
             }
 
         } else {
             index = spendList.indexOf(offer);
-            if (index != -1) {
+            if (index != NOT_FOUND) {
                 spendList.remove(index);
                 notifySpendItemRemoved(index);
             }
@@ -150,69 +150,71 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
     private void syncOffers(OfferList offerList) {
         if (offerList != null && offerList.getOffers() != null) {
-            List<Offer> earnOffers = new ArrayList<>();
-            List<Offer> spendOffers = new ArrayList<>();
+            List<Offer> newEarnOffers = new ArrayList<>();
+            List<Offer> newSpendOffers = new ArrayList<>();
 
-            splitOffersByType(offerList.getOffers(), earnOffers, spendOffers);
+            splitOffersByType(offerList.getOffers(), newEarnOffers, newSpendOffers);
+            syncList(newEarnOffers, earnList, OfferTypeEnum.EARN);
+            syncList(newSpendOffers, spendList, OfferTypeEnum.SPEND);
+        }
+    }
 
-            // check if next [Earn] offer should be removed
-            if (earnOffers.size() > 0) {
-                for (int i = 0; i < earnList.size(); i++) {
-                    Offer offer = earnList.get(i);
-                    int index = earnOffers.indexOf(offer);
-                    if (index == NOT_FOUND) {
-                        earnList.remove(i);
-                        notifyEarnItemRemoved(i);
-                    }
-                }
-            }
-
-            // Add missing [Earn] offers, the order matters
-            for (int i = 0; i < earnOffers.size(); i++) {
-                Offer offer = earnOffers.get(i);
-                if (i < earnList.size()) {
-                    if (!earnList.get(i).equals(offer)) {
-                        earnList.add(i, offer);
-                        notifyEarnItemInserted(i);
-                    }
-                } else {
-                    earnList.add(offer);
-                    notifyEarnItemInserted(i);
-                }
-            }
-
-            // check if next [Spend] offer should be removed
-            if (spendOffers.size() > 0) {
-                for (int i = 0; i < spendList.size(); i++) {
-                    Offer offer = spendList.get(i);
-                    int index = spendOffers.indexOf(offer);
-                    if (index == NOT_FOUND) {
-                        spendList.remove(i);
-                        notifySpendItemRemoved(i);
-                    }
-                }
-            }
-
-            // Add missing [Spend] offers, the order matters
-            for (int i = 0; i < spendOffers.size(); i++) {
-                Offer offer = spendOffers.get(i);
-                if (i < spendList.size()) {
-                    if (!spendList.get(i).equals(offer)) {
-                        spendList.add(i, offer);
-                        notifySpendItemInserted(i);
-                    }
-                } else {
-                    spendList.add(offer);
-                    notifySpendItemInserted(i);
+    private void syncList(List<Offer> newList, List<Offer> oldList, OfferTypeEnum offerType) {
+        // check if offer should be removed (index changed / removed from list).
+        if (newList.size() > 0) {
+            for (int i = 0; i < oldList.size(); i++) {
+                Offer offer = oldList.get(i);
+                int index = newList.indexOf(offer);
+                if (index == NOT_FOUND || index != i) {
+                    oldList.remove(i);
+                    notifyItemRemoved(i, offerType);
                 }
             }
         }
+
+        // Add missing offers, the order matters
+        for (int i = 0; i < newList.size(); i++) {
+            Offer offer = newList.get(i);
+            if (i < oldList.size()) {
+                if (!oldList.get(i).equals(offer)) {
+                    oldList.add(i, offer);
+                    notifyItemInserted(i, offerType);
+                }
+            } else {
+                oldList.add(offer);
+                notifyItemInserted(i, offerType);
+            }
+        }
+    }
+
+    private void notifyItemRemoved(int index, OfferTypeEnum offerType) {
+        if (isSpend(offerType)) {
+            notifySpendItemRemoved(index);
+        } else {
+            notifyEarnItemRemoved(index);
+        }
+    }
+
+    private void notifyItemInserted(int index, OfferTypeEnum offerType) {
+        if (isSpend(offerType)) {
+            notifySpendItemInserted(index);
+        } else {
+            notifyEarnItemInserted(index);
+        }
+    }
+
+    private boolean isSpend(OfferTypeEnum offerType) {
+        return offerType == OfferTypeEnum.SPEND;
     }
 
     private void setOfferList(OfferList offerList) {
         if (offerList != null && offerList.getOffers() != null) {
             splitOffersByType(offerList.getOffers(), this.earnList, this.spendList);
-            updateLists();
+
+            if (this.view != null) {
+                this.view.updateEarnList(earnList);
+                this.view.updateSpendList(spendList);
+            }
         }
     }
 
@@ -223,13 +225,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             } else {
                 spendList.add(offer);
             }
-        }
-    }
-
-    private void updateLists() {
-        if (this.view != null) {
-            this.view.updateEarnList(earnList);
-            this.view.updateSpendList(spendList);
         }
     }
 

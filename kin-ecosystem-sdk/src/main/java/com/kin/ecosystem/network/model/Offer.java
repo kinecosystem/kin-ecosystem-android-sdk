@@ -321,8 +321,7 @@ public class Offer {
             return false;
         }
         Offer offer = (Offer) o;
-        return Objects.equals(this.id, offer.id) &&
-            Objects.equals(this.offerType, offer.offerType);
+        return Objects.equals(this.id, offer.id);
     }
 
     @Override
