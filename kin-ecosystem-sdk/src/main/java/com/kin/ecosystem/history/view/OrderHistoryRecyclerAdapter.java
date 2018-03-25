@@ -25,7 +25,6 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
 
     private static int colorBlue = NOT_INITIALIZED;
     private static int colorRed = NOT_INITIALIZED;
-    private static int colorOrange = NOT_INITIALIZED;
     private static int colorGrayLight = NOT_INITIALIZED;
 
     private static int subTitleFontSize = NOT_INITIALIZED;
@@ -40,9 +39,6 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
     private void initColors(Context context) {
         if (colorBlue == NOT_INITIALIZED) {
             colorBlue = ContextCompat.getColor(context, R.color.bluePrimary);
-        }
-        if (colorOrange == NOT_INITIALIZED) {
-            colorOrange = ContextCompat.getColor(context, R.color.orange);
         }
         if (colorRed == NOT_INITIALIZED) {
             colorRed = ContextCompat.getColor(context, R.color.red);
@@ -64,7 +60,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
     }
 
     @Override
-    protected void convert(ViewHolder holder, Order item) {
+    protected void convert(ViewHolder holder, final Order item) {
         holder.bindObject(item);
     }
 
@@ -90,7 +86,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
         }
 
         @Override
-        protected void bindObject(Order item) {
+        protected void bindObject(final Order item) {
             setOrderTitle(item);
             setSubtitle(item);
             setAmountAndIcon(item);
@@ -126,8 +122,8 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
         private void setOrderTitle(Order item) {
             String brand = item.getTitle();
             String delimiter = " - ";
-            String callToAction = item.getCallToAction();
             if (item.getOfferType() == Order.OfferTypeEnum.SPEND) {
+                String actionText = getActionText(item);
                 switch (item.getStatus()) {
                     case COMPLETED:
                         Spannable titleSpannable = new SpannableString(brand + delimiter);
@@ -136,19 +132,13 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         setSpannableText(R.id.title, titleSpannable);
 
-                        setText(R.id.action_text, callToAction);
+                        setText(R.id.action_text, actionText);
                         setTextColor(R.id.action_text, colorBlue);
-                        break;
-                    case PENDING:
-                        setText(R.id.title, brand + delimiter);
-
-                        setText(R.id.action_text, callToAction);
-                        setTextColor(R.id.action_text, colorOrange);
                         break;
                     case FAILED:
                         setText(R.id.title, brand + delimiter);
 
-                        setText(R.id.action_text, callToAction);
+                        setText(R.id.action_text, actionText);
                         setTextColor(R.id.action_text, colorRed);
                         break;
                     default:
@@ -156,7 +146,24 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
                 }
             } else {
                 setText(R.id.title, brand);
+                setText(R.id.action_text, "");
             }
+        }
+
+        private String getActionText(Order item) {
+            String actionText = "";
+            switch (item.getStatus()) {
+                case COMPLETED:
+                    actionText = TextUtils.isEmpty(item.getCallToAction()) ? "" : item.getCallToAction();
+                    break;
+                case FAILED:
+                    actionText = TextUtils.isEmpty(item.getError().getMessage()) ?
+                        "Transaction failed" : item.getError().getMessage();
+                    break;
+                default:
+                    break;
+            }
+            return actionText;
         }
 
         private void updateTimeLine(Order item) {
@@ -169,9 +176,6 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
                     case COMPLETED:
                         drawable.setColorFilter(colorBlue, PorterDuff.Mode.SRC_ATOP);
                         break;
-                    case PENDING:
-                        drawable.setColorFilter(colorOrange, PorterDuff.Mode.SRC_ATOP);
-                        break;
                     case FAILED:
                         drawable.setColorFilter(colorRed, PorterDuff.Mode.SRC_ATOP);
                         break;
@@ -183,10 +187,12 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
             }
 
             // Timeline path size
-            int itemIndex = getData().indexOf(item);
+            int itemIndex = getLayoutPosition();
             int lastIndex = getDataCount() - 1;
             if (itemIndex == lastIndex) {
                 setViewHeight(R.id.dash_line, itemHalfHeight);
+            } else {
+                setViewHeight(R.id.dash_line, itemHeight);
             }
         }
     }
