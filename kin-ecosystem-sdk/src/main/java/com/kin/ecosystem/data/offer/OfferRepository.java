@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.exception.DataNotAvailableException;
+import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OfferList;
 
 public class OfferRepository implements OfferDataSource {
@@ -14,17 +15,18 @@ public class OfferRepository implements OfferDataSource {
     private final OfferDataSource.Remote remoteData;
 
     private OfferList cachedOfferList;
-    private ObservableData<String> pendingOfferID;
+    private ObservableData<Offer> pendingOffer = ObservableData.create();;
 
     private OfferRepository(@NonNull OfferDataSource.Remote remoteData) {
         this.remoteData = remoteData;
-        this.pendingOfferID = ObservableData.create();
     }
 
     public static void init(@NonNull OfferDataSource.Remote remoteData) {
         if (instance == null) {
             synchronized (OfferRepository.class) {
-                instance = new OfferRepository(remoteData);
+                if (instance == null) {
+                    instance = new OfferRepository(remoteData);
+                }
             }
         }
     }
@@ -59,12 +61,18 @@ public class OfferRepository implements OfferDataSource {
     }
 
     @Override
-    public ObservableData<String> getPendingOfferID() {
-        return pendingOfferID;
+    public ObservableData<Offer> getPendingOffer() {
+        return pendingOffer;
     }
 
     @Override
-    public void setPendingOffer(String offerID) {
-        pendingOfferID.setValue(offerID);
+    public void setPendingOfferByID(String offerID) {
+        Offer offer = getCachedOfferByID(offerID);
+        cachedOfferList.remove(offer);
+        pendingOffer.postValue(offer);
+    }
+
+    private Offer getCachedOfferByID(String offerID) {
+        return cachedOfferList.getOfferByID(offerID);
     }
 }

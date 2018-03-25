@@ -17,7 +17,13 @@ public interface IBlockchainSource {
     void sendTransaction(@NonNull String publicAddress, @NonNull BigDecimal amount, @NonNull String orderID);
 
     /**
-     * @return balance
+     * @return the cached balance.
+     */
+    int getBalance();
+
+    /**
+     * Get balance from network
+     * @param callback
      */
     void getBalance(@NonNull final Callback<Integer> callback);
 

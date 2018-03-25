@@ -2,7 +2,6 @@ package com.kin.ecosystem.data.order;
 
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.Callback;
-import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.network.ApiCallback;
 import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.api.OrdersApi;
@@ -17,6 +16,8 @@ import java.util.Map;
 public class OrderRemoteData implements OrderDataSource.Remote {
 
     private static final int ORDERS_ITEMS_LIMIT = 100;
+    private static final int POLLING_MAX_VALUE = 5;
+
     private static volatile OrderRemoteData instance;
 
     private final OrdersApi ordersApi;
@@ -30,7 +31,9 @@ public class OrderRemoteData implements OrderDataSource.Remote {
     public static OrderRemoteData getInstance(@NonNull ExecutorsUtil executorsUtil) {
         if (instance == null) {
             synchronized (OrderRemoteData.class) {
-                instance = new OrderRemoteData(executorsUtil);
+                if (instance == null) {
+                    instance = new OrderRemoteData(executorsUtil);
+                }
             }
         }
         return instance;
@@ -216,45 +219,26 @@ public class OrderRemoteData implements OrderDataSource.Remote {
 
     @Override
     public void getOrder(String orderID, final Callback<Order> callback) {
-        try {
-            ordersApi.getOrderAsync(orderID, "", new ApiCallback<Order>() {
-                @Override
-                public void onFailure(final ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
-                    executorsUtil.mainThread().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onFailure(e);
-                        }
-                    });
-                }
+        new GetOrderPollingCall(ordersApi, orderID, POLLING_MAX_VALUE, new Callback<Order>() {
+            @Override
+            public void onResponse(final Order result) {
+                executorsUtil.mainThread().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onResponse(result);
+                    }
+                });
+            }
 
-                @Override
-                public void onSuccess(final Order result, int statusCode, Map<String, List<String>> responseHeaders) {
-                    executorsUtil.mainThread().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onResponse(result);
-                        }
-                    });
-                }
-
-                @Override
-                public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
-
-                }
-
-                @Override
-                public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
-
-                }
-            });
-        } catch (final ApiException e) {
-            executorsUtil.mainThread().execute(new Runnable() {
-                @Override
-                public void run() {
-                    callback.onFailure(e);
-                }
-            });
-        }
+            @Override
+            public void onFailure(final Throwable e) {
+                executorsUtil.mainThread().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onFailure(e);
+                    }
+                });
+            }
+        }).run();
     }
 }

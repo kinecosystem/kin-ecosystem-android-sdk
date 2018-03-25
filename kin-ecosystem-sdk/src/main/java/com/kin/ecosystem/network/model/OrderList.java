@@ -1,5 +1,6 @@
 package com.kin.ecosystem.network.model;
 
+import android.support.annotation.NonNull;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.Objects;
  * a list of submitted orders
  */
 public class OrderList {
+
     @SerializedName("orders")
     private List<Order> orders = null;
     @SerializedName("paging")
@@ -30,17 +32,39 @@ public class OrderList {
         return this;
     }
 
-    public OrderList addOrderAtIndex(int index, Order orderItem) {
+    public OrderList addOrderAtIndex(final int index, @NonNull final Order orderItem) {
 
         if (this.orders == null) {
             this.orders = new ArrayList<>();
             this.orders.add(orderItem);
-        }
-        else {
+        } else {
             this.orders.add(index, orderItem);
         }
 
         return this;
+    }
+
+    public int contains(@NonNull final Order order) {
+        if (this.orders == null) {
+            return -1;
+        } else {
+            return this.orders.indexOf(order);
+        }
+    }
+
+    public Order get(int index) {
+        try {
+            return this.orders.get(index);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public boolean updateOrder(int index, Order order) {
+        if(this.orders != null && index < this.orders.size()) {
+            this.orders.set(index, order);
+        }
+        return false;
     }
 
     /**
@@ -85,7 +109,7 @@ public class OrderList {
         }
         OrderList orderList = (OrderList) o;
         return Objects.equals(this.orders, orderList.orders) &&
-                Objects.equals(this.paging, orderList.paging);
+            Objects.equals(this.paging, orderList.paging);
     }
 
     @Override

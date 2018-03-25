@@ -21,6 +21,7 @@ public class OrderRepository implements OrderDataSource {
     private static final String TAG = OrderRepository.class.getSimpleName();
 
     private static OrderRepository instance = null;
+    private final OrderDataSource.Local localData;
     private final OrderDataSource.Remote remoteData;
 
     private final OfferDataSource offerRepository;
@@ -34,17 +35,22 @@ public class OrderRepository implements OrderDataSource {
     private static volatile AtomicInteger pendingOrdersCount = new AtomicInteger(0);
 
     private OrderRepository(@NonNull final IBlockchainSource blockchainSource,
-        @NonNull final OfferDataSource offerRepository, @NonNull final OrderDataSource.Remote remoteData) {
+        @NonNull final OfferDataSource offerRepository, @NonNull final OrderDataSource.Remote remoteData,
+        @NonNull final OrderDataSource.Local localData) {
         this.remoteData = remoteData;
+        this.localData = localData;
         this.offerRepository = offerRepository;
         this.blockchainSource = blockchainSource;
     }
 
     public static void init(@NonNull final IBlockchainSource blockchainSource,
-        @NonNull final OfferDataSource offerRepository, @NonNull final OrderDataSource.Remote remoteData) {
+        @NonNull final OfferDataSource offerRepository, @NonNull final OrderDataSource.Remote remoteData,
+        @NonNull final OrderDataSource.Local localData) {
         if (instance == null) {
             synchronized (OrderRepository.class) {
-                instance = new OrderRepository(blockchainSource, offerRepository, remoteData);
+                if (instance == null) {
+                    instance = new OrderRepository(blockchainSource, offerRepository, remoteData, localData);
+                }
             }
         }
     }
@@ -101,7 +107,7 @@ public class OrderRepository implements OrderDataSource {
     public void submitOrder(@NonNull final String offerID, @Nullable String content, @NonNull final String orderID,
         @Nullable final Callback<Order> callback) {
         listenForCompletedPayment();
-        offerRepository.setPendingOffer(offerID);
+        offerRepository.setPendingOfferByID(offerID);
         remoteData.submitOrder(content, orderID, new Callback<Order>() {
             @Override
             public void onResponse(Order response) {
@@ -134,7 +140,6 @@ public class OrderRepository implements OrderDataSource {
     }
 
     private void getOrder(String orderID) {
-        //TODO handle polling server, error
         remoteData.getOrder(orderID, new Callback<Order>() {
             @Override
             public void onResponse(Order order) {
@@ -165,8 +170,8 @@ public class OrderRepository implements OrderDataSource {
             if (cachedOpenOrder.getValue().getId().equals(order.getOrderId())) {
                 cachedOpenOrder.postValue(null);
             }
-            if (offerRepository.getPendingOfferID().getValue().equals(order.getOfferId())) {
-                offerRepository.setPendingOffer(null);
+            if (offerRepository.getPendingOffer().getValue().getId().equals(order.getOfferId())) {
+                offerRepository.setPendingOfferByID(null);
             }
         }
     }
@@ -205,5 +210,15 @@ public class OrderRepository implements OrderDataSource {
     @Override
     public void removeCompletedOrderObserver(@NonNull Observer<Order> observer) {
         completedOrder.removeObserver(observer);
+    }
+
+    @Override
+    public void isFirstSpendOrder(@NonNull Callback<Boolean> callback) {
+        localData.isFirstSpendOrder(callback);
+    }
+
+    @Override
+    public void setIsFirstSpendOrder(boolean isFirstSpendOrder) {
+        localData.setIsFirstSpendOrder(isFirstSpendOrder);
     }
 }

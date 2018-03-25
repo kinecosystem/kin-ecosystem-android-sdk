@@ -15,7 +15,7 @@ public class AuthLocalData implements AuthDataSource.Local {
 
     private static volatile AuthLocalData instance;
 
-    private static final String SIGN_IN_PREF_NAME = "kinecosystem_sign_in_pref";
+    private static final String SIGN_IN_PREF_NAME_FILE_KEY = "kinecosystem_sign_in_pref";
 
     private static final String JWT_KEY = "jwt";
     private static final String USER_ID_KEY = "user_id";
@@ -33,14 +33,16 @@ public class AuthLocalData implements AuthDataSource.Local {
     private final ExecutorsUtil executorsUtil;
 
     private AuthLocalData(Context context, @NonNull ExecutorsUtil executorsUtil) {
-        this.signInSharedPreferences = context.getSharedPreferences(SIGN_IN_PREF_NAME, Context.MODE_PRIVATE);
+        this.signInSharedPreferences = context.getSharedPreferences(SIGN_IN_PREF_NAME_FILE_KEY, Context.MODE_PRIVATE);
         this.executorsUtil = executorsUtil;
     }
 
     public static AuthLocalData getInstance(@NonNull Context context, @NonNull ExecutorsUtil executorsUtil) {
         if (instance == null) {
             synchronized (AuthLocalData.class) {
-                instance = new AuthLocalData(context, executorsUtil);
+                if (instance == null) {
+                    instance = new AuthLocalData(context, executorsUtil);
+                }
             }
         }
 

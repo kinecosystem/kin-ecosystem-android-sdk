@@ -20,7 +20,7 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, OfferRecyclerAdapt
     private static final float NORMAL_HEIGHT_RATIO = 0.25f;
     private static final float HIGH_RES_HEIGHT_RATIO = 0.28f;
 
-    private static final String KIN = "Kin";
+    private static final String KIN = " Kin";
 
     protected float getImageWidthRatio() {
         return NORMAL_WIDTH_RATIO;

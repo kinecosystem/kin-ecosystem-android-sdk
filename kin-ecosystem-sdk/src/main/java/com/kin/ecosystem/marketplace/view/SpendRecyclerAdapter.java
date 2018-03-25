@@ -1,6 +1,5 @@
 package com.kin.ecosystem.marketplace.view;
 
-import android.support.annotation.NonNull;
 import com.kin.ecosystem.R;
 
 class SpendRecyclerAdapter extends OfferRecyclerAdapter {

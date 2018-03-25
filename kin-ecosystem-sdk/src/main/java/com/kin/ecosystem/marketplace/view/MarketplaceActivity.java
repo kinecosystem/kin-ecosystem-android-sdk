@@ -78,6 +78,12 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
         BlockchainSource.getInstance().addBalanceObserver(balanceObserver);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        marketplacePresenter.getOffers();
+    }
+
     /**
      * Will be changed
      **/
@@ -86,7 +92,6 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
             @Override
             public void run() {
                 if (balanceText != null) {
-                    System.out.println("BALANCE >>>> " + balance);
                     String balanceString = StringUtil.getAmountFormatted(balance);
                     balanceText.setText(balanceString);
                 }
@@ -193,6 +198,16 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     @Override
     public void showToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void notifyEarnItemRemoved(int index) {
+        earnRecyclerAdapter.notifyItemRemoved(index);
+    }
+
+    @Override
+    public void notifySpendItemRemoved(int index) {
+        spendRecyclerAdapter.notifyItemRemoved(index);
     }
 
     @Override

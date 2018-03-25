@@ -23,12 +23,13 @@
         android:id="@+id/brand_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
+        android:layout_marginTop="@dimen/main_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/close_button"
         tools:layout_height="110dp"
-        tools:layout_width="152dp"/>
+        tools:layout_width="152dp"
+        tools:background="@drawable/placeholder"/>
 
     <TextView
         android:id="@+id/title"
@@ -38,7 +39,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/brand_image"
-        tools:text="Redeem code - 8,000 Kin"/>
+        tools:text="Title"/>
 
     <TextView
         android:id="@+id/description"
@@ -53,7 +54,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title"
-        tools:text="Once you have confirmed this purchase,  you can go to your balance to get your code"/>
+        tools:text="Description"/>
 
 
     <Button
@@ -71,18 +72,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title"/>
-
-    <ImageView
-        android:id="@+id/confirmation_image"
-        android:layout_width="@dimen/round_button_height"
-        android:layout_height="@dimen/round_button_height"
-        android:layout_marginTop="@dimen/margin_xlarge"
-        android:layout_marginBottom="@dimen/margin_large"
-        android:src="@drawable/v_mark"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title"/>
-
 
 </android.support.constraint.ConstraintLayout>

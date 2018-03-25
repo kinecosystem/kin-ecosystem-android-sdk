@@ -19,8 +19,6 @@ import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.network.model.Order;
-import java.text.NumberFormat;
-import java.util.Locale;
 
 
 public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, OrderHistoryRecyclerAdapter.ViewHolder> {
@@ -36,6 +34,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
 
     OrderHistoryRecyclerAdapter() {
         super(R.layout.order_history_recycler_item);
+        openLoadAnimation(SLIDEIN_TOP);
     }
 
     private void initColors(Context context) {
