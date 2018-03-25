@@ -22,6 +22,8 @@ import java.util.List;
 
 public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implements IMarketplacePresenter {
 
+    private static final int NOT_FOUND = -1;
+
     private final OfferDataSource offerRepository;
     private final OrderDataSource orderRepository;
 
@@ -41,26 +43,17 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
         this.gson = new Gson();
     }
 
-    private void splitOffersByType(List<Offer> list) {
-        for (Offer offer : list) {
-            if (offer.getOfferType() == Offer.OfferTypeEnum.EARN) {
-                this.earnList.add(offer);
-            } else {
-                this.spendList.add(offer);
-            }
-        }
-
-        if (this.view != null) {
-            this.view.updateEarnList(earnList);
-            this.view.updateSpendList(spendList);
-        }
-    }
-
     @Override
     public void onAttach(IMarketplaceView view) {
         super.onAttach(view);
+        getCachedOffers();
         listenToPendingOffers();
         listenToCompletedOrders();
+    }
+
+    private void getCachedOffers() {
+        OfferList cachedOfferList = offerRepository.getCachedOfferList();
+        setOfferList(cachedOfferList);
     }
 
     private void listenToCompletedOrders() {
@@ -77,9 +70,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
         pendingOfferObserver = new Observer<Offer>() {
             @Override
             public void onChanged(Offer offer) {
-                if(offer == null) {
-                    getOffers();
-                } else {
+                if (offer != null) {
                     removeOfferFromList(offer);
                 }
             }
@@ -106,14 +97,26 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
     }
 
     private void notifyEarnItemRemoved(int index) {
-        if(view != null) {
+        if (view != null) {
             view.notifyEarnItemRemoved(index);
         }
     }
 
+    private void notifyEarnItemInserted(int index) {
+        if (view != null) {
+            view.notifyEarnItemInserted(index);
+        }
+    }
+
     private void notifySpendItemRemoved(int index) {
-        if(view != null) {
+        if (view != null) {
             view.notifySpendItemRemoved(index);
+        }
+    }
+
+    private void notifySpendItemInserted(int index) {
+        if (view != null) {
+            view.notifySpendItemInserted(index);
         }
     }
 
@@ -132,13 +135,10 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
     @Override
     public void getOffers() {
-        OfferList cachedOfferList = offerRepository.getCachedOfferList();
-        setOfferList(cachedOfferList);
-
         this.offerRepository.getOffers(new Callback<OfferList>() {
             @Override
             public void onResponse(OfferList offerList) {
-                setOfferList(offerList);
+                syncOffers(offerList);
             }
 
             @Override
@@ -148,9 +148,88 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
         });
     }
 
+    private void syncOffers(OfferList offerList) {
+        if (offerList != null && offerList.getOffers() != null) {
+            List<Offer> earnOffers = new ArrayList<>();
+            List<Offer> spendOffers = new ArrayList<>();
+
+            splitOffersByType(offerList.getOffers(), earnOffers, spendOffers);
+
+            // check if next [Earn] offer should be removed
+            if (earnOffers.size() > 0) {
+                for (int i = 0; i < earnList.size(); i++) {
+                    Offer offer = earnList.get(i);
+                    int index = earnOffers.indexOf(offer);
+                    if (index == NOT_FOUND) {
+                        earnList.remove(i);
+                        notifyEarnItemRemoved(i);
+                    }
+                }
+            }
+
+            // Add missing [Earn] offers, the order matters
+            for (int i = 0; i < earnOffers.size(); i++) {
+                Offer offer = earnOffers.get(i);
+                if (i < earnList.size()) {
+                    if (!earnList.get(i).equals(offer)) {
+                        earnList.add(i, offer);
+                        notifyEarnItemInserted(i);
+                    }
+                } else {
+                    earnList.add(offer);
+                    notifyEarnItemInserted(i);
+                }
+            }
+
+            // check if next [Spend] offer should be removed
+            if (spendOffers.size() > 0) {
+                for (int i = 0; i < spendList.size(); i++) {
+                    Offer offer = spendList.get(i);
+                    int index = spendOffers.indexOf(offer);
+                    if (index == NOT_FOUND) {
+                        spendList.remove(i);
+                        notifySpendItemRemoved(i);
+                    }
+                }
+            }
+
+            // Add missing [Spend] offers, the order matters
+            for (int i = 0; i < spendOffers.size(); i++) {
+                Offer offer = spendOffers.get(i);
+                if (i < spendList.size()) {
+                    if (!spendList.get(i).equals(offer)) {
+                        spendList.add(i, offer);
+                        notifySpendItemInserted(i);
+                    }
+                } else {
+                    spendList.add(offer);
+                    notifySpendItemInserted(i);
+                }
+            }
+        }
+    }
+
     private void setOfferList(OfferList offerList) {
         if (offerList != null && offerList.getOffers() != null) {
-            splitOffersByType(offerList.getOffers());
+            splitOffersByType(offerList.getOffers(), this.earnList, this.spendList);
+            updateLists();
+        }
+    }
+
+    private void splitOffersByType(List<Offer> list, List<Offer> earnList, List<Offer> spendList) {
+        for (Offer offer : list) {
+            if (offer.getOfferType() == Offer.OfferTypeEnum.EARN) {
+                earnList.add(offer);
+            } else {
+                spendList.add(offer);
+            }
+        }
+    }
+
+    private void updateLists() {
+        if (this.view != null) {
+            this.view.updateEarnList(earnList);
+            this.view.updateSpendList(spendList);
         }
     }
 

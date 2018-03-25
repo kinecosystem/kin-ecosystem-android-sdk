@@ -21,8 +21,6 @@ import java.util.List;
 
 public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> implements IOrderHistoryPresenter {
 
-    private static final String TAG = OrderHistoryPresenter.class.getSimpleName();
-
     private static final int NOT_FOUND = -1;
     private final OrderDataSource orderRepository;
 
@@ -73,17 +71,19 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
                 int index = oldList.indexOf(order);
                 if (index == NOT_FOUND) {
                     //add at top (ui orientation)
-                    oldList.add(0, order);
+                    orderHistoryList.addOrderAtIndex(0, order);
+                    notifyItemInserted();
                 } else {
                     //Update
-                    oldList.set(index, order);
+                    orderHistoryList.updateOrder(index, order);
+                    notifyItemUpdated(index);
                 }
             }
-            orderHistoryList.setOrders(oldList);
+
         } else {
             orderHistoryList = newOrdersList;
+            setOrderHistoryList(orderHistoryList);
         }
-        setOrderHistoryList(orderHistoryList);
     }
 
     private void setOrderHistoryList(OrderList orderHistoryList) {

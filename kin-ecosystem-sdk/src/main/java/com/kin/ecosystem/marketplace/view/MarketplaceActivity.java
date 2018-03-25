@@ -206,8 +206,18 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     }
 
     @Override
+    public void notifyEarnItemInserted(int index) {
+        earnRecyclerAdapter.notifyItemInserted(index);
+    }
+
+    @Override
     public void notifySpendItemRemoved(int index) {
         spendRecyclerAdapter.notifyItemRemoved(index);
+    }
+
+    @Override
+    public void notifySpendItemInserted(int index) {
+        spendRecyclerAdapter.notifyItemInserted(index);
     }
 
     @Override
