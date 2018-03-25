@@ -14,7 +14,7 @@ public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
 
     void moveToTransactionHistory();
 
-    void showOfferActivity(String content , String offerID);
+    void showOfferActivity(String content, String offerID);
 
     void showSpendDialog(ISpendDialogPresenter spendDialogPresenter);
 
@@ -22,5 +22,9 @@ public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
 
     void notifyEarnItemRemoved(int index);
 
+    void notifyEarnItemInserted(int index);
+
     void notifySpendItemRemoved(int index);
+
+    void notifySpendItemInserted(int index);
 }

@@ -23,6 +23,7 @@ import java.util.Objects;
  * offer details for the offer list
  */
 public class Offer {
+
     @SerializedName("id")
     private String id = null;
     @SerializedName("title")
@@ -68,6 +69,7 @@ public class Offer {
         }
 
         public static class Adapter extends TypeAdapter<OfferTypeEnum> {
+
             @Override
             public void write(final JsonWriter jsonWriter, final OfferTypeEnum enumeration) throws IOException {
                 jsonWriter.value(enumeration.getValue());
@@ -118,6 +120,7 @@ public class Offer {
         }
 
         public static class Adapter extends TypeAdapter<ContentTypeEnum> {
+
             @Override
             public void write(final JsonWriter jsonWriter, final ContentTypeEnum enumeration) throws IOException {
                 jsonWriter.value(enumeration.getValue());
@@ -146,11 +149,13 @@ public class Offer {
 
     /**
      * Get id
+     *
      * @return id
      **/
     public String getId() {
         return id;
     }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -163,11 +168,13 @@ public class Offer {
 
     /**
      * Get title
+     *
      * @return title
      **/
     public String getTitle() {
         return title;
     }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -180,11 +187,13 @@ public class Offer {
 
     /**
      * Get description
+     *
      * @return description
      **/
     public String getDescription() {
         return description;
     }
+
     public void setDescription(String description) {
         this.description = description;
     }
@@ -197,11 +206,13 @@ public class Offer {
 
     /**
      * Get image
+     *
      * @return image
      **/
     public String getImage() {
         return image;
     }
+
     public void setImage(String image) {
         this.image = image;
     }
@@ -214,11 +225,13 @@ public class Offer {
 
     /**
      * Get amount
+     *
      * @return amount
      **/
     public Integer getAmount() {
         return amount;
     }
+
     public void setAmount(Integer amount) {
         this.amount = amount;
     }
@@ -231,11 +244,13 @@ public class Offer {
 
     /**
      * Get offerType
+     *
      * @return offerType
      **/
     public OfferTypeEnum getOfferType() {
         return offerType;
     }
+
     public void setOfferType(OfferTypeEnum offerType) {
         this.offerType = offerType;
     }
@@ -248,11 +263,13 @@ public class Offer {
 
     /**
      * determines the type of data that appears in the content
+     *
      * @return contentType
      **/
     public ContentTypeEnum getContentType() {
         return contentType;
     }
+
     public void setContentType(ContentTypeEnum contentType) {
         this.contentType = contentType;
     }
@@ -265,11 +282,13 @@ public class Offer {
 
     /**
      * The coupon description or the poll payload - as serialized json
+     *
      * @return content
      **/
     public String getContent() {
         return content;
     }
+
     public void setContent(String content) {
         this.content = content;
     }
@@ -282,11 +301,13 @@ public class Offer {
 
     /**
      * Get blockchainData
+     *
      * @return blockchainData
      **/
     public BlockchainData getBlockchainData() {
         return blockchainData;
     }
+
     public void setBlockchainData(BlockchainData blockchainData) {
         this.blockchainData = blockchainData;
     }
@@ -300,15 +321,7 @@ public class Offer {
             return false;
         }
         Offer offer = (Offer) o;
-        return Objects.equals(this.id, offer.id) &&
-            Objects.equals(this.title, offer.title) &&
-            Objects.equals(this.description, offer.description) &&
-            Objects.equals(this.image, offer.image) &&
-            Objects.equals(this.amount, offer.amount) &&
-            Objects.equals(this.offerType, offer.offerType) &&
-            Objects.equals(this.contentType, offer.contentType) &&
-            Objects.equals(this.content, offer.content) &&
-            Objects.equals(this.blockchainData, offer.blockchainData);
+        return Objects.equals(this.id, offer.id);
     }
 
     @Override
