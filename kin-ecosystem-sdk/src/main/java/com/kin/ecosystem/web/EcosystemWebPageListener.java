@@ -8,6 +8,8 @@ public interface EcosystemWebPageListener {
 
     void onPageResult(String result);
 
+    void onPageClosed();
+
     void showToolbar();
 
     void hideToolbar();

@@ -42,6 +42,14 @@ class EcosystemNativeApi {
         }
     }
 
+    @JavascriptInterface
+    public void handleClose() {
+        Log.d("NativeApi", "handleClose()");
+        if (listener != null) {
+            listener.onPageClosed();
+        }
+    }
+
     void setListener(final EcosystemWebPageListener listener) {
         this.listener = listener;
     }
