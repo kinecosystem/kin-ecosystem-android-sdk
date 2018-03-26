@@ -7,4 +7,8 @@ public interface EcosystemWebPageListener {
     void onPageCancel();
 
     void onPageResult(String result);
+
+    void showToolbar();
+
+    void hideToolbar();
 }

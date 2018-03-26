@@ -123,4 +123,18 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
             view.close();
         }
     }
+
+    @Override
+    public void showToolbar() {
+        if (view != null) {
+            view.showToolbar();
+        }
+    }
+
+    @Override
+    public void hideToolbar() {
+        if (view != null) {
+            view.hideToolbar();
+        }
+    }
 }

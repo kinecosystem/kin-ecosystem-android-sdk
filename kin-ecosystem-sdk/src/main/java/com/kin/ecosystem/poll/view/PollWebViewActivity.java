@@ -99,13 +99,6 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        close();
-        pollWebViewPresenter.onDetach();
-    }
-
-    @Override
     public void close() {
         runOnUiThread(new Runnable() {
             @Override
@@ -115,5 +108,22 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
             }
         });
         finish();
+    }
+
+    @Override
+    public void showToolbar(){
+        getToolbar().setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideToolbar(){
+        getToolbar().setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        close();
+        pollWebViewPresenter.onDetach();
     }
 }
