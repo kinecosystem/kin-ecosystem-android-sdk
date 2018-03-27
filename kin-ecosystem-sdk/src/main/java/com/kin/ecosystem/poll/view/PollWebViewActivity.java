@@ -20,7 +20,8 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
     private static final String EXTRA_JSON_DATA_KEY = "jsondata";
     private static final String EXTRA_OFFER_ID_KEY = "offer_id";
 
-    public static Intent createIntent(final Context context, @NonNull final String jsonData, @NonNull final String offerID) {
+    public static Intent createIntent(final Context context, @NonNull final String jsonData,
+        @NonNull final String offerID) {
         final Intent intent = new Intent(context, PollWebViewActivity.class);
         intent.putExtra(EXTRA_JSON_DATA_KEY, jsonData);
         intent.putExtra(EXTRA_OFFER_ID_KEY, offerID);
@@ -98,14 +99,13 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
         webView.render(pollJsonString);
     }
 
-
     @Override
-    public void showToolbar(){
+    public void showToolbar() {
         getToolbar().setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void hideToolbar(){
+    public void hideToolbar() {
         getToolbar().setVisibility(View.GONE);
     }
 
@@ -120,7 +120,6 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
         });
         finish();
     }
-
 
     @Override
     protected void onDestroy() {
