@@ -1,5 +1,8 @@
 apply plugin: 'com.android.library'
 apply from: 'dependencies.gradle'
+//publish to jitpack
+apply plugin: 'maven'
+group = 'com.github.kinfoundation'
 
 android {
     compileSdkVersion 26
