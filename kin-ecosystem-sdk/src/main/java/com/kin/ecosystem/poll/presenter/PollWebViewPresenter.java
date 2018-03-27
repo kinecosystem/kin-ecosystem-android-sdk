@@ -100,7 +100,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 
     @Override
     public void onPageClosed() {
-        closeView();
+       closeView();
     }
 
     private void listenToOpenOrders() {

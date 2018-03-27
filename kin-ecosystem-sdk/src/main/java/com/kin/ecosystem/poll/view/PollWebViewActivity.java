@@ -98,6 +98,17 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
         webView.render(pollJsonString);
     }
 
+
+    @Override
+    public void showToolbar(){
+        getToolbar().setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideToolbar(){
+        getToolbar().setVisibility(View.GONE);
+    }
+
     @Override
     public void close() {
         runOnUiThread(new Runnable() {
@@ -110,15 +121,6 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
         finish();
     }
 
-    @Override
-    public void showToolbar(){
-        getToolbar().setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideToolbar(){
-        getToolbar().setVisibility(View.GONE);
-    }
 
     @Override
     protected void onDestroy() {

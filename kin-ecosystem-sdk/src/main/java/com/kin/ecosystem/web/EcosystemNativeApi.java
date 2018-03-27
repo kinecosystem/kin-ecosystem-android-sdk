@@ -31,10 +31,10 @@ class EcosystemNativeApi {
     }
 
     @JavascriptInterface
-    public void displayTopBar(boolean value) {
-        Log.d("NativeApi", "displayTopBar(\"" + value + "\")");
+    public void displayTopBar(boolean shouldDisplay) {
+        Log.d("NativeApi", "displayTopBar(\"" + shouldDisplay + "\")");
         if (listener != null) {
-            if (value) {
+            if (shouldDisplay) {
                 listener.showToolbar();
             } else {
                 listener.hideToolbar();

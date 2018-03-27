@@ -29,16 +29,12 @@ public abstract class BaseToolbarActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutRes());
-        initToolbar();
         setupToolbar();
         initViews();
     }
 
-    private void initToolbar() {
-        topToolBar = findViewById(R.id.toolbar);
-    }
-
     private void setupToolbar() {
+        topToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(topToolBar);
         topToolBar.setTitle(getTitleRes());
         topToolBar.setNavigationIcon(getNavigationIcon());
