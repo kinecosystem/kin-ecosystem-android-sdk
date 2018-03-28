@@ -116,21 +116,6 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
         });
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu_marketplace, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        int id = item.getItemId();
-//        if (R.id.info_menu == id) {
-//            //TODO handle info clicked
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();

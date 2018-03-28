@@ -27,8 +27,6 @@ public class BalanceView extends ConstraintLayout implements IBalanceView {
     private TextView subTitle;
     private TextSwitcher balanceText;
 
-    private final Handler mainHandler = new Handler(Looper.getMainLooper());
-
     public BalanceView(Context context) {
         super(context);
         init(context, null);
@@ -95,7 +93,7 @@ public class BalanceView extends ConstraintLayout implements IBalanceView {
     @Override
     public void updateBalance(final String balance) {
         if (this.balanceText != null) {
-            mainHandler.post(new Runnable() {
+            post(new Runnable() {
                 @Override
                 public void run() {
                     balanceText.setText(balance);
@@ -107,7 +105,7 @@ public class BalanceView extends ConstraintLayout implements IBalanceView {
     @Override
     public void updateSubTitle(final String sub_title) {
         if (this.subTitle != null) {
-            mainHandler.post(new Runnable() {
+            post(new Runnable() {
                 @Override
                 public void run() {
                     subTitle.setText(sub_title);
