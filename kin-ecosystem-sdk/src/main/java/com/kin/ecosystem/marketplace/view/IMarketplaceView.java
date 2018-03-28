@@ -12,7 +12,7 @@ public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
 
     void updateEarnList(List<Offer> response);
 
-    void moveToTransactionHistory();
+    void navigateToOrderHistory();
 
     void showOfferActivity(String content, String offerID);
 

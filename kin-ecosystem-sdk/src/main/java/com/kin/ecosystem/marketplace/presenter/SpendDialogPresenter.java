@@ -86,15 +86,7 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
         if (view != null) {
 
             if (openOrder != null) {
-                int balance = blockchainSource.getBalance();
                 final BigDecimal amount = new BigDecimal(offer.getAmount());
-
-                if (balance < amount.intValue()) {
-                    showToast("You don't have enough Kin");
-                    closeDialog();
-                    return;
-                }
-
                 final String addressee = offer.getBlockchainData().getRecipientAddress();
                 final String orderID = openOrder.getId();
 

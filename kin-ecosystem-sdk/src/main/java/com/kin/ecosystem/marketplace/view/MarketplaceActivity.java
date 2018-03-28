@@ -5,16 +5,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.base.BaseToolbarActivity;
-import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderRepository;
@@ -25,7 +21,6 @@ import com.kin.ecosystem.marketplace.presenter.MarketplacePresenter;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.Offer.OfferTypeEnum;
 import com.kin.ecosystem.poll.view.PollWebViewActivity;
-import com.kin.ecosystem.util.StringUtil;
 import java.util.List;
 
 
@@ -35,9 +30,6 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
 
     private SpendRecyclerAdapter spendRecyclerAdapter;
     private EarnRecyclerAdapter earnRecyclerAdapter;
-
-    private TextView balanceText;
-    private Observer<Integer> balanceObserver;
 
     @Override
     protected int getLayoutRes() {
@@ -67,36 +59,14 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        attachPresenter(new MarketplacePresenter(OfferRepository.getInstance(), OrderRepository.getInstance()));
-        /** Will be changed **/
-        balanceObserver = new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer value) {
-                updateBalance(value);
-            }
-        };
-        BlockchainSource.getInstance().addBalanceObserver(balanceObserver);
+        attachPresenter(new MarketplacePresenter(OfferRepository.getInstance(), OrderRepository.getInstance(),
+            BlockchainSource.getInstance()));
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         marketplacePresenter.getOffers();
-    }
-
-    /**
-     * Will be changed
-     **/
-    private void updateBalance(final int balance) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (balanceText != null) {
-                    String balanceString = StringUtil.getAmountFormatted(balance);
-                    balanceText.setText(balanceString);
-                }
-            }
-        });
     }
 
     @Override
@@ -138,29 +108,28 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
             }
         });
 
-        balanceText = findViewById(R.id.balance_text);
-        balanceText.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.balance_view).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                moveToTransactionHistory();
+                marketplacePresenter.balanceItemClicked();
             }
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_marketplace, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (R.id.info_menu == id) {
-            //TODO handle info clicked
-        }
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.menu_marketplace, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        int id = item.getItemId();
+//        if (R.id.info_menu == id) {
+//            //TODO handle info clicked
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
 
     @Override
     public void onBackPressed() {
@@ -179,9 +148,9 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     }
 
     @Override
-    public void moveToTransactionHistory() {
-        Intent transactionHistory = new Intent(this, OrderHistoryActivity.class);
-        navigateToActivity(transactionHistory);
+    public void navigateToOrderHistory() {
+        Intent orderHistory = new Intent(this, OrderHistoryActivity.class);
+        navigateToActivity(orderHistory);
     }
 
     @Override
@@ -224,6 +193,5 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     protected void onDestroy() {
         super.onDestroy();
         marketplacePresenter.onDetach();
-        BlockchainSource.getInstance().removeBalanceObserver(balanceObserver);
     }
 }

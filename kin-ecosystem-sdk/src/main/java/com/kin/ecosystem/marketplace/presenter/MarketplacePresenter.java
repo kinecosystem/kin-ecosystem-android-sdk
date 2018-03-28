@@ -2,12 +2,14 @@ package com.kin.ecosystem.marketplace.presenter;
 
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
+import com.kin.ecosystem.data.blockchain.IBlockchainSource;
 import com.kin.ecosystem.data.offer.OfferDataSource;
 import com.kin.ecosystem.data.order.OrderDataSource;
 import com.kin.ecosystem.data.order.OrderRepository;
@@ -17,6 +19,7 @@ import com.kin.ecosystem.network.model.Offer.OfferTypeEnum;
 import com.kin.ecosystem.network.model.OfferInfo;
 import com.kin.ecosystem.network.model.OfferList;
 import com.kin.ecosystem.network.model.Order;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +29,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
     private final OfferDataSource offerRepository;
     private final OrderDataSource orderRepository;
+    private final IBlockchainSource blockchainSource;
 
     private List<Offer> spendList;
     private List<Offer> earnList;
@@ -35,11 +39,12 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
     private final Gson gson;
 
     public MarketplacePresenter(@NonNull final OfferDataSource offerRepository,
-        @NonNull final OrderDataSource orderRepository) {
+        @NonNull final OrderDataSource orderRepository, @Nullable final IBlockchainSource blockchainSource) {
         this.spendList = new ArrayList<>();
         this.earnList = new ArrayList<>();
         this.offerRepository = offerRepository;
         this.orderRepository = orderRepository;
+        this.blockchainSource = blockchainSource;
         this.gson = new Gson();
     }
 
@@ -238,12 +243,27 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             }
         } else {
             offer = spendList.get(position);
+            int balance = blockchainSource.getBalance();
+            final BigDecimal amount = new BigDecimal(offer.getAmount());
+
+            if (balance < amount.intValue()) {
+                showToast("You don't have enough Kin");
+                return;
+            }
+
             OfferInfo offerInfo = deserializeOfferInfo(offer.getContent());
             if (offerInfo != null) {
                 showSpendDialog(offerInfo, offer);
             } else {
                 showToast("Oops something went wrong...");
             }
+        }
+    }
+
+    @Override
+    public void balanceItemClicked() {
+        if(view != null) {
+            view.navigateToOrderHistory();
         }
     }
 
