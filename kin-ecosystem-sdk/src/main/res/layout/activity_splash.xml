@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/main_margin"
-        android:layout_marginStart="@dimen/main_margin"
+        android:layout_marginLeft="@dimen/main_margin"
         android:src="@drawable/ic_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
@@ -63,7 +63,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.8"/>
+        app:layout_constraintVertical_bias="0.85"/>
 
     <com.kin.ecosystem.splash.view.SplashScreenButton
         android:id="@+id/lets_get_started"
@@ -72,6 +72,7 @@
         app:layout_constraintBottom_toTopOf="@id/tos_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="@dimen/block_medium_margin"
         android:visibility="visible"/>
 
     <TextView
