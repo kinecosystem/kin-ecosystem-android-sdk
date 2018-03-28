@@ -18,6 +18,7 @@
 
 	<!--Text size-->
 	<dimen name="welcome_text_size">27sp</dimen>
+	<dimen name="title_xlarge_size">21sp</dimen>
 	<dimen name="title_large_size">19sp</dimen>
 	<dimen name="title_size">15sp</dimen>
 	<dimen name="sub_title_size">12sp</dimen>

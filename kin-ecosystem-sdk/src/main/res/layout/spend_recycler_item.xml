@@ -29,6 +29,7 @@
                 style="@style/KinecosysSubTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/title"
                 android:maxLength="18"
                 tools:text="Spotify"/>
 

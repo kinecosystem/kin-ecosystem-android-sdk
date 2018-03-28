@@ -44,6 +44,7 @@
 
     <style name="KinecosysSubTitle" parent="KinecosysTitleText">
         <item name="android:textSize">@dimen/sub_title_size</item>
+        <item name="android:textColor">@color/subtitle</item>
     </style>
 
     <style name="KinecosysSubTitleMedium" parent="KinecosysSubTitle">

@@ -82,8 +82,8 @@ public class SplashScreenButton extends FrameLayout {
     }
 
     private void init() {
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        inflater.inflate(R.layout.splash_loader, this, true);
+        inflate(getContext(), R.layout.splash_loader, this);
+        setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         letsGetStartedBtn = findViewById(R.id.lets_get_started_button);
         centerImage = findViewById(R.id.center_image);
