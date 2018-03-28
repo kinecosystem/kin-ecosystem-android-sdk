@@ -23,6 +23,7 @@ public abstract class BaseToolbarActivity extends AppCompatActivity {
     protected abstract View.OnClickListener getNavigationClickListener();
 
     protected abstract void initViews();
+    private Toolbar topToolBar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,7 +34,7 @@ public abstract class BaseToolbarActivity extends AppCompatActivity {
     }
 
     private void setupToolbar() {
-        Toolbar topToolBar = findViewById(R.id.toolbar);
+        topToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(topToolBar);
         topToolBar.setTitle(getTitleRes());
         topToolBar.setNavigationIcon(getNavigationIcon());
@@ -43,5 +44,9 @@ public abstract class BaseToolbarActivity extends AppCompatActivity {
     protected void navigateToActivity(Intent intent) {
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
+
+    public View getToolbar(){
+        return topToolBar;
     }
 }

@@ -13,4 +13,8 @@ public interface IPollWebView extends IBaseView<PollWebViewPresenter> {
     void renderJson(@NonNull final String pollJsonString);
 
     void close();
+
+    void showToolbar();
+
+    void hideToolbar();
 }

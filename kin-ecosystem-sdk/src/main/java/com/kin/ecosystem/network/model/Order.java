@@ -154,6 +154,8 @@ public class Order {
     private String callToAction = null;
     @SerializedName("amount")
     private Integer amount = null;
+    @SerializedName("error")
+    private Error error = null;
 
     public Order result(Object result) {
         this.result = result;
@@ -352,6 +354,10 @@ public class Order {
 
     public String getContent() {
         return content;
+    }
+
+    public Error getError() {
+        return error;
     }
 
     @Override

@@ -96,7 +96,11 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
                 }
             });
         }
-        closeView();
+    }
+
+    @Override
+    public void onPageClosed() {
+       closeView();
     }
 
     private void listenToOpenOrders() {
@@ -121,6 +125,20 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
     private void closeView() {
         if (view != null) {
             view.close();
+        }
+    }
+
+    @Override
+    public void showToolbar() {
+        if (view != null) {
+            view.showToolbar();
+        }
+    }
+
+    @Override
+    public void hideToolbar() {
+        if (view != null) {
+            view.hideToolbar();
         }
     }
 }
