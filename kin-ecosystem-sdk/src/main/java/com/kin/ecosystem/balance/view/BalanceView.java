@@ -2,8 +2,6 @@ package com.kin.ecosystem.balance.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
@@ -59,18 +57,24 @@ public class BalanceView extends ConstraintLayout implements IBalanceView {
 
         this.subTitle = findViewById(R.id.sub_title);
         this.balanceText = findViewById(R.id.balance_text);
+        setBalanceTextAnimations();
+        setArrowVisibility(showArrow);
 
-        Animation in = AnimationUtils.loadAnimation(context, android.R.anim.fade_in);
-        Animation out = AnimationUtils.loadAnimation(context, android.R.anim.fade_out);
+        attachPresenter(new BalancePresenter(BlockchainSource.getInstance()));
+    }
+
+    private void setBalanceTextAnimations() {
+        Animation in = AnimationUtils.loadAnimation(getContext(), android.R.anim.fade_in);
+        Animation out = AnimationUtils.loadAnimation(getContext(), android.R.anim.fade_out);
         in.setDuration(ANIM_DURATION);
         out.setDuration(ANIM_DURATION);
         balanceText.setInAnimation(in);
         balanceText.setOutAnimation(out);
+    }
 
+    private void setArrowVisibility(boolean showArrow) {
         ImageView arrow = findViewById(R.id.arrow);
         arrow.setVisibility(showArrow ? VISIBLE : GONE);
-
-        attachPresenter(new BalancePresenter(BlockchainSource.getInstance()));
     }
 
     @Override
