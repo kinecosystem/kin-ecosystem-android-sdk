@@ -15,14 +15,14 @@ import android.widget.TextSwitcher;
 import android.widget.TextView;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.balance.presenter.BalancePresenter;
-import com.kin.ecosystem.balance.presenter.IBalancePresenter;
+import com.kin.ecosystem.base.IBasePresenter;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 
 public class BalanceView extends ConstraintLayout implements IBalanceView {
 
     private static final int ANIM_DURATION = 300;
 
-    private IBalancePresenter balancePresenter;
+    private IBasePresenter<IBalanceView> balancePresenter;
 
     private TextView subTitle;
     private TextSwitcher balanceText;
@@ -75,9 +75,8 @@ public class BalanceView extends ConstraintLayout implements IBalanceView {
         attachPresenter(new BalancePresenter(BlockchainSource.getInstance()));
     }
 
-
     @Override
-    public void attachPresenter(IBalancePresenter presenter) {
+    public void attachPresenter(IBasePresenter<IBalanceView> presenter) {
         this.balancePresenter = presenter;
     }
 

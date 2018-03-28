@@ -3,11 +3,12 @@ package com.kin.ecosystem.balance.presenter;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.balance.view.IBalanceView;
 import com.kin.ecosystem.base.BasePresenter;
+import com.kin.ecosystem.base.IBasePresenter;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.blockchain.IBlockchainSource;
 import com.kin.ecosystem.util.StringUtil;
 
-public class BalancePresenter extends BasePresenter<IBalanceView> implements IBalancePresenter {
+public class BalancePresenter extends BasePresenter<IBalanceView> implements IBasePresenter<IBalanceView> {
 
     private Observer<Integer> balanceObserver;
     private final IBlockchainSource blockchainSource;
@@ -50,10 +51,5 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
     public void onDetach() {
         super.onDetach();
         blockchainSource.removeBalanceObserver(balanceObserver);
-    }
-
-    @Override
-    public void updateSubTitle(String subTitle) {
-        //TODO once we have the order observers
     }
 }
