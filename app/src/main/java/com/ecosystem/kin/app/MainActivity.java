@@ -14,7 +14,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        openKinMarketplace();
         findViewById(R.id.launch_marketplace).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
