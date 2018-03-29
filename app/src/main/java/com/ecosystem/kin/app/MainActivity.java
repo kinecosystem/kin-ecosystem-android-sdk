@@ -14,16 +14,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        openKinMarketplace();
         findViewById(R.id.launch_marketplace).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    Kin.launchMarketplace(MainActivity.this);
-                    System.out.println("Public address : " + Kin.getPublicAddress());
-                } catch (TaskFailedException e) {
-                    e.printStackTrace();
-                }
+                openKinMarketplace();
             }
         });
+    }
+
+    private void openKinMarketplace() {
+        try {
+            Kin.launchMarketplace(MainActivity.this);
+        } catch (TaskFailedException e) {
+            e.printStackTrace();
+        }
     }
 }

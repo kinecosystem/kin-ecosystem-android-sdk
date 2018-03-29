@@ -31,8 +31,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
     private final OrderDataSource orderRepository;
     private final IBlockchainSource blockchainSource;
 
-    private List<Offer> spendList;
-    private List<Offer> earnList;
+    private List<Offer> spendList = new ArrayList<>();
+    private List<Offer> earnList = new ArrayList<>();
 
     private Observer<Offer> pendingOfferObserver;
     private Observer<Order> completedOrderObserver;
@@ -215,11 +215,11 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
     private void setOfferList(OfferList offerList) {
         if (offerList != null && offerList.getOffers() != null) {
             splitOffersByType(offerList.getOffers(), this.earnList, this.spendList);
-
-            if (this.view != null) {
-                this.view.updateEarnList(earnList);
-                this.view.updateSpendList(spendList);
-            }
+        }
+        if (this.view != null) {
+            System.out.println("Marketplace >>>>> Presenter  setOfferList ");
+            this.view.updateEarnList(earnList);
+            this.view.updateSpendList(spendList);
         }
     }
 

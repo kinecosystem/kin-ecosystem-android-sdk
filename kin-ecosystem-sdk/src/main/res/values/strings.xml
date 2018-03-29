@@ -8,7 +8,7 @@
     <string name="more">MORE</string>
     <string name="spend">Spend</string>
     <string name="earn">Earn</string>
-    <string name="let_s_get_started">I agree \u2014 Let\'s get started!</string>
+    <string name="let_s_get_started">Let\'s Get Started!</string>
     <string name="confirm">Confirm</string>
     <string name="copy_code">Copy Code</string>
 
@@ -18,7 +18,6 @@
     <string name="use_your_kin_to_enjoy_stuff_you_like">Use your KIN to enjoy stuff you like</string>
     <string name="welcome_to_kin">Welcome to Kin!</string>
     <string name="welcome_kin_info">Kin puts you at the center of your digital life\nby letting you get recognized and rewarded\nfor the time, energy, ideas, opinions,\nand creativity you share online.</string>
-    <string name="please_agree_tos_pp">By clicking “Let’s Get Started” you are agreeing\nto our <a href="http://kinecosystem.org/terms">Terms of Service</a> and <a href="http://kinecosystem.org/privacy">Privacy Policy</a></string>
     <string name="digging_for_gems">Digging for Gems…</string>
     <string name="welcome_to_kin_marketplace">Welcome to Kin Marketplace</string>
 

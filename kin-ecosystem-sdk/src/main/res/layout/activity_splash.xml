@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_bg">
@@ -63,31 +64,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.85"/>
+        app:layout_constraintVertical_bias="0.75"/>
 
     <com.kin.ecosystem.splash.view.SplashScreenButton
         android:id="@+id/lets_get_started"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/tos_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="@dimen/block_medium_margin"
-        android:visibility="visible"/>
-
-    <TextView
-        android:id="@+id/tos_text"
-        style="@style/KinecosysSmallTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/main_margin"
-        android:gravity="center"
-        android:textColorLink="@color/cyan"
-        android:text="@string/please_agree_tos_pp"
-        android:textColor="@color/white"
+        android:layout_marginBottom="@dimen/bottom_margin"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
+
 
     <TextView
         android:id="@+id/loading_text"
@@ -96,10 +84,10 @@
         android:layout_height="wrap_content"
         android:text="@string/digging_for_gems"
         android:textColor="@color/white"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lets_get_started"
-        android:visibility="gone"/>
+        app:layout_constraintTop_toBottomOf="@+id/lets_get_started"/>
 
 
 </android.support.constraint.ConstraintLayout>
