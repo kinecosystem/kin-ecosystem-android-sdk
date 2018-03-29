@@ -217,9 +217,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             splitOffersByType(offerList.getOffers(), this.earnList, this.spendList);
         }
         if (this.view != null) {
-            System.out.println("Marketplace >>>>> Presenter  setOfferList ");
-            this.view.updateEarnList(earnList);
-            this.view.updateSpendList(spendList);
+            this.view.setEarnList(earnList);
+            this.view.setSpendList(spendList);
         }
     }
 

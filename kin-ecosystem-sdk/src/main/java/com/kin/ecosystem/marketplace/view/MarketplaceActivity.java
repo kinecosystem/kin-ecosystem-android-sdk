@@ -123,12 +123,12 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     }
 
     @Override
-    public void updateSpendList(List<Offer> spendList) {
+    public void setSpendList(List<Offer> spendList) {
         spendRecyclerAdapter.setNewData(spendList);
     }
 
     @Override
-    public void updateEarnList(List<Offer> earnList) {
+    public void setEarnList(List<Offer> earnList) {
         earnRecyclerAdapter.setNewData(earnList);
     }
 
