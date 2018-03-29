@@ -101,12 +101,22 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
 
     @Override
     public void showToolbar() {
-        getToolbar().setVisibility(View.VISIBLE);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getToolbar().setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     @Override
     public void hideToolbar() {
-        getToolbar().setVisibility(View.GONE);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getToolbar().setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override
