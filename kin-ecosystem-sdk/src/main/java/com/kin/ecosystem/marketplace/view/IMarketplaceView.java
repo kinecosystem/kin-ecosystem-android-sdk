@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
 
-    void updateSpendList(List<Offer> response);
+    void setSpendList(List<Offer> response);
 
-    void updateEarnList(List<Offer> response);
+    void setEarnList(List<Offer> response);
 
     void navigateToOrderHistory();
 
