@@ -9,4 +9,6 @@ public interface IMarketplacePresenter extends IBasePresenter<IMarketplaceView> 
     void getOffers();
 
     void onItemClicked(int position, OfferTypeEnum offerType);
+
+    void balanceItemClicked();
 }

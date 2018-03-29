@@ -25,14 +25,12 @@ public class SplashViewActivity extends AppCompatActivity implements ISplashView
     private ISplashPresenter splashPresenter;
 
     private SplashScreenButton letsGetStartedBtn;
-    private TextView tosText;
     private TextView loadingText;
 
     private static final int FADE_DURATION = 250;
     private static final float ZERO_FLOAT = 0f;
     private static final float ONE_FLOAT = 1f;
     private Animation fadeIn = new AlphaAnimation(ZERO_FLOAT, ONE_FLOAT);
-    private Animation fadeOutTos = new AlphaAnimation(ONE_FLOAT, ZERO_FLOAT);
     private Animation fadeOutLoading = new AlphaAnimation(ONE_FLOAT, ZERO_FLOAT);
 
     @Override
@@ -46,25 +44,7 @@ public class SplashViewActivity extends AppCompatActivity implements ISplashView
 
     private void initAnimations() {
         fadeIn.setDuration(FADE_DURATION);
-        fadeOutTos.setDuration(FADE_DURATION);
         fadeOutLoading.setDuration(FADE_DURATION);
-        fadeOutTos.setAnimationListener(new AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                tosText.setVisibility(View.INVISIBLE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-
         fadeOutLoading.setAnimationListener(new AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -86,7 +66,6 @@ public class SplashViewActivity extends AppCompatActivity implements ISplashView
     private void initViews() {
         letsGetStartedBtn = findViewById(R.id.lets_get_started);
         loadingText = findViewById(R.id.loading_text);
-        setUpTosText();
         setUpBackButton();
         setUpLetsGetStartedButton();
     }
@@ -117,11 +96,6 @@ public class SplashViewActivity extends AppCompatActivity implements ISplashView
         });
     }
 
-    private void setUpTosText() {
-        tosText = findViewById(R.id.tos_text);
-        tosText.setMovementMethod(LinkMovementMethod.getInstance());
-    }
-
     @Override
     public void attachPresenter(SplashPresenter presenter) {
         splashPresenter = presenter;
@@ -144,25 +118,17 @@ public class SplashViewActivity extends AppCompatActivity implements ISplashView
     public void animateLoading() {
         letsGetStartedBtn.animateLoading();
         fadeInView(loadingText);
-        fadeOutTos();
     }
 
     @Override
     public void stopLoading(boolean reset) {
         letsGetStartedBtn.stopLoading(reset);
         fadeOutLoading();
-        if (reset) {
-            fadeInView(tosText);
-        }
     }
 
     private void fadeInView(View view) {
         view.setVisibility(View.VISIBLE);
         view.startAnimation(fadeIn);
-    }
-
-    private void fadeOutTos() {
-        tosText.startAnimation(fadeOutTos);
     }
 
     private void fadeOutLoading() {

@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
 
-    void updateSpendList(List<Offer> response);
+    void setSpendList(List<Offer> response);
 
-    void updateEarnList(List<Offer> response);
+    void setEarnList(List<Offer> response);
 
-    void moveToTransactionHistory();
+    void navigateToOrderHistory();
 
     void showOfferActivity(String content, String offerID);
 

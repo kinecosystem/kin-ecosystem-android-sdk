@@ -27,11 +27,12 @@ public class SignInRepo {
             userID = UUID.randomUUID().toString();
             sharedPreferences.edit().putString(USER_UUID_KEY, userID).apply();
         }
-        String apiKey = context.getResources().getString(R.string.kin_ecosystem_api_key);
+        String apiKey = context.getResources().getString(R.string.sample_kin_ecosystem_api_key);
+        String appID = context.getResources().getString(R.string.sample_app_id);
 
         signInData = new SignInData()
             .signInType(SignInTypeEnum.WHITELIST)
-            .appId("kik")
+            .appId(appID)
             .deviceId(deviceUUID)
             .userId(userID)
             .apiKey(apiKey);

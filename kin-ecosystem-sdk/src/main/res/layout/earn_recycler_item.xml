@@ -19,6 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/block_margin"
         android:layout_marginBottom="@dimen/tiny_margin"
+        android:textColor="@color/title"
         android:maxLength="14"
         tools:text="Answer a Poll"/>
 

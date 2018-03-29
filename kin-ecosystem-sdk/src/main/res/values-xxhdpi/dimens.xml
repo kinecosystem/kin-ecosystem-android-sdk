@@ -16,9 +16,12 @@
 	<dimen name="margin_large">30dp</dimen>
 	<dimen name="margin_xlarge">60dp</dimen>
 
+	<dimen name="bottom_margin">60dp</dimen>
+
 
 	<!--Text size-->
 	<dimen name="welcome_text_size">30sp</dimen>
+	<dimen name="title_xlarge_size">24sp</dimen>
 	<dimen name="title_large_size">22sp</dimen>
 	<dimen name="title_size">18sp</dimen>
 	<dimen name="sub_title_size">14sp</dimen>

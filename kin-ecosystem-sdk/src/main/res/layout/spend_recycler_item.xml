@@ -29,7 +29,8 @@
                 style="@style/KinecosysSubTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLength="18"
+                android:textColor="@color/title"
+                android:maxLength="24"
                 tools:text="Spotify"/>
 
             <TextView
@@ -37,7 +38,7 @@
                 style="@style/KinecosysSubTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLength="22"
+                android:maxLength="30"
                 tools:text="1 week subscription"/>
 
         </LinearLayout>
@@ -49,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:gravity="right"
-            android:textColor="@color/gray_light"
+            android:textColor="@color/bluePrimary"
             tools:text="2,000 KIN"/>
 
     </FrameLayout>
