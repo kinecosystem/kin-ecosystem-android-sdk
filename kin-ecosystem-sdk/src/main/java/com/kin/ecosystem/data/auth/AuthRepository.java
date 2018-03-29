@@ -109,10 +109,10 @@ public class AuthRepository implements AuthDataSource {
 
     @Override
     public void activateAccount(@NonNull final Callback<Void> callback) {
-        localData.activateAccount();
         remoteData.activateAccount(new Callback<AuthToken>() {
             @Override
             public void onResponse(AuthToken response) {
+                localData.activateAccount();
                 setAuthToken(response);
                 callback.onResponse(null);
             }
