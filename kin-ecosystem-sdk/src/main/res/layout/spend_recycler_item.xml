@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:gravity="right"
-            android:textColor="@color/gray_light"
+            android:textColor="@color/bluePrimary"
             tools:text="2,000 KIN"/>
 
     </FrameLayout>
