@@ -72,8 +72,18 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
         }
     }
 
+
+    @Override
+    public void closeClicked() {
+        cancelOrderAndClose();
+    }
+
     @Override
     public void onPageCancel() {
+        cancelOrderAndClose();
+    }
+
+    private void cancelOrderAndClose() {
         if (openOrder != null && !isOrderSubmitted) {
             orderRepository.cancelOrder(offerID, openOrder.getId(), null);
         }

@@ -6,4 +6,5 @@ import com.kin.ecosystem.web.EcosystemWebPageListener;
 
 public interface IPollWebViewPresenter extends IBasePresenter<IPollWebView>, EcosystemWebPageListener {
 
+    void closeClicked();
 }
