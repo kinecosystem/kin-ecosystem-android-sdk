@@ -52,7 +52,7 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                close();
+                pollWebViewPresenter.closeClicked();
             }
         };
     }
