@@ -33,6 +33,7 @@ dependencies {
     implementation devDependencies.gson
     implementation devDependencies.okhttp3
     implementation devDependencies.loginInterceptor3
+    implementation devDependencies.baseRecyclerAdapter
 
     testImplementation testingDependencies.junit
 }

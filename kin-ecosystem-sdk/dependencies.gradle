@@ -7,6 +7,7 @@ ext {
     picassoVersion = '2.5.2'
     okhttp3Version = '3.9.1'
     gsonVersion = '2.8.2'
+    baseRecyclerAdapterVersion = 'a0c3b3f5b3'
 
     //Testing Version
     junitVersion = '4.12'
@@ -18,19 +19,21 @@ ext {
     picassoPackage = 'com.squareup.picasso'
     okhttp3Packace = 'com.squareup.okhttp3'
     gsonPackage = 'com.google.code.gson'
+    baseRecyclerAdapterPackage = 'com.github.OrenZak'
 
     //Testing Packages
     junitPackage = 'junit'
 
     devDependencies = [
-            kinStellar       : buildDependency(kinFoundationPackage, 'kin-core-android', kinStellarVersion),
-            appCompat_v7     : buildDependency(supportPackage, 'appcompat-v7', supportVersion),
-            recyclerView_v7  : buildDependency(supportPackage, 'recyclerview-v7', supportVersion),
-            constraintLayout : buildDependency(constraintLayoutPackage, 'constraint-layout', constraintLayoutVersion),
-            picasso          : buildDependency(picassoPackage, 'picasso', picassoVersion),
-            gson             : buildDependency(gsonPackage, 'gson', gsonVersion),
-            okhttp3          : buildDependency(okhttp3Packace, 'okhttp', okhttp3Version),
-            loginInterceptor3: buildDependency(okhttp3Packace, 'logging-interceptor', okhttp3Version),
+            kinStellar         : buildDependency(kinFoundationPackage, 'kin-core-android', kinStellarVersion),
+            appCompat_v7       : buildDependency(supportPackage, 'appcompat-v7', supportVersion),
+            recyclerView_v7    : buildDependency(supportPackage, 'recyclerview-v7', supportVersion),
+            constraintLayout   : buildDependency(constraintLayoutPackage, 'constraint-layout', constraintLayoutVersion),
+            picasso            : buildDependency(picassoPackage, 'picasso', picassoVersion),
+            gson               : buildDependency(gsonPackage, 'gson', gsonVersion),
+            okhttp3            : buildDependency(okhttp3Packace, 'okhttp', okhttp3Version),
+            loginInterceptor3  : buildDependency(okhttp3Packace, 'logging-interceptor', okhttp3Version),
+            baseRecyclerAdapter: buildDependency(baseRecyclerAdapterPackage, 'BaseRecyclerViewAdapterHelper', baseRecyclerAdapterVersion),
     ]
 
     testingDependencies = [
