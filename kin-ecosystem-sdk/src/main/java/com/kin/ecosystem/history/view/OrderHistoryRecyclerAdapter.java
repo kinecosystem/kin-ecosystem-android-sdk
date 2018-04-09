@@ -15,13 +15,16 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.ImageView;
+import com.chad.library.adapter.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
-import com.kin.ecosystem.base.BaseRecyclerAdapter;
+import com.kin.ecosystem.history.view.OrderHistoryRecyclerAdapter.ViewHolder;
 import com.kin.ecosystem.network.model.Order;
 
 
-public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, OrderHistoryRecyclerAdapter.ViewHolder> {
+public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, ViewHolder> {
+
+    private static final int NOT_INITIALIZED = -1;
 
     private static int colorBlue = NOT_INITIALIZED;
     private static int colorRed = NOT_INITIALIZED;
