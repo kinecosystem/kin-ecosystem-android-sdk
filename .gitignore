@@ -5,6 +5,9 @@
 # Files for the ART/Dalvik VM
 *.dex
 
+# SampleApp files
+app/src/main/res/values/secret-strings.xml
+
 # Java class files
 *.class
 
