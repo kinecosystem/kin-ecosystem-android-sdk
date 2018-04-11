@@ -7,7 +7,7 @@ jobs:
   build-pull-request:
     docker:
       # specify the version you desire here
-      - image: circleci/openjdk:7-jdk
+      - image: circleci/android:api-25-alpha
       
   
 
