@@ -1,7 +1,3 @@
-# Java Gradle CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-java/ for more details
-#
 version: 2
 jobs:
   build-pull-request:
@@ -33,7 +29,7 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      run:
+      - run:
           name: Download Android Dependencies
           command: ./gradlew androidDependencies
 
@@ -44,7 +40,7 @@ jobs:
 
       # run tests!
       - run:
-          name: build and test
+          name: Build And Test
           command: ./gradlew assembleDebug -Pandroid.buildOnlyTargetAbi=false -Pcircleci test
 
 workflows:
@@ -57,6 +53,3 @@ workflows:
               ignore:
                 - dev
                 - master
-
-
-
