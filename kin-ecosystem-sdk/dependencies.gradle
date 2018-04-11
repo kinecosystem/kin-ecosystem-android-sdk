@@ -9,9 +9,6 @@ ext {
     gsonVersion = '2.8.2'
     baseRecyclerAdapterVersion = '18191dd'
 
-    //Testing Version
-    junitVersion = '4.12'
-
     //Packages
     kinFoundationPackage = 'com.github.kinfoundation'
     supportPackage = 'com.android.support'
@@ -21,8 +18,13 @@ ext {
     gsonPackage = 'com.google.code.gson'
     baseRecyclerAdapterPackage = 'com.github.OrenZak'
 
+    //Testing Version
+    junitVersion = '4.12'
+    mockitoVersion = '2.13.0'
+
     //Testing Packages
     junitPackage = 'junit'
+    mockitoPackage = 'org.mockito'
 
     devDependencies = [
             kinStellar         : buildDependency(kinFoundationPackage, 'kin-core-android', kinStellarVersion),
@@ -37,7 +39,8 @@ ext {
     ]
 
     testingDependencies = [
-            junit: buildDependency(junitPackage, 'junit', junitVersion),
+            junit  : buildDependency(junitPackage, 'junit', junitVersion),
+            mockito: buildDependency(mockitoPackage, 'mockito-core', mockitoVersion),
     ]
 }
 

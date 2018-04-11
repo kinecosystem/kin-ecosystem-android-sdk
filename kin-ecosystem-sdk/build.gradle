@@ -35,4 +35,5 @@ dependencies {
     implementation devDependencies.baseRecyclerAdapter
 
     testImplementation testingDependencies.junit
+    testImplementation testingDependencies.mockito
 }
