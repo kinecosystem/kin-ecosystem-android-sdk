@@ -25,7 +25,7 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
     private static final int NOT_FOUND = -1;
     private final OrderDataSource orderRepository;
 
-    private List<Order> orderHistoryList;
+    private List<Order> orderHistoryList = new ArrayList<>();
     private Observer<Order> completedOrderObserver;
     private final Gson gson;
 
@@ -63,7 +63,7 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 
     private void syncNewOrders(OrderList newOrdersListObj) {
         List<Order> newList = removePendingOrders(newOrdersListObj);
-        if (orderHistoryList != null && orderHistoryList.size() > 0) {
+        if (orderHistoryList.size() > 0) {
             //the oldest order is the last one, so we'll go from the last and add the top
             //we will end with newest order at the top.
             for (int i = newList.size() - 1; i >= 0; i--) {
@@ -91,14 +91,12 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
     }
 
     private List<Order> removePendingOrders(OrderList orderListObj) {
-        if (orderListObj == null || orderListObj.getOrders() == null) {
-            return new ArrayList<>();
-        }
-
         List<Order> orderList = new ArrayList<>();
-        for (Order order : orderListObj.getOrders()) {
-            if (order.getStatus() != StatusEnum.PENDING) {
-                orderList.add(order);
+        if (orderListObj != null && orderListObj.getOrders() != null) {
+            for (Order order : orderListObj.getOrders()) {
+                if (order.getStatus() != StatusEnum.PENDING) {
+                    orderList.add(order);
+                }
             }
         }
         return orderList;

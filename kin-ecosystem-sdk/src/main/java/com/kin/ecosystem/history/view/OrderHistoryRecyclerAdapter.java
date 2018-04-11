@@ -127,6 +127,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
             String brand = item.getTitle();
             String delimiter = " - ";
             String actionText = getActionText(item);
+            setText(R.id.action_text, actionText);
             switch (item.getStatus()) {
                 case COMPLETED:
                     if (item.getOfferType() == OfferTypeEnum.SPEND) {
@@ -139,11 +140,10 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
                     } else {
                         setText(R.id.title, brand);
                     }
-                    setText(R.id.action_text, actionText);
                     break;
                 case FAILED:
                     setText(R.id.title, brand + delimiter);
-                    setText(R.id.action_text, actionText);
+
                     setTextColor(R.id.action_text, colorRed);
                     break;
                 default:
