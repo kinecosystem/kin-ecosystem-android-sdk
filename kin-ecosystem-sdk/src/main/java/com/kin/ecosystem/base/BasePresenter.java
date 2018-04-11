@@ -18,4 +18,9 @@ public class BasePresenter<T extends IBaseView> implements IBasePresenter<T> {
     public void onDetach() {
         view = null;
     }
+
+    @Override
+    public T getView() {
+        return view;
+    }
 }
