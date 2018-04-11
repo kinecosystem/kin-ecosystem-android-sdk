@@ -14,20 +14,6 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
     private boolean animationEnded = false;
     private boolean confirmedSucceed = false;
 
-    private Callback<Void> activateAccountCallback = new Callback<Void>() {
-        @Override
-        public void onResponse(Void response) {
-            confirmedSucceed = true;
-            navigateToMarketplace();
-        }
-
-        @Override
-        public void onFailure(Throwable t) {
-            showToast("Oops something went wrong...");
-            stopLoading(true);
-        }
-    };
-
     public SplashPresenter(@NonNull final AuthDataSource authRepository) {
         this.authRepository = authRepository;
     }
@@ -45,7 +31,19 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
     }
 
     private void activateAccount() {
-        authRepository.activateAccount(getActivateAccountCallback());
+        authRepository.activateAccount(new Callback<Void>() {
+            @Override
+            public void onResponse(Void response) {
+                confirmedSucceed = true;
+                navigateToMarketplace();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                showToast("Oops something went wrong...");
+                stopLoading(true);
+            }
+        });
     }
 
     private void stopLoading(boolean reset) {
@@ -66,11 +64,6 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
                 view.navigateToMarketPlace();
             }
         }
-    }
-
-    @VisibleForTesting
-    Callback<Void> getActivateAccountCallback() {
-        return activateAccountCallback;
     }
 
     @Override
