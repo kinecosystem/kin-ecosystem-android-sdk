@@ -20,6 +20,7 @@ import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.history.view.OrderHistoryRecyclerAdapter.ViewHolder;
 import com.kin.ecosystem.network.model.Order;
+import com.kin.ecosystem.network.model.Order.OfferTypeEnum;
 
 
 public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, ViewHolder> {
@@ -125,31 +126,28 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
         private void setOrderTitle(Order item) {
             String brand = item.getTitle();
             String delimiter = " - ";
-            if (item.getOfferType() == Order.OfferTypeEnum.SPEND) {
-                String actionText = getActionText(item);
-                switch (item.getStatus()) {
-                    case COMPLETED:
+            String actionText = getActionText(item);
+            switch (item.getStatus()) {
+                case COMPLETED:
+                    if (item.getOfferType() == OfferTypeEnum.SPEND) {
                         Spannable titleSpannable = new SpannableString(brand + delimiter);
                         titleSpannable.setSpan(new ForegroundColorSpan(colorBlue),
                             0, brand.length(),
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         setSpannableText(R.id.title, titleSpannable);
-
-                        setText(R.id.action_text, actionText);
                         setTextColor(R.id.action_text, colorBlue);
-                        break;
-                    case FAILED:
-                        setText(R.id.title, brand + delimiter);
-
-                        setText(R.id.action_text, actionText);
-                        setTextColor(R.id.action_text, colorRed);
-                        break;
-                    default:
-                        break;
-                }
-            } else {
-                setText(R.id.title, brand);
-                setText(R.id.action_text, "");
+                    } else {
+                        setText(R.id.title, brand);
+                    }
+                    setText(R.id.action_text, actionText);
+                    break;
+                case FAILED:
+                    setText(R.id.title, brand + delimiter);
+                    setText(R.id.action_text, actionText);
+                    setTextColor(R.id.action_text, colorRed);
+                    break;
+                default:
+                    break;
             }
         }
 

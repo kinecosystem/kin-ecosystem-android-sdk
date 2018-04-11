@@ -1,4 +1,4 @@
-# kin-ecosystem-android-sample-app
+# kin-ecosystem-android-sdk
 A simple sample app that shows how to initiate  and launch the Kin ecosystem marketplace
 
 ## Disclaimer
