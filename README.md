@@ -1,5 +1,4 @@
-# kin-ecosystem-android-sample-app
-A simple sample app that shows how to initiate  and launch the Kin ecosystem marketplace
+# kin-ecosystem-android-sdk
 
 ## Disclaimer
 The [Sample App](app/) under module `app` is for presentation purposes only - it should not be used for any other purpose.<br/>

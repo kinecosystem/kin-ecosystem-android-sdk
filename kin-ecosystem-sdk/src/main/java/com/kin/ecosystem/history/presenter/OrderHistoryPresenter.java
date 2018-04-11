@@ -16,6 +16,7 @@ import com.kin.ecosystem.history.view.IOrderHistoryView;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.Order.StatusEnum;
 import com.kin.ecosystem.network.model.OrderList;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
     private static final int NOT_FOUND = -1;
     private final OrderDataSource orderRepository;
 
-    private OrderList orderHistoryList;
+    private List<Order> orderHistoryList = new ArrayList<>();
     private Observer<Order> completedOrderObserver;
     private final Gson gson;
 
@@ -44,8 +45,9 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
     }
 
     private void getOrderHistoryList() {
-        orderHistoryList = orderRepository.getAllCachedOrderHistory();
-        setOrderHistoryList(orderHistoryList);
+        OrderList cachedOrderListObj = orderRepository.getAllCachedOrderHistory();
+        List<Order> cachedList = removePendingOrders(cachedOrderListObj);
+        setOrderHistoryList(cachedList);
         orderRepository.getAllOrderHistory(new Callback<OrderList>() {
             @Override
             public void onResponse(OrderList orderHistoryList) {
@@ -59,49 +61,45 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
         });
     }
 
-    private void syncNewOrders(OrderList newOrdersList) {
-        if (orderHistoryList != null && orderHistoryList.getOrders() != null
-            && orderHistoryList.getOrders().size() > 0) {
-            List<Order> oldList = orderHistoryList.getOrders();
-            List<Order> newList = newOrdersList.getOrders();
+    private void syncNewOrders(OrderList newOrdersListObj) {
+        List<Order> newList = removePendingOrders(newOrdersListObj);
+        if (orderHistoryList.size() > 0) {
             //the oldest order is the last one, so we'll go from the last and add the top
             //we will end with newest order at the top.
             for (int i = newList.size() - 1; i >= 0; i--) {
                 Order order = newList.get(i);
-                int index = oldList.indexOf(order);
+                int index = orderHistoryList.indexOf(order);
                 if (index == NOT_FOUND) {
                     //add at top (ui orientation)
-                    orderHistoryList.addOrderAtIndex(0, order);
+                    orderHistoryList.add(0, order);
                     notifyItemInserted();
                 } else {
                     //Update
-                    orderHistoryList.updateOrder(index, order);
+                    orderHistoryList.set(index, order);
                     notifyItemUpdated(index);
                 }
             }
 
         } else {
-            orderHistoryList = newOrdersList;
-            setOrderHistoryList(orderHistoryList);
+            setOrderHistoryList(newList);
         }
     }
 
-    private void setOrderHistoryList(OrderList orderHistoryList) {
-        if (orderHistoryList != null && orderHistoryList.getOrders() != null) {
-            List<Order> orders = orderHistoryList.getOrders();
-            removePendingOrders(orders);
-            this.orderHistoryList = orderHistoryList;
-            this.view.updateOrderHistoryList(orderHistoryList.getOrders());
-        }
+    private void setOrderHistoryList(List<Order> orders) {
+        this.orderHistoryList = orders;
+        this.view.updateOrderHistoryList(orderHistoryList);
     }
 
-    private void removePendingOrders(List<Order> orders) {
-        for (Iterator<Order> ordersIterator = orders.listIterator(); ordersIterator.hasNext(); ) {
-            Order order = ordersIterator.next();
-            if (order.getStatus() == StatusEnum.PENDING) {
-                ordersIterator.remove();
+    private List<Order> removePendingOrders(OrderList orderListObj) {
+        List<Order> orderList = new ArrayList<>();
+        if (orderListObj != null && orderListObj.getOrders() != null) {
+            for (Order order : orderListObj.getOrders()) {
+                if (order.getStatus() != StatusEnum.PENDING) {
+                    orderList.add(order);
+                }
             }
         }
+        return orderList;
     }
 
     private void listenToCompletedOrders() {
@@ -118,12 +116,12 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
     }
 
     private void addOrderOrUpdate(Order order) {
-        int index = orderHistoryList.contains(order);
+        int index = orderHistoryList.indexOf(order);
         if (index == NOT_FOUND) {
-            orderHistoryList.addOrderAtIndex(0, order);
+            orderHistoryList.add(0, order);
             notifyItemInserted();
         } else {
-            orderHistoryList.updateOrder(index, order);
+            orderHistoryList.set(index, order);
             notifyItemUpdated(index);
         }
     }
