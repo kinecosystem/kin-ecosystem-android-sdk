@@ -1,7 +1,6 @@
 package com.kin.ecosystem.splash.presenter;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.data.auth.AuthDataSource;
