@@ -61,8 +61,8 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
         });
     }
 
-    private void syncNewOrders(OrderList newOrdersList) {
-        List<Order> newList = removePendingOrders(newOrdersList);
+    private void syncNewOrders(OrderList newOrdersListObj) {
+        List<Order> newList = removePendingOrders(newOrdersListObj);
         if (orderHistoryList != null && orderHistoryList.size() > 0) {
             //the oldest order is the last one, so we'll go from the last and add the top
             //we will end with newest order at the top.
