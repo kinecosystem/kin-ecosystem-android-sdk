@@ -36,24 +36,29 @@ public class SignInRepo {
     private static final String DEVICE_UUID_KEY = "DEVICE_UUID_KEY";
     private static final long MILLISECONDS_IN_DAY = 1000*60*60*24;
     private static final String API_KEY = "A28hNcn2wp77QyaM8kB2C";
-    private static final String ES256_PRIVATE_KEY = "MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgcok+N5GrcPumrW3hLb9pouIp0S4K\n"
-        + "                                                            NWNRFUQk0dxMxISgCgYIKoZIzj0DAQehRANCAAQkfU8r3FLuA2d1a9lhNHr/xM7xArUTpO7Gffbl\n"
-        + "                                                            XOoRXfbhJ+LVVyENo2S10oGvSxjfGpxrRfw4EPBlo+EnzTHk";
-//    private static final String ES256_PRIVATE_KEY = "MIICWwIBAAKBgQDdlatRjRjogo3WojgGHFHYLugdUWAY9iR3fy4arWNA1KoS8kVw\n"
-//        +"33cJibXr8bvwUAUparCwlvdbH6dvEOfou0/gCFQsHUfQrSDv+MuSUMAe8jzKE4qW\n"
-//        +"+jK+xQU9a03GUnKHkkle+Q0pX/g6jXZ7r1/xAK5Do2kQ+X5xK9cipRgEKwIDAQAB\n"
-//        +"AoGAD+onAtVye4ic7VR7V50DF9bOnwRwNXrARcDhq9LWNRrRGElESYYTQ6EbatXS\n"
-//        +"3MCyjjX2eMhu/aF5YhXBwkppwxg+EOmXeh+MzL7Zh284OuPbkglAaGhV9bb6/5Cp\n"
-//        +"uGb1esyPbYW+Ty2PC0GSZfIXkXs76jXAu9TOBvD0ybc2YlkCQQDywg2R/7t3Q2OE\n"
-//        +"2+yo382CLJdrlSLVROWKwb4tb2PjhY4XAwV8d1vy0RenxTB+K5Mu57uVSTHtrMK0\n"
-//        +"GAtFr833AkEA6avx20OHo61Yela/4k5kQDtjEf1N0LfI+BcWZtxsS3jDM3i1Hp0K\n"
-//        +"Su5rsCPb8acJo5RO26gGVrfAsDcIXKC+bQJAZZ2XIpsitLyPpuiMOvBbzPavd4gY\n"
-//        +"6Z8KWrfYzJoI/Q9FuBo6rKwl4BFoToD7WIUS+hpkagwWiz+6zLoX1dbOZwJACmH5\n"
-//        +"fSSjAkLRi54PKJ8TFUeOP15h9sQzydI8zJU+upvDEKZsZc/UhT/SySDOxQ4G/523\n"
-//        +"Y0sz/OZtSWcol/UMgQJALesy++GdvoIDLfJX5GBQpuFgFenRiRDabxrE9MNUZ2aP\n"
-//        +"FaFp+DyAe+b4nDwuJaW2LURbr8AEZga7oQj0uYxcYw==";
 
-    private static final String ES256_PUBLIC_KEY = "";
+//    private static final String ES256_PRIVATE_KEY =
+//        "MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgpo0vR0/qBMrzRHzRbxbVhACJLpoI\n"
+//            + "                                                            7fE/h2CTmFRKP6KgCgYIKoZIzj0DAQehRANCAARxCXH5tmEvTdB6xSyEmxLVk96W8H/Lrl8aJYsp\n"
+//            + "                                                            QcTowj6GvzLHDtqpZY1+4wHt8gAC+QSw9TteF2wqfUDmCWmE";
+//    private static final String ES256_PUBLIC_KEY =
+//        "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEcQlx+bZhL03QesUshJsS1ZPelvB/y65fGiWLKUHE\n"
+//            + "                                                            6MI+hr8yxw7aqWWNfuMB7fIAAvkEsPU7XhdsKn1A5glphA==";
+
+    private static final String RS512_PRIVATE_KEY = "MIICWwIBAAKBgQDdlatRjRjogo3WojgGHFHYLugdUWAY9iR3fy4arWNA1KoS8kVw\n"
+        +"33cJibXr8bvwUAUparCwlvdbH6dvEOfou0/gCFQsHUfQrSDv+MuSUMAe8jzKE4qW\n"
+        +"+jK+xQU9a03GUnKHkkle+Q0pX/g6jXZ7r1/xAK5Do2kQ+X5xK9cipRgEKwIDAQAB\n"
+        +"AoGAD+onAtVye4ic7VR7V50DF9bOnwRwNXrARcDhq9LWNRrRGElESYYTQ6EbatXS\n"
+        +"3MCyjjX2eMhu/aF5YhXBwkppwxg+EOmXeh+MzL7Zh284OuPbkglAaGhV9bb6/5Cp\n"
+        +"uGb1esyPbYW+Ty2PC0GSZfIXkXs76jXAu9TOBvD0ybc2YlkCQQDywg2R/7t3Q2OE\n"
+        +"2+yo382CLJdrlSLVROWKwb4tb2PjhY4XAwV8d1vy0RenxTB+K5Mu57uVSTHtrMK0\n"
+        +"GAtFr833AkEA6avx20OHo61Yela/4k5kQDtjEf1N0LfI+BcWZtxsS3jDM3i1Hp0K\n"
+        +"Su5rsCPb8acJo5RO26gGVrfAsDcIXKC+bQJAZZ2XIpsitLyPpuiMOvBbzPavd4gY\n"
+        +"6Z8KWrfYzJoI/Q9FuBo6rKwl4BFoToD7WIUS+hpkagwWiz+6zLoX1dbOZwJACmH5\n"
+        +"fSSjAkLRi54PKJ8TFUeOP15h9sQzydI8zJU+upvDEKZsZc/UhT/SySDOxQ4G/523\n"
+        +"Y0sz/OZtSWcol/UMgQJALesy++GdvoIDLfJX5GBQpuFgFenRiRDabxrE9MNUZ2aP\n"
+        +"FaFp+DyAe+b4nDwuJaW2LURbr8AEZga7oQj0uYxcYw==";
+
 
 
 
@@ -75,7 +80,7 @@ public class SignInRepo {
         String apiKey = context.getResources().getString(R.string.sample_kin_ecosystem_api_key);
         String appID = context.getResources().getString(R.string.sample_app_id);
 
-    /*    signInData = new SignInData()
+/*        signInData = new SignInData()
             .signInType(SignInTypeEnum.WHITELIST)
             .appId(appID)
             .deviceId(deviceUUID)
@@ -98,9 +103,9 @@ public class SignInRepo {
         KeyFactory keyFactory = null;
 
 
-        byte[] bytes = Base64.decode(ES256_PRIVATE_KEY, Base64.NO_WRAP);
+        byte[] bytes = Base64.decode(RS512_PRIVATE_KEY, Base64.NO_WRAP);
         try {
-            keyFactory = KeyFactory.getInstance("ECDSA", "BC");
+            keyFactory = KeyFactory.getInstance("RSA", "BC");
             privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(bytes));
 
         } catch (NoSuchAlgorithmException e){
