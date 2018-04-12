@@ -36,6 +36,8 @@ public class SignInRepo {
     private static final String DEVICE_UUID_KEY = "DEVICE_UUID_KEY";
     private static final long MILLISECONDS_IN_DAY = 1000*60*60*24;
     private static final String API_KEY = "A28hNcn2wp77QyaM8kB2C";
+    private static final String APP_ID = "smpl";
+
 
 //    private static final String ES256_PRIVATE_KEY =
 //        "MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgpo0vR0/qBMrzRHzRbxbVhACJLpoI\n"
@@ -77,8 +79,8 @@ public class SignInRepo {
             userID = UUID.randomUUID().toString();
             sharedPreferences.edit().putString(USER_UUID_KEY, userID).apply();
         }
-        String apiKey = context.getResources().getString(R.string.sample_kin_ecosystem_api_key);
-        String appID = context.getResources().getString(R.string.sample_app_id);
+/*        String apiKey = context.getResources().getString(R.string.sample_kin_ecosystem_api_key);
+        String appID = context.getResources().getString(R.string.sample_app_id);*/
 
 /*        signInData = new SignInData()
             .signInType(SignInTypeEnum.WHITELIST)
@@ -89,7 +91,7 @@ public class SignInRepo {
         signInData = new SignInData()
             .signInType(SignInTypeEnum.JWT)
             .jwt(getJWT(userID, API_KEY))
-            .appId(appID)
+            .appId(APP_ID)
             .deviceId(deviceUUID)
             .userId(userID)
             .apiKey(API_KEY);
@@ -128,7 +130,7 @@ public class SignInRepo {
 
         String jwt = Jwts.builder()
             .setHeaderParam("key_id", "1")
-            .setIssuer("smpl")
+            .setIssuer(APP_ID)
             .setSubject("register")
             .setIssuedAt(new Date())
             .setExpiration(new Date(System.currentTimeMillis() + MILLISECONDS_IN_DAY))
