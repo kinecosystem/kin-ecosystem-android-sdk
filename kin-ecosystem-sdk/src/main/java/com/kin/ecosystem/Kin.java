@@ -67,48 +67,10 @@ public class Kin {
             signInData.setPublicAddress(publicAddress);
             AuthRepository.init(signInData, AuthLocalData.getInstance(context, instance.executorsUtil),
                 AuthRemoteData.getInstance(instance.executorsUtil));
-
-            /**
-             * Only for now, will be changed later.
-             */
-            AuthRepository.getInstance().getAuthToken(new Callback<AuthToken>() {
-                @Override
-                public void onResponse(AuthToken response) {
-                    if (response != null) {
-                        System.out.println("ACTIVATE >>> getAuthToken");
-                        createTrustLine();
-                    }
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-
-                }
-            });
         } catch (TaskFailedException e) {
             throw new InitializeException(e.getMessage());
         }
     }
-
-    /**
-     * Only for now, will be changed later.
-     */
-    private static void createTrustLine() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                activate();
-            }
-        }, 10000);
-    }
-
-    /**
-     * Only for now, will be changed later.
-     */
-    private static void activate() {
-        BlockchainSource.getInstance().createTrustLine();
-    }
-
 
     private static void initOfferRepository() {
         OfferRepository.init(OfferRemoteData.getInstance(instance.executorsUtil));
