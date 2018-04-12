@@ -14,12 +14,15 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        loadCredential()
+        buildConfigField "String", "SAMPLE_APP_ID", credentialProperties.getProperty("APP_ID")
+        buildConfigField "String", "SAMPLE_API_KEY", credentialProperties.getProperty("API_KEY")
+        buildConfigField "String", "RS512_PRIVATE_KEY", credentialProperties.getProperty("RS512_PRIVATE_KEY")
     }
 
     buildTypes {
         release {
             minifyEnabled false
-
         }
     }
 }
@@ -28,10 +31,31 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     api project(':kin-ecosystem-sdk')
-
+    implementation 'io.jsonwebtoken:jjwt:0.9.0'
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+}
+
+def loadCredential() {
+    def credentialPropertiesFile = project.file("credential.properties")
+    def credentialProperties = new Properties()
+
+    if (credentialPropertiesFile.exists()) {
+        credentialProperties.load(new FileInputStream(credentialPropertiesFile))
+    }
+
+    if (!credentialProperties.containsKey("APP_ID")) {
+        credentialProperties.put("APP_ID", '"No appId, please add credential.properties"')
+    }
+    if (!credentialProperties.containsKey("API_KEY")) {
+        credentialProperties.put("API_KEY", '"No apiKey, please add credential.properties"')
+    }
+    if (!credentialProperties.containsKey("RS512_PRIVATE_KEY")) {
+        credentialProperties.put("RS512_PRIVATE_KEY", '"No JWT private key, please add credential.properties"')
+    }
+
+    ext.credentialProperties = credentialProperties
 }
