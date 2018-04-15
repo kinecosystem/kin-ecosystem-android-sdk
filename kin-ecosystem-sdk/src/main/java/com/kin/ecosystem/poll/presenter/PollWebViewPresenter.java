@@ -118,9 +118,6 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
             @Override
             public void onChanged(OpenOrder value) {
                 openOrder = value;
-                if ((value != null)) {
-                    showToast("OpenOrder: " + value.getId());
-                }
             }
         };
         orderRepository.getOpenOrder().addObserver(openOrderObserver);

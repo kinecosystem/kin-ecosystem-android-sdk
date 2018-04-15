@@ -13,13 +13,15 @@ import com.kin.ecosystem.util.ExecutorsUtil.MainThreadExecutor;
 import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicInteger;
 import kin.core.Balance;
+import kin.core.EventListener;
 import kin.core.KinAccount;
 import kin.core.KinClient;
+import kin.core.ListenerRegistration;
 import kin.core.PaymentInfo;
-import kin.core.PaymentWatcher;
+
 import kin.core.ResultCallback;
 import kin.core.TransactionId;
-import kin.core.WatcherListener;
+
 import kin.core.exception.CreateAccountException;
 
 public class BlockchainSource implements IBlockchainSource {
@@ -38,12 +40,12 @@ public class BlockchainSource implements IBlockchainSource {
     private ObservableData<Payment> completedPayment = ObservableData.create();
     private static volatile AtomicInteger paymentObserversCount = new AtomicInteger(0);
 
-    private PaymentWatcher paymentWatcher;
+    private ListenerRegistration paymentRegistration;
+    private ListenerRegistration accountCreationRegistration;
     private final MainThreadExecutor mainThread = new MainThreadExecutor();
 
     private String appID;
     private static final int MEMO_FORMAT_VERSION = 1;
-    private static final String PASSPHRASE = "";
     private static final String MEMO_DELIMITER = "-";
     private static final String MEMO_FORMAT =
         "%d" + MEMO_DELIMITER + "%s" + MEMO_DELIMITER + "%s"; // version-appID-orderID
@@ -78,7 +80,8 @@ public class BlockchainSource implements IBlockchainSource {
         account = kinClient.getAccount(0);
         if (account == null) {
             try {
-                account = kinClient.addAccount(""); // blockchain-sdk should generate and take care of that passphrase.
+                account = kinClient.addAccount();
+                startAccountCreationListener();
             } catch (CreateAccountException e) {
                 throw new InitializeException(e.getMessage());
             }
@@ -88,17 +91,17 @@ public class BlockchainSource implements IBlockchainSource {
     @Override
     public void sendTransaction(@NonNull String publicAddress, @NonNull BigDecimal amount,
         @NonNull final String orderID) {
-        account.sendTransaction(publicAddress, PASSPHRASE, amount, generateMemo(orderID)).run(
+        account.sendTransaction(publicAddress, amount, generateMemo(orderID)).run(
             new ResultCallback<TransactionId>() {
                 @Override
                 public void onResult(TransactionId result) {
-                    Log.i(TAG, "sendTransaction onResult: " + result.id());
+                    Log.d(TAG, "sendTransaction onResult: " + result.id());
                 }
 
                 @Override
                 public void onError(Exception e) {
                     completedPayment.setValue(new Payment(orderID, false, e.getMessage()));
-                    Log.i(TAG, "sendTransaction onError: " + e.getMessage());
+                    Log.d(TAG, "sendTransaction onError: " + e.getMessage());
                 }
             });
     }
@@ -113,13 +116,13 @@ public class BlockchainSource implements IBlockchainSource {
         getBalance(new Callback<Integer>() {
             @Override
             public void onResponse(Integer response) {
-                Log.i(TAG, "getCurrentBalance onResponse: " + response);
+                Log.d(TAG, "getCurrentBalance onResponse: " + response);
                 balance.setValue(response);
             }
 
             @Override
             public void onFailure(Throwable t) {
-                Log.i(TAG, "getCurrentBalance onFailure: " + t.getMessage());
+                Log.d(TAG, "getCurrentBalance onFailure: " + t.getMessage());
             }
         });
     }
@@ -140,7 +143,7 @@ public class BlockchainSource implements IBlockchainSource {
                         callback.onResponse(balanceObj.value().intValue());
                     }
                 });
-                Log.i(TAG, "getCurrentBalance onResult: " + balanceObj.value().intValue());
+                Log.d(TAG, "getCurrentBalance onResult: " + balanceObj.value().intValue());
             }
 
             @Override
@@ -151,7 +154,7 @@ public class BlockchainSource implements IBlockchainSource {
                         callback.onFailure(e);
                     }
                 });
-                Log.i(TAG, "getCurrentBalance onError: " + e.getMessage());
+                Log.d(TAG, "getCurrentBalance onError: " + e.getMessage());
             }
         });
     }
@@ -169,15 +172,15 @@ public class BlockchainSource implements IBlockchainSource {
 
     @Override
     public void createTrustLine() {
-        account.activate(PASSPHRASE).run(new ResultCallback<Void>() {
+        account.activate().run(new ResultCallback<Void>() {
             @Override
             public void onResult(Void result) {
-                System.out.println("ACTIVATE >>> createTrustLine");
+                Log.d(TAG, "createTrustLine onResult");
             }
 
             @Override
             public void onError(Exception e) {
-
+                Log.d(TAG, "createTrustLine onError");
             }
         });
     }
@@ -194,7 +197,7 @@ public class BlockchainSource implements IBlockchainSource {
     public void addPaymentObservable(Observer<Payment> observer) {
         completedPayment.addObserver(observer);
         if (paymentObserversCount.getAndIncrement() == 0) {
-            startPaymentWatcher();
+            startPaymentListener();
         }
     }
 
@@ -202,29 +205,49 @@ public class BlockchainSource implements IBlockchainSource {
     public void removePaymentObserver(Observer<Payment> observer) {
         completedPayment.removeObserver(observer);
         if (paymentObserversCount.decrementAndGet() == 0) {
-            stopPaymentWatcher();
+            stopPaymentListener();
         }
     }
 
-    private void startPaymentWatcher() {
-        paymentWatcher = account.createPaymentWatcher();
-        paymentWatcher.start(new WatcherListener<PaymentInfo>() {
+    private void startPaymentListener() {
+        paymentRegistration = account.blockchainEvents()
+            .addPaymentListener(new EventListener<PaymentInfo>() {
             @Override
             public void onEvent(PaymentInfo data) {
                 String orderID = extractOrderId(data.memo());
                 if (orderID != null) {
                     completedPayment.setValue(new Payment(orderID, data.hash().id()));
-                    Log.i(TAG, "completedPayment order id: " + orderID);
+                    Log.d(TAG, "completedPayment order id: " + orderID);
                 }
                 updateBalance(data);
             }
         });
     }
 
-    private void stopPaymentWatcher() {
-        if (paymentWatcher != null) {
-            paymentWatcher.stop();
-            paymentWatcher = null;
+    private void stopPaymentListener() {
+        if (paymentRegistration != null) {
+            paymentRegistration.remove();
+            paymentRegistration = null;
+        }
+    }
+
+    private void startAccountCreationListener() {
+        Log.d(TAG, "startAccountCreationListener");
+        accountCreationRegistration = account.blockchainEvents()
+            .addAccountCreationListener(new EventListener<Void>() {
+            @Override
+            public void onEvent(Void data) {
+                createTrustLine();
+                stopAccountCreationListener();
+            }
+        });
+    }
+
+    private void stopAccountCreationListener() {
+        Log.d(TAG, "stopAccountCreationListener");
+        if (accountCreationRegistration != null) {
+            accountCreationRegistration.remove();
+            accountCreationRegistration = null;
         }
     }
 
@@ -242,11 +265,11 @@ public class BlockchainSource implements IBlockchainSource {
         if (data.sourcePublicKey().equals(account.getPublicAddress())) {
             int spendAmount = data.amount().intValue();
             balanceAmount -= spendAmount;
-            Log.i(TAG, "updateBalance: Spend " + spendAmount);
+            Log.d(TAG, "updateBalance: Spend " + spendAmount);
         } else {
             int earnAmount = data.amount().intValue();
             balanceAmount += earnAmount;
-            Log.i(TAG, "updateBalance: Earn " + earnAmount);
+            Log.d(TAG, "updateBalance: Earn " + earnAmount);
         }
         balance.setValue(balanceAmount);
     }

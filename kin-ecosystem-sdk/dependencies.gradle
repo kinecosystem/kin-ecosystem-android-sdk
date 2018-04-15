@@ -1,7 +1,7 @@
 ext {
 
     //Version
-    kinStellarVersion = '0.0.3'
+    kinStellarVersion = '0.0.5'
     constraintLayoutVersion = '1.0.2'
     supportVersion = '26.1.0'
     picassoVersion = '2.5.2'

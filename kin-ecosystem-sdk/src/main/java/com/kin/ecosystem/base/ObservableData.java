@@ -47,6 +47,10 @@ public class ObservableData<T> {
         observers.remove(observer);
     }
 
+    public void removeAllObservers() {
+        observers.clear();
+    }
+
     public T getValue() {
         return value.get();
     }
