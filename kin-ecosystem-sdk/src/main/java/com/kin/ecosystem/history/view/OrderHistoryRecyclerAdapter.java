@@ -35,6 +35,8 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
     private static int itemHeight = NOT_INITIALIZED;
     private static int itemHalfHeight = NOT_INITIALIZED;
 
+    private static final String TRANSACTION_FAILED_MSG = "Transaction failed";
+
     OrderHistoryRecyclerAdapter() {
         super(R.layout.order_history_recycler_item);
         openLoadAnimation(SLIDEIN_TOP);
@@ -158,8 +160,11 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
                     actionText = TextUtils.isEmpty(item.getCallToAction()) ? "" : item.getCallToAction();
                     break;
                 case FAILED:
-                    actionText = TextUtils.isEmpty(item.getError().getMessage()) ?
-                        "Transaction failed" : item.getError().getMessage();
+                    actionText = TRANSACTION_FAILED_MSG;
+                    if(item.getError() != null) {
+                        actionText = TextUtils.isEmpty(item.getError().getMessage()) ?
+                            TRANSACTION_FAILED_MSG : item.getError().getMessage();
+                    }
                     break;
                 default:
                     break;
