@@ -13,7 +13,16 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         try {
-            SignInData signInData = SignInRepo.getSignInData(this);
+/*            //Use whitelist signing data for small scale testing
+            SignInData signInData = SignInRepo.getWhitelistSignInData(this);*/
+
+            /*
+            * SignInData should be created with registration JWT {see https://jwt.io/} created securely by server side
+            * In the the this example 'SignInRepo.getJWTSignInData' receive an empty JWT String and the sample app generate the JWT locally.
+            * DO NOT!!!! use this approach in your real app.
+            * */
+
+            SignInData signInData = SignInRepo.getJWTSignInData(this, "");
             Kin.start(getApplicationContext(), signInData);
         } catch (InitializeException e) {
             e.printStackTrace();
