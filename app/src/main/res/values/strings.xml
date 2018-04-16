@@ -1,6 +1,9 @@
 <resources>
-    <string name="app_name">Kin Ecosystem</string>
+    <string name="app_name">Kin Ecosystem - Sample App</string>
 
     <string name="sample_kin_ecosystem_api_key">YOUR_API_KEY</string>
     <string name="sample_app_id">YOUR_APP_ID</string>
+
+    <string name="get_balance"><u>Get Balance:</u></string>
+    <string name="failed_to_get_balance">Failed to get balance, try again</string>
 </resources>

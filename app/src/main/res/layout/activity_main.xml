@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,23 +9,52 @@
     tools:context="com.ecosystem.kin.app.MainActivity">
 
     <ImageView
+        android:id="@+id/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_gravity="center"
-        android:layout_marginBottom="50dp"
-        android:src="@drawable/kin_header_icon"/>
+        android:src="@drawable/kin_header_icon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.248"/>
+
+    <TextView
+        android:id="@+id/get_balance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/get_balance"
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        app:layout_constraintBottom_toTopOf="@+id/launch_marketplace"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <Button
         android:id="@+id/launch_marketplace"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginBottom="50dp"
-        android:textColor="@color/colorPrimary"
+        android:layout_marginBottom="48dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/button_background_white_rounded"
         android:text="Kin Marketplace"
         android:textAllCaps="false"
-        android:background="@drawable/button_background_white_rounded"
-        android:layout_gravity="bottom"/>
+        android:textColor="@color/bluePrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
-</FrameLayout>
+</android.support.constraint.ConstraintLayout>
