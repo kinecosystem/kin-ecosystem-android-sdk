@@ -10,7 +10,6 @@ import com.kin.ecosystem.network.model.SignInData;
 
 public class App extends Application {
 
-    private static final boolean IS_JWT = true;
 
     @Override
     public void onCreate() {
@@ -18,7 +17,7 @@ public class App extends Application {
 
         SignInData signInData;
 
-        if(IS_JWT) {
+        if(BuildConfig.IS_JWT_REGISTRATION) {
             /*
             * SignInData should be created with registration JWT {see https://jwt.io/} created securely by server side
             * In the the this example 'SignInRepo.getJWTSignInData' receive an empty/null JWT String and the sample app generate the JWT locally.
