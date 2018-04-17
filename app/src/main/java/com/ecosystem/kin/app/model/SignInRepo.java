@@ -25,21 +25,24 @@ public class SignInRepo {
     private final static String USER_PREFERENCE_FILE_KEY = "USER_PREFERENCE_FILE_KEY";
     private final static String USER_UUID_KEY = "USER_UUID_KEY";
     private static final String DEVICE_UUID_KEY = "DEVICE_UUID_KEY";
-    private static final long MILLISECONDS_IN_DAY = 1000 * 60 * 60 * 24;
+    private static final long DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
+    public static final String JWT_SUBJECT_REGISTER = "register";
+    public static final String JWT_KEY_USER_ID = "user_id";
+    public static final String JWT_HEADER_KEYID = "keyid";
+    public static final String ALGORITHM_RSA = "RSA";
+    public static final String SECURITY_PROVIDER_BC = "BC";
 
 
-    public static SignInData getWhitelistSignInData(Context context) {
+    public static SignInData getWhitelistSignInData(Context context, @NonNull String appId, @NonNull String apiKey) {
         SignInData signInData = createSignInDataWithDeviceID(context);
-        signInData
-            .signInType(SignInTypeEnum.WHITELIST)
-            .appId(getAppId())
+        signInData.signInType(SignInTypeEnum.WHITELIST)
+            .appId(appId)
             .userId(getUserId(context))
-            .apiKey(getApiKey());
+            .apiKey(apiKey);
         return signInData;
     }
 
-    public static SignInData getJWTSignInData(Context context, String jwt) {
-
+    public static SignInData getJWTSignInData(Context context, @Nullable String jwt) {
         SignInData signInData = createSignInDataWithDeviceID(context);
         signInData.signInType(SignInTypeEnum.JWT);
 
@@ -52,7 +55,6 @@ public class SignInRepo {
     }
 
     private static SignInData createSignInDataWithDeviceID(Context context) {
-
         SignInData signInData = new SignInData();
 
         SharedPreferences sharedPreferences = getSharedPreferences(context);
@@ -69,11 +71,6 @@ public class SignInRepo {
     @NonNull
     private static String getAppId() {
         return BuildConfig.SAMPLE_APP_ID;
-    }
-
-    @NonNull
-    private static String getApiKey() {
-        return BuildConfig.SAMPLE_API_KEY;
     }
 
     @NonNull
@@ -98,13 +95,12 @@ public class SignInRepo {
 
     private static String generateExampleJWT(Context context) {
         String jwt = Jwts.builder()
-            .setHeaderParam("key_id", "1")
+            .setHeaderParam(JWT_HEADER_KEYID, "1")
             .setIssuer(getAppId())
-            .setSubject("register")
+            .setSubject(JWT_SUBJECT_REGISTER)
             .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + MILLISECONDS_IN_DAY))
-            .claim("user_id", getUserId(context))
-            .claim("api_key", getApiKey())
+            .setExpiration(new Date(System.currentTimeMillis() + DAY_IN_MILLISECONDS))
+            .claim(JWT_KEY_USER_ID, getUserId(context))
             .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
         return jwt;
     }
@@ -116,7 +112,7 @@ public class SignInRepo {
 
         byte[] bytes = Base64.decode(getPrivateKeyForJWT(), Base64.NO_WRAP);
         try {
-            keyFactory = KeyFactory.getInstance("RSA", "BC");
+            keyFactory = KeyFactory.getInstance(ALGORITHM_RSA, SECURITY_PROVIDER_BC);
             privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(bytes));
 
         } catch (NoSuchAlgorithmException e) {
