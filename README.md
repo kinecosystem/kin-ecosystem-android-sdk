@@ -14,19 +14,61 @@ A stellar wallet and account will be created behind the scene for the user. <br/
 
 ![DEMO](https://user-images.githubusercontent.com/3635216/38100813-0f2c7bc2-3387-11e8-930d-03175842e81e.gif)
 
+## Registration for Ecosystem backend service
+
+Digital service application needs to initiate the Ecosystem sdk, which interacts with the ecosystem backend service. <br/>
+<br/>
+The Ecosystem backend is required for
+1. Creating users accounts on the Stellar blockchain
+1. Funds these account with initial XLM balance.
+1. Serving KIN earn and spend offers for the SDK marketplace.
+1. Mange and store user's earn and spend order history.
+
+Therefore the ecosystem backend will block unauthorized requests.
+Digital services will have to authorised client request using one of the following methods:
+1. "whitelist" registration - used for quick first time integration or small internal testing. 
+    1. Whitelist registration requires a unique appID and apiKey.
+    1. Please contact us to receive your unique appId and apiKey.
+1. "JWT" registration - A secure register method for production ready application,
+    1. "JWT" registration" use a Server side signed JWT token to authenticated client request.
+    1. You can learn more [here](https://jwt.io)
+    1. Please contact us to receive your JWT issuer identifier (iss key) and provide us with your public signature key and its corresponding 'keyid'
+### JWT Registration specs
+1. We will support ES256 signature algorithm.
+1. Header will follow this template
+    ```aidl
+    {
+        "alg": ""ES256", // We will support ES256 signature algorithem 
+        "typ": "JWT",
+        "keyid": string" // identifier of the keypair that was used to sign the JWT. identifiers and public keys will be provided by signer authority. This enables using multiple private/public key pairs (a list of public keys and their ids need to be provided by signer authority to verifier in advanced)
+    }
+    ```
+1. Registration payload template
+    ```aidl
+    {
+        // common/ standard fields
+        iat: number;  // issued at - seconds from epoc
+        iss: string; // issuer - please contact us to recive your issuer
+        exp: number; // expiration
+        sub: "register"
+    
+        // application fields
+        user_id: string; // id of the user - or a deterministic unique id for the user (hash)
+    }
+    ```
 
 ## Setup sample app
-The sample app (or digital service app) needs to initiate the ecosystem sdk, which interacts with the ecosystem backend service. <br/>
-The ecosystem backend will block unauthorized requests, therefore digital services will have to provide a valid unique apiKey and appID.<br/>
-To setup and run the sample app an authorized apiKey and appId needs to be provided.<br/>
+ 
+To setup and run the sample app authorized apiKey and appId needs to be provided.<br/>
 In order to receive a test apiKey please contact us.<br/>
-
+ 
 Create a local `credential.properties` in the `app` module directory. <br/>
 Add the lines below to your local `credential.properties` file of the sample app once you receive your appId and apiKey.<br/>
 ```
-   APP_ID="YOUR_APP_ID"
-   API_KEY="YOUR_API_KEY"
-   RS512_PRIVATE_KEY="YOUR_RS512_PRIVATE_KEY // only applicable when testing JWT on sample app in real use case JWT is created by server side
+   APP_ID="YOUR_APP_ID" // will be used for Whitelisted registartion and also as the issuer (iss) 
+   API_KEY="YOUR_API_KEY" // only requreid for whitelist registrartion
+   RS512_PRIVATE_KEY="YOUR_RS512_PRIVATE_KEY // (optional) only required when testing JWT on sample app in real use case JWT is created by server side with ES256 signature
+   IS_JWT_REGISTRATION = false// (optional)to test sample app JWT registartion set this property to true, if not specified defualt is set to false 
    
 ```
 The sample app Gradle build loads `credential.properties` setting and use it to create 'SignInData' object used for the registration.
