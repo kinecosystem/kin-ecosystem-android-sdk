@@ -39,6 +39,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 }
 
+
 def loadCredential() {
     def credentialPropertiesFile = project.file("credential.properties")
     def credentialProperties = new Properties()

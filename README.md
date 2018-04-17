@@ -22,7 +22,7 @@ To setup and run the sample app an authorized apiKey and appId needs to be provi
 In order to receive a test apiKey please contact us.<br/>
 
 Create a local `credential.properties` in the `app` module directory. <br/>
-Add this lines to your local `credential.properties` file of the sample app once you receive your appId and apiKey.<br/>
+Add the lines below to your local `credential.properties` file of the sample app once you receive your appId and apiKey.<br/>
 ```
    APP_ID="YOUR_APP_ID"
    API_KEY="YOUR_API_KEY"
