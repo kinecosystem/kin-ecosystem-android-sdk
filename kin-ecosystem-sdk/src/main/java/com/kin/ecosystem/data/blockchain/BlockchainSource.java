@@ -3,6 +3,7 @@ package com.kin.ecosystem.data.blockchain;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
@@ -54,19 +55,18 @@ public class BlockchainSource implements IBlockchainSource {
     private static final int ORDER_ID_INDEX = 2;
     private static final int MEMO_SPLIT_LENGTH = 3;
 
-    private BlockchainSource(@NonNull final Context context, @NonNull final String appID)
+    private BlockchainSource(@NonNull final Context context)
         throws InitializeException {
         this.kinClient = new KinClient(context, StellarNetwork.NETWORK_TEST.getProvider());
-        this.appID = appID;
         createKinAccountIfNeeded();
         getCurrentBalance();
     }
 
-    public static void init(@NonNull final Context context, @NonNull final String appID) throws InitializeException {
+    public static void init(@NonNull final Context context) throws InitializeException {
         if (instance == null) {
             synchronized (BlockchainSource.class) {
                 if (instance == null) {
-                    instance = new BlockchainSource(context, appID);
+                    instance = new BlockchainSource(context);
                 }
             }
         }
@@ -85,6 +85,14 @@ public class BlockchainSource implements IBlockchainSource {
             } catch (CreateAccountException e) {
                 throw new InitializeException(e.getMessage());
             }
+        }
+    }
+
+    @Override
+    public void setAppID(String appID) {
+        Log.d(TAG, "setAppID: " + appID);
+        if(!TextUtils.isEmpty(appID)){
+            this.appID = appID;
         }
     }
 
@@ -215,6 +223,7 @@ public class BlockchainSource implements IBlockchainSource {
             @Override
             public void onEvent(PaymentInfo data) {
                 String orderID = extractOrderId(data.memo());
+                Log.d(TAG, "startPaymentListener onEvent: the orderId: " + orderID + " with memo: " + data.memo());
                 if (orderID != null) {
                     completedPayment.setValue(new Payment(orderID, data.hash().id()));
                     Log.d(TAG, "completedPayment order id: " + orderID);
@@ -261,6 +270,7 @@ public class BlockchainSource implements IBlockchainSource {
     }
 
     private void updateBalance(PaymentInfo data) {
+        Log.d(TAG, "start updateBalance: ");
         int balanceAmount = balance.getValue();
         if (data.sourcePublicKey().equals(account.getPublicAddress())) {
             int spendAmount = data.amount().intValue();

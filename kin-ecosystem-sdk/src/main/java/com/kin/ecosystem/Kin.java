@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import com.kin.ecosystem.base.ObservableData;
+import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.auth.AuthLocalData;
 import com.kin.ecosystem.data.auth.AuthRemoteData;
 import com.kin.ecosystem.data.auth.AuthRepository;
@@ -49,15 +52,30 @@ public class Kin {
         instance = getInstance();
         appContext = appContext.getApplicationContext(); // use application context to avoid leaks.
         DeviceUtils.init(appContext);
-        initBlockchain(appContext, signInData.getAppId());
+        initBlockchain(appContext);
         registerAccount(appContext, signInData);
         initOfferRepository();
         initOrderRepository(appContext);
+        setAppID();
     }
 
-    private static void initBlockchain(Context context, String appID) throws InitializeException {
-        BlockchainSource.init(context, appID);
+    private static void setAppID() {
+        ObservableData<String> observableData = AuthRepository.getInstance().getAppID();
+        String appID = observableData.getValue();
+        observableData.addObserver(new Observer<String>() {
+            @Override
+            public void onChanged(String appID) {
+                BlockchainSource.getInstance().setAppID(appID);
+            }
+        });
+
+        BlockchainSource.getInstance().setAppID(appID);
     }
+
+    private static void initBlockchain(Context context) throws InitializeException {
+        BlockchainSource.init(context);
+    }
+
 
     private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
         throws InitializeException {

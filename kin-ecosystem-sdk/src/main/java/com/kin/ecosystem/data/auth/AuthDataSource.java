@@ -2,12 +2,15 @@ package com.kin.ecosystem.data.auth;
 
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.network.model.SignInData;
 
 public interface AuthDataSource {
 
     void setSignInData(@NonNull final SignInData signInData);
+
+    ObservableData<String> getAppID();
 
     void setAuthToken(@NonNull final AuthToken authToken);
 
