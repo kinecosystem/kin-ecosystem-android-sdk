@@ -18,6 +18,7 @@ android {
         buildConfigField "String", "SAMPLE_APP_ID", credentialProperties.getProperty("APP_ID")
         buildConfigField "String", "SAMPLE_API_KEY", credentialProperties.getProperty("API_KEY")
         buildConfigField "String", "RS512_PRIVATE_KEY", credentialProperties.getProperty("RS512_PRIVATE_KEY")
+        buildConfigField "boolean", "IS_JWT_REGISTRATION", credentialProperties.getProperty("IS_JWT_REGISTRATION")
     }
 
     buildTypes {
@@ -56,6 +57,9 @@ def loadCredential() {
     }
     if (!credentialProperties.containsKey("RS512_PRIVATE_KEY")) {
         credentialProperties.put("RS512_PRIVATE_KEY", '"No JWT private key, please add credential.properties"')
+    }
+    if (!credentialProperties.containsKey("IS_JWT_REGISTRATION")) {
+        credentialProperties.put("IS_JWT_REGISTRATION", "false")
     }
 
     ext.credentialProperties = credentialProperties
