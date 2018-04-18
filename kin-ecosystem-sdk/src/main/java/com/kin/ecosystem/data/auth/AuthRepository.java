@@ -3,11 +3,15 @@ package com.kin.ecosystem.data.auth;
 import static com.kin.ecosystem.util.DateUtil.getDateFromUTCString;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.network.model.SignInData;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Observable;
 
 public class AuthRepository implements AuthDataSource {
 
@@ -18,6 +22,7 @@ public class AuthRepository implements AuthDataSource {
 
     private SignInData cachedSignInData;
     private AuthToken cachedAuthToken;
+    private ObservableData<String> appId = ObservableData.create(null);
 
     private AuthRepository(@NonNull AuthDataSource.Local local, @NonNull AuthDataSource.Remote remote) {
         this.localData = local;
@@ -45,6 +50,12 @@ public class AuthRepository implements AuthDataSource {
         cachedSignInData = signInData;
         localData.setSignInData(signInData);
         remoteData.setSignInData(signInData);
+        postAppID(signInData.getAppId());
+    }
+
+    @Override
+    public ObservableData<String> getAppID() {
+        return appId;
     }
 
     @Override
@@ -148,5 +159,10 @@ public class AuthRepository implements AuthDataSource {
     public void setAuthToken(@NonNull AuthToken authToken) {
         cachedAuthToken = authToken;
         localData.setAuthToken(authToken);
+        postAppID(authToken.getAppID());
+    }
+
+    private void postAppID(@Nullable String appID) {
+        appId.postValue(appID);
     }
 }

@@ -14,13 +14,6 @@ jobs:
     
     steps:
       - checkout
-      - run:
-          name: skip is not pr
-          command: |
-            if [ -z "$CIRCLE_PULL_REQUESTS" ]
-            then
-              circleci step halt
-            fi
 
       # Download and cache dependencies
       - restore_cache:
