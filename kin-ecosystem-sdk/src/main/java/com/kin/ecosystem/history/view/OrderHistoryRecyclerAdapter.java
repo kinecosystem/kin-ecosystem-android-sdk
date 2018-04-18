@@ -15,13 +15,17 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.ImageView;
+import com.chad.library.adapter.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
-import com.kin.ecosystem.base.BaseRecyclerAdapter;
+import com.kin.ecosystem.history.view.OrderHistoryRecyclerAdapter.ViewHolder;
 import com.kin.ecosystem.network.model.Order;
+import com.kin.ecosystem.network.model.Order.OfferTypeEnum;
 
 
-public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, OrderHistoryRecyclerAdapter.ViewHolder> {
+public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, ViewHolder> {
+
+    private static final int NOT_INITIALIZED = -1;
 
     private static int colorBlue = NOT_INITIALIZED;
     private static int colorRed = NOT_INITIALIZED;
@@ -30,6 +34,8 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
     private static int subTitleFontSize = NOT_INITIALIZED;
     private static int itemHeight = NOT_INITIALIZED;
     private static int itemHalfHeight = NOT_INITIALIZED;
+
+    private static final String TRANSACTION_FAILED_MSG = "Transaction failed";
 
     OrderHistoryRecyclerAdapter() {
         super(R.layout.order_history_recycler_item);
@@ -122,31 +128,28 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
         private void setOrderTitle(Order item) {
             String brand = item.getTitle();
             String delimiter = " - ";
-            if (item.getOfferType() == Order.OfferTypeEnum.SPEND) {
-                String actionText = getActionText(item);
-                switch (item.getStatus()) {
-                    case COMPLETED:
+            String actionText = getActionText(item);
+            setText(R.id.action_text, actionText);
+            switch (item.getStatus()) {
+                case COMPLETED:
+                    if (item.getOfferType() == OfferTypeEnum.SPEND) {
                         Spannable titleSpannable = new SpannableString(brand + delimiter);
                         titleSpannable.setSpan(new ForegroundColorSpan(colorBlue),
                             0, brand.length(),
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         setSpannableText(R.id.title, titleSpannable);
-
-                        setText(R.id.action_text, actionText);
                         setTextColor(R.id.action_text, colorBlue);
-                        break;
-                    case FAILED:
-                        setText(R.id.title, brand + delimiter);
+                    } else {
+                        setText(R.id.title, brand);
+                    }
+                    break;
+                case FAILED:
+                    setText(R.id.title, brand + delimiter);
 
-                        setText(R.id.action_text, actionText);
-                        setTextColor(R.id.action_text, colorRed);
-                        break;
-                    default:
-                        break;
-                }
-            } else {
-                setText(R.id.title, brand);
-                setText(R.id.action_text, "");
+                    setTextColor(R.id.action_text, colorRed);
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -157,8 +160,11 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, Orde
                     actionText = TextUtils.isEmpty(item.getCallToAction()) ? "" : item.getCallToAction();
                     break;
                 case FAILED:
-                    actionText = TextUtils.isEmpty(item.getError().getMessage()) ?
-                        "Transaction failed" : item.getError().getMessage();
+                    actionText = TRANSACTION_FAILED_MSG;
+                    if(item.getError() != null) {
+                        actionText = TextUtils.isEmpty(item.getError().getMessage()) ?
+                            TRANSACTION_FAILED_MSG : item.getError().getMessage();
+                    }
                     break;
                 default:
                     break;

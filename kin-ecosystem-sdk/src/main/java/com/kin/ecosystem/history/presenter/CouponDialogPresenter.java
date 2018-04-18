@@ -12,7 +12,8 @@ public class CouponDialogPresenter extends BaseDialogPresenter<ICouponDialog> im
     IBottomDialogPresenter<ICouponDialog> {
 
     private final Coupon coupon;
-    private static final String URL_PATTERN= "http://www.";
+    private static final String HTTP_URL_PATTERN= "http://";
+    private static final String HTTPS_URL_PATTERN= "https://";
 
     public CouponDialogPresenter(@NonNull final Coupon coupon) {
         this.coupon = coupon;
@@ -36,10 +37,11 @@ public class CouponDialogPresenter extends BaseDialogPresenter<ICouponDialog> im
     }
 
     private String createUrl(String link) {
-        if (!link.contains(URL_PATTERN)) {
-            return URL_PATTERN + link;
+        if (link.contains(HTTP_URL_PATTERN) || link.contains(HTTPS_URL_PATTERN)) {
+            return link;
+        } else {
+            return HTTP_URL_PATTERN + link;
         }
-        return link;
     }
 
     @Override

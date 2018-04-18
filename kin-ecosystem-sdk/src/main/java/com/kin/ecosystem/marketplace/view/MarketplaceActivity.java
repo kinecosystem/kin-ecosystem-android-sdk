@@ -7,9 +7,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Toast;
+import com.chad.library.adapter.base.BaseRecyclerAdapter;
+import com.chad.library.adapter.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.R;
-import com.kin.ecosystem.base.BaseRecyclerAdapter;
-import com.kin.ecosystem.base.BaseRecyclerAdapter.OnItemClickListener;
+
 import com.kin.ecosystem.base.BaseToolbarActivity;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.offer.OfferRepository;

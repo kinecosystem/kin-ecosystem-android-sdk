@@ -26,6 +26,8 @@ public class AuthToken {
     private Boolean activated = null;
     @SerializedName("expiration_date")
     private String expirationDate = null;
+    @SerializedName("app_id")
+    private String appID = null;
 
     public AuthToken token(String token) {
         this.token = token;
@@ -84,6 +86,14 @@ public class AuthToken {
         this.expirationDate = expirationDate;
     }
 
+    public String getAppID() {
+        return appID;
+    }
+
+    public void setAppID(String appID) {
+        this.appID = appID;
+    }
+
     @Override
     public boolean equals(java.lang.Object o) {
         if (this == o) {
@@ -93,14 +103,16 @@ public class AuthToken {
             return false;
         }
         AuthToken authToken = (AuthToken) o;
-        return Objects.equals(this.token, authToken.token) &&
-            Objects.equals(this.activated, authToken.activated) &&
-            Objects.equals(this.expirationDate, authToken.expirationDate);
+        return this.token.equals(authToken.token) &&
+            this.activated.equals(authToken.activated) &&
+            this.appID.equals(authToken.appID) &&
+            this.expirationDate.equals(authToken.expirationDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(token, activated, expirationDate);
+        return token.hashCode() + activated.hashCode() +
+            expirationDate.hashCode() + appID.hashCode();
     }
 
     @Override
@@ -110,6 +122,7 @@ public class AuthToken {
 
         sb.append("    token: ").append(toIndentedString(token)).append("\n");
         sb.append("    activated: ").append(toIndentedString(activated)).append("\n");
+        sb.append("    appID: ").append(toIndentedString(appID)).append("\n");
         sb.append("    expirationDate: ").append(toIndentedString(expirationDate)).append("\n");
         sb.append("}");
         return sb.toString();

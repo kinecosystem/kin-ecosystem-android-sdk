@@ -243,6 +243,7 @@ public class SignInData {
         sb.append("    jwt: ").append(toIndentedString(jwt)).append("\n");
         sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
         sb.append("    appId: ").append(toIndentedString(appId)).append("\n");
+        sb.append("    apiKey: ").append(toIndentedString(apiKey)).append("\n");
         sb.append("    deviceId: ").append(toIndentedString(deviceId)).append("\n");
         sb.append("    publicAddress: ").append(toIndentedString(publicAddress)).append("\n");
         sb.append("    signInType: ").append(toIndentedString(signInType)).append("\n");

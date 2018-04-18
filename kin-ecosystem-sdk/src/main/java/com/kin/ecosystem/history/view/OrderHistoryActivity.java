@@ -7,12 +7,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import com.chad.library.adapter.base.BaseRecyclerAdapter;
+import com.chad.library.adapter.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.R;
-import com.kin.ecosystem.base.BaseRecyclerAdapter;
-import com.kin.ecosystem.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.base.BaseToolbarActivity;
 import com.kin.ecosystem.base.IBottomDialogPresenter;
 import com.kin.ecosystem.data.order.OrderRepository;
@@ -86,7 +84,7 @@ public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderH
         orderHistoryPresenter = presenter;
         orderHistoryPresenter.onAttach(this);
     }
-    
+
     @Override
     public void updateOrderHistoryList(List<Order> orders) {
         orderHistoryRecyclerAdapter.setNewData(orders);
