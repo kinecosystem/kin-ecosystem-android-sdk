@@ -1,4 +1,26 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        // These docs use an open ended version so that our plugin
+        // can be updated quickly in response to Android tooling updates
+
+        // We recommend changing it to the latest version from our changelog:
+        // https://docs.fabric.io/android/changelog.html#fabric-gradle-plugin
+        classpath 'io.fabric.tools:gradle:1.25.3'
+    }
+}
+
+
+
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
 
 android {
     compileSdkVersion 26
@@ -19,6 +41,7 @@ android {
         buildConfigField "String", "SAMPLE_API_KEY", credentialProperties.getProperty("API_KEY")
         buildConfigField "String", "RS512_PRIVATE_KEY", credentialProperties.getProperty("RS512_PRIVATE_KEY")
         buildConfigField "boolean", "IS_JWT_REGISTRATION", credentialProperties.getProperty("IS_JWT_REGISTRATION")
+        resValue "string", "crashlytics_api_key", credentialProperties.getProperty("CRASHLYTICS_API_KEY")
     }
 
     buildTypes {
@@ -32,9 +55,13 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     api project(':kin-ecosystem-sdk')
+    //implementation 'com.github.kinfoundation:kin-ecosystem-android-sdk:0.0.2'
     implementation 'io.jsonwebtoken:jjwt:0.9.0'
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
+        transitive = true;
+    }
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
@@ -60,6 +87,9 @@ def loadCredential() {
     }
     if (!credentialProperties.containsKey("IS_JWT_REGISTRATION")) {
         credentialProperties.put("IS_JWT_REGISTRATION", "false")
+    }
+    if (!credentialProperties.containsKey("CRASHLYTICS_API_KEY")) {
+        credentialProperties.put("CRASHLYTICS_API_KEY", "")
     }
 
     ext.credentialProperties = credentialProperties
