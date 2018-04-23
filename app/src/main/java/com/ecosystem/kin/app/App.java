@@ -2,10 +2,12 @@ package com.ecosystem.kin.app;
 
 import android.app.Application;
 import android.support.annotation.NonNull;
+import com.crashlytics.android.Crashlytics;
 import com.ecosystem.kin.app.model.SignInRepo;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.network.model.SignInData;
+import io.fabric.sdk.android.Fabric;
 
 
 public class App extends Application {
@@ -14,6 +16,8 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        Fabric.with(this, new Crashlytics());
 
         SignInData signInData;
 
