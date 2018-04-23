@@ -20,7 +20,7 @@
         </activity>
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="@string/crashlytics_api_key"
+            android:value="${crashlytics_api_key}"
             />
     </application>
 

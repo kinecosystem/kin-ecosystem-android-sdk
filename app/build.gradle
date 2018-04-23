@@ -22,6 +22,7 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 
+
 android {
     compileSdkVersion 26
 
@@ -41,7 +42,7 @@ android {
         buildConfigField "String", "SAMPLE_API_KEY", credentialProperties.getProperty("API_KEY")
         buildConfigField "String", "RS512_PRIVATE_KEY", credentialProperties.getProperty("RS512_PRIVATE_KEY")
         buildConfigField "boolean", "IS_JWT_REGISTRATION", credentialProperties.getProperty("IS_JWT_REGISTRATION")
-        resValue "string", "crashlytics_api_key", credentialProperties.getProperty("CRASHLYTICS_API_KEY")
+        manifestPlaceholders = [crashlytics_api_key:credentialProperties.getProperty("CRASHLYTICS_API_KEY")]
     }
 
     buildTypes {
@@ -89,7 +90,9 @@ def loadCredential() {
         credentialProperties.put("IS_JWT_REGISTRATION", "false")
     }
     if (!credentialProperties.containsKey("CRASHLYTICS_API_KEY")) {
-        credentialProperties.put("CRASHLYTICS_API_KEY", "")
+        //make sure build will run without valid apiKey missing from credential.properties files.
+        def crashlytics_open_source_api_key = "4b7647b5860d29039e16910e281fcf8d9cad21bb"
+        credentialProperties.put("CRASHLYTICS_API_KEY", crashlytics_open_source_api_key)
     }
 
     ext.credentialProperties = credentialProperties
