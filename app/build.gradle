@@ -85,5 +85,6 @@ def loadCredential() {
     credentialProperties.entrySet().each {
         println it.key + it.value
     }
+
     ext.credentialProperties = credentialProperties
 }
