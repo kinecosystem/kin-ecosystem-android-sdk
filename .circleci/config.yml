@@ -48,5 +48,4 @@ workflows:
           filters:
             branches:
               ignore:
-                - dev
                 - master
