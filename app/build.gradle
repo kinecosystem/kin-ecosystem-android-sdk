@@ -76,30 +76,18 @@ dependencies {
 
 
 def loadCredential() {
+    def crashlytics_demo_api_key = "4b7647b5860d29039e16910e281fcf8d9cad21bb"
+
+    ant.propertyfile(file: "credential.properties") {
+        entry(key: "APP_ID", default: System.getenv('APP_ID') ?: '"No appId, please add credential.properties"')
+        entry(key: "API_KEY", default: System.getenv('API_KEY') ?: '"No apiKey, please add credential.properties"')
+        entry(key: "RS512_PRIVATE_KEY", default: System.getenv('RS512_PRIVATE_KEY') ?: '"No JWT private key, please add credential.properties"')
+        entry(key: "IS_JWT_REGISTRATION", default: System.getenv('IS_JWT_REGISTRATION') ?:  "false")
+        entry(key: "CRASHLYTICS_API_KEY", default: System.getenv('CRASHLYTICS_API_KEY')  ?: crashlytics_demo_api_key)
+    }
     def credentialPropertiesFile = project.file("credential.properties")
     def credentialProperties = new Properties()
-
-    if (credentialPropertiesFile.exists()) {
-        credentialProperties.load(new FileInputStream(credentialPropertiesFile))
-    }
-
-    if (!credentialProperties.containsKey("APP_ID")) {
-        credentialProperties.put("APP_ID", '"No appId, please add credential.properties"')
-    }
-    if (!credentialProperties.containsKey("API_KEY")) {
-        credentialProperties.put("API_KEY", '"No apiKey, please add credential.properties"')
-    }
-    if (!credentialProperties.containsKey("RS512_PRIVATE_KEY")) {
-        credentialProperties.put("RS512_PRIVATE_KEY", '"No JWT private key, please add credential.properties"')
-    }
-    if (!credentialProperties.containsKey("IS_JWT_REGISTRATION")) {
-        credentialProperties.put("IS_JWT_REGISTRATION", "false")
-    }
-    if (!credentialProperties.containsKey("CRASHLYTICS_API_KEY")) {
-        //make sure build will run without valid apiKey missing from credential.properties files.
-        def crashlytics_open_source_api_key = "4b7647b5860d29039e16910e281fcf8d9cad21bb"
-        credentialProperties.put("CRASHLYTICS_API_KEY", crashlytics_open_source_api_key)
-    }
+    credentialProperties.load(new FileInputStream(credentialPropertiesFile))
 
     ext.credentialProperties = credentialProperties
 }

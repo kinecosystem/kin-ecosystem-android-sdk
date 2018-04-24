@@ -35,6 +35,10 @@ jobs:
       - run:
           name: Build And Test
           command: ./gradlew assembleDebug -Pandroid.buildOnlyTargetAbi=false -Pcircleci test
+      # Store APK
+      - store_artifacts:
+                path: app/build/outputs/apk/
+                destination: apks/
 
 workflows:
   version: 2
@@ -44,5 +48,4 @@ workflows:
           filters:
             branches:
               ignore:
-                - dev
                 - master
