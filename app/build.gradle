@@ -82,5 +82,8 @@ def loadCredential() {
     def credentialPropertiesFile = project.file("credential.properties")
     def credentialProperties = new Properties()
     credentialProperties.load(new FileInputStream(credentialPropertiesFile))
+    credentialProperties.entrySet().each {
+        println it.key + it.value
+    }
     ext.credentialProperties = credentialProperties
 }
