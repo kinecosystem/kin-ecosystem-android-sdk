@@ -49,3 +49,9 @@ workflows:
             branches:
               ignore:
                 - master
+experimental:
+  notify:
+    branches:
+      only:
+        - master
+        - dev
