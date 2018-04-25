@@ -28,7 +28,7 @@ public class SignInRepo {
     private static final long DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
     public static final String JWT_SUBJECT_REGISTER = "register";
     public static final String JWT_KEY_USER_ID = "user_id";
-    public static final String JWT_HEADER_KEYID = "keyid";
+    public static final String JWT_HEADER_KEYID = "kid";
     public static final String ALGORITHM_RSA = "RSA";
     public static final String SECURITY_PROVIDER_BC = "BC";
 
