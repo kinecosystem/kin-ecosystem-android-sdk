@@ -4,16 +4,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
+import android.util.Log;
 import android.view.View;
 
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.util.StringUtil;
+import io.jsonwebtoken.Jwts;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "Ecosystem - SampleApp";
 
     private TextView balanceView;
     private static final String GET_BALANCE = "Get Balance: ";
@@ -33,6 +38,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 openKinMarketplace();
+            }
+        });
+        findViewById(R.id.native_spend_button).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createNativeSpendOffer();
             }
         });
     }
@@ -72,5 +83,30 @@ public class MainActivity extends AppCompatActivity {
         } catch (TaskFailedException e) {
             e.printStackTrace();
         }
+    }
+
+    private void createNativeSpendOffer() {
+        String offerJwt = JwtUtil.generateSpendOfferExampleJWT(BuildConfig.SAMPLE_APP_ID);
+        Log.d(TAG, "createNativeSpendOffer: " + offerJwt);
+        try {
+            Kin.purchase(offerJwt, new Callback<String>() {
+                @Override
+                public void onResponse(String jwtConfirmation) {
+                    showToast("Succeed to create native spend");
+                    Log.d(TAG, "Jwt confirmation: \n" + jwtConfirmation);
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    showToast("Failed - " + t.getMessage());
+                }
+            });
+        } catch (TaskFailedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 }

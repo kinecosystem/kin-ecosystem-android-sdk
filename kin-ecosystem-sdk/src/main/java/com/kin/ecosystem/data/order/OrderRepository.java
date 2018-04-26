@@ -9,11 +9,14 @@ import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.blockchain.IBlockchainSource;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.data.offer.OfferDataSource;
+import com.kin.ecosystem.data.order.CreateExternalOrderCall.ExternalOrderCallbacks;
 import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.exception.TaskFailedException;
+import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.OrderList;
+import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrderRepository implements OrderDataSource {
@@ -129,8 +132,8 @@ public class OrderRepository implements OrderDataSource {
         if (pendingOrdersCount.getAndIncrement() == 0) {
             paymentObserver = new Observer<Payment>() {
                 @Override
-                public void onChanged(Payment value) {
-                    getOrder(value.getOrderID());
+                public void onChanged(Payment payment) {
+                    getOrder(payment.getOrderID());
                     decrementPendingOrdersCount();
                 }
             };
@@ -167,10 +170,10 @@ public class OrderRepository implements OrderDataSource {
         Log.i(TAG, "setCompletedOrder: " + order);
         completedOrder.postValue(order);
         if (!hasMorePendingOffers()) {
-            if (cachedOpenOrder.getValue().getId().equals(order.getOrderId())) {
+            if (isCachedOpenOrderEquals(order.getOrderId())) {
                 cachedOpenOrder.postValue(null);
             }
-            if (offerRepository.getPendingOffer().getValue().getId().equals(order.getOfferId())) {
+            if (isOfferIdEquals(order.getOfferId())) {
                 offerRepository.setPendingOfferByID(null);
             }
         }
@@ -178,6 +181,21 @@ public class OrderRepository implements OrderDataSource {
 
     private boolean hasMorePendingOffers() {
         return pendingOrdersCount.get() > 0;
+    }
+
+    private boolean isCachedOpenOrderEquals(String orderId) {
+        if (cachedOpenOrder != null && cachedOpenOrder.getValue() != null) {
+            return cachedOpenOrder.getValue().getId().equals(orderId);
+        }
+        return false;
+    }
+
+    private boolean isOfferIdEquals(String offerId) {
+        ObservableData<Offer> pendingOffer = offerRepository.getPendingOffer();
+        if (pendingOffer != null && pendingOffer.getValue() != null) {
+            return pendingOffer.getValue().getId().equals(offerId);
+        }
+        return false;
     }
 
     @Override
@@ -200,6 +218,25 @@ public class OrderRepository implements OrderDataSource {
                 }
             }
         });
+    }
+
+    public void purchase(String offerJwt, final Callback<String> callback) {
+        new CreateExternalOrderCall(remoteData, blockchainSource, offerJwt, new ExternalOrderCallbacks() {
+            @Override
+            public void onTransactionSent(OpenOrder openOrder) {
+                submitOrder(openOrder.getOfferId(), null, openOrder.getId(), null);
+            }
+
+            @Override
+            public void onOrderConfirmed(String confirmationJwt) {
+                callback.onResponse(confirmationJwt);
+            }
+
+            @Override
+            public void onOrderFailed(String msg) {
+                callback.onFailure(new TaskFailedException(msg));
+            }
+        }).start();
     }
 
     @Override

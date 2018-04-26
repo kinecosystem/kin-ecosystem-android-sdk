@@ -10,18 +10,16 @@ import java.util.concurrent.TimeoutException;
 
 class GetOrderPollingCall extends Thread {
 
-    private static final int DELAY = 2000;
+    private static final int[] DELAY_SECONDS = {2, 4, 8, 16, 32, 32, 32, 32, 32};
 
-    private final OrdersApi ordersApi;
+    private final OrderDataSource.Remote remote;
     private final String orderID;
-    private final int pollingMaxValue;
     private final Callback<Order> callback;
 
-    GetOrderPollingCall(@NonNull final OrdersApi ordersApi, final String orderID, final int pollingMaxValue,
+    GetOrderPollingCall(@NonNull final OrderDataSource.Remote remote, final String orderID,
         @NonNull final Callback<Order> callback) {
-        this.ordersApi = ordersApi;
+        this.remote = remote;
         this.orderID = orderID;
-        this.pollingMaxValue = pollingMaxValue;
         this.callback = callback;
     }
 
@@ -30,21 +28,20 @@ class GetOrderPollingCall extends Thread {
         getOrder(0);
     }
 
-    private void getOrder(int pollingValue) {
+    private void getOrder(int pollingIndex) {
         try {
-            if (pollingValue < pollingMaxValue) {
-                Order order = ordersApi.getOrder(orderID, "");
-                if (order.getStatus() == StatusEnum.PENDING) {
-                    sleep(DELAY);
-                    getOrder(++pollingValue);
+            if (pollingIndex < DELAY_SECONDS.length) {
+                Order order = remote.getOrderSync(orderID);
+                if (order == null || order.getStatus() == StatusEnum.PENDING) {
+                    sleep(DELAY_SECONDS[pollingIndex]);
+                    getOrder(++pollingIndex);
                 } else {
                     callback.onResponse(order);
                 }
-            }
-            else {
+            } else {
                 callback.onFailure(new TimeoutException());
             }
-        } catch (final ApiException | InterruptedException e) {
+        } catch (final InterruptedException e) {
             callback.onFailure(e);
         }
     }

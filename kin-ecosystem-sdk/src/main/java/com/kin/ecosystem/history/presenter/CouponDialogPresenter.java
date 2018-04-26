@@ -26,12 +26,14 @@ public class CouponDialogPresenter extends BaseDialogPresenter<ICouponDialog> im
     }
 
     private void loadInfo() {
-        if (view != null) {
+        if (view != null && coupon != null) {
             CouponInfo info = coupon.getCouponInfo();
             view.setupImage(info.getImage());
             view.setupTitle(info.getTitle());
             view.setUpRedeemDescription(info.getDescription(), info.getLink(), createUrl(info.getLink()));
-            view.setupCouponCode(coupon.getCouponCode().getCode());
+            if(coupon.getCouponCode() != null) {
+                view.setupCouponCode(coupon.getCouponCode().getCode());
+            }
             view.setUpButtonText(R.string.copy_code);
         }
     }
@@ -60,7 +62,7 @@ public class CouponDialogPresenter extends BaseDialogPresenter<ICouponDialog> im
     }
 
     private void copyCouponCodeToClipboard() {
-        if (view != null) {
+        if (view != null && coupon.getCouponCode() != null) {
             view.copyCouponCode(coupon.getCouponCode().getCode());
         }
     }

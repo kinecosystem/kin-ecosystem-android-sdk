@@ -23,6 +23,7 @@ import kin.core.PaymentInfo;
 import kin.core.ResultCallback;
 import kin.core.TransactionId;
 
+import kin.core.exception.AccountNotFoundException;
 import kin.core.exception.CreateAccountException;
 
 public class BlockchainSource implements IBlockchainSource {
@@ -91,7 +92,7 @@ public class BlockchainSource implements IBlockchainSource {
     @Override
     public void setAppID(String appID) {
         Log.d(TAG, "setAppID: " + appID);
-        if(!TextUtils.isEmpty(appID)){
+        if (!TextUtils.isEmpty(appID)) {
             this.appID = appID;
         }
     }
@@ -159,7 +160,11 @@ public class BlockchainSource implements IBlockchainSource {
                 mainThread.execute(new Runnable() {
                     @Override
                     public void run() {
-                        callback.onFailure(e);
+                        if (e instanceof AccountNotFoundException) {
+                            callback.onResponse(0);
+                        } else {
+                            callback.onFailure(e);
+                        }
                     }
                 });
                 Log.d(TAG, "getCurrentBalance onError: " + e.getMessage());
@@ -220,17 +225,17 @@ public class BlockchainSource implements IBlockchainSource {
     private void startPaymentListener() {
         paymentRegistration = account.blockchainEvents()
             .addPaymentListener(new EventListener<PaymentInfo>() {
-            @Override
-            public void onEvent(PaymentInfo data) {
-                String orderID = extractOrderId(data.memo());
-                Log.d(TAG, "startPaymentListener onEvent: the orderId: " + orderID + " with memo: " + data.memo());
-                if (orderID != null) {
-                    completedPayment.setValue(new Payment(orderID, data.hash().id()));
-                    Log.d(TAG, "completedPayment order id: " + orderID);
+                @Override
+                public void onEvent(PaymentInfo data) {
+                    String orderID = extractOrderId(data.memo());
+                    Log.d(TAG, "startPaymentListener onEvent: the orderId: " + orderID + " with memo: " + data.memo());
+                    if (orderID != null) {
+                        completedPayment.setValue(new Payment(orderID, data.hash().id()));
+                        Log.d(TAG, "completedPayment order id: " + orderID);
+                    }
+                    updateBalance(data);
                 }
-                updateBalance(data);
-            }
-        });
+            });
     }
 
     private void stopPaymentListener() {
@@ -244,12 +249,12 @@ public class BlockchainSource implements IBlockchainSource {
         Log.d(TAG, "startAccountCreationListener");
         accountCreationRegistration = account.blockchainEvents()
             .addAccountCreationListener(new EventListener<Void>() {
-            @Override
-            public void onEvent(Void data) {
-                createTrustLine();
-                stopAccountCreationListener();
-            }
-        });
+                @Override
+                public void onEvent(Void data) {
+                    createTrustLine();
+                    stopAccountCreationListener();
+                }
+            });
     }
 
     private void stopAccountCreationListener() {

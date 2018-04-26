@@ -14,8 +14,6 @@ public interface AuthDataSource {
 
     void setAuthToken(@NonNull final AuthToken authToken);
 
-    void getAuthToken(@NonNull final Callback<AuthToken> callback);
-
     AuthToken getAuthTokenSync();
 
     boolean isActivated();
@@ -28,7 +26,7 @@ public interface AuthDataSource {
 
         void setAuthToken(@NonNull final AuthToken authToken);
 
-        void getAuthToken(@NonNull final Callback<AuthToken> callback);
+        void getAppId(@NonNull final Callback<String> callback);
 
         AuthToken getAuthTokenSync();
 
@@ -41,8 +39,6 @@ public interface AuthDataSource {
     interface Remote {
 
         void setSignInData(@NonNull final SignInData signInData);
-
-        void getAuthToken(@NonNull final Callback<AuthToken> callback);
 
         AuthToken getAuthTokenSync();
 

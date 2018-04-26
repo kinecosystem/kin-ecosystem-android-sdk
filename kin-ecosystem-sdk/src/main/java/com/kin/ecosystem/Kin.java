@@ -3,7 +3,6 @@ package com.kin.ecosystem;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import com.kin.ecosystem.base.ObservableData;
@@ -20,7 +19,6 @@ import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
-import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.splash.view.SplashViewActivity;
 import com.kin.ecosystem.util.DeviceUtils;
@@ -82,7 +80,7 @@ public class Kin {
         String publicAddress = null;
         try {
             publicAddress = getPublicAddress();
-            signInData.setPublicAddress(publicAddress);
+            signInData.setWalletAddress(publicAddress);
             AuthRepository.init(signInData, AuthLocalData.getInstance(context, instance.executorsUtil),
                 AuthRemoteData.getInstance(instance.executorsUtil));
         } catch (TaskFailedException e) {
@@ -134,5 +132,10 @@ public class Kin {
     public static void getBalance(@NonNull final Callback<Integer> callback) throws TaskFailedException {
         checkInstanceNotNull();
         BlockchainSource.getInstance().getBalance(callback);
+    }
+
+    public static void purchase(String offerJwt, Callback<String> callback) throws TaskFailedException {
+        checkInstanceNotNull();
+        OrderRepository.getInstance().purchase(offerJwt, callback);
     }
 }

@@ -21,6 +21,7 @@ import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.history.view.OrderHistoryRecyclerAdapter.ViewHolder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.Order.OfferTypeEnum;
+import com.kin.ecosystem.network.model.Order.StatusEnum;
 
 
 public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, ViewHolder> {
@@ -74,6 +75,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
 
         private static final String PLUS_SIGN = "+";
         private static final String MINUS_SIGN = "-";
+        private static final String DASH_DELIMITER = " - ";
 
         public ViewHolder(View item_root) {
             super(item_root);
@@ -114,12 +116,11 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
 
         private void setSubtitle(Order item) {
             StringBuilder subTitle = new StringBuilder(item.getDescription());
-            final String delimiter = " - ";
             String dateString = item.getCompletionDate();
             if (dateString != null && !TextUtils.isEmpty(dateString)) {
                 dateString = getDateFormatted(dateString);
                 if (!TextUtils.isEmpty(dateString)) {
-                    subTitle.append(delimiter).append(dateString);
+                    subTitle.append(DASH_DELIMITER).append(dateString);
                 }
             }
             setText(R.id.sub_title, subTitle);
@@ -127,7 +128,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
 
         private void setOrderTitle(Order item) {
             String brand = item.getTitle();
-            String delimiter = " - ";
+            String delimiter =  TextUtils.isEmpty(item.getCallToAction()) && !isFailed(item.getStatus())? "" : DASH_DELIMITER;
             String actionText = getActionText(item);
             setText(R.id.action_text, actionText);
             switch (item.getStatus()) {
@@ -151,6 +152,10 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
                 default:
                     break;
             }
+        }
+
+        private boolean isFailed(StatusEnum status) {
+            return status == StatusEnum.FAILED;
         }
 
         private String getActionText(Order item) {

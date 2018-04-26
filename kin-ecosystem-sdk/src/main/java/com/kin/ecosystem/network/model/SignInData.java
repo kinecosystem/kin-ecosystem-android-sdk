@@ -34,8 +34,8 @@ public class SignInData {
     private String deviceId = null;
     @SerializedName("api_key")
     private String apiKey = null;
-    @SerializedName("public_address")
-    private String publicAddress = null;
+    @SerializedName("wallet_address")
+    private String walletAddress = null;
 
     /**
      * Gets or Sets signInType
@@ -175,8 +175,8 @@ public class SignInData {
         this.deviceId = deviceId;
     }
 
-    public SignInData publicAddress(String publicAddress) {
-        this.publicAddress = publicAddress;
+    public SignInData walletAddress(String walletAddress) {
+        this.walletAddress = walletAddress;
         return this;
     }
 
@@ -186,12 +186,12 @@ public class SignInData {
      *
      * @return publicAddress
      **/
-    public String getPublicAddress() {
-        return publicAddress;
+    public String getWalletAddress() {
+        return walletAddress;
     }
 
-    public void setPublicAddress(String publicAddress) {
-        this.publicAddress = publicAddress;
+    public void setWalletAddress(String walletAddress) {
+        this.walletAddress = walletAddress;
     }
 
     public SignInData signInType(SignInTypeEnum signInType) {
@@ -222,17 +222,18 @@ public class SignInData {
             return false;
         }
         SignInData signInData = (SignInData) o;
-        return Objects.equals(this.jwt, signInData.jwt) &&
-            Objects.equals(this.userId, signInData.userId) &&
-            Objects.equals(this.appId, signInData.appId) &&
-            Objects.equals(this.deviceId, signInData.deviceId) &&
-            Objects.equals(this.publicAddress, signInData.publicAddress) &&
-            Objects.equals(this.signInType, signInData.signInType);
+        return this.jwt.equals(signInData.jwt) &&
+            this.userId.equals(signInData.userId) &&
+            this.appId.equals(signInData.appId) &&
+            this.deviceId.equals(signInData.deviceId) &&
+            this.walletAddress.equals(signInData.walletAddress) &&
+            this.signInType.equals(signInData.signInType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(jwt, userId, appId, deviceId, publicAddress, signInType);
+        return jwt.hashCode() + userId.hashCode() + appId.hashCode() +
+            deviceId.hashCode() + walletAddress.hashCode() + signInType.hashCode();
     }
 
     @Override
@@ -245,7 +246,7 @@ public class SignInData {
         sb.append("    appId: ").append(toIndentedString(appId)).append("\n");
         sb.append("    apiKey: ").append(toIndentedString(apiKey)).append("\n");
         sb.append("    deviceId: ").append(toIndentedString(deviceId)).append("\n");
-        sb.append("    publicAddress: ").append(toIndentedString(publicAddress)).append("\n");
+        sb.append("    publicAddress: ").append(toIndentedString(walletAddress)).append("\n");
         sb.append("    signInType: ").append(toIndentedString(signInType)).append("\n");
         sb.append("}");
         return sb.toString();

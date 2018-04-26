@@ -34,16 +34,16 @@ Digital services will have to authorised client request using one of the followi
     1. You can learn more [here](https://jwt.io)
     1. Please contact us to receive your JWT issuer identifier (iss key) and provide us with your public signature key and its corresponding 'keyid'
 ### JWT Registration specs
-1. We will support ES256 signature algorithm.
-1. Header will follow this template
+1. We will support `ES256` signature algorithm later on, right now you should use `RS512`.
+2. Header will follow this template
     ```aidl
     {
-        "alg": ""ES256", // We will support ES256 signature algorithem 
+        "alg": "RS512", // We will support ES256 signature algorithem 
         "typ": "JWT",
-        "keyid": string" // identifier of the keypair that was used to sign the JWT. identifiers and public keys will be provided by signer authority. This enables using multiple private/public key pairs (a list of public keys and their ids need to be provided by signer authority to verifier in advanced)
+        "kid": string" // identifier of the keypair that was used to sign the JWT. identifiers and public keys will be provided by signer authority. This enables using multiple private/public key pairs (a list of public keys and their ids need to be provided by signer authority to verifier in advanced)
     }
     ```
-1. Registration payload template
+3. Registration payload template
     ```aidl
     {
         // common/ standard fields
@@ -135,6 +135,9 @@ As can be seen in the sample app, there are just few step required to integrate 
                   //
             }
       ```
+
+##[Create Native Spend Offer](NATIVE_SPEND.md)
+
    
 ## License
 The kin-ecosystem-android-sdk library is licensed under [MIT license](LICENSE.md).

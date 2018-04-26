@@ -134,8 +134,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
     private void release() {
         offerRepository.getPendingOffer().removeObserver(pendingOfferObserver);
         orderRepository.removeCompletedOrderObserver(completedOrderObserver);
-        spendList = null;
-        earnList = null;
     }
 
     @Override
