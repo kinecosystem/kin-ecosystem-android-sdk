@@ -9,7 +9,8 @@ All blockchain transactions are currently running on Stellar test net and not on
 
 ## Intro
 The ecosystem "5 minute SDK" supports rich user experience and seamless blockchain integration. <br/>
-Once the ecosystem SDK is integrated within digital service, users will be be able to interact with rich earn and spend marketplace experiences, and view their account balance and order history.<br/>
+
+Once the ecosystem SDK is integrated within a digital service, you’ll have the ability to provide your users with a range of new experiences as part of the Kin ecosystem including, earn and spend marketplace opportunities, and the ability to view their account balance and order history<br/>
 A stellar wallet and account will be created behind the scene for the user. <br/>
 
 ![DEMO](https://user-images.githubusercontent.com/3635216/38100813-0f2c7bc2-3387-11e8-930d-03175842e81e.gif)
@@ -34,8 +35,8 @@ Digital services will have to authorised client request using one of the followi
     1. You can learn more [here](https://jwt.io)
     1. Please contact us to receive your JWT issuer identifier (iss key) and provide us with your public signature key and its corresponding 'keyid'
 ### JWT Registration specs
-1. We will support ES256 signature algorithm.
-1. Header will follow this template
+1. We will support the ES256 signature algorithm.
+1. The header will follow this template
     ```aidl
     {
         "alg": ""ES256", // We will support ES256 signature algorithem 
@@ -43,7 +44,7 @@ Digital services will have to authorised client request using one of the followi
         "keyid": string" // identifier of the keypair that was used to sign the JWT. identifiers and public keys will be provided by signer authority. This enables using multiple private/public key pairs (a list of public keys and their ids need to be provided by signer authority to verifier in advanced)
     }
     ```
-1. Registration payload template
+1. Here is the registration payload template
     ```aidl
     {
         // common/ standard fields
@@ -61,8 +62,8 @@ Digital services will have to authorised client request using one of the followi
  
 The Sample app is configured with default appId = 'test' and apiKey = 'A2XEJTdN8hGiuUvg9VSHZ'.<br/>
 These appID and apiKey can be used for integration testing in any app but will not run on real production environment.<br/>
-To setup and run the sample app authorized apiKey and appId needs to be provided.<br/>
-In order to receive your unique appId and apiKey please contact us.<br/>
+To setup and run the sample app an authorized apiKey and appId needs to be provided.<br/>
+Contact us to receive your unique appId and apiKey.<br/>
  
 To override the default setting, create or edit a local `credential.properties` in the `app` module directory. <br/>
 Add the lines below to your local `credential.properties` file of the sample app once you receive your appId and apiKey.<br/>
@@ -73,7 +74,7 @@ Add the lines below to your local `credential.properties` file of the sample app
    IS_JWT_REGISTRATION = false// (optional)to test sample app JWT registartion set this property to true, if not specified defualt is set to false 
    
 ```
-The sample app Gradle build loads `credential.properties` setting and use it to create 'SignInData' object used for the registration.
+The sample app Gradle build loads `credential.properties` setting and uses it to create the 'SignInData' object used for the registration.
 
 
 
@@ -120,7 +121,7 @@ As can be seen in the sample app, there are just few step required to integrate 
           ```
          JWT spec can be found at [ecosystem-api repository](https://github.com/kinfoundation/ecosystem-api)
    
-1. Initiate SDK when the Application starts calling Kin. The first start will begin the blocakchain wallet and account creation process.
+1. Initiate the SDK when the application starts calling Kin. The first start will begin the blocakchain wallet and account creation process.
       ```java
                try {
                    Kin.start(getApplicationContext(), signInData);
