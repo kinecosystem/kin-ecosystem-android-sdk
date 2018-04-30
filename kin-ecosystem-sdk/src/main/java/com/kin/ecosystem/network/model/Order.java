@@ -217,6 +217,11 @@ public class Order {
         return offerId;
     }
 
+    public Order offerId(String offerId) {
+        this.offerId = offerId;
+        return this;
+    }
+
     public Order completionDate(String completionDate) {
         this.completionDate = completionDate;
         return this;
@@ -367,8 +372,7 @@ public class Order {
             return false;
         }
         Order order = (Order) o;
-        return this.orderId.equals(order.orderId) &&
-            this.offerId.equals(order.offerId);
+        return this.orderId.equals(order.orderId);
     }
 
     @Override

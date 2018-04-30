@@ -18,11 +18,19 @@ import java.util.List;
 import java.util.Map;
 
 public class ApiException extends Exception {
+
+    private static int CODE_INTERNAL = 1;
+    private static String MSG_INTERNAL = "internal error";
+
     private int code = 0;
     private Map<String, List<String>> responseHeaders = null;
     private Error responseBody = null;
 
-    public ApiException() {}
+    public ApiException() {
+        this.code = CODE_INTERNAL;
+        this.responseBody = new Error(MSG_INTERNAL, MSG_INTERNAL, CODE_INTERNAL);
+
+    }
 
     public ApiException(Throwable throwable) {
         super(throwable);
@@ -32,7 +40,8 @@ public class ApiException extends Exception {
         super(message);
     }
 
-    public ApiException(String message, Throwable throwable, int code, Map<String, List<String>> responseHeaders, Error responseBody) {
+    public ApiException(String message, Throwable throwable, int code, Map<String, List<String>> responseHeaders,
+        Error responseBody) {
         super(message, throwable);
         this.code = code;
         this.responseHeaders = responseHeaders;

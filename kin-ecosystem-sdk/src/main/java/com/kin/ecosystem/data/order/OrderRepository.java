@@ -16,7 +16,6 @@ import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.OrderList;
-import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrderRepository implements OrderDataSource {
@@ -121,6 +120,8 @@ public class OrderRepository implements OrderDataSource {
 
             @Override
             public void onFailure(Throwable t) {
+                removeCachedOpenOrderByID(orderID);
+                removePendingOfferByID(offerID);
                 if (callback != null) {
                     callback.onFailure(new TaskFailedException("Order: " + orderID + " submission failed"));
                 }
@@ -142,7 +143,7 @@ public class OrderRepository implements OrderDataSource {
         }
     }
 
-    private void getOrder(String orderID) {
+    private void getOrder(final String orderID) {
         remoteData.getOrder(orderID, new Callback<Order>() {
             @Override
             public void onResponse(Order order) {
@@ -160,27 +161,37 @@ public class OrderRepository implements OrderDataSource {
         if (hasMorePendingOffers()) {
             pendingOrdersCount.decrementAndGet();
         }
-        if (!hasMorePendingOffers()) {
-            blockchainSource.removePaymentObserver(paymentObserver);
-            Log.d(TAG, "decrementPendingOrdersCount: removePaymentObserver");
+        else {
+            if(paymentObserver != null) {
+                blockchainSource.removePaymentObserver(paymentObserver);
+                Log.d(TAG, "decrementPendingOrdersCount: removePaymentObserver");
+            }
         }
     }
 
-    private void setCompletedOrder(Order order) {
+    private void setCompletedOrder(@NonNull Order order) {
         Log.i(TAG, "setCompletedOrder: " + order);
         completedOrder.postValue(order);
         if (!hasMorePendingOffers()) {
-            if (isCachedOpenOrderEquals(order.getOrderId())) {
-                cachedOpenOrder.postValue(null);
-            }
-            if (isOfferIdEquals(order.getOfferId())) {
-                offerRepository.setPendingOfferByID(null);
-            }
+            removeCachedOpenOrderByID(order.getOrderId());
+            removePendingOfferByID(order.getOfferId());
         }
     }
 
     private boolean hasMorePendingOffers() {
         return pendingOrdersCount.get() > 0;
+    }
+
+    private void removeCachedOpenOrderByID(String orderId) {
+        if (isCachedOpenOrderEquals(orderId)) {
+            cachedOpenOrder.postValue(null);
+        }
+    }
+
+    private void removePendingOfferByID(String offerId) {
+        if (isCurrentPendingOfferIdEquals(offerId)) {
+            offerRepository.setPendingOfferByID(null);
+        }
     }
 
     private boolean isCachedOpenOrderEquals(String orderId) {
@@ -190,7 +201,7 @@ public class OrderRepository implements OrderDataSource {
         return false;
     }
 
-    private boolean isOfferIdEquals(String offerId) {
+    private boolean isCurrentPendingOfferIdEquals(String offerId) {
         ObservableData<Offer> pendingOffer = offerRepository.getPendingOffer();
         if (pendingOffer != null && pendingOffer.getValue() != null) {
             return pendingOffer.getValue().getId().equals(offerId);
@@ -205,7 +216,8 @@ public class OrderRepository implements OrderDataSource {
         remoteData.cancelOrder(orderID, new Callback<Void>() {
             @Override
             public void onResponse(Void response) {
-                cachedOpenOrder.setValue(null);
+                removeCachedOpenOrderByID(orderID);
+                removePendingOfferByID(offerID);
                 if (callback != null) {
                     callback.onResponse(response);
                 }
@@ -220,11 +232,18 @@ public class OrderRepository implements OrderDataSource {
         });
     }
 
+    @Override
     public void purchase(String offerJwt, final Callback<String> callback) {
         new CreateExternalOrderCall(remoteData, blockchainSource, offerJwt, new ExternalOrderCallbacks() {
             @Override
             public void onTransactionSent(OpenOrder openOrder) {
+                cachedOpenOrder.postValue(openOrder);
                 submitOrder(openOrder.getOfferId(), null, openOrder.getId(), null);
+            }
+
+            @Override
+            public void onTransactionFailed(OpenOrder openOrder) {
+                cancelOrder(openOrder.getOfferId(), openOrder.getId(), null);
             }
 
             @Override
@@ -250,8 +269,18 @@ public class OrderRepository implements OrderDataSource {
     }
 
     @Override
-    public void isFirstSpendOrder(@NonNull Callback<Boolean> callback) {
-        localData.isFirstSpendOrder(callback);
+    public void isFirstSpendOrder(@NonNull final Callback<Boolean> callback) {
+        localData.isFirstSpendOrder(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Boolean response) {
+                callback.onResponse(response);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                callback.onFailure(new DataNotAvailableException());
+            }
+        });
     }
 
     @Override

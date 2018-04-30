@@ -51,6 +51,7 @@ class CreateExternalOrderCall extends Thread {
         // Send transaction to the network.
         blockchainSource.sendTransaction(openOrder.getBlockchainData().getRecipientAddress(),
             new BigDecimal(openOrder.getAmount()), openOrder.getId());
+
         runOnMainThread(new Runnable() {
             @Override
             public void run() {
@@ -67,13 +68,12 @@ class CreateExternalOrderCall extends Thread {
                 if (payment.isSucceed()) {
                     getOrder(payment.getOrderID());
                 } else {
-                    remote.cancelOrder(payment.getOrderID(), null);
-                    runOnMainThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            externalOrderCallbacks.onOrderFailed(payment.getResultMessage());
-                        }
-                    });
+                   runOnMainThread(new Runnable() {
+                       @Override
+                       public void run() {
+                           externalOrderCallbacks.onTransactionFailed(openOrder);
+                       }
+                   });
                 }
                 blockchainSource.removePaymentObserver(this);
             }
@@ -114,8 +114,11 @@ class CreateExternalOrderCall extends Thread {
 
         void onTransactionSent(OpenOrder openOrder);
 
+        void onTransactionFailed(OpenOrder openOrder);
+
         void onOrderConfirmed(String confirmationJwt);
 
         void onOrderFailed(String msg);
+
     }
 }
