@@ -89,8 +89,8 @@ public class JwtUtil {
     private static JWTSpendOffer createSpendOfferExampleObject() {
         int randomID = new Random().nextInt((9999 - 1) + 1) + 1;
         return new JWTSpendOffer(String.valueOf(randomID),
-            "Set profile picture",
-            "Get superpowers in real life",
+            "NativeSpend",
+            "Bought a sticker",
             10,
             "GDSXU3DVE3M3CTWXGN3DOLJHRDQLII3WV3GUGK5ZDQGWWDHKJFHRVGNB");
     }

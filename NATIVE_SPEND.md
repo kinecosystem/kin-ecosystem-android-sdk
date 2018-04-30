@@ -1,10 +1,7 @@
 ## Create Native Spend Offer
 In order to create a native spend offer in your app
-1. Generate a JWT that represent a SpendOffer signed by you.
-2. Call the method below:
-```java
-    Kin.purchase(offerJwt, callback);
-```
+1. Generate a JWT that represent a SpendOffer signed by you. (see [spend offer jwt specs](#spend-offer-jwt-specs))
+2. Call the method: `Kin.purchase(offerJwt, callback);` (see [example below](#example-from-sample-app))
 
 ### Spend offer jwt specs
 1. We will support `ES256` signature algorithm later on, right now you can use `RS512`.
@@ -23,7 +20,7 @@ In order to create a native spend offer in your app
         iat: number;  // issued at - seconds from epoc
         iss: string; // issuer - please contact us to recive your issuer
         exp: number; // expiration
-        sub: "register"
+        sub: "spend"
         
         // application fields
         offer: {
@@ -35,7 +32,9 @@ In order to create a native spend offer in your app
             }
     }
     ```
-### Example
+### Example from sample app
+In the sample app the spend JWT is created and signed by the Android client side for presentation purpose only- do not use this approach on real production app.
+JWT need to be signed by server side where private key is secure.
 ```java
     String offerJwt = JwtUtil.generateSpendOfferExampleJWT(BuildConfig.SAMPLE_APP_ID);
         
@@ -43,6 +42,8 @@ In order to create a native spend offer in your app
             Kin.purchase(offerJwt, new Callback<String>() {
                 @Override
                 public void onResponse(String jwtConfirmation) {
+                    // Send confirmation JWT back to the server in order prove that the user
+                    // completed the blockchain transaction and purchase can be unlocked for this user.
                     System.out.println("Succeed to create native spend.\n jwtConfirmation: " + jwtConfirmation);
                 }
 

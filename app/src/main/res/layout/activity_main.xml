@@ -67,7 +67,7 @@
         android:layout_marginEnd="8dp"
         android:layout_gravity="bottom"
         android:background="@drawable/button_background_white_rounded"
-        android:text="Create Native Spend"
+        android:text="Native Spend - Buy A Sticker"
         android:textAllCaps="false"
         android:textColor="@color/bluePrimary"
         app:layout_constraintEnd_toEndOf="parent"

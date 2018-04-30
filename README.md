@@ -137,7 +137,7 @@ As can be seen in the sample app, there are just few step required to integrate 
       ```
 
 ##[Create Native Spend Offer](NATIVE_SPEND.md)
-
+A native spend is a mechanism allowing your users to buy virtual goods you define, using Kin on Kin Ecosystem API's.
    
 ## License
 The kin-ecosystem-android-sdk library is licensed under [MIT license](LICENSE.md).
