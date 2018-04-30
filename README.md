@@ -59,14 +59,16 @@ Digital services will have to authorised client request using one of the followi
 
 ## Setup sample app
  
+The Sample app is configured with default appId = 'test' and apiKey = 'A2XEJTdN8hGiuUvg9VSHZ'.<br/>
+These appID and apiKey can be used for integration testing in any app but will not run on real production environment.<br/>
 To setup and run the sample app authorized apiKey and appId needs to be provided.<br/>
-In order to receive a test apiKey please contact us.<br/>
+In order to receive your unique appId and apiKey please contact us.<br/>
  
-Create a local `credential.properties` in the `app` module directory. <br/>
+To override the default setting, create or edit a local `credential.properties` in the `app` module directory. <br/>
 Add the lines below to your local `credential.properties` file of the sample app once you receive your appId and apiKey.<br/>
 ```
-   APP_ID="YOUR_APP_ID" // will be used for Whitelisted registartion and also as the issuer (iss) 
-   API_KEY="YOUR_API_KEY" // only requreid for whitelist registrartion
+   APP_ID="YOUR_APP_ID" // will be used for Whitelisted registartion and also as the issuer (iss). Set by defualt to 'test' 
+   API_KEY="YOUR_API_KEY" // only requreid for whitelist registrartion. Set by default to 'A2XEJTdN8hGiuUvg9VSHZ'.
    RS512_PRIVATE_KEY="YOUR_RS512_PRIVATE_KEY // (optional) only required when testing JWT on sample app in real use case JWT is created by server side with ES256 signature
    IS_JWT_REGISTRATION = false// (optional)to test sample app JWT registartion set this property to true, if not specified defualt is set to false 
    
