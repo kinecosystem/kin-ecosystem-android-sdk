@@ -77,10 +77,12 @@ dependencies {
 
 def loadCredential() {
     def crashlytics_demo_api_key = "4b7647b5860d29039e16910e281fcf8d9cad21bb"
+    def default_app_id = '"test"'
+    def default_api_key = '"A2XEJTdN8hGiuUvg9VSHZ"'
 
     ant.propertyfile(file: "credential.properties") {
-        entry(key: "APP_ID", default: System.getenv('APP_ID') ?: '"No appId, please add credential.properties"')
-        entry(key: "API_KEY", default: System.getenv('API_KEY') ?: '"No apiKey, please add credential.properties"')
+        entry(key: "APP_ID", default: System.getenv('APP_ID') ?: default_app_id)
+        entry(key: "API_KEY", default: System.getenv('API_KEY') ?: default_api_key)
         entry(key: "RS512_PRIVATE_KEY", default: System.getenv('RS512_PRIVATE_KEY') ?: '"No JWT private key, please add credential.properties"')
         entry(key: "IS_JWT_REGISTRATION", default: System.getenv('IS_JWT_REGISTRATION') ?:  "false")
         entry(key: "CRASHLYTICS_API_KEY", default: System.getenv('CRASHLYTICS_API_KEY')  ?: crashlytics_demo_api_key)
