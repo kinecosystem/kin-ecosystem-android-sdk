@@ -87,7 +87,7 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
         RecyclerView spendRecycler = findViewById(R.id.spend_recycler);
         spendRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         spendRecycler.addItemDecoration(itemDecoration);
-        spendRecyclerAdapter = new SpendRecyclerAdapter();
+        spendRecyclerAdapter = new SpendRecyclerAdapter(this);
         spendRecyclerAdapter.bindToRecyclerView(spendRecycler);
         spendRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -96,11 +96,12 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
             }
         });
 
+
         //Earn Recycler
         RecyclerView earnRecycler = findViewById(R.id.earn_recycler);
         earnRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         earnRecycler.addItemDecoration(itemDecoration);
-        earnRecyclerAdapter = new EarnRecyclerAdapter();
+        earnRecyclerAdapter = new EarnRecyclerAdapter(this);
         earnRecyclerAdapter.bindToRecyclerView(earnRecycler);
         earnRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override

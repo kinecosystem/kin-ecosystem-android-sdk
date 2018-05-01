@@ -1,10 +1,12 @@
 package com.kin.ecosystem.marketplace.view;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
 import com.kin.ecosystem.R;
 
 class EarnRecyclerAdapter extends OfferRecyclerAdapter {
 
-    EarnRecyclerAdapter() {
-        super(R.layout.earn_recycler_item);
+    EarnRecyclerAdapter(@NonNull Context context) {
+        super(context, R.layout.earn_recycler_item);
     }
 }
