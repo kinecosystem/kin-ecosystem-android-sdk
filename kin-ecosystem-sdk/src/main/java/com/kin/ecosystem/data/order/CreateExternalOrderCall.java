@@ -65,19 +65,26 @@ class CreateExternalOrderCall extends Thread {
             public void onChanged(final Payment payment) {
                 Log.d(TAG,
                     "addPaymentObservable onChanged: " + payment.getOrderID() + " isSucceed: " + payment.isSucceed());
-                if (payment.isSucceed()) {
-                    getOrder(payment.getOrderID());
-                } else {
-                   runOnMainThread(new Runnable() {
-                       @Override
-                       public void run() {
-                           externalOrderCallbacks.onTransactionFailed(openOrder);
-                       }
-                   });
+                if (isPaymentOrderEquals(payment, openOrder.getId())) {
+                    if (payment.isSucceed()) {
+                        getOrder(payment.getOrderID());
+                    } else {
+                        runOnMainThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                externalOrderCallbacks.onTransactionFailed(openOrder);
+                            }
+                        });
+                    }
                 }
                 blockchainSource.removePaymentObserver(this);
             }
         });
+    }
+
+    private boolean isPaymentOrderEquals(Payment payment, String orderId) {
+        String paymentOrderID = payment.getOrderID();
+        return paymentOrderID != null && paymentOrderID.equals(orderId);
     }
 
     private void getOrder(String orderID) {

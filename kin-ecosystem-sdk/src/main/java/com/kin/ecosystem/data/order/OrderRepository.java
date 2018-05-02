@@ -16,6 +16,7 @@ import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.OrderList;
+import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrderRepository implements OrderDataSource {
@@ -160,9 +161,8 @@ public class OrderRepository implements OrderDataSource {
     private void decrementPendingOrdersCount() {
         if (hasMorePendingOffers()) {
             pendingOrdersCount.decrementAndGet();
-        }
-        else {
-            if(paymentObserver != null) {
+        } else {
+            if (paymentObserver != null) {
                 blockchainSource.removePaymentObserver(paymentObserver);
                 Log.d(TAG, "decrementPendingOrdersCount: removePaymentObserver");
             }
@@ -195,16 +195,21 @@ public class OrderRepository implements OrderDataSource {
     }
 
     private boolean isCachedOpenOrderEquals(String orderId) {
-        if (cachedOpenOrder != null && cachedOpenOrder.getValue() != null) {
-            return cachedOpenOrder.getValue().getId().equals(orderId);
+        if (cachedOpenOrder != null) {
+            final OpenOrder openOrder = cachedOpenOrder.getValue();
+            if (openOrder != null) {
+                return openOrder.getId().equals(orderId);
+            }
         }
         return false;
     }
 
     private boolean isCurrentPendingOfferIdEquals(String offerId) {
-        ObservableData<Offer> pendingOffer = offerRepository.getPendingOffer();
-        if (pendingOffer != null && pendingOffer.getValue() != null) {
-            return pendingOffer.getValue().getId().equals(offerId);
+        if (offerRepository.getPendingOffer() != null) {
+            final Offer pendingOffer = offerRepository.getPendingOffer().getValue();
+            if (pendingOffer != null) {
+                return pendingOffer.getId().equals(offerId);
+            }
         }
         return false;
     }
@@ -233,7 +238,7 @@ public class OrderRepository implements OrderDataSource {
     }
 
     @Override
-    public void purchase(String offerJwt, final Callback<String> callback) {
+    public void purchase(String offerJwt, final WeakReference<Callback<String>> callback) {
         new CreateExternalOrderCall(remoteData, blockchainSource, offerJwt, new ExternalOrderCallbacks() {
             @Override
             public void onTransactionSent(OpenOrder openOrder) {
@@ -248,12 +253,16 @@ public class OrderRepository implements OrderDataSource {
 
             @Override
             public void onOrderConfirmed(String confirmationJwt) {
-                callback.onResponse(confirmationJwt);
+                if (callback.get() != null) {
+                    callback.get().onResponse(confirmationJwt);
+                }
             }
 
             @Override
             public void onOrderFailed(String msg) {
-                callback.onFailure(new TaskFailedException(msg));
+                if (callback.get() != null) {
+                    callback.get().onFailure(new TaskFailedException(msg));
+                }
             }
         }).start();
     }

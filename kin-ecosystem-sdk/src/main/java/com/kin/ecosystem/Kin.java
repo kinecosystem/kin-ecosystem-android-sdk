@@ -23,6 +23,7 @@ import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.splash.view.SplashViewActivity;
 import com.kin.ecosystem.util.DeviceUtils;
 import com.kin.ecosystem.util.ExecutorsUtil;
+import java.lang.ref.WeakReference;
 
 
 public class Kin {
@@ -134,8 +135,17 @@ public class Kin {
         BlockchainSource.getInstance().getBalance(callback);
     }
 
+    /**
+     * Allowing your users to purchase virtual goods you define within your app, using KIN.
+     * This call might take time, due to transaction validation on the blockchain network.
+     *
+     * @param offerJwt Represents the offer in a JWT manner.
+     * @param callback Confirmation callback, the result will be a failure or a succeed with a jwt confirmation.
+     *                 This callback will be kept as a {@link WeakReference} in order to prevent memory leaks.
+     * @throws TaskFailedException
+     */
     public static void purchase(String offerJwt, Callback<String> callback) throws TaskFailedException {
         checkInstanceNotNull();
-        OrderRepository.getInstance().purchase(offerJwt, callback);
+        OrderRepository.getInstance().purchase(offerJwt, new WeakReference<>(callback));
     }
 }

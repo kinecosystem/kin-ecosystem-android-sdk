@@ -9,6 +9,7 @@ import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.OrderList;
+import java.lang.ref.WeakReference;
 
 public interface OrderDataSource {
 
@@ -25,7 +26,7 @@ public interface OrderDataSource {
 
     ObservableData<OpenOrder> getOpenOrder();
 
-    void purchase(String offerJwt, final Callback<String> callback);
+    void purchase(String offerJwt, final WeakReference<Callback<String>> callback);
 
     void addCompletedOrderObserver(@NonNull final Observer<Order> observer);
 
