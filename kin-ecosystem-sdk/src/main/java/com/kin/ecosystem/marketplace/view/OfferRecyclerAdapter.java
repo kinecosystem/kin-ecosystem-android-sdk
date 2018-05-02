@@ -5,6 +5,8 @@ import static com.kin.ecosystem.util.StringUtil.getAmountFormatted;
 
 import android.content.Context;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import com.chad.library.adapter.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.R;
@@ -32,10 +34,10 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
         return DeviceUtils.isDensity(XXHDPI) ? HIGH_RES_HEIGHT_RATIO : NORMAL_HEIGHT_RATIO;
     }
 
-    OfferRecyclerAdapter(@LayoutRes int layoutResID) {
+    OfferRecyclerAdapter(@NonNull Context context, @LayoutRes int layoutResID) {
         super(layoutResID);
         openLoadAnimation(SLIDEIN_RIGHT);
-        isUseEmpty(true);
+        setEmptyView(new OffersEmptyView(context));
     }
 
     @Override
