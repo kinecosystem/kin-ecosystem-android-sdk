@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.Toast;
 import com.kin.ecosystem.R;
 
 
@@ -48,14 +47,12 @@ public class OffersEmptyView extends ConstraintLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        Toast.makeText(getContext(), "onAttachedToWindow", Toast.LENGTH_SHORT).show();
         startSpaceShipAnimation();
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        Toast.makeText(getContext(), "onDetachedFromWindow", Toast.LENGTH_SHORT).show();
         stopSpaceShipAnimation();
     }
 
