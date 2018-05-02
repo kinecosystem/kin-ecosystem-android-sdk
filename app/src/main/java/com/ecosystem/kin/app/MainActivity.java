@@ -25,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
     private Button nativeSpendButton;
     private static final String GET_BALANCE = "Get Balance: ";
 
+    private Callback<String> nativeSpendCallback;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,7 +99,15 @@ public class MainActivity extends AppCompatActivity {
         String offerJwt = JwtUtil.generateSpendOfferExampleJWT(BuildConfig.SAMPLE_APP_ID);
         Log.d(TAG, "createNativeSpendOffer: " + offerJwt);
         try {
-            Kin.purchase(offerJwt, new Callback<String>() {
+            Kin.purchase(offerJwt, getNativeSpendCallback());
+        } catch (TaskFailedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Callback<String> getNativeSpendCallback() {
+        if (nativeSpendCallback == null) {
+            nativeSpendCallback = new Callback<String>() {
                 @Override
                 public void onResponse(String jwtConfirmation) {
                     getBalance();
@@ -111,10 +121,9 @@ public class MainActivity extends AppCompatActivity {
                     showToast("Failed - " + t.getMessage());
                     enableView(nativeSpendButton, true);
                 }
-            });
-        } catch (TaskFailedException e) {
-            e.printStackTrace();
+            };
         }
+        return nativeSpendCallback;
     }
 
     public void enableView(View v, boolean enable) {
@@ -125,5 +134,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void showToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        nativeSpendCallback = null;
     }
 }

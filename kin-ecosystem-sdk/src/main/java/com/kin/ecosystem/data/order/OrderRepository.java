@@ -238,7 +238,7 @@ public class OrderRepository implements OrderDataSource {
     }
 
     @Override
-    public void purchase(String offerJwt, final WeakReference<Callback<String>> callback) {
+    public void purchase(String offerJwt, @Nullable final Callback<String> callback) {
         new CreateExternalOrderCall(remoteData, blockchainSource, offerJwt, new ExternalOrderCallbacks() {
             @Override
             public void onTransactionSent(OpenOrder openOrder) {
@@ -247,21 +247,24 @@ public class OrderRepository implements OrderDataSource {
             }
 
             @Override
-            public void onTransactionFailed(OpenOrder openOrder) {
+            public void onTransactionFailed(OpenOrder openOrder, String msg) {
                 cancelOrder(openOrder.getOfferId(), openOrder.getId(), null);
+                if (callback != null) {
+                    callback.onFailure(new TaskFailedException(msg));
+                }
             }
 
             @Override
             public void onOrderConfirmed(String confirmationJwt) {
-                if (callback.get() != null) {
-                    callback.get().onResponse(confirmationJwt);
+                if (callback != null) {
+                    callback.onResponse(confirmationJwt);
                 }
             }
 
             @Override
             public void onOrderFailed(String msg) {
-                if (callback.get() != null) {
-                    callback.get().onFailure(new TaskFailedException(msg));
+                if (callback != null) {
+                    callback.onFailure(new TaskFailedException(msg));
                 }
             }
         }).start();
