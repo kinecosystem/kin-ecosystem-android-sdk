@@ -68,11 +68,22 @@ public class OfferRepository implements OfferDataSource {
     @Override
     public void setPendingOfferByID(String offerID) {
         Offer offer = getCachedOfferByID(offerID);
-        cachedOfferList.remove(offer);
+        removeFromCachedOfferList(offer);
         pendingOffer.postValue(offer);
     }
 
+    private void removeFromCachedOfferList(Offer offer) {
+        if (cachedOfferList != null) {
+            cachedOfferList.remove(offer);
+        }
+    }
+
+    @Nullable
     private Offer getCachedOfferByID(String offerID) {
+        if(cachedOfferList == null) {
+            return null;
+        }
+
         return cachedOfferList.getOfferByID(offerID);
     }
 }

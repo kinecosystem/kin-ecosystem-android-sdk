@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
@@ -12,8 +13,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ObservableData<T> {
 
+    static final Observer[] EMPTY = new Observer[0];
+
     private AtomicReference<T> value;
-    private List<Observer<T>> observers = new ArrayList<>(1);
+    private final AtomicReference<Observer<T>[]> observers;
     private final Handler mainThreadHandler;
 
     private final ReadWriteLock lock;
@@ -24,6 +27,7 @@ public class ObservableData<T> {
         this.writeLock = lock.writeLock();
         this.mainThreadHandler = new Handler(Looper.getMainLooper());
         this.value = new AtomicReference<>();
+        this.observers = new AtomicReference<Observer<T>[]>(EMPTY);
     }
 
     ObservableData(@NonNull final T defaultValue) {
@@ -39,16 +43,44 @@ public class ObservableData<T> {
         return new ObservableData<>(defaultValue);
     }
 
-    public void addObserver(Observer<T> observer) {
-        observers.add(observer);
+    public boolean addObserver(Observer<T> observer) {
+        Observer<T>[] oldList = observers.get();
+
+        int len = oldList.length;
+        @SuppressWarnings("unchecked")
+        Observer<T>[] newList = new Observer[len + 1];
+        System.arraycopy(oldList, 0, newList, 0, len);
+        newList[len] = observer;
+        return observers.compareAndSet(oldList, newList);
+
     }
 
     public void removeObserver(Observer<T> observer) {
-        observers.remove(observer);
-    }
+        Observer<T>[] oldList = observers.get();
+        if (oldList == EMPTY) {
+            return;
+        }
+        int len = oldList.length;
+        int observerIndex = -1;
+        for (int i = 0; i < len; i++) {
+            if (oldList[i] == observer) {
+                observerIndex = i;
+                break;
+            }
+        }
 
-    public void removeAllObservers() {
-        observers.clear();
+        if (observerIndex < 0) {
+            return;
+        }
+        Observer<T>[] newList;
+        if (len == 1) {
+            newList = EMPTY;
+        } else {
+            newList = new Observer[len - 1];
+            System.arraycopy(oldList, 0, newList, 0, observerIndex);
+            System.arraycopy(oldList, observerIndex + 1, newList, observerIndex, len - observerIndex - 1);
+        }
+        observers.compareAndSet(oldList, newList);
     }
 
     public T getValue() {
@@ -84,7 +116,7 @@ public class ObservableData<T> {
     }
 
     private void onChanged() {
-        for (Observer observer : observers) {
+        for (Observer observer : observers.get()) {
             observer.onChanged(value.get());
         }
     }

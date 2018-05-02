@@ -23,11 +23,21 @@ public class AuthToken {
     @SerializedName("token")
     private String token = null;
     @SerializedName("activated")
-    private Boolean activated = null;
+    private Boolean activated = false;
     @SerializedName("expiration_date")
     private String expirationDate = null;
     @SerializedName("app_id")
     private String appID = null;
+
+    public AuthToken() {
+    }
+
+    public AuthToken(String token, Boolean activated, String expirationDate, String appID) {
+        this.token = token;
+        this.activated = activated;
+        this.expirationDate = expirationDate;
+        this.appID = appID;
+    }
 
     public AuthToken token(String token) {
         this.token = token;
@@ -90,8 +100,9 @@ public class AuthToken {
         return appID;
     }
 
-    public void setAppID(String appID) {
+    public AuthToken appID(String appID) {
         this.appID = appID;
+        return this;
     }
 
     @Override

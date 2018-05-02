@@ -15,14 +15,11 @@ package com.kin.ecosystem.network.model;
 
 import static com.kin.ecosystem.util.StringUtil.toIndentedString;
 
-import java.util.Objects;
-
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
 import java.io.IOException;
 
 /**
@@ -31,10 +28,11 @@ import java.io.IOException;
 public class Order {
 
     @SerializedName("result")
-    private Object result = null;
+    @JsonAdapter(OrderSpendResult.Adapter.class)
+    private OrderSpendResult result = null;
 
     @SerializedName("content")
-    private String content;
+    private String content = null;
 
     /**
      * Gets or Sets status
@@ -157,7 +155,7 @@ public class Order {
     @SerializedName("error")
     private Error error = null;
 
-    public Order result(Object result) {
+    public Order result(OrderSpendResult result) {
         this.result = result;
         return this;
     }
@@ -169,11 +167,11 @@ public class Order {
      *
      * @return result
      **/
-    public Object getResult() {
+    public OrderSpendResult getResult() {
         return result;
     }
 
-    public void setResult(Object result) {
+    public void setResult(OrderSpendResult result) {
         this.result = result;
     }
 
@@ -217,6 +215,11 @@ public class Order {
 
     public String getOfferId() {
         return offerId;
+    }
+
+    public Order offerId(String offerId) {
+        this.offerId = offerId;
+        return this;
     }
 
     public Order completionDate(String completionDate) {
@@ -369,15 +372,15 @@ public class Order {
             return false;
         }
         Order order = (Order) o;
-        return Objects.equals(this.orderId, order.orderId) &&
-            Objects.equals(this.offerId, order.offerId);
+        return this.orderId.equals(order.orderId);
     }
 
     @Override
     public int hashCode() {
-        return Objects
-            .hash(result, status, orderId, completionDate, blockchainData, offerType, title, description, callToAction,
-                amount);
+        return result.hashCode() + status.hashCode() +  orderId.hashCode() +
+            completionDate.hashCode() +  blockchainData.hashCode() +
+            offerType.hashCode() +  title.hashCode() +  description.hashCode() +
+            callToAction.hashCode() + amount.hashCode();
     }
 
     @Override

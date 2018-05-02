@@ -5,9 +5,11 @@ import android.support.annotation.Nullable;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.OrderList;
+import java.lang.ref.WeakReference;
 
 public interface OrderDataSource {
 
@@ -23,6 +25,8 @@ public interface OrderDataSource {
     void cancelOrder(@NonNull final String offerID, @NonNull final String orderID, final Callback<Void> callback);
 
     ObservableData<OpenOrder> getOpenOrder();
+
+    void purchase(String offerJwt, final WeakReference<Callback<String>> callback);
 
     void addCompletedOrderObserver(@NonNull final Observer<Order> observer);
 
@@ -50,5 +54,9 @@ public interface OrderDataSource {
         void cancelOrder(@NonNull final String orderID, final Callback<Void> callback);
 
         void getOrder(String orderID, Callback<Order> callback);
+
+        Order getOrderSync(String orderID);
+
+        OpenOrder createExternalOrderSync(String orderJwt) throws ApiException;
     }
 }

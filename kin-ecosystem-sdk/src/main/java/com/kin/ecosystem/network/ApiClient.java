@@ -6,9 +6,11 @@ package com.kin.ecosystem.network;
 
 import static com.kin.ecosystem.BuildConfig.DEBUG;
 
+import com.google.gson.reflect.TypeToken;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.network.auth.Authentication;
 import com.kin.ecosystem.network.model.AuthToken;
+import com.kin.ecosystem.network.model.Error;
 import com.kin.ecosystem.util.StringUtil;
 import java.io.File;
 import java.io.IOException;
@@ -590,7 +592,16 @@ public class ApiClient {
                 "Content type \"" + contentType + "\" is not supported for type: " + returnType,
                 response.code(),
                 response.headers().toMultimap(),
-                respBody);
+                deserializeError(respBody));
+        }
+    }
+
+    private Error deserializeError(String respBody) {
+        try {
+            return (Error) (json.deserialize(respBody, new TypeToken<Error>() {
+            }.getType()));
+        }catch (Throwable throwable) {
+            return null;
         }
     }
 
@@ -791,7 +802,7 @@ public class ApiClient {
                     throw new ApiException(response.message(), e, response.code(), response.headers().toMultimap());
                 }
             }
-            throw new ApiException(response.message(), response.code(), response.headers().toMultimap(), respBody);
+            throw new ApiException(response.message(), response.code(), response.headers().toMultimap(), deserializeError(respBody));
         }
     }
 

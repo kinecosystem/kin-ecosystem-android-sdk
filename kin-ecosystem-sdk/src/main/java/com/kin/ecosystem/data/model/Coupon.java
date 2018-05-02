@@ -5,15 +5,16 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.kin.ecosystem.network.model.CouponCodeResult;
 import java.io.IOException;
 
 public class Coupon {
 
     private CouponInfo couponInfo;
 
-    private CouponCode couponCode;
+    private CouponCodeResult couponCode;
 
-    public Coupon(CouponInfo couponInfo, CouponCode couponCode) {
+    public Coupon(CouponInfo couponInfo, CouponCodeResult couponCode) {
         this.couponInfo = couponInfo;
         this.couponCode = couponCode;
     }
@@ -22,7 +23,7 @@ public class Coupon {
         return couponInfo;
     }
 
-    public CouponCode getCouponCode() {
+    public CouponCodeResult getCouponCode() {
         return couponCode;
     }
 
@@ -53,27 +54,6 @@ public class Coupon {
 
         public String getLink() {
             return link;
-        }
-    }
-
-    public static class CouponCode {
-
-        public CouponCode(String code) {
-            this.code = code;
-        }
-
-        @SerializedName("coupon_code")
-        private String code;
-
-        @SerializedName("type")
-        private CouponType type = null;
-
-        public String getCode() {
-            return code;
-        }
-
-        public CouponType getType() {
-            return type;
         }
     }
 

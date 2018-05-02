@@ -56,12 +56,15 @@ public class AuthLocalData implements AuthDataSource.Local {
             public void run() {
                 Editor editor = signInSharedPreferences.edit();
                 editor.putString(USER_ID_KEY, signInData.getUserId());
-                editor.putString(APP_ID_KEY, signInData.getAppId());
                 editor.putString(DEVICE_ID_KEY, signInData.getDeviceId());
-                editor.putString(PUBLIC_ADDRESS_KEY, signInData.getPublicAddress());
+                editor.putString(PUBLIC_ADDRESS_KEY, signInData.getWalletAddress());
                 editor.putString(TYPE_KEY, signInData.getSignInType().getValue());
+
                 if (signInData.getSignInType() == SignInTypeEnum.JWT) {
                     editor.putString(JWT_KEY, signInData.getJwt());
+                }
+                else {
+                    editor.putString(APP_ID_KEY, signInData.getAppId());
                 }
                 editor.commit();
             }
@@ -77,6 +80,8 @@ public class AuthLocalData implements AuthDataSource.Local {
             public void run() {
                 Editor editor = signInSharedPreferences.edit();
                 editor.putString(TOKEN_KEY, authToken.getToken());
+                editor.putString(APP_ID_KEY, authToken.getAppID());
+                editor.putBoolean(IS_ACTIVATED_KEY, authToken.isActivated());
                 editor.putString(TOKEN_EXPIRATION_DATE_KEY, authToken.getExpirationDate());
                 editor.commit();
             }
@@ -85,17 +90,16 @@ public class AuthLocalData implements AuthDataSource.Local {
     }
 
     @Override
-    public void getAuthToken(@NonNull final Callback<AuthToken> callback) {
-        Runnable command = new Runnable() {
+    public void getAppId(@NonNull final Callback<String> callback) {
+        final Runnable command = new Runnable() {
             @Override
             public void run() {
-                final String token = signInSharedPreferences.getString(TOKEN_KEY, null);
-                final String expirationDate = signInSharedPreferences.getString(TOKEN_EXPIRATION_DATE_KEY, null);
+                final String appID = signInSharedPreferences.getString(APP_ID_KEY, null);
                 executorsUtil.mainThread().execute(new Runnable() {
                     @Override
                     public void run() {
-                        if (token != null && expirationDate != null) {
-                            callback.onResponse(new AuthToken().token(token).expirationDate(expirationDate));
+                        if (appID != null) {
+                            callback.onResponse(appID);
                         } else {
                             callback.onFailure(new DataNotAvailableException());
                         }
@@ -103,16 +107,17 @@ public class AuthLocalData implements AuthDataSource.Local {
                 });
             }
         };
-
         executorsUtil.diskIO().execute(command);
     }
 
     @Override
     public AuthToken getAuthTokenSync() {
         String token = signInSharedPreferences.getString(TOKEN_KEY, null);
+        String appID = signInSharedPreferences.getString(APP_ID_KEY, null);
+        boolean isActivated = signInSharedPreferences.getBoolean(IS_ACTIVATED_KEY, false);
         String expirationDate = signInSharedPreferences.getString(TOKEN_EXPIRATION_DATE_KEY, null);
         if (token != null && expirationDate != null) {
-            return new AuthToken().token(token).expirationDate(expirationDate);
+            return new AuthToken(token, isActivated, expirationDate, appID);
         } else {
             return null;
         }

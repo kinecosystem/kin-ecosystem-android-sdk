@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
+import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.network.model.SignInData;
 import java.util.Calendar;
@@ -55,43 +56,24 @@ public class AuthRepository implements AuthDataSource {
 
     @Override
     public ObservableData<String> getAppID() {
+        loadCachedAppIDIfNeeded();
         return appId;
     }
 
-    @Override
-    public void getAuthToken(@NonNull final Callback<AuthToken> callback) {
-        if (cachedAuthToken != null) {
-            callback.onResponse(cachedAuthToken);
-        } else {
-            localData.getAuthToken(new Callback<AuthToken>() {
+    private void loadCachedAppIDIfNeeded() {
+        if (TextUtils.isEmpty(appId.getValue())) {
+            localData.getAppId(new Callback<String>() {
                 @Override
-                public void onResponse(final AuthToken response) {
-                    setAuthToken(response);
-                    callback.onResponse(cachedAuthToken);
-
+                public void onResponse(String appID) {
+                  postAppID(appID);
                 }
 
                 @Override
                 public void onFailure(Throwable t) {
-                    getRemoteAuthToken(callback);
+                    // No Data Available
                 }
             });
         }
-    }
-
-    private void getRemoteAuthToken(final Callback<AuthToken> callback) {
-        remoteData.getAuthToken(new Callback<AuthToken>() {
-            @Override
-            public void onResponse(AuthToken response) {
-                setAuthToken(response);
-                callback.onResponse(cachedAuthToken);
-            }
-
-            @Override
-            public void onFailure(final Throwable t) {
-                callback.onFailure(t);
-            }
-        });
     }
 
     @Override
