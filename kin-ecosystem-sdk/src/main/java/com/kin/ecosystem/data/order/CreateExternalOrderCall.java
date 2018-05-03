@@ -43,7 +43,11 @@ class CreateExternalOrderCall extends Thread {
             runOnMainThread(new Runnable() {
                 @Override
                 public void run() {
-                    externalOrderCallbacks.onOrderFailed(e.getResponseBody().getError());
+                    try {
+                        externalOrderCallbacks.onOrderFailed(e.getResponseBody().getError());
+                    }catch (Exception e) {
+                        externalOrderCallbacks.onOrderFailed("Could not create order");
+                    }
                 }
             });
             return;
@@ -76,8 +80,8 @@ class CreateExternalOrderCall extends Thread {
                             }
                         });
                     }
+                    blockchainSource.removePaymentObserver(this);
                 }
-                blockchainSource.removePaymentObserver(this);
             }
         });
     }
