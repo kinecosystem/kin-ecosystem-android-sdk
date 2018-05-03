@@ -16,7 +16,6 @@ import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.OrderList;
-import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrderRepository implements OrderDataSource {
@@ -238,7 +237,7 @@ public class OrderRepository implements OrderDataSource {
     }
 
     @Override
-    public void purchase(String offerJwt, final WeakReference<Callback<String>> callback) {
+    public void purchase(String offerJwt, @Nullable final Callback<String> callback) {
         new CreateExternalOrderCall(remoteData, blockchainSource, offerJwt, new ExternalOrderCallbacks() {
             @Override
             public void onTransactionSent(OpenOrder openOrder) {
@@ -247,23 +246,39 @@ public class OrderRepository implements OrderDataSource {
             }
 
             @Override
-            public void onTransactionFailed(OpenOrder openOrder) {
-                cancelOrder(openOrder.getOfferId(), openOrder.getId(), null);
+            public void onTransactionFailed(OpenOrder openOrder, final String msg) {
+                cancelOrder(openOrder.getOfferId(), openOrder.getId(), new Callback<Void>() {
+                    @Override
+                    public void onResponse(Void response) {
+                        handleOnFailure(msg);
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        handleOnFailure(msg);
+                    }
+                });
+
             }
 
             @Override
             public void onOrderConfirmed(String confirmationJwt) {
-                if (callback.get() != null) {
-                    callback.get().onResponse(confirmationJwt);
+                if (callback != null) {
+                    callback.onResponse(confirmationJwt);
                 }
             }
 
             @Override
             public void onOrderFailed(String msg) {
-                if (callback.get() != null) {
-                    callback.get().onFailure(new TaskFailedException(msg));
+                handleOnFailure(msg);
+            }
+
+            private void handleOnFailure(String msg) {
+                if (callback != null) {
+                    callback.onFailure(new TaskFailedException(msg));
                 }
             }
+
         }).start();
     }
 

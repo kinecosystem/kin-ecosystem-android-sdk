@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
@@ -96,7 +97,8 @@ public class Kin {
 
     private static void initOrderRepository(@NonNull final Context context) {
         OrderRepository.init(BlockchainSource.getInstance(), OfferRepository.getInstance(),
-            OrderRemoteData.getInstance(instance.executorsUtil), OrderLocalData.getInstance(context, instance.executorsUtil));
+            OrderRemoteData.getInstance(instance.executorsUtil),
+            OrderLocalData.getInstance(context, instance.executorsUtil));
     }
 
     private static void checkInstanceNotNull() throws TaskFailedException {
@@ -141,11 +143,9 @@ public class Kin {
      *
      * @param offerJwt Represents the offer in a JWT manner.
      * @param callback Confirmation callback, the result will be a failure or a succeed with a jwt confirmation.
-     *                 This callback will be kept as a {@link WeakReference} in order to prevent memory leaks.
-     * @throws TaskFailedException
      */
-    public static void purchase(String offerJwt, Callback<String> callback) throws TaskFailedException {
+    public static void purchase(String offerJwt, @Nullable Callback<String> callback) throws TaskFailedException {
         checkInstanceNotNull();
-        OrderRepository.getInstance().purchase(offerJwt, new WeakReference<>(callback));
+        OrderRepository.getInstance().purchase(offerJwt, callback);
     }
 }

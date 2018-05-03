@@ -26,7 +26,7 @@ public interface OrderDataSource {
 
     ObservableData<OpenOrder> getOpenOrder();
 
-    void purchase(String offerJwt, final WeakReference<Callback<String>> callback);
+    void purchase(String offerJwt, @Nullable final Callback<String> callback);
 
     void addCompletedOrderObserver(@NonNull final Observer<Order> observer);
 

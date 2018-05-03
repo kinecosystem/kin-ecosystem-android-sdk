@@ -294,7 +294,7 @@ public class OrderRepositoryTest {
         when(remote.getOrderSync(anyString())).thenReturn(confirmedOrder);
         when(offerRepository.getPendingOffer()).thenReturn(pendingOffer);
 
-        orderRepository.purchase("A GENERATED NATIVE OFFER JWT", new WeakReference<Callback<String>>(new Callback<String>() {
+        orderRepository.purchase("A GENERATED NATIVE OFFER JWT", new Callback<String>() {
             @Override
             public void onResponse(String confirmationJwt) {
                 countDownLatch.countDown();
@@ -307,7 +307,7 @@ public class OrderRepositoryTest {
             public void onFailure(Throwable t) {
 
             }
-        }));
+        });
         Thread.sleep(500);
         ShadowLooper.runUiThreadTasks();
         verify(blockchainSource, times(2)).addPaymentObservable(paymentCapture.capture());
@@ -332,7 +332,7 @@ public class OrderRepositoryTest {
 
         when(remote.createExternalOrderSync(anyString())).thenThrow(new ApiException());
 
-        orderRepository.purchase("generatedOfferJWT", new WeakReference<Callback<String>>(new Callback<String>() {
+        orderRepository.purchase("generatedOfferJWT", new Callback<String>() {
             @Override
             public void onResponse(String confirmationJwt) {
 
@@ -344,7 +344,7 @@ public class OrderRepositoryTest {
                 assertNotNull(t);
                 assertNull(orderRepository.getOpenOrder().getValue());
             }
-        }));
+        });
         Thread.sleep(500);
         ShadowLooper.runUiThreadTasks();
         verify(blockchainSource, never()).addPaymentObservable(any(Observer.class));
@@ -356,11 +356,14 @@ public class OrderRepositoryTest {
     public void purchase_Failed_Payment_Failed() throws Exception {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         ArgumentCaptor<Observer<Payment>> paymentCapture = ArgumentCaptor.forClass(Observer.class);
+        ArgumentCaptor<Callback<Void>> cancelOrderCallback = ArgumentCaptor.forClass(Callback.class);
 
+        ObservableData<Offer> pendingOffer = ObservableData.create(offer);
+        when(offerRepository.getPendingOffer()).thenReturn(pendingOffer);
         when(remote.createExternalOrderSync(anyString())).thenReturn(openOrder);
         when(payment.isSucceed()).thenReturn(false);
 
-        orderRepository.purchase("generatedOfferJWT", new WeakReference<Callback<String>>(new Callback<String>() {
+        orderRepository.purchase("generatedOfferJWT", new Callback<String>() {
             @Override
             public void onResponse(String response) {
 
@@ -373,7 +376,7 @@ public class OrderRepositoryTest {
                 verify(offerRepository).setPendingOfferByID(null);
                 assertNull(orderRepository.getOpenOrder().getValue());
             }
-        }));
+        });
         Thread.sleep(500);
         ShadowLooper.runUiThreadTasks();
         verify(blockchainSource, times(2)).addPaymentObservable(paymentCapture.capture());
@@ -382,8 +385,11 @@ public class OrderRepositoryTest {
             observer.onChanged(payment);
         }
 
+        verify(remote).cancelOrder(anyString(), cancelOrderCallback.capture());
+        cancelOrderCallback.getValue().onResponse(null);
+
         countDownLatch.await(500, TimeUnit.MICROSECONDS);
-        verify(remote).cancelOrder(anyString(), any(Callback.class));
+
         verify(blockchainSource).removePaymentObserver(observersList.get(0));
         verify(blockchainSource).removePaymentObserver(observersList.get(1));
     }

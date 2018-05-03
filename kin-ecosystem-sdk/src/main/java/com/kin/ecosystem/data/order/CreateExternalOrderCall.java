@@ -72,7 +72,7 @@ class CreateExternalOrderCall extends Thread {
                         runOnMainThread(new Runnable() {
                             @Override
                             public void run() {
-                                externalOrderCallbacks.onTransactionFailed(openOrder);
+                                externalOrderCallbacks.onTransactionFailed(openOrder, payment.getResultMessage());
                             }
                         });
                     }
@@ -121,7 +121,7 @@ class CreateExternalOrderCall extends Thread {
 
         void onTransactionSent(OpenOrder openOrder);
 
-        void onTransactionFailed(OpenOrder openOrder);
+        void onTransactionFailed(OpenOrder openOrder, String msg);
 
         void onOrderConfirmed(String confirmationJwt);
 
