@@ -356,7 +356,10 @@ public class OrderRepositoryTest {
     public void purchase_Failed_Payment_Failed() throws Exception {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         ArgumentCaptor<Observer<Payment>> paymentCapture = ArgumentCaptor.forClass(Observer.class);
+        ArgumentCaptor<Callback<Void>> cancelOrderCallback = ArgumentCaptor.forClass(Callback.class);
 
+        ObservableData<Offer> pendingOffer = ObservableData.create(offer);
+        when(offerRepository.getPendingOffer()).thenReturn(pendingOffer);
         when(remote.createExternalOrderSync(anyString())).thenReturn(openOrder);
         when(payment.isSucceed()).thenReturn(false);
 
@@ -382,8 +385,11 @@ public class OrderRepositoryTest {
             observer.onChanged(payment);
         }
 
+        verify(remote).cancelOrder(anyString(), cancelOrderCallback.capture());
+        cancelOrderCallback.getValue().onResponse(null);
+
         countDownLatch.await(500, TimeUnit.MICROSECONDS);
-        verify(remote).cancelOrder(anyString(), any(Callback.class));
+
         verify(blockchainSource).removePaymentObserver(observersList.get(0));
         verify(blockchainSource).removePaymentObserver(observersList.get(1));
     }

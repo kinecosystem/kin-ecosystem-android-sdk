@@ -16,7 +16,6 @@ import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.OrderList;
-import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrderRepository implements OrderDataSource {
@@ -247,11 +246,19 @@ public class OrderRepository implements OrderDataSource {
             }
 
             @Override
-            public void onTransactionFailed(OpenOrder openOrder, String msg) {
-                cancelOrder(openOrder.getOfferId(), openOrder.getId(), null);
-                if (callback != null) {
-                    callback.onFailure(new TaskFailedException(msg));
-                }
+            public void onTransactionFailed(OpenOrder openOrder, final String msg) {
+                cancelOrder(openOrder.getOfferId(), openOrder.getId(), new Callback<Void>() {
+                    @Override
+                    public void onResponse(Void response) {
+                        handleOnFailure(msg);
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        handleOnFailure(msg);
+                    }
+                });
+
             }
 
             @Override
@@ -263,10 +270,15 @@ public class OrderRepository implements OrderDataSource {
 
             @Override
             public void onOrderFailed(String msg) {
+                handleOnFailure(msg);
+            }
+
+            private void handleOnFailure(String msg) {
                 if (callback != null) {
                     callback.onFailure(new TaskFailedException(msg));
                 }
             }
+
         }).start();
     }
 
