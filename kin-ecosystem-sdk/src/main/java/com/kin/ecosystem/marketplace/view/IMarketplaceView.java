@@ -4,6 +4,7 @@ import com.kin.ecosystem.base.IBaseView;
 import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
 import com.kin.ecosystem.marketplace.presenter.MarketplacePresenter;
 import com.kin.ecosystem.network.model.Offer;
+import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
 import java.util.List;
 
 public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
@@ -14,7 +15,7 @@ public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
 
     void navigateToOrderHistory();
 
-    void showOfferActivity(String content, String offerID, String title);
+    void showOfferActivity(PollBundle pollBundle);
 
     void showSpendDialog(ISpendDialogPresenter spendDialogPresenter);
 
@@ -27,4 +28,6 @@ public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
     void notifySpendItemRemoved(int index);
 
     void notifySpendItemInserted(int index);
+
+    void showSomethingWentWrong();
 }

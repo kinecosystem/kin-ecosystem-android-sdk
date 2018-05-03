@@ -141,8 +141,7 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     }
 
     @Override
-    public void showOfferActivity(String content, String offerID, String title) {
-        PollBundle pollBundle = new PollBundle().setJsonData(content).setOfferID(offerID).setTitle(title);
+    public void showOfferActivity(PollBundle pollBundle) {
         try {
             navigateToActivity(PollWebViewActivity.createIntent(this, pollBundle));
         } catch (TaskFailedException e) {
@@ -179,6 +178,11 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     @Override
     public void notifySpendItemInserted(int index) {
         spendRecyclerAdapter.notifyItemInserted(index);
+    }
+
+    @Override
+    public void showSomethingWentWrong() {
+        showToast(getString(R.string.something_went_wrong));
     }
 
     @Override

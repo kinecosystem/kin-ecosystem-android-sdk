@@ -142,6 +142,8 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
 
         private Bundle bundle;
 
+        private static final int FIELD_COUNT = 3;
+
         private static final String EXTRA_JSON_DATA_KEY = "jsondata";
         private static final String EXTRA_OFFER_ID_KEY = "offer_id";
         private static final String EXTRA_TITLE_KEY = "title";
@@ -172,8 +174,8 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
             return bundle.getString(EXTRA_OFFER_ID_KEY);
         }
 
-        public PollBundle setTitle(String jsonData) {
-            this.bundle.putString(EXTRA_TITLE_KEY, jsonData);
+        public PollBundle setTitle(String title) {
+            this.bundle.putString(EXTRA_TITLE_KEY, title);
             return this;
         }
 
@@ -182,7 +184,7 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
         }
 
         public Bundle build() throws TaskFailedException {
-            if (bundle.size() < 3) {
+            if (bundle.size() < FIELD_COUNT) {
                 throw new TaskFailedException("You must specified all the fields.");
             }
             return bundle;
