@@ -2,7 +2,6 @@
     <!--Activity Name-->
     <string name="kin_marketplace">Kin Marketplace</string>
     <string name="transaction_history">Transaction History</string>
-    <string name="answer_a_poll">Answer A Poll</string>
 
     <!--Button-->
     <string name="more">MORE</string>
@@ -20,6 +19,7 @@
     <string name="welcome_kin_info">Kin puts you at the center of your digital life\nby letting you get recognized and rewarded\nfor the time, energy, ideas, opinions,\nand creativity you share online.</string>
     <string name="digging_for_gems">Digging for Gems…</string>
     <string name="welcome_to_kin_marketplace">Welcome to Kin Marketplace</string>
+    <string name="something_went_wrong">Oops something went wrong…</string>
 
     <!--Menu-->
     <string name="info_menu">Info</string>

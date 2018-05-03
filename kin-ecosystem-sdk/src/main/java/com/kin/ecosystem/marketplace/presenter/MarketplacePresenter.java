@@ -19,6 +19,7 @@ import com.kin.ecosystem.network.model.Offer.OfferTypeEnum;
 import com.kin.ecosystem.network.model.OfferInfo;
 import com.kin.ecosystem.network.model.OfferList;
 import com.kin.ecosystem.network.model.Order;
+import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -236,7 +237,11 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
         if (offerType == OfferTypeEnum.EARN) {
             offer = earnList.get(position);
             if (this.view != null) {
-                this.view.showOfferActivity(offer.getContent(), offer.getId());
+                PollBundle pollBundle = new PollBundle()
+                    .setJsonData(offer.getContent())
+                    .setOfferID(offer.getId())
+                    .setTitle(offer.getTitle());
+                this.view.showOfferActivity(pollBundle);
             }
         } else {
             offer = spendList.get(position);
@@ -252,8 +257,14 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             if (offerInfo != null) {
                 showSpendDialog(offerInfo, offer);
             } else {
-                showToast("Oops something went wrong...");
+                showSomethingWentWrong();
             }
+        }
+    }
+
+    private void showSomethingWentWrong() {
+        if(view != null) {
+            view.showSomethingWentWrong();
         }
     }
 
@@ -262,6 +273,11 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
         if(view != null) {
             view.navigateToOrderHistory();
         }
+    }
+
+    @Override
+    public void showOfferActivityFailed() {
+        showSomethingWentWrong();
     }
 
     private void showSpendDialog(@NonNull final OfferInfo offerInfo, @NonNull final Offer offer) {

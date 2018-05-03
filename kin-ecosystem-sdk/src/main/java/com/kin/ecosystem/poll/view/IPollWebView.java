@@ -17,4 +17,6 @@ public interface IPollWebView extends IBaseView<PollWebViewPresenter> {
     void showToolbar();
 
     void hideToolbar();
+
+    void setTitle(String title);
 }
