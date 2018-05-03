@@ -14,7 +14,7 @@ public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
 
     void navigateToOrderHistory();
 
-    void showOfferActivity(String content, String offerID);
+    void showOfferActivity(String content, String offerID, String title);
 
     void showSpendDialog(ISpendDialogPresenter spendDialogPresenter);
 

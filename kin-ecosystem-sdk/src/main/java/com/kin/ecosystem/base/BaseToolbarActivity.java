@@ -14,6 +14,8 @@ import com.kin.ecosystem.R;
 
 public abstract class BaseToolbarActivity extends AppCompatActivity {
 
+    protected static final int EMPTY_TITLE = -1;
+
     protected abstract @LayoutRes int getLayoutRes();
 
     protected abstract @StringRes int getTitleRes();
@@ -35,8 +37,12 @@ public abstract class BaseToolbarActivity extends AppCompatActivity {
 
     private void setupToolbar() {
         topToolBar = findViewById(R.id.toolbar);
+        if (getTitleRes() != EMPTY_TITLE) {
+            topToolBar.setTitle(getTitleRes());
+        } else {
+            topToolBar.setTitle("");
+        }
         setSupportActionBar(topToolBar);
-        topToolBar.setTitle(getTitleRes());
         topToolBar.setNavigationIcon(getNavigationIcon());
         topToolBar.setNavigationOnClickListener(getNavigationClickListener());
     }
@@ -46,7 +52,7 @@ public abstract class BaseToolbarActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
-    public View getToolbar(){
+    public Toolbar getToolbar() {
         return topToolBar;
     }
 }

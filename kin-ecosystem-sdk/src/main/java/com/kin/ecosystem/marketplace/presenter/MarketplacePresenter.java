@@ -26,6 +26,7 @@ import java.util.List;
 public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implements IMarketplacePresenter {
 
     private static final int NOT_FOUND = -1;
+    private static String SOMETHING_WRONG = "Oops something went wrong...";
 
     private final OfferDataSource offerRepository;
     private final OrderDataSource orderRepository;
@@ -236,7 +237,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
         if (offerType == OfferTypeEnum.EARN) {
             offer = earnList.get(position);
             if (this.view != null) {
-                this.view.showOfferActivity(offer.getContent(), offer.getId());
+                this.view.showOfferActivity(offer.getContent(), offer.getId(), offer.getTitle());
             }
         } else {
             offer = spendList.get(position);
@@ -252,9 +253,13 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             if (offerInfo != null) {
                 showSpendDialog(offerInfo, offer);
             } else {
-                showToast("Oops something went wrong...");
+                showSomethingWentWrong();
             }
         }
+    }
+
+    private void showSomethingWentWrong() {
+        showToast(SOMETHING_WRONG);
     }
 
     @Override
@@ -262,6 +267,11 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
         if(view != null) {
             view.navigateToOrderHistory();
         }
+    }
+
+    @Override
+    public void showOfferActivityFailed() {
+        showSomethingWentWrong();
     }
 
     private void showSpendDialog(@NonNull final OfferInfo offerInfo, @NonNull final Offer offer) {

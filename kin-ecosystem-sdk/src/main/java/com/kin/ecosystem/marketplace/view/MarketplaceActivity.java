@@ -10,11 +10,11 @@ import android.widget.Toast;
 import com.chad.library.adapter.base.BaseRecyclerAdapter;
 import com.chad.library.adapter.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.R;
-
 import com.kin.ecosystem.base.BaseToolbarActivity;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderRepository;
+import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.history.view.OrderHistoryActivity;
 import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter;
 import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
@@ -22,6 +22,7 @@ import com.kin.ecosystem.marketplace.presenter.MarketplacePresenter;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.Offer.OfferTypeEnum;
 import com.kin.ecosystem.poll.view.PollWebViewActivity;
+import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
 import java.util.List;
 
 
@@ -96,7 +97,6 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
             }
         });
 
-
         //Earn Recycler
         RecyclerView earnRecycler = findViewById(R.id.earn_recycler);
         earnRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -141,8 +141,13 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     }
 
     @Override
-    public void showOfferActivity(String content, String offerID) {
-        navigateToActivity(PollWebViewActivity.createIntent(this, content, offerID));
+    public void showOfferActivity(String content, String offerID, String title) {
+        PollBundle pollBundle = new PollBundle().setJsonData(content).setOfferID(offerID).setTitle(title);
+        try {
+            navigateToActivity(PollWebViewActivity.createIntent(this, pollBundle));
+        } catch (TaskFailedException e) {
+            marketplacePresenter.showOfferActivityFailed();
+        }
     }
 
     @Override

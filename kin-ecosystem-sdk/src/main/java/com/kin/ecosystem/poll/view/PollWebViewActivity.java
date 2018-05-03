@@ -5,26 +5,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
-
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseToolbarActivity;
 import com.kin.ecosystem.data.order.OrderRepository;
+import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.poll.presenter.IPollWebViewPresenter;
 import com.kin.ecosystem.poll.presenter.PollWebViewPresenter;
 import com.kin.ecosystem.web.EcosystemWebView;
 
 public class PollWebViewActivity extends BaseToolbarActivity implements IPollWebView {
 
-    private static final String EXTRA_JSON_DATA_KEY = "jsondata";
-    private static final String EXTRA_OFFER_ID_KEY = "offer_id";
-
-    public static Intent createIntent(final Context context, @NonNull final String jsonData,
-        @NonNull final String offerID) {
+    public static Intent createIntent(final Context context, @NonNull PollBundle bundle) throws TaskFailedException {
         final Intent intent = new Intent(context, PollWebViewActivity.class);
-        intent.putExtra(EXTRA_JSON_DATA_KEY, jsonData);
-        intent.putExtra(EXTRA_OFFER_ID_KEY, offerID);
+        intent.putExtras(bundle.build());
         return intent;
     }
 
@@ -39,7 +34,7 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
 
     @Override
     protected int getTitleRes() {
-        return R.string.answer_a_poll;
+        return EMPTY_TITLE;
     }
 
     @Override
@@ -60,10 +55,10 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = getIntent();
-        String pollJsonString = intent.getStringExtra(EXTRA_JSON_DATA_KEY);
-        String offerID = intent.getStringExtra(EXTRA_OFFER_ID_KEY);
-        attachPresenter(new PollWebViewPresenter(pollJsonString, offerID, OrderRepository.getInstance()));
+        PollBundle pollBundle = new PollBundle(getIntent().getExtras());
+        attachPresenter(
+            new PollWebViewPresenter(pollBundle.getJsonData(), pollBundle.getOfferID(), pollBundle.getTitle(),
+                OrderRepository.getInstance()));
     }
 
     @Override
@@ -120,6 +115,11 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
     }
 
     @Override
+    public void setTitle(String title) {
+        getToolbar().setTitle(title);
+    }
+
+    @Override
     public void close() {
         runOnUiThread(new Runnable() {
             @Override
@@ -136,5 +136,57 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
         super.onDestroy();
         close();
         pollWebViewPresenter.onDetach();
+    }
+
+    public static class PollBundle {
+
+        private Bundle bundle;
+
+        private static final String EXTRA_JSON_DATA_KEY = "jsondata";
+        private static final String EXTRA_OFFER_ID_KEY = "offer_id";
+        private static final String EXTRA_TITLE_KEY = "title";
+
+        public PollBundle() {
+            this.bundle = new Bundle();
+        }
+
+        public PollBundle(Bundle bundle) {
+            this.bundle = bundle;
+        }
+
+        public PollBundle setJsonData(String jsonData) {
+            this.bundle.putString(EXTRA_JSON_DATA_KEY, jsonData);
+            return this;
+        }
+
+        public String getJsonData() {
+            return bundle.getString(EXTRA_JSON_DATA_KEY);
+        }
+
+        public PollBundle setOfferID(String offerID) {
+            this.bundle.putString(EXTRA_OFFER_ID_KEY, offerID);
+            return this;
+        }
+
+        public String getOfferID() {
+            return bundle.getString(EXTRA_OFFER_ID_KEY);
+        }
+
+        public PollBundle setTitle(String jsonData) {
+            this.bundle.putString(EXTRA_TITLE_KEY, jsonData);
+            return this;
+        }
+
+        public String getTitle() {
+            return bundle.getString(EXTRA_TITLE_KEY);
+        }
+
+        public Bundle build() throws TaskFailedException {
+            if (bundle.size() < 3) {
+                throw new TaskFailedException("You must specified all the fields.");
+            }
+            return bundle;
+        }
+
     }
 }
