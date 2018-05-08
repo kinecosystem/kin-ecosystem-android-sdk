@@ -3,7 +3,6 @@ package com.ecosystem.kin.app;
 import android.content.Context;
 import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +16,6 @@ import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
-import com.kin.ecosystem.network.model.BlockchainData;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -87,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
     // Use this method to remove the nativeOffer you added
     private void removeNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer) {
         try {
-            if (Kin.removeOffer(nativeSpendOffer)) {
+            if (Kin.removeNativeOffer(nativeSpendOffer)) {
                 showToast("Native offer removed");
             }
         } catch (TaskFailedException e) {
@@ -98,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
     private void addNativeSpendOffer(@NonNull NativeSpendOffer nativeSpendOffer) {
 
         try {
-            if(Kin.addOffer(nativeSpendOffer)) {
+            if(Kin.addNativeOffer(nativeSpendOffer)) {
                 showToast("Native offer added");
             }
         } catch (TaskFailedException e) {

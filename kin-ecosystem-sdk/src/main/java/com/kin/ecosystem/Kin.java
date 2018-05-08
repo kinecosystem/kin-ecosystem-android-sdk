@@ -163,7 +163,7 @@ public class Kin {
      * @return true if the offer added successfully, the list was changed.
      * @throws TaskFailedException Could not add the offer to the list.
      */
-    public static boolean addOffer(@NonNull NativeSpendOffer nativeSpendOffer) throws TaskFailedException {
+    public static boolean addNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer) throws TaskFailedException {
         checkInstanceNotNull();
         return OfferRepository.getInstance().addNativeOffer(nativeSpendOffer);
     }
@@ -175,7 +175,7 @@ public class Kin {
      * @return true if the offer removed successfully, the list was changed.
      * @throws TaskFailedException Could not remove the offer from the list.
      */
-    public static boolean removeOffer(@NonNull NativeSpendOffer nativeSpendOffer) throws TaskFailedException {
+    public static boolean removeNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer) throws TaskFailedException {
         checkInstanceNotNull();
         return OfferRepository.getInstance().removeNativeOffer(nativeSpendOffer);
     }
