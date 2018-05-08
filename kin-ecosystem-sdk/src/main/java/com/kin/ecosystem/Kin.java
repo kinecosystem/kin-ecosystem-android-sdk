@@ -19,6 +19,7 @@ import com.kin.ecosystem.data.order.OrderRemoteData;
 import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.exception.TaskFailedException;
+import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
 import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.splash.view.SplashViewActivity;
@@ -47,7 +48,7 @@ public class Kin {
         return instance;
     }
 
-    public static void start(@NonNull Context appContext, @NonNull SignInData signInData)
+    public static Kin start(@NonNull Context appContext, @NonNull SignInData signInData)
         throws InitializeException {
         instance = getInstance();
         appContext = appContext.getApplicationContext(); // use application context to avoid leaks.
@@ -57,6 +58,11 @@ public class Kin {
         initOfferRepository();
         initOrderRepository(appContext);
         setAppID();
+        return instance;
+    }
+
+    public void addNativeOfferCallback(@NonNull Callback<NativeSpendOffer> callback) {
+        OfferRepository.getInstance().addNativeOfferCallback(callback);
     }
 
     private static void setAppID() {
@@ -75,7 +81,6 @@ public class Kin {
     private static void initBlockchain(Context context) throws InitializeException {
         BlockchainSource.init(context);
     }
-
 
     private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
         throws InitializeException {
@@ -147,5 +152,31 @@ public class Kin {
     public static void purchase(String offerJwt, @Nullable Callback<String> callback) throws TaskFailedException {
         checkInstanceNotNull();
         OrderRepository.getInstance().purchase(offerJwt, callback);
+    }
+
+    /**
+     * Adds an {@link NativeSpendOffer} to spend offer list on Kin Marketplace activity.
+     * The offer will be added at index 0 in the spend list.
+     *
+     *
+     * @param nativeSpendOffer The spend offer you want to add to the spend list.
+     * @return true if the offer added successfully, the list was changed.
+     * @throws TaskFailedException Could not add the offer to the list.
+     */
+    public static boolean addOffer(@NonNull NativeSpendOffer nativeSpendOffer) throws TaskFailedException {
+        checkInstanceNotNull();
+        return OfferRepository.getInstance().addNativeOffer(nativeSpendOffer);
+    }
+
+    /**
+     * Removes a {@link NativeSpendOffer} from the spend list on Kin Marketplace activity.
+     *
+     * @param nativeSpendOffer The spend offer you want to remove from the spend list.
+     * @return true if the offer removed successfully, the list was changed.
+     * @throws TaskFailedException Could not remove the offer from the list.
+     */
+    public static boolean removeOffer(@NonNull NativeSpendOffer nativeSpendOffer) throws TaskFailedException {
+        checkInstanceNotNull();
+        return OfferRepository.getInstance().removeNativeOffer(nativeSpendOffer);
     }
 }

@@ -13,8 +13,10 @@ import com.kin.ecosystem.data.blockchain.IBlockchainSource;
 import com.kin.ecosystem.data.offer.OfferDataSource;
 import com.kin.ecosystem.data.order.OrderDataSource;
 import com.kin.ecosystem.data.order.OrderRepository;
+import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.marketplace.view.IMarketplaceView;
 import com.kin.ecosystem.network.model.Offer;
+import com.kin.ecosystem.network.model.Offer.ContentTypeEnum;
 import com.kin.ecosystem.network.model.Offer.OfferTypeEnum;
 import com.kin.ecosystem.network.model.OfferInfo;
 import com.kin.ecosystem.network.model.OfferList;
@@ -245,6 +247,10 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             }
         } else {
             offer = spendList.get(position);
+            if(offer.getContentType() == ContentTypeEnum.EXTERNAL) {
+                nativeSpendOfferClicked(offer);
+                return;
+            }
             int balance = blockchainSource.getBalance();
             final BigDecimal amount = new BigDecimal(offer.getAmount());
 
@@ -259,6 +265,13 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             } else {
                 showSomethingWentWrong();
             }
+        }
+    }
+
+    private void nativeSpendOfferClicked(Offer offer) {
+        final Callback<NativeSpendOffer> callback = offerRepository.getNativeOfferCallback();
+        if(callback != null) {
+            callback.onResponse((NativeSpendOffer) offer);
         }
     }
 

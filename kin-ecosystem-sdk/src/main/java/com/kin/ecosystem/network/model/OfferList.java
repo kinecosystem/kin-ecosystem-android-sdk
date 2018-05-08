@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * a list of offers
@@ -16,27 +15,39 @@ public class OfferList {
     @SerializedName("paging")
     private Paging paging = null;
 
-    public OfferList offers(List<Offer> offers) {
-        this.offers = offers;
-        return this;
+    public OfferList() {
+        this.offers = new ArrayList<>();
     }
 
-    public OfferList addOffersItem(Offer offersItem) {
+    public boolean addAtIndex(final int index, @NonNull final Offer offer) {
 
         if (this.offers == null) {
-            this.offers = new ArrayList<Offer>();
-        }
-
-        this.offers.add(offersItem);
-        return this;
-    }
-
-    public int contains(@NonNull final Offer offer) {
-        if (this.offers == null) {
-            return -1;
+            this.offers = new ArrayList<>();
+            return this.offers.add(offer);
         } else {
-            return this.offers.indexOf(offer);
+            try {
+                this.offers.add(index, offer);
+                return true;
+            } catch (IndexOutOfBoundsException e) {
+                return false;
+            }
         }
+    }
+
+    public OfferList addAll(@NonNull final OfferList offerList) {
+        List<Offer> offers = offerList.getOffers();
+        if (offers != null) {
+            this.offers.addAll(size(), offers);
+        }
+
+        return this;
+    }
+
+    private int size() {
+        if (this.offers != null) {
+            return this.offers.size();
+        }
+        return  -1;
     }
 
     public Offer getOfferByID(String offerID) {
@@ -50,10 +61,11 @@ public class OfferList {
         return null;
     }
 
-    public void remove(Offer offer) {
+    public boolean remove(Offer offer) {
         if (this.offers != null) {
-            this.offers.remove(offer);
+            return this.offers.remove(offer);
         }
+        return false;
     }
 
     /**
@@ -97,13 +109,13 @@ public class OfferList {
             return false;
         }
         OfferList offerList = (OfferList) o;
-        return Objects.equals(this.offers, offerList.offers) &&
-            Objects.equals(this.paging, offerList.paging);
+        return this.offers.equals(offerList.offers) &&
+            this.paging.equals(offerList.paging);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(offers, paging);
+        return offers.hashCode() + paging.hashCode();
     }
 }
 

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Kin Ecosystem - Sample App</string>
 
-    <string name="get_balance"><u>Get Balance:</u></string>
+    <string name="get_balance">Get Balance:</string>
+    <string name="get_balance_d">Get Balance: %d</string>
     <string name="failed_to_get_balance">Failed to get balance, try again</string>
 </resources>

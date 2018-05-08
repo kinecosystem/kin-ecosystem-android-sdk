@@ -1,12 +1,14 @@
 package com.ecosystem.kin.app;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Context;
+import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.style.UnderlineSpan;
+import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,8 +16,9 @@ import android.widget.Toast;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.exception.TaskFailedException;
-import com.kin.ecosystem.util.StringUtil;
-import io.jsonwebtoken.Jwts;
+import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
+import com.kin.ecosystem.network.model.BlockchainData;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,9 +26,20 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView balanceView;
     private Button nativeSpendButton;
-    private static final String GET_BALANCE = "Get Balance: ";
+    private Button showPublicAddressButton;
+    private TextView publicAddressTextArea;
 
     private Callback<String> nativeSpendCallback;
+
+    private String publicAddress;
+
+    int randomID = new Random().nextInt((9999 - 1) + 1) + 1;
+    NativeSpendOffer nativeOffer =
+        new NativeSpendOffer(String.valueOf(randomID))
+            .title("Get Themes")
+            .description("Personalize your chat")
+            .amount(1000)
+            .image("https://s3.amazonaws.com/kinmarketplace-assets/version1/kik_theme_offer+2.png");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +47,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         balanceView = findViewById(R.id.get_balance);
         nativeSpendButton = findViewById(R.id.native_spend_button);
+        showPublicAddressButton = findViewById(R.id.show_public_address);
+        publicAddressTextArea = findViewById(R.id.public_text_area);
+        showPublicAddressButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (publicAddress == null) {
+                    getPublicAddress();
+                } else {
+                    copyToClipboard(publicAddress);
+                }
+            }
+        });
         balanceView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,6 +80,59 @@ public class MainActivity extends AppCompatActivity {
                 openKinMarketplace();
             }
         });
+
+        addNativeSpendOffer(nativeOffer);
+    }
+
+    // Use this method to remove the nativeOffer you added
+    private void removeNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer) {
+        try {
+            if (Kin.removeOffer(nativeSpendOffer)) {
+                showToast("Native offer removed");
+            }
+        } catch (TaskFailedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addNativeSpendOffer(@NonNull NativeSpendOffer nativeSpendOffer) {
+
+        try {
+            if(Kin.addOffer(nativeSpendOffer)) {
+                showToast("Native offer added");
+            }
+        } catch (TaskFailedException e) {
+            e.printStackTrace();
+            showToast("Could not add native offer");
+        }
+    }
+
+    private void getPublicAddress() {
+        try {
+            publicAddress = Kin.getPublicAddress();
+            int blueColor = ContextCompat.getColor(getApplicationContext(), R.color.sample_app_blue);
+            publicAddressTextArea.getBackground().setColorFilter(blueColor, Mode.SRC_ATOP);
+            showPublicAddressButton.setText("Copy Public Address");
+            publicAddressTextArea.setText(publicAddress);
+        } catch (TaskFailedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void copyToClipboard(CharSequence textToCopy) {
+        int sdk = android.os.Build.VERSION.SDK_INT;
+        if (sdk < android.os.Build.VERSION_CODES.HONEYCOMB) {
+            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(
+                Context.CLIPBOARD_SERVICE);
+            clipboard.setText(textToCopy);
+        } else {
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(
+                Context.CLIPBOARD_SERVICE);
+            android.content.ClipData clip = android.content.ClipData.newPlainText("copied text", textToCopy);
+            clipboard.setPrimaryClip(clip);
+        }
+        Toast.makeText(this, "Copied to your clipboard", Toast.LENGTH_SHORT).show();
     }
 
     private void getBalance() {
@@ -62,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Integer balance) {
                     enableView(balanceView, true);
-                    balanceView.setText(getSpannableBalance(balance));
+                    balanceView.setText(getString(R.string.get_balance_d, balance));
                 }
 
                 @Override
@@ -75,16 +154,6 @@ public class MainActivity extends AppCompatActivity {
             balanceView.setText(R.string.failed_to_get_balance);
             e.printStackTrace();
         }
-    }
-
-    private SpannableString getSpannableBalance(Integer balance) {
-        StringBuilder text = new StringBuilder(GET_BALANCE);
-        text.append(StringUtil.getAmountFormatted(balance));
-
-        SpannableString spannableString = new SpannableString(text);
-        spannableString.setSpan(new UnderlineSpan(), 0, GET_BALANCE.length() - 1, 0);
-
-        return spannableString;
     }
 
     private void openKinMarketplace() {

@@ -1,7 +1,10 @@
 package com.kin.ecosystem.data.offer;
 
+import android.support.annotation.NonNull;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
+import com.kin.ecosystem.marketplace.model.NativeOffer;
+import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OfferList;
 
@@ -14,6 +17,14 @@ public interface OfferDataSource {
     ObservableData<Offer> getPendingOffer();
 
     void setPendingOfferByID(String offerID);
+
+    void addNativeOfferCallback(Callback<NativeSpendOffer> callback);
+
+    Callback<NativeSpendOffer> getNativeOfferCallback();
+
+    boolean addNativeOffer(@NonNull NativeOffer nativeOffer);
+
+    boolean removeNativeOffer(@NonNull NativeOffer nativeOffer);
 
     interface Remote {
 

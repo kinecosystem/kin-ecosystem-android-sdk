@@ -5,8 +5,12 @@ import android.support.annotation.Nullable;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.exception.DataNotAvailableException;
+import com.kin.ecosystem.marketplace.model.NativeOffer;
+import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.network.model.Offer;
+import com.kin.ecosystem.network.model.Offer.ContentTypeEnum;
 import com.kin.ecosystem.network.model.OfferList;
+import java.util.Iterator;
 
 public class OfferRepository implements OfferDataSource {
 
@@ -14,8 +18,10 @@ public class OfferRepository implements OfferDataSource {
 
     private final OfferDataSource.Remote remoteData;
 
-    private OfferList cachedOfferList;
-    private ObservableData<Offer> pendingOffer = ObservableData.create();;
+    private OfferList cachedOfferList = new OfferList();
+    private ObservableData<Offer> pendingOffer = ObservableData.create();
+
+    private static Callback<NativeSpendOffer> nativeSpendOfferCallback;
 
     private OfferRepository(@NonNull OfferDataSource.Remote remoteData) {
         this.remoteData = remoteData;
@@ -45,7 +51,7 @@ public class OfferRepository implements OfferDataSource {
         remoteData.getOffers(new Callback<OfferList>() {
             @Override
             public void onResponse(OfferList response) {
-                cachedOfferList = response;
+                updateCacheOfferList(response);
                 if (callback != null) {
                     callback.onResponse(cachedOfferList);
                 }
@@ -60,6 +66,21 @@ public class OfferRepository implements OfferDataSource {
         });
     }
 
+    private void updateCacheOfferList(OfferList response) {
+        removeAllNoneNativeOffers();
+        cachedOfferList.addAll(response);
+    }
+
+    private void removeAllNoneNativeOffers() {
+        Iterator<Offer> offerIterator = cachedOfferList.getOffers().iterator();
+        while (offerIterator.hasNext()) {
+            if (offerIterator.next().getContentType() != ContentTypeEnum.EXTERNAL) {
+                offerIterator.remove();
+            }
+        }
+
+    }
+
     @Override
     public ObservableData<Offer> getPendingOffer() {
         return pendingOffer;
@@ -72,6 +93,16 @@ public class OfferRepository implements OfferDataSource {
         pendingOffer.postValue(offer);
     }
 
+    @Override
+    public void addNativeOfferCallback(Callback<NativeSpendOffer> callback) {
+        nativeSpendOfferCallback = callback;
+    }
+
+    @Override
+    public Callback<NativeSpendOffer> getNativeOfferCallback() {
+        return nativeSpendOfferCallback;
+    }
+
     private void removeFromCachedOfferList(Offer offer) {
         if (cachedOfferList != null) {
             cachedOfferList.remove(offer);
@@ -80,10 +111,20 @@ public class OfferRepository implements OfferDataSource {
 
     @Nullable
     private Offer getCachedOfferByID(String offerID) {
-        if(cachedOfferList == null) {
+        if (cachedOfferList == null) {
             return null;
         }
 
         return cachedOfferList.getOfferByID(offerID);
+    }
+
+    @Override
+    public boolean addNativeOffer(@NonNull NativeOffer nativeOffer) {
+        return cachedOfferList.addAtIndex(0, nativeOffer);
+    }
+
+    @Override
+    public boolean removeNativeOffer(@NonNull NativeOffer nativeOffer) {
+        return cachedOfferList.remove(nativeOffer);
     }
 }

@@ -93,7 +93,9 @@ public class Offer {
     public enum ContentTypeEnum {
 
         POLL("poll"),
-        COUPON("coupon");
+        COUPON("coupon"),
+        EXTERNAL("external");
+
 
         private String value;
 
@@ -321,12 +323,13 @@ public class Offer {
             return false;
         }
         Offer offer = (Offer) o;
-        return Objects.equals(this.id, offer.id);
+        return this.id.equals(offer.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, description, image, amount, offerType, contentType, content, blockchainData);
+        return id.hashCode() + title.hashCode() + description.hashCode() + image.hashCode() + amount.hashCode()
+            + offerType.hashCode() + contentType.hashCode() + content.hashCode() + blockchainData.hashCode();
     }
 
     @Override
