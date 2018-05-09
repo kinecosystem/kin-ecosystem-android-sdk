@@ -8,6 +8,7 @@ import java.util.Objects;
  * object accompanying lists - used to fetch next/previous section
  */
 public class Paging {
+
     @SerializedName("cursors")
     private PagingCursors cursors = null;
     @SerializedName("previous")
@@ -81,14 +82,14 @@ public class Paging {
             return false;
         }
         Paging paging = (Paging) o;
-        return Objects.equals(this.cursors, paging.cursors) &&
-                Objects.equals(this.previous, paging.previous) &&
-                Objects.equals(this.next, paging.next);
+        return this.cursors.equals(paging.cursors) &&
+            this.previous.equals(paging.previous) &&
+            this.next.equals(paging.next);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cursors, previous, next);
+        return cursors.hashCode() + previous.hashCode() + next.hashCode();
     }
 }
 

@@ -15,12 +15,15 @@ import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
+import com.kin.ecosystem.network.model.Order.Status;
 import com.kin.ecosystem.network.model.OrderList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrderRepository implements OrderDataSource {
 
     private static final String TAG = OrderRepository.class.getSimpleName();
+    private static final String ORIGIN_EXTERNAL = "external";
 
     private static OrderRepository instance = null;
     private final OrderDataSource.Local localData;
@@ -310,5 +313,27 @@ public class OrderRepository implements OrderDataSource {
     @Override
     public void setIsFirstSpendOrder(boolean isFirstSpendOrder) {
         localData.setIsFirstSpendOrder(isFirstSpendOrder);
+    }
+
+    @Override
+    public void getExternalOrderStatus(@NonNull String offerID, @NonNull final Callback<Status> callback) {
+        remoteData.getFilteredOrderHistory(ORIGIN_EXTERNAL, offerID, new Callback<OrderList>() {
+            @Override
+            public void onResponse(OrderList response) {
+                if(response != null){
+                    final List<Order> orders = response.getOrders();
+                    if(orders != null & orders.size() >= 1) {
+                        final Order order = orders.get(0);
+                        callback.onResponse(order.getStatus());
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                    callback.onFailure(t);
+            }
+        });
     }
 }

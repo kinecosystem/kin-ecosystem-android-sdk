@@ -11,6 +11,7 @@ import com.kin.ecosystem.network.model.EarnSubmission;
 import com.kin.ecosystem.network.model.ExternalOrderRequest;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
+import com.kin.ecosystem.network.model.Order.Status;
 import com.kin.ecosystem.network.model.OrderList;
 import com.kin.ecosystem.util.ExecutorsUtil;
 import java.util.List;
@@ -21,6 +22,7 @@ public class OrderRemoteData implements OrderDataSource.Remote {
     private static final String TAG = OrderRemoteData.class.getSimpleName();
 
     private static final int ORDERS_ITEMS_LIMIT = 100;
+    private static final int ONE_ORDER_LIMIT = 1;
 
     private static volatile OrderRemoteData instance;
 
@@ -45,47 +47,7 @@ public class OrderRemoteData implements OrderDataSource.Remote {
 
     @Override
     public void getAllOrderHistory(@NonNull final Callback<OrderList> callback) {
-        try {
-            ordersApi.getHistoryAsync("", ORDERS_ITEMS_LIMIT, "", "", new ApiCallback<OrderList>() {
-                @Override
-                public void onFailure(final ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
-                    executorsUtil.mainThread().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onFailure(e);
-                        }
-                    });
-                }
-
-                @Override
-                public void onSuccess(final OrderList result, int statusCode,
-                    Map<String, List<String>> responseHeaders) {
-                    executorsUtil.mainThread().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onResponse(result);
-                        }
-                    });
-                }
-
-                @Override
-                public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
-
-                }
-
-                @Override
-                public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
-
-                }
-            });
-        } catch (final ApiException e) {
-            executorsUtil.mainThread().execute(new Runnable() {
-                @Override
-                public void run() {
-                    callback.onFailure(e);
-                }
-            });
-        }
+        getHistory(null, null, ORDERS_ITEMS_LIMIT, callback);
     }
 
     @Override
@@ -186,7 +148,7 @@ public class OrderRemoteData implements OrderDataSource.Remote {
                     executorsUtil.mainThread().execute(new Runnable() {
                         @Override
                         public void run() {
-                            if(callback != null) {
+                            if (callback != null) {
                                 callback.onFailure(e);
                             }
                         }
@@ -198,7 +160,7 @@ public class OrderRemoteData implements OrderDataSource.Remote {
                     executorsUtil.mainThread().execute(new Runnable() {
                         @Override
                         public void run() {
-                            if(callback != null) {
+                            if (callback != null) {
                                 callback.onResponse(result);
                             }
                         }
@@ -263,5 +225,56 @@ public class OrderRemoteData implements OrderDataSource.Remote {
 
     public OpenOrder createExternalOrderSync(String orderJwt) throws ApiException {
         return ordersApi.createExternalOrder(new ExternalOrderRequest().jwt(orderJwt), "");
+    }
+
+    @Override
+    public void getFilteredOrderHistory(@Nullable String origin, @NonNull String offerID,
+        @NonNull Callback<OrderList> callback) {
+        getHistory(origin, offerID, ONE_ORDER_LIMIT, callback);
+    }
+
+    private void getHistory(@Nullable String origin, @Nullable String offerID, int limit,
+        @NonNull final Callback<OrderList> callback) {
+        try {
+            ordersApi.getHistoryAsync("", origin, offerID, limit, null, null, new ApiCallback<OrderList>() {
+                @Override
+                public void onFailure(final ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+                    executorsUtil.mainThread().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onFailure(e);
+                        }
+                    });
+                }
+
+                @Override
+                public void onSuccess(final OrderList result, int statusCode,
+                    Map<String, List<String>> responseHeaders) {
+                    executorsUtil.mainThread().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onResponse(result);
+                        }
+                    });
+                }
+
+                @Override
+                public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
+
+                }
+
+                @Override
+                public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+
+                }
+            });
+        } catch (final ApiException e) {
+            executorsUtil.mainThread().execute(new Runnable() {
+                @Override
+                public void run() {
+                    callback.onFailure(e);
+                }
+            });
+        }
     }
 }

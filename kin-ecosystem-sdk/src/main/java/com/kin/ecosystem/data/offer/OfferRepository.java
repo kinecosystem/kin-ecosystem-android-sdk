@@ -69,6 +69,7 @@ public class OfferRepository implements OfferDataSource {
     private void updateCacheOfferList(OfferList response) {
         removeAllNoneNativeOffers();
         cachedOfferList.addAll(response);
+        cachedOfferList.setPaging(response.getPaging());
     }
 
     private void removeAllNoneNativeOffers() {
@@ -78,7 +79,6 @@ public class OfferRepository implements OfferDataSource {
                 offerIterator.remove();
             }
         }
-
     }
 
     @Override
@@ -91,16 +91,6 @@ public class OfferRepository implements OfferDataSource {
         Offer offer = getCachedOfferByID(offerID);
         removeFromCachedOfferList(offer);
         pendingOffer.postValue(offer);
-    }
-
-    @Override
-    public void addNativeOfferCallback(Callback<NativeSpendOffer> callback) {
-        nativeSpendOfferCallback = callback;
-    }
-
-    @Override
-    public Callback<NativeSpendOffer> getNativeOfferCallback() {
-        return nativeSpendOfferCallback;
     }
 
     private void removeFromCachedOfferList(Offer offer) {
@@ -119,8 +109,22 @@ public class OfferRepository implements OfferDataSource {
     }
 
     @Override
+    public void addNativeOfferCallback(Callback<NativeSpendOffer> callback) {
+        nativeSpendOfferCallback = callback;
+    }
+
+    @Override
+    public Callback<NativeSpendOffer> getNativeOfferCallback() {
+        return nativeSpendOfferCallback;
+    }
+
+    @Override
     public boolean addNativeOffer(@NonNull NativeOffer nativeOffer) {
-        return cachedOfferList.addAtIndex(0, nativeOffer);
+        Offer offer = getCachedOfferByID(nativeOffer.getId());
+        if (offer == null) {
+            return cachedOfferList.addAtIndex(0, nativeOffer);
+        }
+        return false;
     }
 
     @Override

@@ -36,17 +36,17 @@ public class NativeSpendOffer extends NativeOffer {
     }
 
     @Override
-    public Offer offerType(OfferTypeEnum offerType) {
-        return super.offerType(OfferTypeEnum.SPEND);
+    public Offer offerType(OfferType offerType) {
+        return super.offerType(OfferType.SPEND);
     }
 
     @Override
-    public OfferTypeEnum getOfferType() {
-        return OfferTypeEnum.SPEND;
+    public OfferType getOfferType() {
+        return OfferType.SPEND;
     }
 
     @Override
-    public void setOfferType(OfferTypeEnum offerType) {
-        super.setOfferType(OfferTypeEnum.SPEND);
+    public void setOfferType(OfferType offerType) {
+        super.setOfferType(OfferType.SPEND);
     }
 }

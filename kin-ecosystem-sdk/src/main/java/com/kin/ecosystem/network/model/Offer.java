@@ -17,7 +17,6 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
-import java.util.Objects;
 
 /**
  * offer details for the offer list
@@ -38,15 +37,15 @@ public class Offer {
     /**
      * Gets or Sets offerType
      */
-    @JsonAdapter(OfferTypeEnum.Adapter.class)
-    public enum OfferTypeEnum {
+    @JsonAdapter(OfferType.Adapter.class)
+    public enum OfferType {
 
         EARN("earn"),
         SPEND("spend");
 
         private String value;
 
-        OfferTypeEnum(String value) {
+        OfferType(String value) {
             this.value = value;
         }
 
@@ -59,8 +58,8 @@ public class Offer {
             return String.valueOf(value);
         }
 
-        public static OfferTypeEnum fromValue(String text) {
-            for (OfferTypeEnum b : OfferTypeEnum.values()) {
+        public static OfferType fromValue(String text) {
+            for (OfferType b : OfferType.values()) {
                 if (String.valueOf(b.value).equals(text)) {
                     return b;
                 }
@@ -68,23 +67,23 @@ public class Offer {
             return null;
         }
 
-        public static class Adapter extends TypeAdapter<OfferTypeEnum> {
+        public static class Adapter extends TypeAdapter<OfferType> {
 
             @Override
-            public void write(final JsonWriter jsonWriter, final OfferTypeEnum enumeration) throws IOException {
+            public void write(final JsonWriter jsonWriter, final OfferType enumeration) throws IOException {
                 jsonWriter.value(enumeration.getValue());
             }
 
             @Override
-            public OfferTypeEnum read(final JsonReader jsonReader) throws IOException {
+            public OfferType read(final JsonReader jsonReader) throws IOException {
                 String value = jsonReader.nextString();
-                return OfferTypeEnum.fromValue(String.valueOf(value));
+                return OfferType.fromValue(String.valueOf(value));
             }
         }
     }
 
     @SerializedName("offer_type")
-    private OfferTypeEnum offerType = null;
+    private OfferType offerType = OfferType.SPEND;
 
     /**
      * determines the type of data that appears in the content
@@ -238,7 +237,7 @@ public class Offer {
         this.amount = amount;
     }
 
-    public Offer offerType(OfferTypeEnum offerType) {
+    public Offer offerType(OfferType offerType) {
         this.offerType = offerType;
         return this;
     }
@@ -249,11 +248,11 @@ public class Offer {
      *
      * @return offerType
      **/
-    public OfferTypeEnum getOfferType() {
+    public OfferType getOfferType() {
         return offerType;
     }
 
-    public void setOfferType(OfferTypeEnum offerType) {
+    public void setOfferType(OfferType offerType) {
         this.offerType = offerType;
     }
 

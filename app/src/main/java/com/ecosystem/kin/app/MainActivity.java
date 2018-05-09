@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,6 +17,7 @@ import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
+import com.kin.ecosystem.network.model.Order.Status;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -96,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
     private void addNativeSpendOffer(@NonNull NativeSpendOffer nativeSpendOffer) {
 
         try {
-            if(Kin.addNativeOffer(nativeSpendOffer)) {
+            if (Kin.addNativeOffer(nativeSpendOffer)) {
                 showToast("Native offer added");
             }
         } catch (TaskFailedException e) {
@@ -172,6 +174,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Use this method with the offerID you created, to get the order {@link Status}
+     * @param offerID
+     */
+    private void getOrderStatus(@NonNull final String offerID) {
+        if (!TextUtils.isEmpty(offerID)) {
+            try {
+                Kin.getOrderStatus(offerID, new Callback<Status>() {
+                    @Override
+                    public void onResponse(Status status) {
+                        showToast("Offer: " + offerID + " Status is: " + status.getValue());
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        showToast("Failed to get OfferId: " + offerID + " status");
+                    }
+                });
+            } catch (TaskFailedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private Callback<String> getNativeSpendCallback() {
         if (nativeSpendCallback == null) {
             nativeSpendCallback = new Callback<String>() {
@@ -193,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
         return nativeSpendCallback;
     }
 
-    public void enableView(View v, boolean enable) {
+    private void enableView(View v, boolean enable) {
         v.setEnabled(enable);
         v.setClickable(enable);
         v.setAlpha(enable ? 1f : 0.5f);

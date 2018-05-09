@@ -2,10 +2,8 @@ package com.kin.ecosystem.data.order;
 
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.Callback;
-import com.kin.ecosystem.network.ApiException;
-import com.kin.ecosystem.network.api.OrdersApi;
 import com.kin.ecosystem.network.model.Order;
-import com.kin.ecosystem.network.model.Order.StatusEnum;
+import com.kin.ecosystem.network.model.Order.Status;
 import java.util.concurrent.TimeoutException;
 
 class GetOrderPollingCall extends Thread {
@@ -32,7 +30,7 @@ class GetOrderPollingCall extends Thread {
         try {
             if (pollingIndex < DELAY_SECONDS.length) {
                 Order order = remote.getOrderSync(orderID);
-                if (order == null || order.getStatus() == StatusEnum.PENDING) {
+                if (order == null || order.getStatus() == Status.PENDING) {
                     sleep(DELAY_SECONDS[pollingIndex]);
                     getOrder(++pollingIndex);
                 } else {

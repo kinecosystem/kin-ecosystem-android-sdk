@@ -8,6 +8,7 @@ import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
+import com.kin.ecosystem.network.model.Order.Status;
 import com.kin.ecosystem.network.model.OrderList;
 import java.lang.ref.WeakReference;
 
@@ -36,6 +37,8 @@ public interface OrderDataSource {
 
     void setIsFirstSpendOrder(boolean isFirstSpendOrder);
 
+    void getExternalOrderStatus(@NonNull String offerID, @NonNull final Callback<Status> callback);
+
     interface Local {
 
         void isFirstSpendOrder(@NonNull final Callback<Boolean> callback);
@@ -58,5 +61,7 @@ public interface OrderDataSource {
         Order getOrderSync(String orderID);
 
         OpenOrder createExternalOrderSync(String orderJwt) throws ApiException;
+
+        void getFilteredOrderHistory(@Nullable String origin, @NonNull String offerID, @NonNull final Callback<OrderList> callback);
     }
 }

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.auth.AuthLocalData;
@@ -21,11 +20,11 @@ import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
+import com.kin.ecosystem.network.model.Order.Status;
 import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.splash.view.SplashViewActivity;
 import com.kin.ecosystem.util.DeviceUtils;
 import com.kin.ecosystem.util.ExecutorsUtil;
-import java.lang.ref.WeakReference;
 
 
 public class Kin {
@@ -155,9 +154,20 @@ public class Kin {
     }
 
     /**
+     *
+     * @param offerID
+     * @param callback
+     * @throws TaskFailedException
+     */
+    public static void getOrderStatus(@NonNull String offerID, @NonNull Callback<Status> callback)
+        throws TaskFailedException {
+        checkInstanceNotNull();
+        OrderRepository.getInstance().getExternalOrderStatus(offerID, callback);
+    }
+
+    /**
      * Adds an {@link NativeSpendOffer} to spend offer list on Kin Marketplace activity.
      * The offer will be added at index 0 in the spend list.
-     *
      *
      * @param nativeSpendOffer The spend offer you want to add to the spend list.
      * @return true if the offer added successfully, the list was changed.
