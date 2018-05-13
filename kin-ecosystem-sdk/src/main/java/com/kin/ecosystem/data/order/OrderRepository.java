@@ -7,11 +7,13 @@ import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.blockchain.IBlockchainSource;
+import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.data.offer.OfferDataSource;
 import com.kin.ecosystem.data.order.CreateExternalOrderCall.ExternalOrderCallbacks;
 import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.exception.TaskFailedException;
+import com.kin.ecosystem.network.model.JWTBodyConfirmPaymentResult;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
@@ -240,7 +242,7 @@ public class OrderRepository implements OrderDataSource {
     }
 
     @Override
-    public void purchase(String offerJwt, @Nullable final Callback<String> callback) {
+    public void purchase(String offerJwt, @Nullable final Callback<OrderConfirmation> callback) {
         new CreateExternalOrderCall(remoteData, blockchainSource, offerJwt, new ExternalOrderCallbacks() {
             @Override
             public void onTransactionSent(OpenOrder openOrder) {
@@ -267,7 +269,10 @@ public class OrderRepository implements OrderDataSource {
             @Override
             public void onOrderConfirmed(String confirmationJwt) {
                 if (callback != null) {
-                    callback.onResponse(confirmationJwt);
+                    OrderConfirmation orderConfirmation = new OrderConfirmation();
+                    orderConfirmation.setStatus(Status.COMPLETED);
+                    orderConfirmation.setJwtConfirmation(confirmationJwt);
+                    callback.onResponse(orderConfirmation);
                 }
             }
 
@@ -316,15 +321,25 @@ public class OrderRepository implements OrderDataSource {
     }
 
     @Override
-    public void getExternalOrderStatus(@NonNull String offerID, @NonNull final Callback<Status> callback) {
+    public void getExternalOrderStatus(@NonNull String offerID, @NonNull final Callback<OrderConfirmation> callback) {
         remoteData.getFilteredOrderHistory(ORIGIN_EXTERNAL, offerID, new Callback<OrderList>() {
             @Override
             public void onResponse(OrderList response) {
                 if(response != null){
                     final List<Order> orders = response.getOrders();
-                    if(orders != null & orders.size() >= 1) {
+                    if(orders != null && orders.size() >= 1) {
                         final Order order = orders.get(0);
-                        callback.onResponse(order.getStatus());
+                        OrderConfirmation orderConfirmation = new OrderConfirmation();
+                        orderConfirmation.setStatus(order.getStatus());
+                        if (order.getStatus() == Status.COMPLETED) {
+                            try {
+                                orderConfirmation.setJwtConfirmation(((JWTBodyConfirmPaymentResult)order.getResult()).getJwt());
+                            } catch (ClassCastException e) {
+                                Log.d(TAG, "could not cast to jwt confirmation");
+                            }
+
+                        }
+                        callback.onResponse(orderConfirmation);
 
                     }
                 }

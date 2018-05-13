@@ -11,6 +11,7 @@ import com.kin.ecosystem.data.auth.AuthLocalData;
 import com.kin.ecosystem.data.auth.AuthRemoteData;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
+import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.offer.OfferRemoteData;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderLocalData;
@@ -147,19 +148,21 @@ public class Kin {
      *
      * @param offerJwt Represents the offer in a JWT manner.
      * @param callback Confirmation callback, the result will be a failure or a succeed with a jwt confirmation.
+     * @throws TaskFailedException
      */
-    public static void purchase(String offerJwt, @Nullable Callback<String> callback) throws TaskFailedException {
+    public static void purchase(String offerJwt, @Nullable Callback<OrderConfirmation> callback) throws TaskFailedException {
         checkInstanceNotNull();
         OrderRepository.getInstance().purchase(offerJwt, callback);
     }
 
     /**
+     * Returns a {@link OrderConfirmation}, with the order status and a jwtConfirmation if the order is completed.
      *
-     * @param offerID
+     * @param offerID The offerID that this order created from
      * @param callback
      * @throws TaskFailedException
      */
-    public static void getOrderStatus(@NonNull String offerID, @NonNull Callback<Status> callback)
+    public static void getOrderConfirmation(@NonNull String offerID, @NonNull Callback<OrderConfirmation> callback)
         throws TaskFailedException {
         checkInstanceNotNull();
         OrderRepository.getInstance().getExternalOrderStatus(offerID, callback);

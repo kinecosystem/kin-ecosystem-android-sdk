@@ -15,9 +15,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.Kin;
+import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
-import com.kin.ecosystem.network.model.Order.Status;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private Button showPublicAddressButton;
     private TextView publicAddressTextArea;
 
-    private Callback<String> nativeSpendCallback;
+    private Callback<OrderConfirmation> nativeSpendCallback;
 
     private String publicAddress;
 
@@ -175,16 +175,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Use this method with the offerID you created, to get the order {@link Status}
+     * Use this method with the offerID you created, to get {@link OrderConfirmation}
      * @param offerID
      */
-    private void getOrderStatus(@NonNull final String offerID) {
+    private void getOrderConfirmation(@NonNull final String offerID) {
         if (!TextUtils.isEmpty(offerID)) {
             try {
-                Kin.getOrderStatus(offerID, new Callback<Status>() {
+                Kin.getOrderConfirmation(offerID, new Callback<OrderConfirmation>() {
                     @Override
-                    public void onResponse(Status status) {
-                        showToast("Offer: " + offerID + " Status is: " + status.getValue());
+                    public void onResponse(OrderConfirmation orderConfirmation) {
+                        showToast("Offer: " + offerID + " Status is: " + orderConfirmation.getStatus());
                     }
 
                     @Override
@@ -198,14 +198,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private Callback<String> getNativeSpendCallback() {
+    private Callback<OrderConfirmation> getNativeSpendCallback() {
         if (nativeSpendCallback == null) {
-            nativeSpendCallback = new Callback<String>() {
+            nativeSpendCallback = new Callback<OrderConfirmation>() {
                 @Override
-                public void onResponse(String jwtConfirmation) {
+                public void onResponse(OrderConfirmation orderConfirmation) {
                     getBalance();
                     showToast("Succeed to create native spend");
-                    Log.d(TAG, "Jwt confirmation: \n" + jwtConfirmation);
+                    Log.d(TAG, "Jwt confirmation: \n" + orderConfirmation.getJwtConfirmation());
                     enableView(nativeSpendButton, true);
                 }
 

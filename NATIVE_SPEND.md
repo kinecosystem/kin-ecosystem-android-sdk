@@ -112,3 +112,23 @@ JWT need to be signed by server side where private key is secure.
         e.printStackTrace();
     }
 ```
+
+# Get Order Confirmation
+if you wish to get the order status of a certain offer, which already completed or<br>
+the user closed the app and you want to get the order status or jwtConfirmation<br>
+just follow the example below:
+```java
+    Kin.getOrderConfirmation("your_offer_id", new Callback<OrderConfirmation>() {
+            @Override
+            public void onResponse(OrderConfirmation orderConfirmation) {
+                if(orderConfirmation.getStatus() == Status.COMPLETED ){
+                   String jwtConfirmation = orderConfirmation.getStatus()
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
+            }
+        });
+```
