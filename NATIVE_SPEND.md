@@ -39,12 +39,12 @@ JWT need to be signed by server side where private key is secure.
     String offerJwt = JwtUtil.generateSpendOfferExampleJWT(BuildConfig.SAMPLE_APP_ID);
         
         try {
-            Kin.purchase(offerJwt, new Callback<String>() {
+            Kin.purchase(offerJwt, new Callback<OrderConfirmation>() {
                 @Override
-                public void onResponse(String jwtConfirmation) {
+                public void onResponse(OrderConfirmation orderConfirmation) {
                     // Send confirmation JWT back to the server in order prove that the user
                     // completed the blockchain transaction and purchase can be unlocked for this user.
-                    System.out.println("Succeed to create native spend.\n jwtConfirmation: " + jwtConfirmation);
+                    System.out.println("Succeed to create native spend.\n jwtConfirmation: " + orderConfirmation.getJwtConfirmation());
                 }
 
                 @Override

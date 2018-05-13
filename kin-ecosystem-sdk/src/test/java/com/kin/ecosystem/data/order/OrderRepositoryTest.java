@@ -14,6 +14,7 @@ import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.blockchain.IBlockchainSource;
+import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.data.offer.OfferDataSource;
 import com.kin.ecosystem.exception.DataNotAvailableException;
@@ -290,11 +291,11 @@ public class OrderRepositoryTest {
         when(remote.getOrderSync(anyString())).thenReturn(confirmedOrder);
         when(offerRepository.getPendingOffer()).thenReturn(pendingOffer);
 
-        orderRepository.purchase("A GENERATED NATIVE OFFER JWT", new Callback<String>() {
+        orderRepository.purchase("A GENERATED NATIVE OFFER JWT", new Callback<OrderConfirmation>() {
             @Override
-            public void onResponse(String confirmationJwt) {
+            public void onResponse(OrderConfirmation orderConfirmation) {
                 countDownLatch.countDown();
-                assertEquals("A JWT CONFIRMATION", confirmationJwt);
+                assertEquals("A JWT CONFIRMATION", orderConfirmation.getJwtConfirmation());
                 verify(offerRepository).setPendingOfferByID(null);
                 assertNull(orderRepository.getOpenOrder().getValue());
             }
@@ -328,9 +329,9 @@ public class OrderRepositoryTest {
 
         when(remote.createExternalOrderSync(anyString())).thenThrow(new ApiException());
 
-        orderRepository.purchase("generatedOfferJWT", new Callback<String>() {
+        orderRepository.purchase("generatedOfferJWT", new Callback<OrderConfirmation>() {
             @Override
-            public void onResponse(String confirmationJwt) {
+            public void onResponse(OrderConfirmation confirmationJwt) {
 
             }
 
@@ -359,9 +360,9 @@ public class OrderRepositoryTest {
         when(remote.createExternalOrderSync(anyString())).thenReturn(openOrder);
         when(payment.isSucceed()).thenReturn(false);
 
-        orderRepository.purchase("generatedOfferJWT", new Callback<String>() {
+        orderRepository.purchase("generatedOfferJWT", new Callback<OrderConfirmation>() {
             @Override
-            public void onResponse(String response) {
+            public void onResponse(OrderConfirmation response) {
 
             }
 
