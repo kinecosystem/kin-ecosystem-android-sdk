@@ -91,6 +91,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             if (index != NOT_FOUND) {
                 earnList.remove(index);
                 notifyEarnItemRemoved(index);
+                setEarnEmptyViewIfNeeded();
             }
 
         } else {
@@ -98,6 +99,23 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             if (index != NOT_FOUND) {
                 spendList.remove(index);
                 notifySpendItemRemoved(index);
+                setSpendEmptyViewIfNeeded();
+            }
+        }
+    }
+
+    private void setEarnEmptyViewIfNeeded() {
+        if (earnList.size() == 0) {
+            if (view != null) {
+                view.setEarnEmptyView();
+            }
+        }
+    }
+
+    private void setSpendEmptyViewIfNeeded() {
+        if(spendList.size() == 0) {
+            if (view != null) {
+                view.setSpendEmptyView();
             }
         }
     }
@@ -160,6 +178,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             splitOffersByType(offerList.getOffers(), newEarnOffers, newSpendOffers);
             syncList(newEarnOffers, earnList, OfferTypeEnum.EARN);
             syncList(newSpendOffers, spendList, OfferTypeEnum.SPEND);
+
+            setEarnEmptyViewIfNeeded();
+            setSpendEmptyViewIfNeeded();
         }
     }
 
@@ -263,14 +284,14 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
     }
 
     private void showSomethingWentWrong() {
-        if(view != null) {
+        if (view != null) {
             view.showSomethingWentWrong();
         }
     }
 
     @Override
     public void balanceItemClicked() {
-        if(view != null) {
+        if (view != null) {
             view.navigateToOrderHistory();
         }
     }
