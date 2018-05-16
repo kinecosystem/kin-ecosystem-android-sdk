@@ -4,13 +4,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
+import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.marketplace.model.NativeOffer;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.Offer.ContentTypeEnum;
 import com.kin.ecosystem.network.model.OfferList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 public class OfferRepository implements OfferDataSource {
 
@@ -18,10 +22,11 @@ public class OfferRepository implements OfferDataSource {
 
     private final OfferDataSource.Remote remoteData;
 
+    private OfferList nativeOfferList = new OfferList();
     private OfferList cachedOfferList = new OfferList();
     private ObservableData<Offer> pendingOffer = ObservableData.create();
 
-    private static Callback<NativeSpendOffer> nativeSpendOfferCallback;
+    private ObservableData<NativeSpendOffer> nativeSpendOfferObservable = ObservableData.create();
 
     private OfferRepository(@NonNull OfferDataSource.Remote remoteData) {
         this.remoteData = remoteData;
@@ -43,7 +48,7 @@ public class OfferRepository implements OfferDataSource {
 
     @Override
     public OfferList getCachedOfferList() {
-        return cachedOfferList;
+        return getList();
     }
 
     @Override
@@ -51,9 +56,9 @@ public class OfferRepository implements OfferDataSource {
         remoteData.getOffers(new Callback<OfferList>() {
             @Override
             public void onResponse(OfferList response) {
-                updateCacheOfferList(response);
+                cachedOfferList = response;
                 if (callback != null) {
-                    callback.onResponse(cachedOfferList);
+                    callback.onResponse(getList());
                 }
             }
 
@@ -66,19 +71,8 @@ public class OfferRepository implements OfferDataSource {
         });
     }
 
-    private void updateCacheOfferList(OfferList response) {
-        removeAllNoneNativeOffers();
-        cachedOfferList.addAll(response);
-        cachedOfferList.setPaging(response.getPaging());
-    }
-
-    private void removeAllNoneNativeOffers() {
-        Iterator<Offer> offerIterator = cachedOfferList.getOffers().iterator();
-        while (offerIterator.hasNext()) {
-            if (offerIterator.next().getContentType() != ContentTypeEnum.EXTERNAL) {
-                offerIterator.remove();
-            }
-        }
+    private OfferList getList() {
+        return new OfferList(nativeOfferList.getOffers()).addAll(cachedOfferList);
     }
 
     @Override
@@ -109,26 +103,31 @@ public class OfferRepository implements OfferDataSource {
     }
 
     @Override
-    public void addNativeOfferCallback(Callback<NativeSpendOffer> callback) {
-        nativeSpendOfferCallback = callback;
+    public void addNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer) {
+        nativeSpendOfferObservable.addObserver(observer);
     }
 
     @Override
-    public Callback<NativeSpendOffer> getNativeOfferCallback() {
-        return nativeSpendOfferCallback;
+    public void removeNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer) {
+        nativeSpendOfferObservable.removeObserver(observer);
+    }
+
+    @Override
+    public ObservableData<NativeSpendOffer> getNativeSpendOfferObservable() {
+        return nativeSpendOfferObservable;
     }
 
     @Override
     public boolean addNativeOffer(@NonNull NativeOffer nativeOffer) {
-        Offer offer = getCachedOfferByID(nativeOffer.getId());
+        Offer offer = nativeOfferList.getOfferByID(nativeOffer.getId());
         if (offer == null) {
-            return cachedOfferList.addAtIndex(0, nativeOffer);
+            return nativeOfferList.addAtIndex(0, nativeOffer);
         }
         return false;
     }
 
     @Override
     public boolean removeNativeOffer(@NonNull NativeOffer nativeOffer) {
-        return cachedOfferList.remove(nativeOffer);
+        return nativeOfferList.remove(nativeOffer);
     }
 }

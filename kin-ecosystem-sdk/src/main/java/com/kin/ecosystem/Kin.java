@@ -21,7 +21,6 @@ import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
-import com.kin.ecosystem.network.model.Order.Status;
 import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.splash.view.SplashViewActivity;
 import com.kin.ecosystem.util.DeviceUtils;
@@ -59,10 +58,6 @@ public class Kin {
         initOrderRepository(appContext);
         setAppID();
         return instance;
-    }
-
-    public void addNativeOfferCallback(@NonNull Callback<NativeSpendOffer> callback) {
-        OfferRepository.getInstance().addNativeOfferCallback(callback);
     }
 
     private static void setAppID() {
@@ -166,6 +161,27 @@ public class Kin {
         throws TaskFailedException {
         checkInstanceNotNull();
         OrderRepository.getInstance().getExternalOrderStatus(offerID, callback);
+    }
+
+    /**
+     * Add a native offer {@link Observer} to receive a trigger when you native offers on Kin Marketplace are clicked.
+     *
+     * @param observer
+     * @throws TaskFailedException
+     */
+    public static void addNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer) throws TaskFailedException {
+        checkInstanceNotNull();
+        OfferRepository.getInstance().addNativeOfferClickedObserver(observer);
+    }
+
+    /**
+     * Remove the callback if you no longer want to get triggered when your offer on Kin marketplace are clicked.
+     * @throws TaskFailedException
+     */
+    public static void removeNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer)
+        throws TaskFailedException {
+        checkInstanceNotNull();
+        OfferRepository.getInstance().removeNativeOfferClickedObserver(observer);
     }
 
     /**

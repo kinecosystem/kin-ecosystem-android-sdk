@@ -121,7 +121,7 @@ public class OfferRepositoryTest {
             }
         };
 
-        offerRepository.addNativeOfferCallback(callback);
+        offerRepository.addNativeOfferClickedObserver(callback);
         assertEquals(callback, offerRepository.getNativeOfferCallback());
     }
 

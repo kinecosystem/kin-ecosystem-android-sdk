@@ -269,10 +269,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
     }
 
     private void nativeSpendOfferClicked(Offer offer) {
-        final Callback<NativeSpendOffer> callback = offerRepository.getNativeOfferCallback();
-        if(callback != null) {
-            callback.onResponse((NativeSpendOffer) offer);
-        }
+        offerRepository.getNativeSpendOfferObservable().postValue((NativeSpendOffer) offer);
     }
 
     private void showSomethingWentWrong() {

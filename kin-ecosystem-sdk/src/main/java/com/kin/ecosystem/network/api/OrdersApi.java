@@ -515,10 +515,10 @@ public class OrdersApi {
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
         List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
-        if (limit != null) {
+        if (origin != null) {
             localVarQueryParams.addAll(apiClient.parameterToPair("origin", origin));
         }
-        if (limit != null) {
+        if (offerId != null) {
             localVarQueryParams.addAll(apiClient.parameterToPair("offerId", offerId));
         }
         if (limit != null) {

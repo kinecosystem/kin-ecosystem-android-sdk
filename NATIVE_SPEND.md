@@ -57,34 +57,39 @@ JWT need to be signed by server side where private key is secure.
         }
 ```
 
-# Add spend offer opportunity to marketplace
-1. Add a NativeOfferCallback to be triggered when the user clicks on your offer in Kin Marketplace.
+# Add spend offer opportunity to Kin marketplace
+1. Add a NativeOfferObserver to be triggered when the user clicks on your offer in Kin Marketplace.
 ```java
-        try {
-            Kin.start(getApplicationContext(), signInData)
-            .addNativeOfferCallback(new Callback<NativeSpendOffer>() {
+        private void addNativeOfferClickedObserver() {
+            try {
+                Kin.addNativeOfferClickedObserver(getNativeOfferClickedObserver());
+            } catch (TaskFailedException e) {
+                showToast("Could not add native offer callback");
+            }
+        }
+    
+        private Observer<NativeSpendOffer> getNativeOfferClickedObserver() {
+            if (nativeSpendOfferClickedObserver == null) {
+                nativeSpendOfferClickedObserver = new Observer<NativeSpendOffer>() {
                     @Override
-                    public void onResponse(NativeSpendOffer offer) {
-                        // Do checks on the offer
-                      
+                    public void onChanged(NativeSpendOffer value) {
+                        Intent nativeOfferIntent = NativeOfferActivity.createIntent(MainActivity.this, value.getTitle());
+                        startActivity(nativeOfferIntent);
                     }
-        
-                    @Override
-                    public void onFailure(Throwable t) {
-        
-                    }
-                });
-        } catch (InitializeException e) {
-            e.printStackTrace();
+                };
+            }
+            return nativeSpendOfferClickedObserver;
         }
 ```
+You can remove the observer also by `Kin.removeNativeOfferClickedObserver(nativeSpendOfferClickedObserver)`
+
 2. Create a [NativeSpendOffer](/kin-ecosystem-sdk/src/main/java/com/kin/ecosystem/marketplace/model/NativeSpendOffer.java) object:
 ```java
     NativeSpendOffer nativeOffer =
         new NativeSpendOffer("The offerID") // OfferId should be uniqe
             .title("Offer Title")
             .description("Offer Description")
-            .amount(int_amount)
+            .amount(1000)
             .image("A URL to offer image");
 ```
 3. Add the offer to Kin Marketplace, notice each offer you add will be added at index 0.
@@ -122,7 +127,7 @@ just follow the example below:
             @Override
             public void onResponse(OrderConfirmation orderConfirmation) {
                 if(orderConfirmation.getStatus() == Status.COMPLETED ){
-                   String jwtConfirmation = orderConfirmation.getStatus()
+                   String jwtConfirmation = orderConfirmation.getJwtConfirmation()
                 }
             }
 

@@ -1,6 +1,7 @@
 package com.ecosystem.kin.app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.Kin;
+import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
@@ -29,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private Button showPublicAddressButton;
     private TextView publicAddressTextArea;
 
-    private Callback<OrderConfirmation> nativeSpendCallback;
+    private Callback<OrderConfirmation> nativeSpendOrderConfirmationCallback;
+    private Observer<NativeSpendOffer> nativeSpendOfferClickedObserver;
 
     private String publicAddress;
 
@@ -82,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         addNativeSpendOffer(nativeOffer);
+        addNativeOfferClickedObserver();
     }
 
     // Use this method to remove the nativeOffer you added
@@ -93,6 +97,27 @@ public class MainActivity extends AppCompatActivity {
         } catch (TaskFailedException e) {
             e.printStackTrace();
         }
+    }
+
+    private void addNativeOfferClickedObserver() {
+        try {
+            Kin.addNativeOfferClickedObserver(getNativeOfferClickedObserver());
+        } catch (TaskFailedException e) {
+            showToast("Could not add native offer callback");
+        }
+    }
+
+    private Observer<NativeSpendOffer> getNativeOfferClickedObserver() {
+        if (nativeSpendOfferClickedObserver == null) {
+            nativeSpendOfferClickedObserver = new Observer<NativeSpendOffer>() {
+                @Override
+                public void onChanged(NativeSpendOffer value) {
+                    Intent nativeOfferIntent = NativeOfferActivity.createIntent(MainActivity.this, value.getTitle());
+                    startActivity(nativeOfferIntent);
+                }
+            };
+        }
+        return nativeSpendOfferClickedObserver;
     }
 
     private void addNativeSpendOffer(@NonNull NativeSpendOffer nativeSpendOffer) {
@@ -112,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
             publicAddress = Kin.getPublicAddress();
             int blueColor = ContextCompat.getColor(getApplicationContext(), R.color.sample_app_blue);
             publicAddressTextArea.getBackground().setColorFilter(blueColor, Mode.SRC_ATOP);
-            showPublicAddressButton.setText("Copy Public Address");
+            showPublicAddressButton.setText(R.string.copy_public_address);
             publicAddressTextArea.setText(publicAddress);
         } catch (TaskFailedException e) {
             e.printStackTrace();
@@ -168,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
         String offerJwt = JwtUtil.generateSpendOfferExampleJWT(BuildConfig.SAMPLE_APP_ID);
         Log.d(TAG, "createNativeSpendOffer: " + offerJwt);
         try {
-            Kin.purchase(offerJwt, getNativeSpendCallback());
+            Kin.purchase(offerJwt, getNativeSpendOrderConfirmationCallback());
         } catch (TaskFailedException e) {
             e.printStackTrace();
         }
@@ -176,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Use this method with the offerID you created, to get {@link OrderConfirmation}
-     * @param offerID
      */
     private void getOrderConfirmation(@NonNull final String offerID) {
         if (!TextUtils.isEmpty(offerID)) {
@@ -198,9 +222,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private Callback<OrderConfirmation> getNativeSpendCallback() {
-        if (nativeSpendCallback == null) {
-            nativeSpendCallback = new Callback<OrderConfirmation>() {
+    private Callback<OrderConfirmation> getNativeSpendOrderConfirmationCallback() {
+        if (nativeSpendOrderConfirmationCallback == null) {
+            nativeSpendOrderConfirmationCallback = new Callback<OrderConfirmation>() {
                 @Override
                 public void onResponse(OrderConfirmation orderConfirmation) {
                     getBalance();
@@ -216,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
         }
-        return nativeSpendCallback;
+        return nativeSpendOrderConfirmationCallback;
     }
 
     private void enableView(View v, boolean enable) {
@@ -232,6 +256,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        nativeSpendCallback = null;
+        nativeSpendOrderConfirmationCallback = null;
+        try {
+            Kin.removeNativeOfferClickedObserver(nativeSpendOfferClickedObserver);
+        } catch (TaskFailedException e) {
+            Log.d(TAG, "onDestroy: Failed to remove native offer clicked observer");
+        }
     }
 }

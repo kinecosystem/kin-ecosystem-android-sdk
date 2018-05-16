@@ -327,8 +327,7 @@ public class Offer {
 
     @Override
     public int hashCode() {
-        return id.hashCode() + title.hashCode() + description.hashCode() + image.hashCode() + amount.hashCode()
-            + offerType.hashCode() + contentType.hashCode() + content.hashCode() + blockchainData.hashCode();
+        return id.hashCode();
     }
 
     @Override

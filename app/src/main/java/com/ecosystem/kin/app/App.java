@@ -1,14 +1,11 @@
 package com.ecosystem.kin.app;
 
 import android.app.Application;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import com.crashlytics.android.Crashlytics;
 import com.ecosystem.kin.app.model.SignInRepo;
-import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.exception.InitializeException;
-import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.network.model.SignInData;
 import io.fabric.sdk.android.Fabric;
 
@@ -24,7 +21,7 @@ public class App extends Application {
 
         SignInData signInData;
 
-        if(BuildConfig.IS_JWT_REGISTRATION) {
+        if (BuildConfig.IS_JWT_REGISTRATION) {
             /*
             * SignInData should be created with registration JWT {see https://jwt.io/} created securely by server side
             * In the the this example 'SignInRepo.getJWTSignInData' receive an empty/null JWT String and the sample app generate the JWT locally.
@@ -37,29 +34,11 @@ public class App extends Application {
         }
 
         try {
-            Kin.start(getApplicationContext(), signInData)
-            .addNativeOfferCallback(getNativeOfferCallback());
+            Kin.start(getApplicationContext(), signInData);
         } catch (InitializeException e) {
             e.printStackTrace();
         }
     }
-
-    private Callback<NativeSpendOffer> getNativeOfferCallback() {
-        return new Callback<NativeSpendOffer>() {
-            @Override
-            public void onResponse(NativeSpendOffer response) {
-                // Do checks on the offer
-                Intent intent = new Intent(getApplicationContext(), NativeOfferActivity.class);
-                startActivity(intent);
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-
-            }
-        };
-    }
-
 
     @NonNull
     private static String getAppId() {

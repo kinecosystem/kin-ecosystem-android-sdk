@@ -19,53 +19,38 @@ public class OfferList {
         this.offers = new ArrayList<>();
     }
 
-    public boolean addAtIndex(final int index, @NonNull final Offer offer) {
+    public OfferList(@NonNull List<Offer> offers) {
+        this.offers = offers;
+    }
 
-        if (this.offers == null) {
-            this.offers = new ArrayList<>();
-            return this.offers.add(offer);
-        } else {
-            try {
-                this.offers.add(index, offer);
-                return true;
-            } catch (IndexOutOfBoundsException e) {
-                return false;
-            }
+    public boolean addAtIndex(final int index, @NonNull final Offer offer) {
+        try {
+            this.offers.add(index, offer);
+            return true;
+        } catch (IndexOutOfBoundsException e) {
+            return false;
         }
     }
 
     public OfferList addAll(@NonNull final OfferList offerList) {
         List<Offer> offers = offerList.getOffers();
         if (offers != null) {
-            this.offers.addAll(size(), offers);
+            this.offers.addAll(offers);
         }
-
         return this;
     }
 
-    private int size() {
-        if (this.offers != null) {
-            return this.offers.size();
-        }
-        return  -1;
-    }
-
     public Offer getOfferByID(String offerID) {
-        if (this.offers != null) {
-            for (Offer offer : this.offers) {
-                if (offer.getId().equals(offerID)) {
-                    return offer;
-                }
+        for (Offer offer : this.offers) {
+            if (offer.getId().equals(offerID)) {
+                return offer;
             }
         }
         return null;
     }
 
     public boolean remove(Offer offer) {
-        if (this.offers != null) {
-            return this.offers.remove(offer);
-        }
-        return false;
+        return this.offers.remove(offer);
     }
 
     /**

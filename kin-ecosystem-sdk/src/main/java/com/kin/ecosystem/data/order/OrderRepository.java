@@ -270,7 +270,7 @@ public class OrderRepository implements OrderDataSource {
             public void onOrderConfirmed(String confirmationJwt) {
                 if (callback != null) {
                     OrderConfirmation orderConfirmation = new OrderConfirmation();
-                    orderConfirmation.setStatus(Status.COMPLETED);
+                    orderConfirmation.setStatus(OrderConfirmation.Status.COMPLETED);
                     orderConfirmation.setJwtConfirmation(confirmationJwt);
                     callback.onResponse(orderConfirmation);
                 }
@@ -325,29 +325,34 @@ public class OrderRepository implements OrderDataSource {
         remoteData.getFilteredOrderHistory(ORIGIN_EXTERNAL, offerID, new Callback<OrderList>() {
             @Override
             public void onResponse(OrderList response) {
-                if(response != null){
+                if (response != null) {
                     final List<Order> orders = response.getOrders();
-                    if(orders != null && orders.size() >= 1) {
-                        final Order order = orders.get(0);
+                    if (orders != null && orders.size() > 0) {
+                        final Order order = orders.get(orders.size());
                         OrderConfirmation orderConfirmation = new OrderConfirmation();
-                        orderConfirmation.setStatus(order.getStatus());
-                        if (order.getStatus() == Status.COMPLETED) {
+                        OrderConfirmation.Status status = OrderConfirmation.Status.fromValue(order.getStatus().getValue());
+                        orderConfirmation.setStatus(status);
+                        if (status == OrderConfirmation.Status.COMPLETED) {
                             try {
-                                orderConfirmation.setJwtConfirmation(((JWTBodyConfirmPaymentResult)order.getResult()).getJwt());
+                                orderConfirmation
+                                    .setJwtConfirmation(((JWTBodyConfirmPaymentResult) order.getResult()).getJwt());
                             } catch (ClassCastException e) {
                                 Log.d(TAG, "could not cast to jwt confirmation");
+                                callback.onFailure(new DataNotAvailableException());
                             }
 
                         }
                         callback.onResponse(orderConfirmation);
-
+                    }
+                    else {
+                        callback.onFailure(new DataNotAvailableException());
                     }
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                    callback.onFailure(t);
+                callback.onFailure(t);
             }
         });
     }
