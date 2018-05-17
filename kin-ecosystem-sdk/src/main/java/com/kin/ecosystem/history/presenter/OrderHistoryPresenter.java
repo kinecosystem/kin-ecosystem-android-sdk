@@ -85,8 +85,10 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
     }
 
     private void setOrderHistoryList(List<Order> orders) {
-        this.orderHistoryList = orders;
-        this.view.updateOrderHistoryList(orderHistoryList);
+        orderHistoryList = orders;
+        if (view != null) {
+            view.updateOrderHistoryList(orderHistoryList);
+        }
     }
 
     private List<Order> removePendingOrders(OrderList orderListObj) {
