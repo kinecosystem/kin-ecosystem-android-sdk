@@ -3,4 +3,7 @@
     <color name="colorPrimary">@color/bluePrimary</color>
     <color name="colorPrimaryDark">@color/bluePrimaryDark</color>
     <color name="colorAccent">@color/bluePrimary</color>
+
+
+    <color name="sample_app_blue">#263ffd</color>
 </resources>

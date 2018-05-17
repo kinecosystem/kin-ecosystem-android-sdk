@@ -2,9 +2,7 @@ package com.kin.ecosystem.data.order;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -16,6 +14,7 @@ import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.blockchain.IBlockchainSource;
+import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.data.offer.OfferDataSource;
 import com.kin.ecosystem.exception.DataNotAvailableException;
@@ -26,12 +25,10 @@ import com.kin.ecosystem.network.model.JWTBodyConfirmPaymentResult;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
-import com.kin.ecosystem.network.model.Order.StatusEnum;
+import com.kin.ecosystem.network.model.Order.Status;
 import com.kin.ecosystem.network.model.OrderList;
 import com.kin.ecosystem.network.model.OrderSpendResult.TypeEnum;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -286,7 +283,7 @@ public class OrderRepositoryTest {
         ArgumentCaptor<Observer<Payment>> paymentCapture = ArgumentCaptor.forClass(Observer.class);
         ArgumentCaptor<Callback<Order>> getOrderCapture = ArgumentCaptor.forClass(Callback.class);
 
-        Order confirmedOrder = new Order().orderId(orderID).offerId(offerID).status(StatusEnum.COMPLETED);
+        Order confirmedOrder = new Order().orderId(orderID).offerId(offerID).status(Status.COMPLETED);
         confirmedOrder.setResult(new JWTBodyConfirmPaymentResult().jwt("A JWT CONFIRMATION").type(TypeEnum.CONFIRM_PAYMENT));
         ObservableData<Offer> pendingOffer = ObservableData.create(offer);
 
@@ -294,11 +291,11 @@ public class OrderRepositoryTest {
         when(remote.getOrderSync(anyString())).thenReturn(confirmedOrder);
         when(offerRepository.getPendingOffer()).thenReturn(pendingOffer);
 
-        orderRepository.purchase("A GENERATED NATIVE OFFER JWT", new Callback<String>() {
+        orderRepository.purchase("A GENERATED NATIVE OFFER JWT", new Callback<OrderConfirmation>() {
             @Override
-            public void onResponse(String confirmationJwt) {
+            public void onResponse(OrderConfirmation orderConfirmation) {
                 countDownLatch.countDown();
-                assertEquals("A JWT CONFIRMATION", confirmationJwt);
+                assertEquals("A JWT CONFIRMATION", orderConfirmation.getJwtConfirmation());
                 verify(offerRepository).setPendingOfferByID(null);
                 assertNull(orderRepository.getOpenOrder().getValue());
             }
@@ -332,9 +329,9 @@ public class OrderRepositoryTest {
 
         when(remote.createExternalOrderSync(anyString())).thenThrow(new ApiException());
 
-        orderRepository.purchase("generatedOfferJWT", new Callback<String>() {
+        orderRepository.purchase("generatedOfferJWT", new Callback<OrderConfirmation>() {
             @Override
-            public void onResponse(String confirmationJwt) {
+            public void onResponse(OrderConfirmation confirmationJwt) {
 
             }
 
@@ -363,9 +360,9 @@ public class OrderRepositoryTest {
         when(remote.createExternalOrderSync(anyString())).thenReturn(openOrder);
         when(payment.isSucceed()).thenReturn(false);
 
-        orderRepository.purchase("generatedOfferJWT", new Callback<String>() {
+        orderRepository.purchase("generatedOfferJWT", new Callback<OrderConfirmation>() {
             @Override
-            public void onResponse(String response) {
+            public void onResponse(OrderConfirmation response) {
 
             }
 
