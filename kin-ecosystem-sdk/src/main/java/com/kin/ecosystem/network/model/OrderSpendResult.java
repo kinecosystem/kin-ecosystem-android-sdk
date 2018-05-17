@@ -30,7 +30,7 @@ public class OrderSpendResult {
     public enum TypeEnum {
 
         COUPON("coupon"),
-        PAYMENT_CONFIRMED("payment_confirmed");
+        PAYMENT_CONFIRMATION("payment_confirmation");
 
         private String value;
 
@@ -162,7 +162,7 @@ public class OrderSpendResult {
                                 case COUPON:
                                     result = new CouponCodeResult();
                                     break;
-                                case PAYMENT_CONFIRMED:
+                                case PAYMENT_CONFIRMATION:
                                     result = new JWTBodyPaymentConfirmationResult();
                                     break;
                             }

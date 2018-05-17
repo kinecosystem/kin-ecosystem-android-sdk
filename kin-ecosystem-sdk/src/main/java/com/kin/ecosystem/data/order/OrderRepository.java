@@ -14,16 +14,19 @@ import com.kin.ecosystem.data.order.CreateExternalOrderCall.ExternalEarnOrderCal
 import com.kin.ecosystem.data.order.CreateExternalOrderCall.ExternalSpendOrderCallbacks;
 import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.exception.TaskFailedException;
+import com.kin.ecosystem.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
-import com.kin.ecosystem.network.model.Order.StatusEnum;
+
 import com.kin.ecosystem.network.model.OrderList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrderRepository implements OrderDataSource {
 
     private static final String TAG = OrderRepository.class.getSimpleName();
+    private static final String ORIGIN_EXTERNAL = "external";
 
     private static OrderRepository instance = null;
     private final OrderDataSource.Local localData;
@@ -240,7 +243,7 @@ public class OrderRepository implements OrderDataSource {
     }
 
     @Override
-    public void purchase(String offerJwt, @Nullable final Callback<String> callback) {
+    public void purchase(String offerJwt, @Nullable final Callback<OrderConfirmation> callback) {
         new ExternalSpendOrderCall(remoteData, blockchainSource, offerJwt, new ExternalSpendOrderCallbacks() {
             @Override
             public void onTransactionSent(OpenOrder openOrder) {
@@ -266,7 +269,10 @@ public class OrderRepository implements OrderDataSource {
             @Override
             public void onOrderConfirmed(String confirmationJwt) {
                 if (callback != null) {
-                    callback.onResponse(confirmationJwt);
+                    OrderConfirmation orderConfirmation = new OrderConfirmation();
+                    orderConfirmation.setStatus(OrderConfirmation.Status.COMPLETED);
+                    orderConfirmation.setJwtConfirmation(confirmationJwt);
+                    callback.onResponse(orderConfirmation);
                 }
             }
 
@@ -296,7 +302,7 @@ public class OrderRepository implements OrderDataSource {
             public void onOrderConfirmed(String confirmationJwt) {
                 if (callback != null) {
                     OrderConfirmation orderConfirmation = new OrderConfirmation();
-                    orderConfirmation.setStatus(StatusEnum.COMPLETED);
+                    orderConfirmation.setStatus(OrderConfirmation.Status.COMPLETED);
                     orderConfirmation.setJwtConfirmation(confirmationJwt);
                     callback.onResponse(orderConfirmation);
                 }
@@ -308,7 +314,7 @@ public class OrderRepository implements OrderDataSource {
                     callback.onFailure(new TaskFailedException(msg));
                 }
             }
-        });
+        }).start();
     }
 
     private void cacheAndSubmitOrder(OpenOrder openOrder) {
@@ -344,5 +350,42 @@ public class OrderRepository implements OrderDataSource {
     @Override
     public void setIsFirstSpendOrder(boolean isFirstSpendOrder) {
         localData.setIsFirstSpendOrder(isFirstSpendOrder);
+    }
+
+    @Override
+    public void getExternalOrderStatus(@NonNull String offerID, @NonNull final Callback<OrderConfirmation> callback) {
+        remoteData.getFilteredOrderHistory(ORIGIN_EXTERNAL, offerID, new Callback<OrderList>() {
+            @Override
+            public void onResponse(OrderList response) {
+                if (response != null) {
+                    final List<Order> orders = response.getOrders();
+                    if (orders != null && orders.size() > 0) {
+                        final Order order = orders.get(orders.size());
+                        OrderConfirmation orderConfirmation = new OrderConfirmation();
+                        OrderConfirmation.Status status = OrderConfirmation.Status.fromValue(order.getStatus().getValue());
+                        orderConfirmation.setStatus(status);
+                        if (status == OrderConfirmation.Status.COMPLETED) {
+                            try {
+                                orderConfirmation
+                                    .setJwtConfirmation(((JWTBodyPaymentConfirmationResult) order.getResult()).getJwt());
+                            } catch (ClassCastException e) {
+                                Log.d(TAG, "could not cast to jwt confirmation");
+                                callback.onFailure(new DataNotAvailableException());
+                            }
+
+                        }
+                        callback.onResponse(orderConfirmation);
+                    }
+                    else {
+                        callback.onFailure(new DataNotAvailableException());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                callback.onFailure(t);
+            }
+        });
     }
 }

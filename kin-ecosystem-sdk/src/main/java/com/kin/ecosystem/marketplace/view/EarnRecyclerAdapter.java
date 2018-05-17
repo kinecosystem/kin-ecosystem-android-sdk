@@ -7,6 +7,6 @@ import com.kin.ecosystem.R;
 class EarnRecyclerAdapter extends OfferRecyclerAdapter {
 
     EarnRecyclerAdapter(@NonNull Context context) {
-        super(context, R.layout.earn_recycler_item);
+        super(R.layout.earn_recycler_item);
     }
 }

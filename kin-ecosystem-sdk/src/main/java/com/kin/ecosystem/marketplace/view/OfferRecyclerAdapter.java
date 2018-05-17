@@ -5,12 +5,10 @@ import static com.kin.ecosystem.util.StringUtil.getAmountFormatted;
 
 import android.content.Context;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.view.View;
 import com.chad.library.adapter.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
-
 import com.kin.ecosystem.marketplace.view.OfferRecyclerAdapter.ViewHolder;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.Offer.ContentTypeEnum;
@@ -33,10 +31,9 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
         return DeviceUtils.isDensity(XXHDPI) ? HIGH_RES_HEIGHT_RATIO : NORMAL_HEIGHT_RATIO;
     }
 
-    OfferRecyclerAdapter(@NonNull Context context, @LayoutRes int layoutResID) {
+    OfferRecyclerAdapter(@LayoutRes int layoutResID) {
         super(layoutResID);
         openLoadAnimation(SLIDEIN_RIGHT);
-        setEmptyView(new OffersEmptyView(context));
     }
 
     @Override

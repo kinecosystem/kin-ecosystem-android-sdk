@@ -17,7 +17,6 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
-import java.util.Objects;
 
 /**
  * offer details for the offer list
@@ -84,7 +83,7 @@ public class Offer {
     }
 
     @SerializedName("offer_type")
-    private OfferType offerType = null;
+    private OfferType offerType = OfferType.SPEND;
 
     /**
      * determines the type of data that appears in the content
@@ -93,7 +92,9 @@ public class Offer {
     public enum ContentTypeEnum {
 
         POLL("poll"),
-        COUPON("coupon");
+        COUPON("coupon"),
+        EXTERNAL("external");
+
 
         private String value;
 
@@ -321,12 +322,12 @@ public class Offer {
             return false;
         }
         Offer offer = (Offer) o;
-        return Objects.equals(this.id, offer.id);
+        return this.id.equals(offer.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, description, image, amount, offerType, contentType, content, blockchainData);
+        return id.hashCode();
     }
 
     @Override

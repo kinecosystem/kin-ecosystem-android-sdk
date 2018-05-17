@@ -6,54 +6,102 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_blue_gradient"
-    tools:context="com.ecosystem.kin.app.MainActivity">
+    tools:context="com.ecosystem.kin.app.MainActivity"
+    android:animateLayoutChanges="true">
 
     <ImageView
         android:id="@+id/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="40dp"
         android:layout_gravity="center"
-        android:src="@drawable/kin_header_icon"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:src="@drawable/kin_logo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.248"/>
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
-        android:id="@+id/get_balance"
+        android:id="@+id/sample_app_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/get_balance"
-        android:textSize="20sp"
+        android:layout_marginTop="8dp"
+        android:text="@string/kin_sdk_sample_app"
         android:textColor="@color/white"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logo"/>
+
+
+    <TextView
+        android:id="@+id/public_text_area"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginBottom="@dimen/main_margin"
+        android:layout_marginLeft="@dimen/margin_large"
+        android:layout_marginRight="@dimen/margin_large"
+        android:paddingLeft="@dimen/main_margin"
+        android:paddingRight="@dimen/main_margin"
+        android:background="@drawable/stroke_frame_rounded_white"
+        android:ellipsize="marquee"
+        android:gravity="center_vertical"
+        android:maxLines="2"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/show_public_address"
+        tools:text="GASDAGDFGHSDSDGDSFGKJ#$%IHSal;skdl;aksdl;askd;lksdDHASDKGSFDGJHALKHSD"/>
+
+
+    <Button
+        android:id="@+id/show_public_address"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="@dimen/margin_large"
+        android:layout_marginRight="@dimen/margin_large"
+        android:layout_gravity="bottom"
+        android:background="@drawable/button_bg_blue_rounded"
+        android:text="@string/show_public_address"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/get_balance"
+        />
+
+    <Button
+        android:id="@+id/get_balance"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginEnd="@dimen/margin_large"
+        android:gravity="left|center_vertical"
+        android:paddingLeft="@dimen/main_margin"
+        android:background="@drawable/button_bg_white_rounded"
         android:clickable="true"
+        android:text="@string/get_balance"
+        android:textAllCaps="false"
+        android:textColor="@color/bluePrimary"
+        android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/launch_marketplace"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"/>
+
 
     <Button
         android:id="@+id/launch_marketplace"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginBottom="76dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginEnd="@dimen/margin_large"
         android:layout_gravity="bottom"
-        android:background="@drawable/button_background_white_rounded"
-        android:text="Kin Marketplace"
+        android:background="@drawable/button_bg_blue_rounded"
+        android:text="@string/kin_marketplace"
         android:textAllCaps="false"
-        android:textColor="@color/bluePrimary"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/native_spend_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"/>
@@ -63,15 +111,35 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginEnd="@dimen/margin_large"
         android:layout_gravity="bottom"
-        android:background="@drawable/button_background_white_rounded"
-        android:text="Native Spend - Buy A Sticker"
+        android:background="@drawable/button_bg_white_rounded"
+        android:text="@string/native_spend_buy_a_sticker"
         android:textAllCaps="false"
         android:textColor="@color/bluePrimary"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/launch_marketplace"/>
+        app:layout_constraintBottom_toTopOf="@+id/native_earn_button"/>
+
+    <Button
+        android:id="@+id/native_earn_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginEnd="@dimen/margin_large"
+        android:layout_gravity="bottom"
+        android:background="@drawable/button_bg_white_rounded"
+        android:text="@string/native_earn"
+        android:textAllCaps="false"
+        android:textColor="@color/bluePrimary"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

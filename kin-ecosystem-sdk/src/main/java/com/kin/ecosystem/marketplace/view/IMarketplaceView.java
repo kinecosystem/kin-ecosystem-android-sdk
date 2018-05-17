@@ -30,4 +30,8 @@ public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
     void notifySpendItemInserted(int index);
 
     void showSomethingWentWrong();
+
+    void setEarnEmptyView();
+
+    void setSpendEmptyView();
 }

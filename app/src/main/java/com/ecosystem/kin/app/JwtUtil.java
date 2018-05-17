@@ -50,7 +50,7 @@ public class JwtUtil {
         String jwt = getBasicJWT(appID)
             .setSubject(JWT_SUBJECT_SPEND)
             .claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject())
-            .claim(JWT_CLAIM_OBJECT_SENDER_PART, new JWTOrderPart(userID, "Bought a sticker", "Lion sticker"))
+            .claim(JWT_CLAIM_OBJECT_SENDER_PART, new JWTSenderPart(userID, "Bought a sticker", "Lion sticker"))
             .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
         return jwt;
     }
@@ -59,7 +59,7 @@ public class JwtUtil {
         String jwt = getBasicJWT(appID)
             .setSubject(JWT_SUBJECT_EARN)
             .claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject())
-            .claim(JWT_CLAIM_OBJECT_RECIPIENT_PART, new JWTOrderPart(userID, "Received Kin", "upload profile picture"))
+            .claim(JWT_CLAIM_OBJECT_RECIPIENT_PART, new JWTRecipientPart(userID, "Received Kin", "upload profile picture"))
             .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
         return jwt;
     }
@@ -137,20 +137,19 @@ public class JwtUtil {
         }
     }
 
-
     private static class JWTOrderPart {
 
         private String user_id; // Optional in case of spend order
         private String title;
         private String description;
 
-        public JWTOrderPart(String user_id, String title, String description) {
+        JWTOrderPart(String user_id, String title, String description) {
             this.user_id = user_id;
             this.title = title;
             this.description = description;
         }
 
-        public JWTOrderPart(String title, String description) {
+        JWTOrderPart(String title, String description) {
             this.title = title;
             this.description = description;
         }
@@ -177,6 +176,25 @@ public class JwtUtil {
 
         public void setDescription(String description) {
             this.description = description;
+        }
+    }
+
+    private static class JWTSenderPart extends JWTOrderPart {
+
+        // User Id is optional
+        JWTSenderPart(String user_id, String title, String description) {
+            super(user_id, title, description);
+        }
+
+        JWTSenderPart(String title, String description) {
+            super(title, description);
+        }
+    }
+
+    private static class JWTRecipientPart extends JWTOrderPart {
+
+        JWTRecipientPart(String user_id, String title, String description) {
+            super(user_id, title, description);
         }
     }
 }

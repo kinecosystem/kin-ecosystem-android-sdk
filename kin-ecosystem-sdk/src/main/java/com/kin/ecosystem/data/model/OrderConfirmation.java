@@ -1,14 +1,43 @@
 package com.kin.ecosystem.data.model;
 
-import com.kin.ecosystem.network.model.Order.StatusEnum;
-
 public class OrderConfirmation {
 
-    private StatusEnum status;
+    public enum Status {
+
+        PENDING("pending"),
+        COMPLETED("completed"),
+        FAILED("failed");
+
+        private String value;
+
+        Status(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(value);
+        }
+
+        public static Status fromValue(String text) {
+            for (Status b : Status.values()) {
+                if (String.valueOf(b.value).equals(text)) {
+                    return b;
+                }
+            }
+            return null;
+        }
+    }
+
+    private Status status;
 
     private String jwtConfirmation;
 
-    public void setStatus(StatusEnum status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -16,7 +45,7 @@ public class OrderConfirmation {
         this.jwtConfirmation = jwtConfirmation;
     }
 
-    public StatusEnum getStatus() {
+    public Status getStatus() {
         return status;
     }
 

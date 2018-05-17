@@ -13,8 +13,10 @@ import com.kin.ecosystem.data.blockchain.IBlockchainSource;
 import com.kin.ecosystem.data.offer.OfferDataSource;
 import com.kin.ecosystem.data.order.OrderDataSource;
 import com.kin.ecosystem.data.order.OrderRepository;
+import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.marketplace.view.IMarketplaceView;
 import com.kin.ecosystem.network.model.Offer;
+import com.kin.ecosystem.network.model.Offer.ContentTypeEnum;
 import com.kin.ecosystem.network.model.Offer.OfferType;
 import com.kin.ecosystem.network.model.OfferInfo;
 import com.kin.ecosystem.network.model.OfferList;
@@ -91,6 +93,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             if (index != NOT_FOUND) {
                 earnList.remove(index);
                 notifyEarnItemRemoved(index);
+                setEarnEmptyViewIfNeeded();
             }
 
         } else {
@@ -98,6 +101,23 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             if (index != NOT_FOUND) {
                 spendList.remove(index);
                 notifySpendItemRemoved(index);
+                setSpendEmptyViewIfNeeded();
+            }
+        }
+    }
+
+    private void setEarnEmptyViewIfNeeded() {
+        if (earnList.size() == 0) {
+            if (view != null) {
+                view.setEarnEmptyView();
+            }
+        }
+    }
+
+    private void setSpendEmptyViewIfNeeded() {
+        if (spendList.size() == 0) {
+            if (view != null) {
+                view.setSpendEmptyView();
             }
         }
     }
@@ -160,6 +180,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             splitOffersByType(offerList.getOffers(), newEarnOffers, newSpendOffers);
             syncList(newEarnOffers, earnList, OfferType.EARN);
             syncList(newSpendOffers, spendList, OfferType.SPEND);
+
+            setEarnEmptyViewIfNeeded();
+            setSpendEmptyViewIfNeeded();
         }
     }
 
@@ -245,6 +268,10 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             }
         } else {
             offer = spendList.get(position);
+            if (offer.getContentType() == ContentTypeEnum.EXTERNAL) {
+                nativeSpendOfferClicked(offer);
+                return;
+            }
             int balance = blockchainSource.getBalance();
             final BigDecimal amount = new BigDecimal(offer.getAmount());
 
@@ -262,15 +289,19 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
         }
     }
 
+    private void nativeSpendOfferClicked(Offer offer) {
+        offerRepository.getNativeSpendOfferObservable().postValue((NativeSpendOffer) offer);
+    }
+
     private void showSomethingWentWrong() {
-        if(view != null) {
+        if (view != null) {
             view.showSomethingWentWrong();
         }
     }
 
     @Override
     public void balanceItemClicked() {
-        if(view != null) {
+        if (view != null) {
             view.navigateToOrderHistory();
         }
     }
