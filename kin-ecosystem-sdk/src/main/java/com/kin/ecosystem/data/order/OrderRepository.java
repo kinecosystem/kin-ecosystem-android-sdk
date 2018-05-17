@@ -17,7 +17,6 @@ import com.kin.ecosystem.network.model.JWTBodyConfirmPaymentResult;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
-import com.kin.ecosystem.network.model.Order.Status;
 import com.kin.ecosystem.network.model.OrderList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -140,7 +139,6 @@ public class OrderRepository implements OrderDataSource {
                 @Override
                 public void onChanged(Payment payment) {
                     getOrder(payment.getOrderID());
-                    decrementPendingOrdersCount();
                 }
             };
             blockchainSource.addPaymentObservable(paymentObserver);
@@ -153,22 +151,20 @@ public class OrderRepository implements OrderDataSource {
             @Override
             public void onResponse(Order order) {
                 setCompletedOrder(order);
+                decrementPendingOrdersCount();
             }
 
             @Override
             public void onFailure(Throwable t) {
-
+                decrementPendingOrdersCount();
             }
         });
     }
 
     private void decrementPendingOrdersCount() {
         if (hasMorePendingOffers()) {
-            pendingOrdersCount.decrementAndGet();
-        } else {
-            if (paymentObserver != null) {
+            if (pendingOrdersCount.decrementAndGet() == 0 && paymentObserver != null) {
                 blockchainSource.removePaymentObserver(paymentObserver);
-                Log.d(TAG, "decrementPendingOrdersCount: removePaymentObserver");
             }
         }
     }
