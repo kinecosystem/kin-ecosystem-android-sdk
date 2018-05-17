@@ -12,6 +12,7 @@ import com.kin.ecosystem.data.auth.AuthLocalData;
 import com.kin.ecosystem.data.auth.AuthRemoteData;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
+import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.offer.OfferRemoteData;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderLocalData;
@@ -147,5 +148,11 @@ public class Kin {
     public static void purchase(String offerJwt, @Nullable Callback<String> callback) throws TaskFailedException {
         checkInstanceNotNull();
         OrderRepository.getInstance().purchase(offerJwt, callback);
+    }
+
+    public static void requestPayment(String offerJwt, @Nullable Callback<OrderConfirmation> callback)
+        throws TaskFailedException {
+        checkInstanceNotNull();
+        OrderRepository.getInstance().requestPayment(offerJwt, callback);
     }
 }

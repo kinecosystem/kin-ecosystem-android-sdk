@@ -30,7 +30,7 @@ public class OrderSpendResult {
     public enum TypeEnum {
 
         COUPON("coupon"),
-        CONFIRM_PAYMENT("confirm_payment");
+        PAYMENT_CONFIRMED("payment_confirmed");
 
         private String value;
 
@@ -143,8 +143,8 @@ public class OrderSpendResult {
             if(spendResult instanceof CouponCodeResult) {
                 out.name("coupon_code").value(((CouponCodeResult) spendResult).getCode());
             }
-            if(spendResult instanceof JWTBodyConfirmPaymentResult) {
-                out.name("jwt").value(((JWTBodyConfirmPaymentResult) spendResult).getJwt());
+            if(spendResult instanceof JWTBodyPaymentConfirmationResult) {
+                out.name("jwt").value(((JWTBodyPaymentConfirmationResult) spendResult).getJwt());
             }
             out.endObject();
         }
@@ -162,8 +162,8 @@ public class OrderSpendResult {
                                 case COUPON:
                                     result = new CouponCodeResult();
                                     break;
-                                case CONFIRM_PAYMENT:
-                                    result = new JWTBodyConfirmPaymentResult();
+                                case PAYMENT_CONFIRMED:
+                                    result = new JWTBodyPaymentConfirmationResult();
                                     break;
                             }
                         }
@@ -173,7 +173,7 @@ public class OrderSpendResult {
                         ((CouponCodeResult) result).setCode(in.nextString());
                         break;
                     case "jwt":
-                        ((JWTBodyConfirmPaymentResult)result).setJwt(in.nextString());
+                        ((JWTBodyPaymentConfirmationResult)result).setJwt(in.nextString());
                         break;
                 }
             }

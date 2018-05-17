@@ -14,19 +14,19 @@ package com.kin.ecosystem.network.model;/*
 import com.google.gson.annotations.SerializedName;
 
 /**
- * JWTBodyConfirmPaymentResult
+ * JWTBodyPaymentConfirmationResult
  */
-public class JWTBodyConfirmPaymentResult extends OrderSpendResult {
+public class JWTBodyPaymentConfirmationResult extends OrderSpendResult {
 
     @SerializedName("jwt")
     private String jwt = null;
 
-    public JWTBodyConfirmPaymentResult type(TypeEnum type) {
+    public JWTBodyPaymentConfirmationResult type(TypeEnum type) {
         this.type = type;
         return this;
     }
 
-    public JWTBodyConfirmPaymentResult jwt(String jwt) {
+    public JWTBodyPaymentConfirmationResult jwt(String jwt) {
         this.jwt = jwt;
         return this;
     }
@@ -53,7 +53,7 @@ public class JWTBodyConfirmPaymentResult extends OrderSpendResult {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        JWTBodyConfirmPaymentResult jwTBodyConfirmPaymentResult = (JWTBodyConfirmPaymentResult) o;
+        JWTBodyPaymentConfirmationResult jwTBodyConfirmPaymentResult = (JWTBodyPaymentConfirmationResult) o;
         return super.equals(jwTBodyConfirmPaymentResult) &&
             this.jwt.equals(jwTBodyConfirmPaymentResult.jwt);
     }
@@ -66,7 +66,7 @@ public class JWTBodyConfirmPaymentResult extends OrderSpendResult {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("class JWTBodyConfirmPaymentResult {\n");
+        sb.append("class JWTBodyPaymentConfirmationResult {\n");
 
         sb.append("    type: ").append(toIndentedString(type)).append("\n");
         sb.append("    jwt: ").append(toIndentedString(jwt)).append("\n");

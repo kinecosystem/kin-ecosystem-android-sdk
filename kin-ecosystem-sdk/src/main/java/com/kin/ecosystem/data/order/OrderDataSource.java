@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
@@ -27,6 +28,8 @@ public interface OrderDataSource {
     ObservableData<OpenOrder> getOpenOrder();
 
     void purchase(String offerJwt, @Nullable final Callback<String> callback);
+
+    void requestPayment(String offerJwt, Callback<OrderConfirmation> callback);
 
     void addCompletedOrderObserver(@NonNull final Observer<Order> observer);
 

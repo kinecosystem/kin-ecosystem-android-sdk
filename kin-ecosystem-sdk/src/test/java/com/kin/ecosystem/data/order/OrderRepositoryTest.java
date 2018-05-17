@@ -2,9 +2,7 @@ package com.kin.ecosystem.data.order;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -22,16 +20,14 @@ import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.model.BlockchainData;
-import com.kin.ecosystem.network.model.JWTBodyConfirmPaymentResult;
+import com.kin.ecosystem.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.Order.StatusEnum;
 import com.kin.ecosystem.network.model.OrderList;
 import com.kin.ecosystem.network.model.OrderSpendResult.TypeEnum;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -287,7 +283,7 @@ public class OrderRepositoryTest {
         ArgumentCaptor<Callback<Order>> getOrderCapture = ArgumentCaptor.forClass(Callback.class);
 
         Order confirmedOrder = new Order().orderId(orderID).offerId(offerID).status(StatusEnum.COMPLETED);
-        confirmedOrder.setResult(new JWTBodyConfirmPaymentResult().jwt("A JWT CONFIRMATION").type(TypeEnum.CONFIRM_PAYMENT));
+        confirmedOrder.setResult(new JWTBodyPaymentConfirmationResult().jwt("A JWT CONFIRMATION").type(TypeEnum.PAYMENT_CONFIRMED));
         ObservableData<Offer> pendingOffer = ObservableData.create(offer);
 
         when(remote.createExternalOrderSync(anyString())).thenReturn(openOrder);

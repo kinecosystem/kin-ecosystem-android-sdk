@@ -7,14 +7,17 @@ import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.blockchain.IBlockchainSource;
+import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.data.offer.OfferDataSource;
-import com.kin.ecosystem.data.order.CreateExternalOrderCall.ExternalOrderCallbacks;
+import com.kin.ecosystem.data.order.CreateExternalOrderCall.ExternalEarnOrderCallbacks;
+import com.kin.ecosystem.data.order.CreateExternalOrderCall.ExternalSpendOrderCallbacks;
 import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
+import com.kin.ecosystem.network.model.Order.StatusEnum;
 import com.kin.ecosystem.network.model.OrderList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -238,11 +241,10 @@ public class OrderRepository implements OrderDataSource {
 
     @Override
     public void purchase(String offerJwt, @Nullable final Callback<String> callback) {
-        new CreateExternalOrderCall(remoteData, blockchainSource, offerJwt, new ExternalOrderCallbacks() {
+        new ExternalSpendOrderCall(remoteData, blockchainSource, offerJwt, new ExternalSpendOrderCallbacks() {
             @Override
             public void onTransactionSent(OpenOrder openOrder) {
-                cachedOpenOrder.postValue(openOrder);
-                submitOrder(openOrder.getOfferId(), null, openOrder.getId(), null);
+                cacheAndSubmitOrder(openOrder);
             }
 
             @Override
@@ -280,6 +282,38 @@ public class OrderRepository implements OrderDataSource {
             }
 
         }).start();
+    }
+
+    @Override
+    public void requestPayment(String offerJwt, final Callback<OrderConfirmation> callback) {
+        new ExternalEarnOrderCall(remoteData, blockchainSource, offerJwt, new ExternalEarnOrderCallbacks() {
+            @Override
+            public void onOrderCreated(OpenOrder openOrder) {
+                cacheAndSubmitOrder(openOrder);
+            }
+
+            @Override
+            public void onOrderConfirmed(String confirmationJwt) {
+                if (callback != null) {
+                    OrderConfirmation orderConfirmation = new OrderConfirmation();
+                    orderConfirmation.setStatus(StatusEnum.COMPLETED);
+                    orderConfirmation.setJwtConfirmation(confirmationJwt);
+                    callback.onResponse(orderConfirmation);
+                }
+            }
+
+            @Override
+            public void onOrderFailed(String msg) {
+                if (callback != null) {
+                    callback.onFailure(new TaskFailedException(msg));
+                }
+            }
+        });
+    }
+
+    private void cacheAndSubmitOrder(OpenOrder openOrder) {
+        cachedOpenOrder.postValue(openOrder);
+        submitOrder(openOrder.getOfferId(), null, openOrder.getId(), null);
     }
 
     @Override

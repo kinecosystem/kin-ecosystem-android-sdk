@@ -25,11 +25,14 @@ In order to create a native spend offer in your app
         // application fields
         offer: {
                 id: string; // offer id is decided by you (internal)
-                title: string; // offer title - appears in order history
-                description: string; // offer description - appears in order history
                 amount: number; // amount of kin for this offer - price
-                wallet_address: string; // address the client should send kin to to acquire this offer
-            }
+        }
+         
+        order: {
+               user_id: string; // user_id who will perform the order
+               title: string; // offer title - appears in order history
+               description: string; // offer description - appears in order history
+        }
     }
     ```
 ### Example from sample app
