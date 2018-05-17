@@ -5,9 +5,13 @@ import android.support.annotation.Nullable;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.data.model.OrderConfirmation;
+import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
+import com.kin.ecosystem.network.model.Order.Status;
 import com.kin.ecosystem.network.model.OrderList;
+import java.lang.ref.WeakReference;
 
 public interface OrderDataSource {
 
@@ -24,6 +28,8 @@ public interface OrderDataSource {
 
     ObservableData<OpenOrder> getOpenOrder();
 
+    void purchase(String offerJwt, @Nullable final Callback<OrderConfirmation> callback);
+
     void addCompletedOrderObserver(@NonNull final Observer<Order> observer);
 
     void removeCompletedOrderObserver(@NonNull final Observer<Order> observer);
@@ -31,6 +37,8 @@ public interface OrderDataSource {
     void isFirstSpendOrder(@NonNull final Callback<Boolean> callback);
 
     void setIsFirstSpendOrder(boolean isFirstSpendOrder);
+
+    void getExternalOrderStatus(@NonNull String offerID, @NonNull final Callback<OrderConfirmation> callback);
 
     interface Local {
 
@@ -50,5 +58,11 @@ public interface OrderDataSource {
         void cancelOrder(@NonNull final String orderID, final Callback<Void> callback);
 
         void getOrder(String orderID, Callback<Order> callback);
+
+        Order getOrderSync(String orderID);
+
+        OpenOrder createExternalOrderSync(String orderJwt) throws ApiException;
+
+        void getFilteredOrderHistory(@Nullable String origin, @NonNull String offerID, @NonNull final Callback<OrderList> callback);
     }
 }

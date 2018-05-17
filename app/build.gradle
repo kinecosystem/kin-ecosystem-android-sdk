@@ -1,4 +1,27 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        // These docs use an open ended version so that our plugin
+        // can be updated quickly in response to Android tooling updates
+
+        // We recommend changing it to the latest version from our changelog:
+        // https://docs.fabric.io/android/changelog.html#fabric-gradle-plugin
+        classpath 'io.fabric.tools:gradle:1.25.3'
+    }
+}
+
+
+
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
 
 android {
     compileSdkVersion 26
@@ -10,7 +33,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
-        versionName "1.0"
+        versionName "${SAMPLE_VERSION_NAME}"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -19,11 +42,18 @@ android {
         buildConfigField "String", "SAMPLE_API_KEY", credentialProperties.getProperty("API_KEY")
         buildConfigField "String", "RS512_PRIVATE_KEY", credentialProperties.getProperty("RS512_PRIVATE_KEY")
         buildConfigField "boolean", "IS_JWT_REGISTRATION", credentialProperties.getProperty("IS_JWT_REGISTRATION")
+        manifestPlaceholders = [crashlytics_api_key: credentialProperties.getProperty("CRASHLYTICS_API_KEY")]
     }
 
     buildTypes {
         release {
             minifyEnabled false
+        }
+    }
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "SampleApp-${variant.name}-${variant.versionName}.apk"
         }
     }
 }
@@ -32,9 +62,13 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     api project(':kin-ecosystem-sdk')
+    //implementation 'com.github.kinfoundation:kin-ecosystem-android-sdk:0.0.3'
     implementation 'io.jsonwebtoken:jjwt:0.9.0'
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
+        transitive = true;
+    }
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
@@ -42,25 +76,20 @@ dependencies {
 
 
 def loadCredential() {
+    def crashlytics_demo_api_key = "4b7647b5860d29039e16910e281fcf8d9cad21bb"
+    def default_app_id = '"test"'
+    def default_api_key = '"A2XEJTdN8hGiuUvg9VSHZ"'
+
+    ant.propertyfile(file: "credential.properties") {
+        entry(key: "APP_ID", default: System.getenv('APP_ID') ?: default_app_id)
+        entry(key: "API_KEY", default: System.getenv('API_KEY') ?: default_api_key)
+        entry(key: "RS512_PRIVATE_KEY", default: System.getenv('RS512_PRIVATE_KEY') ?: '"No JWT private key, please add credential.properties"')
+        entry(key: "IS_JWT_REGISTRATION", default: System.getenv('IS_JWT_REGISTRATION') ?:  "false")
+        entry(key: "CRASHLYTICS_API_KEY", default: System.getenv('CRASHLYTICS_API_KEY')  ?: crashlytics_demo_api_key)
+    }
     def credentialPropertiesFile = project.file("credential.properties")
     def credentialProperties = new Properties()
-
-    if (credentialPropertiesFile.exists()) {
-        credentialProperties.load(new FileInputStream(credentialPropertiesFile))
-    }
-
-    if (!credentialProperties.containsKey("APP_ID")) {
-        credentialProperties.put("APP_ID", '"No appId, please add credential.properties"')
-    }
-    if (!credentialProperties.containsKey("API_KEY")) {
-        credentialProperties.put("API_KEY", '"No apiKey, please add credential.properties"')
-    }
-    if (!credentialProperties.containsKey("RS512_PRIVATE_KEY")) {
-        credentialProperties.put("RS512_PRIVATE_KEY", '"No JWT private key, please add credential.properties"')
-    }
-    if (!credentialProperties.containsKey("IS_JWT_REGISTRATION")) {
-        credentialProperties.put("IS_JWT_REGISTRATION", "false")
-    }
+    credentialProperties.load(new FileInputStream(credentialPropertiesFile))
 
     ext.credentialProperties = credentialProperties
 }

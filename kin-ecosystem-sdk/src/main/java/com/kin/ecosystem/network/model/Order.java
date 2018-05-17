@@ -15,14 +15,11 @@ package com.kin.ecosystem.network.model;
 
 import static com.kin.ecosystem.util.StringUtil.toIndentedString;
 
-import java.util.Objects;
-
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
 import java.io.IOException;
 
 /**
@@ -31,16 +28,17 @@ import java.io.IOException;
 public class Order {
 
     @SerializedName("result")
-    private Object result = null;
+    @JsonAdapter(OrderSpendResult.Adapter.class)
+    private OrderSpendResult result = null;
 
     @SerializedName("content")
-    private String content;
+    private String content = null;
 
     /**
      * Gets or Sets status
      */
-    @JsonAdapter(StatusEnum.Adapter.class)
-    public enum StatusEnum {
+    @JsonAdapter(Status.Adapter.class)
+    public enum Status {
 
         PENDING("pending"),
         COMPLETED("completed"),
@@ -48,7 +46,7 @@ public class Order {
 
         private String value;
 
-        StatusEnum(String value) {
+        Status(String value) {
             this.value = value;
         }
 
@@ -61,8 +59,8 @@ public class Order {
             return String.valueOf(value);
         }
 
-        public static StatusEnum fromValue(String text) {
-            for (StatusEnum b : StatusEnum.values()) {
+        public static Status fromValue(String text) {
+            for (Status b : Status.values()) {
                 if (String.valueOf(b.value).equals(text)) {
                     return b;
                 }
@@ -70,23 +68,23 @@ public class Order {
             return null;
         }
 
-        public static class Adapter extends TypeAdapter<StatusEnum> {
+        public static class Adapter extends TypeAdapter<Status> {
 
             @Override
-            public void write(final JsonWriter jsonWriter, final StatusEnum enumeration) throws IOException {
+            public void write(final JsonWriter jsonWriter, final Status enumeration) throws IOException {
                 jsonWriter.value(enumeration.getValue());
             }
 
             @Override
-            public StatusEnum read(final JsonReader jsonReader) throws IOException {
+            public Status read(final JsonReader jsonReader) throws IOException {
                 String value = jsonReader.nextString();
-                return StatusEnum.fromValue(String.valueOf(value));
+                return Status.fromValue(String.valueOf(value));
             }
         }
     }
 
     @SerializedName("status")
-    private StatusEnum status = null;
+    private Status status = null;
     @SerializedName("id")
     private String orderId = null;
     @SerializedName("offer_id")
@@ -157,7 +155,7 @@ public class Order {
     @SerializedName("error")
     private Error error = null;
 
-    public Order result(Object result) {
+    public Order result(OrderSpendResult result) {
         this.result = result;
         return this;
     }
@@ -169,15 +167,15 @@ public class Order {
      *
      * @return result
      **/
-    public Object getResult() {
+    public OrderSpendResult getResult() {
         return result;
     }
 
-    public void setResult(Object result) {
+    public void setResult(OrderSpendResult result) {
         this.result = result;
     }
 
-    public Order status(StatusEnum status) {
+    public Order status(Status status) {
         this.status = status;
         return this;
     }
@@ -188,11 +186,11 @@ public class Order {
      *
      * @return status
      **/
-    public StatusEnum getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(StatusEnum status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -217,6 +215,11 @@ public class Order {
 
     public String getOfferId() {
         return offerId;
+    }
+
+    public Order offerId(String offerId) {
+        this.offerId = offerId;
+        return this;
     }
 
     public Order completionDate(String completionDate) {
@@ -369,15 +372,15 @@ public class Order {
             return false;
         }
         Order order = (Order) o;
-        return Objects.equals(this.orderId, order.orderId) &&
-            Objects.equals(this.offerId, order.offerId);
+        return this.orderId.equals(order.orderId);
     }
 
     @Override
     public int hashCode() {
-        return Objects
-            .hash(result, status, orderId, completionDate, blockchainData, offerType, title, description, callToAction,
-                amount);
+        return result.hashCode() + status.hashCode() +  orderId.hashCode() +
+            completionDate.hashCode() +  blockchainData.hashCode() +
+            offerType.hashCode() +  title.hashCode() +  description.hashCode() +
+            callToAction.hashCode() + amount.hashCode();
     }
 
     @Override

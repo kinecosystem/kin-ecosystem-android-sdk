@@ -10,18 +10,19 @@ import android.widget.Toast;
 import com.chad.library.adapter.base.BaseRecyclerAdapter;
 import com.chad.library.adapter.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.R;
-
 import com.kin.ecosystem.base.BaseToolbarActivity;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderRepository;
+import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.history.view.OrderHistoryActivity;
 import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter;
 import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
 import com.kin.ecosystem.marketplace.presenter.MarketplacePresenter;
 import com.kin.ecosystem.network.model.Offer;
-import com.kin.ecosystem.network.model.Offer.OfferTypeEnum;
+import com.kin.ecosystem.network.model.Offer.OfferType;
 import com.kin.ecosystem.poll.view.PollWebViewActivity;
+import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
 import java.util.List;
 
 
@@ -31,6 +32,7 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
 
     private SpendRecyclerAdapter spendRecyclerAdapter;
     private EarnRecyclerAdapter earnRecyclerAdapter;
+    private OffersEmptyView offersEmptyView;
 
     @Override
     protected int getLayoutRes() {
@@ -87,12 +89,12 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
         RecyclerView spendRecycler = findViewById(R.id.spend_recycler);
         spendRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         spendRecycler.addItemDecoration(itemDecoration);
-        spendRecyclerAdapter = new SpendRecyclerAdapter();
+        spendRecyclerAdapter = new SpendRecyclerAdapter(this);
         spendRecyclerAdapter.bindToRecyclerView(spendRecycler);
         spendRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
-                marketplacePresenter.onItemClicked(position, OfferTypeEnum.SPEND);
+                marketplacePresenter.onItemClicked(position, OfferType.SPEND);
             }
         });
 
@@ -100,12 +102,12 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
         RecyclerView earnRecycler = findViewById(R.id.earn_recycler);
         earnRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         earnRecycler.addItemDecoration(itemDecoration);
-        earnRecyclerAdapter = new EarnRecyclerAdapter();
+        earnRecyclerAdapter = new EarnRecyclerAdapter(this);
         earnRecyclerAdapter.bindToRecyclerView(earnRecycler);
         earnRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
-                marketplacePresenter.onItemClicked(position, OfferTypeEnum.EARN);
+                marketplacePresenter.onItemClicked(position, OfferType.EARN);
             }
         });
 
@@ -140,8 +142,12 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     }
 
     @Override
-    public void showOfferActivity(String content, String offerID) {
-        navigateToActivity(PollWebViewActivity.createIntent(this, content, offerID));
+    public void showOfferActivity(PollBundle pollBundle) {
+        try {
+            navigateToActivity(PollWebViewActivity.createIntent(this, pollBundle));
+        } catch (TaskFailedException e) {
+            marketplacePresenter.showOfferActivityFailed();
+        }
     }
 
     @Override
@@ -173,6 +179,29 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     @Override
     public void notifySpendItemInserted(int index) {
         spendRecyclerAdapter.notifyItemInserted(index);
+    }
+
+    @Override
+    public void showSomethingWentWrong() {
+        showToast(getString(R.string.something_went_wrong));
+    }
+
+    @Override
+    public void setEarnEmptyView() {
+        earnRecyclerAdapter.setEmptyView(getOffersEmptyView());
+    }
+
+
+    @Override
+    public void setSpendEmptyView() {
+        spendRecyclerAdapter.setEmptyView(getOffersEmptyView());
+    }
+
+    private OffersEmptyView getOffersEmptyView() {
+        if (offersEmptyView == null) {
+            offersEmptyView = new OffersEmptyView(this);
+        }
+        return offersEmptyView;
     }
 
     @Override

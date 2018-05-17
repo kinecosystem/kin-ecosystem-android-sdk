@@ -3,15 +3,15 @@ package com.kin.ecosystem;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
+import android.support.annotation.Nullable;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.auth.AuthLocalData;
 import com.kin.ecosystem.data.auth.AuthRemoteData;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
+import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.offer.OfferRemoteData;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderLocalData;
@@ -19,8 +19,8 @@ import com.kin.ecosystem.data.order.OrderRemoteData;
 import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.exception.TaskFailedException;
+import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
-import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.splash.view.SplashViewActivity;
 import com.kin.ecosystem.util.DeviceUtils;
@@ -47,7 +47,7 @@ public class Kin {
         return instance;
     }
 
-    public static void start(@NonNull Context appContext, @NonNull SignInData signInData)
+    public static Kin start(@NonNull Context appContext, @NonNull SignInData signInData)
         throws InitializeException {
         instance = getInstance();
         appContext = appContext.getApplicationContext(); // use application context to avoid leaks.
@@ -57,6 +57,7 @@ public class Kin {
         initOfferRepository();
         initOrderRepository(appContext);
         setAppID();
+        return instance;
     }
 
     private static void setAppID() {
@@ -76,13 +77,12 @@ public class Kin {
         BlockchainSource.init(context);
     }
 
-
     private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
         throws InitializeException {
         String publicAddress = null;
         try {
             publicAddress = getPublicAddress();
-            signInData.setPublicAddress(publicAddress);
+            signInData.setWalletAddress(publicAddress);
             AuthRepository.init(signInData, AuthLocalData.getInstance(context, instance.executorsUtil),
                 AuthRemoteData.getInstance(instance.executorsUtil));
         } catch (TaskFailedException e) {
@@ -97,7 +97,8 @@ public class Kin {
 
     private static void initOrderRepository(@NonNull final Context context) {
         OrderRepository.init(BlockchainSource.getInstance(), OfferRepository.getInstance(),
-            OrderRemoteData.getInstance(instance.executorsUtil), OrderLocalData.getInstance(context, instance.executorsUtil));
+            OrderRemoteData.getInstance(instance.executorsUtil),
+            OrderLocalData.getInstance(context, instance.executorsUtil));
     }
 
     private static void checkInstanceNotNull() throws TaskFailedException {
@@ -134,5 +135,77 @@ public class Kin {
     public static void getBalance(@NonNull final Callback<Integer> callback) throws TaskFailedException {
         checkInstanceNotNull();
         BlockchainSource.getInstance().getBalance(callback);
+    }
+
+    /**
+     * Allowing your users to purchase virtual goods you define within your app, using KIN.
+     * This call might take time, due to transaction validation on the blockchain network.
+     *
+     * @param offerJwt Represents the offer in a JWT manner.
+     * @param callback Confirmation callback, the result will be a failure or a succeed with a jwt confirmation.
+     * @throws TaskFailedException
+     */
+    public static void purchase(String offerJwt, @Nullable Callback<OrderConfirmation> callback) throws TaskFailedException {
+        checkInstanceNotNull();
+        OrderRepository.getInstance().purchase(offerJwt, callback);
+    }
+
+    /**
+     * Returns a {@link OrderConfirmation}, with the order status and a jwtConfirmation if the order is completed.
+     *
+     * @param offerID The offerID that this order created from
+     * @param callback
+     * @throws TaskFailedException
+     */
+    public static void getOrderConfirmation(@NonNull String offerID, @NonNull Callback<OrderConfirmation> callback)
+        throws TaskFailedException {
+        checkInstanceNotNull();
+        OrderRepository.getInstance().getExternalOrderStatus(offerID, callback);
+    }
+
+    /**
+     * Add a native offer {@link Observer} to receive a trigger when you native offers on Kin Marketplace are clicked.
+     *
+     * @param observer
+     * @throws TaskFailedException
+     */
+    public static void addNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer) throws TaskFailedException {
+        checkInstanceNotNull();
+        OfferRepository.getInstance().addNativeOfferClickedObserver(observer);
+    }
+
+    /**
+     * Remove the callback if you no longer want to get triggered when your offer on Kin marketplace are clicked.
+     * @throws TaskFailedException
+     */
+    public static void removeNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer)
+        throws TaskFailedException {
+        checkInstanceNotNull();
+        OfferRepository.getInstance().removeNativeOfferClickedObserver(observer);
+    }
+
+    /**
+     * Adds an {@link NativeSpendOffer} to spend offer list on Kin Marketplace activity.
+     * The offer will be added at index 0 in the spend list.
+     *
+     * @param nativeSpendOffer The spend offer you want to add to the spend list.
+     * @return true if the offer added successfully, the list was changed.
+     * @throws TaskFailedException Could not add the offer to the list.
+     */
+    public static boolean addNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer) throws TaskFailedException {
+        checkInstanceNotNull();
+        return OfferRepository.getInstance().addNativeOffer(nativeSpendOffer);
+    }
+
+    /**
+     * Removes a {@link NativeSpendOffer} from the spend list on Kin Marketplace activity.
+     *
+     * @param nativeSpendOffer The spend offer you want to remove from the spend list.
+     * @return true if the offer removed successfully, the list was changed.
+     * @throws TaskFailedException Could not remove the offer from the list.
+     */
+    public static boolean removeNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer) throws TaskFailedException {
+        checkInstanceNotNull();
+        return OfferRepository.getInstance().removeNativeOffer(nativeSpendOffer);
     }
 }

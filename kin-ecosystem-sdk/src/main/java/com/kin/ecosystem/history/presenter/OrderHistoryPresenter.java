@@ -8,16 +8,15 @@ import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.IBottomDialogPresenter;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.model.Coupon;
-import com.kin.ecosystem.data.model.Coupon.CouponCode;
 import com.kin.ecosystem.data.model.Coupon.CouponInfo;
 import com.kin.ecosystem.data.order.OrderDataSource;
 import com.kin.ecosystem.history.view.ICouponDialog;
 import com.kin.ecosystem.history.view.IOrderHistoryView;
+import com.kin.ecosystem.network.model.CouponCodeResult;
 import com.kin.ecosystem.network.model.Order;
-import com.kin.ecosystem.network.model.Order.StatusEnum;
+import com.kin.ecosystem.network.model.Order.Status;
 import com.kin.ecosystem.network.model.OrderList;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> implements IOrderHistoryPresenter {
@@ -86,15 +85,17 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
     }
 
     private void setOrderHistoryList(List<Order> orders) {
-        this.orderHistoryList = orders;
-        this.view.updateOrderHistoryList(orderHistoryList);
+        orderHistoryList = orders;
+        if (view != null) {
+            view.updateOrderHistoryList(orderHistoryList);
+        }
     }
 
     private List<Order> removePendingOrders(OrderList orderListObj) {
         List<Order> orderList = new ArrayList<>();
         if (orderListObj != null && orderListObj.getOrders() != null) {
             for (Order order : orderListObj.getOrders()) {
-                if (order.getStatus() != StatusEnum.PENDING) {
+                if (order.getStatus() != Status.PENDING) {
                     orderList.add(order);
                 }
             }
@@ -160,8 +161,13 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
     private Coupon deserializeCoupon(Order order) {
         try {
             CouponInfo couponInfo = gson.fromJson(order.getContent(), CouponInfo.class);
-            CouponCode couponCode = gson.fromJson(order.getResult().toString(), CouponCode.class);
-            return new Coupon(couponInfo, couponCode);
+            CouponCodeResult couponCodeResult = (CouponCodeResult)order.getResult();
+            if(couponCodeResult.getCode() != null) {
+                return new Coupon(couponInfo, couponCodeResult);
+            }
+            else {
+                return null;
+            }
         } catch (Exception t) {
             return null;
         }
@@ -175,6 +181,5 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 
     private void release() {
         orderRepository.removeCompletedOrderObserver(completedOrderObserver);
-        orderHistoryList = null;
     }
 }

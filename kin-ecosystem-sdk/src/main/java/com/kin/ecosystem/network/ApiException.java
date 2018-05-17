@@ -13,15 +13,24 @@
 
 package com.kin.ecosystem.network;
 
+import com.kin.ecosystem.network.model.Error;
 import java.util.List;
 import java.util.Map;
 
 public class ApiException extends Exception {
+
+    private static int CODE_INTERNAL = 1;
+    private static String MSG_INTERNAL = "internal error";
+
     private int code = 0;
     private Map<String, List<String>> responseHeaders = null;
-    private String responseBody = null;
+    private Error responseBody = null;
 
-    public ApiException() {}
+    public ApiException() {
+        this.code = CODE_INTERNAL;
+        this.responseBody = new Error(MSG_INTERNAL, MSG_INTERNAL, CODE_INTERNAL);
+
+    }
 
     public ApiException(Throwable throwable) {
         super(throwable);
@@ -31,14 +40,15 @@ public class ApiException extends Exception {
         super(message);
     }
 
-    public ApiException(String message, Throwable throwable, int code, Map<String, List<String>> responseHeaders, String responseBody) {
+    public ApiException(String message, Throwable throwable, int code, Map<String, List<String>> responseHeaders,
+        Error responseBody) {
         super(message, throwable);
         this.code = code;
         this.responseHeaders = responseHeaders;
         this.responseBody = responseBody;
     }
 
-    public ApiException(String message, int code, Map<String, List<String>> responseHeaders, String responseBody) {
+    public ApiException(String message, int code, Map<String, List<String>> responseHeaders, Error responseBody) {
         this(message, (Throwable) null, code, responseHeaders, responseBody);
     }
 
@@ -46,7 +56,7 @@ public class ApiException extends Exception {
         this(message, throwable, code, responseHeaders, null);
     }
 
-    public ApiException(int code, Map<String, List<String>> responseHeaders, String responseBody) {
+    public ApiException(int code, Map<String, List<String>> responseHeaders, Error responseBody) {
         this((String) null, (Throwable) null, code, responseHeaders, responseBody);
     }
 
@@ -55,7 +65,7 @@ public class ApiException extends Exception {
         this.code = code;
     }
 
-    public ApiException(int code, String message, Map<String, List<String>> responseHeaders, String responseBody) {
+    public ApiException(int code, String message, Map<String, List<String>> responseHeaders, Error responseBody) {
         this(code, message);
         this.responseHeaders = responseHeaders;
         this.responseBody = responseBody;
@@ -84,7 +94,7 @@ public class ApiException extends Exception {
      *
      * @return Response body in the form of string
      */
-    public String getResponseBody() {
+    public Error getResponseBody() {
         return responseBody;
     }
 }

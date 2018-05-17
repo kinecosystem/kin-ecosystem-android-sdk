@@ -19,7 +19,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/KinecosysNoActionBar"/>
         <activity
-            android:label="@string/answer_a_poll"
             android:name=".poll.view.PollWebViewActivity"
             android:screenOrientation="portrait"
             android:theme="@style/KinecosysNoActionBar"/>

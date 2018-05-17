@@ -12,7 +12,7 @@ public class Payment {
     private String orderID;
 
     /**
-     * The transaction id on blockchain, could be null if the transaction failed.
+     * The transaction id on the blockchain, could be null if the transaction failed.
      */
     private String transactionID;
 
@@ -24,7 +24,7 @@ public class Payment {
     /**
      * Result message:
      *      success - Payment with {@code transactionID}: succeeded
-     *      failed - An error message from Stellar network.
+     *      failed - An error message from the network.
      */
     private String resultMessage;
 

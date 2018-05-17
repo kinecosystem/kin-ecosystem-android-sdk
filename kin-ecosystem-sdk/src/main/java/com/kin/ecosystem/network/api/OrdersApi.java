@@ -21,6 +21,7 @@ import com.kin.ecosystem.network.Pair;
 import com.kin.ecosystem.network.ProgressRequestBody;
 import com.kin.ecosystem.network.ProgressResponseBody;
 import com.kin.ecosystem.network.model.EarnSubmission;
+import com.kin.ecosystem.network.model.ExternalOrderRequest;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.OrderList;
@@ -202,6 +203,146 @@ public class OrdersApi {
     }
 
     /**
+     * Build call for createExternalOrder
+     * @param externalorderrequest  (required)
+     * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
+     * @param progressListener Progress listener
+     * @param progressRequestListener Progress request listener
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+
+     */
+    public Call createExternalOrderCall(ExternalOrderRequest externalorderrequest, String X_REQUEST_ID,
+        final ProgressResponseBody.ProgressListener progressListener,
+        final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+        Object localVarPostBody = externalorderrequest;
+
+        // create path and map variables
+        String localVarPath = "/offers/external/orders";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        if (X_REQUEST_ID != null)
+            localVarHeaderParams.put("X-REQUEST-ID", apiClient.parameterToString(X_REQUEST_ID));
+
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json","application/json"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) localVarHeaderParams.put("Accept", localVarAccept);
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+        localVarHeaderParams.put("Content-Type", localVarContentType);
+
+        if(progressListener != null) {
+            apiClient.addNetworkInterceptor(new Interceptor() {
+                @Override
+                public Response intercept(Interceptor.Chain chain) throws IOException {
+                    Response originalResponse = chain.proceed(chain.request());
+                    return originalResponse.newBuilder()
+                        .body(new ProgressResponseBody(originalResponse.body(), progressListener))
+                        .build();
+                }
+            });
+        }
+
+        String[] localVarAuthNames = new String[] {};
+        return apiClient.buildCall(localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private Call createExternalOrderValidateBeforeCall(ExternalOrderRequest externalorderrequest, String X_REQUEST_ID, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+
+
+        // verify the required parameter 'externalorderrequest' is set
+        if (externalorderrequest == null) {
+            throw new ApiException("Missing the required parameter 'externalorderrequest' when calling createExternalOrder(Async)");
+        }
+
+        // verify the required parameter 'X_REQUEST_ID' is set
+        if (X_REQUEST_ID == null) {
+            throw new ApiException("Missing the required parameter 'X_REQUEST_ID' when calling createExternalOrder(Async)");
+        }
+
+
+        Call call = createExternalOrderCall(externalorderrequest, X_REQUEST_ID, progressListener, progressRequestListener);
+        return call;
+    }
+
+    /**
+     * create an external order for a native offer
+     * create an external order for a native offer
+     * @param externalorderrequest  (required)
+     * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
+     * @return OpenOrder
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+
+     */
+    public OpenOrder createExternalOrder(ExternalOrderRequest externalorderrequest, String X_REQUEST_ID) throws ApiException {
+        ApiResponse<OpenOrder> resp = createExternalOrderWithHttpInfo(externalorderrequest, X_REQUEST_ID);
+        return resp.getData();
+    }
+
+    /**
+     * create an external order for a native offer
+     * create an external order for a native offer
+     * @param externalorderrequest  (required)
+     * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
+     * @return ApiResponse&lt;OpenOrder&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+
+     */
+    public ApiResponse<OpenOrder> createExternalOrderWithHttpInfo(ExternalOrderRequest externalorderrequest, String X_REQUEST_ID) throws ApiException {
+        Call call = createExternalOrderValidateBeforeCall(externalorderrequest, X_REQUEST_ID, null, null);
+        Type localVarReturnType = new TypeToken<OpenOrder>(){}.getType();
+        return apiClient.execute(call, localVarReturnType);
+    }
+
+    /**
+     * create an external order for a native offer (asynchronously)
+     * create an external order for a native offer
+     * @param externalorderrequest  (required)
+     * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
+     * @param callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+
+     */
+    public Call createExternalOrderAsync(ExternalOrderRequest externalorderrequest, String X_REQUEST_ID, final ApiCallback<OpenOrder> callback) throws ApiException {
+
+        ProgressResponseBody.ProgressListener progressListener = null;
+        ProgressRequestBody.ProgressRequestListener progressRequestListener = null;
+
+        if (callback != null) {
+            progressListener = new ProgressResponseBody.ProgressListener() {
+                @Override
+                public void update(long bytesRead, long contentLength, boolean done) {
+                    callback.onDownloadProgress(bytesRead, contentLength, done);
+                }
+            };
+
+            progressRequestListener = new ProgressRequestBody.ProgressRequestListener() {
+                @Override
+                public void onRequestProgress(long bytesWritten, long contentLength, boolean done) {
+                    callback.onUploadProgress(bytesWritten, contentLength, done);
+                }
+            };
+        }
+
+        Call call = createExternalOrderValidateBeforeCall(externalorderrequest, X_REQUEST_ID, progressListener, progressRequestListener);
+        Type localVarReturnType = new TypeToken<OpenOrder>(){}.getType();
+        apiClient.executeAsync(call, localVarReturnType, callback);
+        return call;
+    }
+
+    /**
      * Build call for createOrder
      *
      * @param offerId The offer id (required)
@@ -279,8 +420,6 @@ public class OrdersApi {
 
         Call call = createOrderCall(offerId, X_REQUEST_ID, progressListener, progressRequestListener);
         return call;
-
-
     }
 
     /**
@@ -356,6 +495,8 @@ public class OrdersApi {
      * Build call for getHistory
      *
      * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
+     * @param origin filter by origin (optional)
+     * @param offerId filter by offer_id (optional)
      * @param limit maximum number of items in a list (optional)
      * @param before cursor that points to the start of the page of data that has been returned (optional)
      * @param after cursor that points to the end of the page of data that has been returned (optional)
@@ -364,7 +505,7 @@ public class OrdersApi {
      * @return Call to execute
      * @throws ApiException If fail to serialize the request body object
      */
-    public Call getHistoryCall(String X_REQUEST_ID, Integer limit, String before, String after,
+    public Call getHistoryCall(String X_REQUEST_ID, String origin, String offerId, Integer limit, String before, String after,
         final ProgressResponseBody.ProgressListener progressListener,
         final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
         Object localVarPostBody = null;
@@ -374,6 +515,12 @@ public class OrdersApi {
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
         List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        if (origin != null) {
+            localVarQueryParams.addAll(apiClient.parameterToPair("origin", origin));
+        }
+        if (offerId != null) {
+            localVarQueryParams.addAll(apiClient.parameterToPair("offerId", offerId));
+        }
         if (limit != null) {
             localVarQueryParams.addAll(apiClient.parameterToPair("limit", limit));
         }
@@ -424,7 +571,7 @@ public class OrdersApi {
     }
 
     @SuppressWarnings("rawtypes")
-    private Call getHistoryValidateBeforeCall(String X_REQUEST_ID, Integer limit, String before, String after,
+    private Call getHistoryValidateBeforeCall(String X_REQUEST_ID, String origin, String offerId, Integer limit, String before, String after,
         final ProgressResponseBody.ProgressListener progressListener,
         final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
 
@@ -433,7 +580,7 @@ public class OrdersApi {
             throw new ApiException("Missing the required parameter 'X_REQUEST_ID' when calling getHistory(Async)");
         }
 
-        Call call = getHistoryCall(X_REQUEST_ID, limit, before, after, progressListener, progressRequestListener);
+        Call call = getHistoryCall(X_REQUEST_ID, origin, offerId, limit, before, after, progressListener, progressRequestListener);
         return call;
 
 
@@ -444,14 +591,16 @@ public class OrdersApi {
      * get user order history
      *
      * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
+     * @param origin filter by origin (optional)
+     * @param offerId filter by offer_id (optional)
      * @param limit maximum number of items in a list (optional)
      * @param before cursor that points to the start of the page of data that has been returned (optional)
      * @param after cursor that points to the end of the page of data that has been returned (optional)
      * @return OrderList
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public OrderList getHistory(String X_REQUEST_ID, Integer limit, String before, String after) throws ApiException {
-        ApiResponse<OrderList> resp = getHistoryWithHttpInfo(X_REQUEST_ID, limit, before, after);
+    public OrderList getHistory(String X_REQUEST_ID, String origin, String offerId, Integer limit, String before, String after) throws ApiException {
+        ApiResponse<OrderList> resp = getHistoryWithHttpInfo(X_REQUEST_ID, origin, offerId, limit, before, after);
         return resp.getData();
     }
 
@@ -460,15 +609,17 @@ public class OrdersApi {
      * get user order history
      *
      * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
+     * @param origin filter by origin (optional)
+     * @param offerId filter by offer_id (optional)
      * @param limit maximum number of items in a list (optional)
      * @param before cursor that points to the start of the page of data that has been returned (optional)
      * @param after cursor that points to the end of the page of data that has been returned (optional)
      * @return ApiResponse&lt;OrderList&gt;
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public ApiResponse<OrderList> getHistoryWithHttpInfo(String X_REQUEST_ID, Integer limit, String before,
+    public ApiResponse<OrderList> getHistoryWithHttpInfo(String X_REQUEST_ID, String origin, String offerId, Integer limit, String before,
         String after) throws ApiException {
-        Call call = getHistoryValidateBeforeCall(X_REQUEST_ID, limit, before, after, null, null);
+        Call call = getHistoryValidateBeforeCall(X_REQUEST_ID, origin, offerId, limit, before, after, null, null);
         Type localVarReturnType = new TypeToken<OrderList>() {
         }.getType();
         return apiClient.execute(call, localVarReturnType);
@@ -479,6 +630,8 @@ public class OrdersApi {
      * get user order history
      *
      * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
+     * @param origin filter by origin (optional)
+     * @param offerId filter by offer_id (optional)
      * @param limit maximum number of items in a list (optional)
      * @param before cursor that points to the start of the page of data that has been returned (optional)
      * @param after cursor that points to the end of the page of data that has been returned (optional)
@@ -486,7 +639,7 @@ public class OrdersApi {
      * @return The request call
      * @throws ApiException If fail to process the API call, e.g. serializing the request body object
      */
-    public Call getHistoryAsync(String X_REQUEST_ID, Integer limit, String before, String after,
+    public Call getHistoryAsync(String X_REQUEST_ID, String origin, String offerId, Integer limit, String before, String after,
         final ApiCallback<OrderList> callback) throws ApiException {
 
         ProgressResponseBody.ProgressListener progressListener = null;
@@ -508,7 +661,7 @@ public class OrdersApi {
             };
         }
 
-        Call call = getHistoryValidateBeforeCall(X_REQUEST_ID, limit, before, after, progressListener,
+        Call call = getHistoryValidateBeforeCall(X_REQUEST_ID, origin, offerId, limit, before, after, progressListener,
             progressRequestListener);
         Type localVarReturnType = new TypeToken<OrderList>() {
         }.getType();

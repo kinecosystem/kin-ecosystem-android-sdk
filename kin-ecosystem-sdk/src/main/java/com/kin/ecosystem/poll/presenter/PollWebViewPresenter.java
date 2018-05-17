@@ -16,24 +16,39 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 
     private final String pollJsonString;
     private final String offerID;
+    private final String title;
 
     private Observer<OpenOrder> openOrderObserver;
     private OpenOrder openOrder;
     private boolean isOrderSubmitted = false;
 
     public PollWebViewPresenter(@NonNull final String pollJsonString, @NonNull final String offerID,
-        @NonNull final OrderDataSource orderRepository) {
+        String title, @NonNull final OrderDataSource orderRepository) {
         this.pollJsonString = pollJsonString;
         this.offerID = offerID;
+        this.title = title;
         this.orderRepository = orderRepository;
     }
 
     @Override
     public void onAttach(IPollWebView view) {
         super.onAttach(view);
-        view.loadUrl();
+        loadUrl();
+        setTitle(title);
         listenToOpenOrders();
         createOrder();
+    }
+
+    private void loadUrl() {
+        if (view != null) {
+            view.loadUrl();
+        }
+    }
+
+    private void setTitle(String title) {
+        if (view != null) {
+            view.setTitle(title);
+        }
     }
 
     private void createOrder() {
@@ -110,7 +125,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 
     @Override
     public void onPageClosed() {
-       closeView();
+        closeView();
     }
 
     private void listenToOpenOrders() {

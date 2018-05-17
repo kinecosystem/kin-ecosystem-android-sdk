@@ -28,6 +28,12 @@ public class Error {
     @SerializedName("code")
     private Integer code = null;
 
+    public Error(String error, String message, Integer code) {
+        this.error = error;
+        this.message = message;
+        this.code = code;
+    }
+
     public Error error(String error) {
         this.error = error;
         return this;
