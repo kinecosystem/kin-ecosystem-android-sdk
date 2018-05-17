@@ -34,6 +34,7 @@ public class JwtUtil {
 
     private static final String JWT = "jwt";
 
+    private static String lastNativeSpendOfferID;
 
     public static String generateSignInExampleJWT(String appID, String userId) {
         String jwt = getBasicJWT(appID)
@@ -88,11 +89,16 @@ public class JwtUtil {
 
     private static JWTSpendOffer createSpendOfferExampleObject() {
         int randomID = new Random().nextInt((9999 - 1) + 1) + 1;
-        return new JWTSpendOffer(String.valueOf(randomID),
+        lastNativeSpendOfferID = String.valueOf(randomID);
+        return new JWTSpendOffer(lastNativeSpendOfferID,
             "NativeSpend",
             "Bought a sticker",
             10,
             "GDSXU3DVE3M3CTWXGN3DOLJHRDQLII3WV3GUGK5ZDQGWWDHKJFHRVGNB");
+    }
+
+    public static String getLastNativeSpendOfferID() {
+        return lastNativeSpendOfferID;
     }
 
     private static class JWTSpendOffer {

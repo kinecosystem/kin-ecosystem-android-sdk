@@ -20,7 +20,7 @@ import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter;
 import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
 import com.kin.ecosystem.marketplace.presenter.MarketplacePresenter;
 import com.kin.ecosystem.network.model.Offer;
-import com.kin.ecosystem.network.model.Offer.OfferTypeEnum;
+import com.kin.ecosystem.network.model.Offer.OfferType;
 import com.kin.ecosystem.poll.view.PollWebViewActivity;
 import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
 import java.util.List;
@@ -94,7 +94,7 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
         spendRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
-                marketplacePresenter.onItemClicked(position, OfferTypeEnum.SPEND);
+                marketplacePresenter.onItemClicked(position, OfferType.SPEND);
             }
         });
 
@@ -107,7 +107,7 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
         earnRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
-                marketplacePresenter.onItemClicked(position, OfferTypeEnum.EARN);
+                marketplacePresenter.onItemClicked(position, OfferType.EARN);
             }
         });
 

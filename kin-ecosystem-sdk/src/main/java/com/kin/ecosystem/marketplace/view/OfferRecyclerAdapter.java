@@ -5,20 +5,15 @@ import static com.kin.ecosystem.util.StringUtil.getAmountFormatted;
 
 import android.content.Context;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import com.chad.library.adapter.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
-
 import com.kin.ecosystem.marketplace.view.OfferRecyclerAdapter.ViewHolder;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.Offer.ContentTypeEnum;
-import com.kin.ecosystem.network.model.Offer.OfferTypeEnum;
+import com.kin.ecosystem.network.model.Offer.OfferType;
 import com.kin.ecosystem.util.DeviceUtils;
-import java.util.List;
 
 class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
 
@@ -77,14 +72,14 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
             setText(R.id.sub_title, item.getDescription());
             setAmountText(item);
 
-            if (item.getOfferType() == OfferTypeEnum.EARN && item.getContentType() == ContentTypeEnum.POLL) {
+            if (item.getOfferType() == OfferType.EARN && item.getContentType() == ContentTypeEnum.POLL) {
                 setOnItemClickListener(getOnItemClickListener());
             }
         }
 
         private void setAmountText(final Offer item) {
             int amount = item.getAmount();
-            if (item.getOfferType() == OfferTypeEnum.EARN) {
+            if (item.getOfferType() == OfferType.EARN) {
                 setText(R.id.amount_text, "+" + getAmountFormatted(amount) + KIN);
             } else {
                 setText(R.id.amount_text, getAmountFormatted(amount) + KIN);

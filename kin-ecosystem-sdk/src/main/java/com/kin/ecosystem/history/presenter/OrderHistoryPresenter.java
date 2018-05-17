@@ -14,7 +14,7 @@ import com.kin.ecosystem.history.view.ICouponDialog;
 import com.kin.ecosystem.history.view.IOrderHistoryView;
 import com.kin.ecosystem.network.model.CouponCodeResult;
 import com.kin.ecosystem.network.model.Order;
-import com.kin.ecosystem.network.model.Order.StatusEnum;
+import com.kin.ecosystem.network.model.Order.Status;
 import com.kin.ecosystem.network.model.OrderList;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,15 +85,17 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
     }
 
     private void setOrderHistoryList(List<Order> orders) {
-        this.orderHistoryList = orders;
-        this.view.updateOrderHistoryList(orderHistoryList);
+        orderHistoryList = orders;
+        if (view != null) {
+            view.updateOrderHistoryList(orderHistoryList);
+        }
     }
 
     private List<Order> removePendingOrders(OrderList orderListObj) {
         List<Order> orderList = new ArrayList<>();
         if (orderListObj != null && orderListObj.getOrders() != null) {
             for (Order order : orderListObj.getOrders()) {
-                if (order.getStatus() != StatusEnum.PENDING) {
+                if (order.getStatus() != Status.PENDING) {
                     orderList.add(order);
                 }
             }

@@ -37,8 +37,8 @@ public class Order {
     /**
      * Gets or Sets status
      */
-    @JsonAdapter(StatusEnum.Adapter.class)
-    public enum StatusEnum {
+    @JsonAdapter(Status.Adapter.class)
+    public enum Status {
 
         PENDING("pending"),
         COMPLETED("completed"),
@@ -46,7 +46,7 @@ public class Order {
 
         private String value;
 
-        StatusEnum(String value) {
+        Status(String value) {
             this.value = value;
         }
 
@@ -59,8 +59,8 @@ public class Order {
             return String.valueOf(value);
         }
 
-        public static StatusEnum fromValue(String text) {
-            for (StatusEnum b : StatusEnum.values()) {
+        public static Status fromValue(String text) {
+            for (Status b : Status.values()) {
                 if (String.valueOf(b.value).equals(text)) {
                     return b;
                 }
@@ -68,23 +68,23 @@ public class Order {
             return null;
         }
 
-        public static class Adapter extends TypeAdapter<StatusEnum> {
+        public static class Adapter extends TypeAdapter<Status> {
 
             @Override
-            public void write(final JsonWriter jsonWriter, final StatusEnum enumeration) throws IOException {
+            public void write(final JsonWriter jsonWriter, final Status enumeration) throws IOException {
                 jsonWriter.value(enumeration.getValue());
             }
 
             @Override
-            public StatusEnum read(final JsonReader jsonReader) throws IOException {
+            public Status read(final JsonReader jsonReader) throws IOException {
                 String value = jsonReader.nextString();
-                return StatusEnum.fromValue(String.valueOf(value));
+                return Status.fromValue(String.valueOf(value));
             }
         }
     }
 
     @SerializedName("status")
-    private StatusEnum status = null;
+    private Status status = null;
     @SerializedName("id")
     private String orderId = null;
     @SerializedName("offer_id")
@@ -175,7 +175,7 @@ public class Order {
         this.result = result;
     }
 
-    public Order status(StatusEnum status) {
+    public Order status(Status status) {
         this.status = status;
         return this;
     }
@@ -186,11 +186,11 @@ public class Order {
      *
      * @return status
      **/
-    public StatusEnum getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(StatusEnum status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

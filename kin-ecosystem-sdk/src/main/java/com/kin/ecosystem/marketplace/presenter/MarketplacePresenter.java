@@ -13,9 +13,11 @@ import com.kin.ecosystem.data.blockchain.IBlockchainSource;
 import com.kin.ecosystem.data.offer.OfferDataSource;
 import com.kin.ecosystem.data.order.OrderDataSource;
 import com.kin.ecosystem.data.order.OrderRepository;
+import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.marketplace.view.IMarketplaceView;
 import com.kin.ecosystem.network.model.Offer;
-import com.kin.ecosystem.network.model.Offer.OfferTypeEnum;
+import com.kin.ecosystem.network.model.Offer.ContentTypeEnum;
+import com.kin.ecosystem.network.model.Offer.OfferType;
 import com.kin.ecosystem.network.model.OfferInfo;
 import com.kin.ecosystem.network.model.OfferList;
 import com.kin.ecosystem.network.model.Order;
@@ -86,7 +88,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
     private void removeOfferFromList(Offer offer) {
         int index;
-        if (offer.getOfferType() == OfferTypeEnum.EARN) {
+        if (offer.getOfferType() == OfferType.EARN) {
             index = earnList.indexOf(offer);
             if (index != NOT_FOUND) {
                 earnList.remove(index);
@@ -113,7 +115,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
     }
 
     private void setSpendEmptyViewIfNeeded() {
-        if(spendList.size() == 0) {
+        if (spendList.size() == 0) {
             if (view != null) {
                 view.setSpendEmptyView();
             }
@@ -176,15 +178,17 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             List<Offer> newSpendOffers = new ArrayList<>();
 
             splitOffersByType(offerList.getOffers(), newEarnOffers, newSpendOffers);
-            syncList(newEarnOffers, earnList, OfferTypeEnum.EARN);
-            syncList(newSpendOffers, spendList, OfferTypeEnum.SPEND);
+
+            syncList(newEarnOffers, earnList, OfferType.EARN);
+            syncList(newSpendOffers, spendList, OfferType.SPEND);
 
             setEarnEmptyViewIfNeeded();
             setSpendEmptyViewIfNeeded();
+
         }
     }
 
-    private void syncList(List<Offer> newList, List<Offer> oldList, OfferTypeEnum offerType) {
+    private void syncList(List<Offer> newList, List<Offer> oldList, OfferType offerType) {
         // check if offer should be removed (index changed / removed from list).
         if (newList.size() > 0) {
             for (int i = 0; i < oldList.size(); i++) {
@@ -212,7 +216,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
         }
     }
 
-    private void notifyItemRemoved(int index, OfferTypeEnum offerType) {
+    private void notifyItemRemoved(int index, OfferType offerType) {
         if (isSpend(offerType)) {
             notifySpendItemRemoved(index);
         } else {
@@ -220,7 +224,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
         }
     }
 
-    private void notifyItemInserted(int index, OfferTypeEnum offerType) {
+    private void notifyItemInserted(int index, OfferType offerType) {
         if (isSpend(offerType)) {
             notifySpendItemInserted(index);
         } else {
@@ -228,8 +232,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
         }
     }
 
-    private boolean isSpend(OfferTypeEnum offerType) {
-        return offerType == OfferTypeEnum.SPEND;
+    private boolean isSpend(OfferType offerType) {
+        return offerType == OfferType.SPEND;
     }
 
     private void setOfferList(OfferList offerList) {
@@ -244,7 +248,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
     private void splitOffersByType(List<Offer> list, List<Offer> earnList, List<Offer> spendList) {
         for (Offer offer : list) {
-            if (offer.getOfferType() == Offer.OfferTypeEnum.EARN) {
+            if (offer.getOfferType() == OfferType.EARN) {
                 earnList.add(offer);
             } else {
                 spendList.add(offer);
@@ -253,9 +257,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
     }
 
     @Override
-    public void onItemClicked(int position, OfferTypeEnum offerType) {
+    public void onItemClicked(int position, OfferType offerType) {
         final Offer offer;
-        if (offerType == OfferTypeEnum.EARN) {
+        if (offerType == OfferType.EARN) {
             offer = earnList.get(position);
             if (this.view != null) {
                 PollBundle pollBundle = new PollBundle()
@@ -266,6 +270,10 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             }
         } else {
             offer = spendList.get(position);
+            if (offer.getContentType() == ContentTypeEnum.EXTERNAL) {
+                nativeSpendOfferClicked(offer);
+                return;
+            }
             int balance = blockchainSource.getBalance();
             final BigDecimal amount = new BigDecimal(offer.getAmount());
 
@@ -281,6 +289,10 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
                 showSomethingWentWrong();
             }
         }
+    }
+
+    private void nativeSpendOfferClicked(Offer offer) {
+        offerRepository.getNativeSpendOfferObservable().postValue((NativeSpendOffer) offer);
     }
 
     private void showSomethingWentWrong() {

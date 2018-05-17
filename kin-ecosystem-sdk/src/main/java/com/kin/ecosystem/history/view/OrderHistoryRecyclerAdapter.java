@@ -21,7 +21,7 @@ import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.history.view.OrderHistoryRecyclerAdapter.ViewHolder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.Order.OfferTypeEnum;
-import com.kin.ecosystem.network.model.Order.StatusEnum;
+import com.kin.ecosystem.network.model.Order.Status;
 
 
 public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, ViewHolder> {
@@ -102,7 +102,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
         }
 
         private void setAmountAndIcon(Order item) {
-            if (item.getStatus() == Order.StatusEnum.COMPLETED) {
+            if (item.getStatus() == Status.COMPLETED) {
                 String amount = getAmountFormatted(item.getAmount());
                 if (item.getOfferType() == Order.OfferTypeEnum.SPEND) {
                     setImageResource(R.id.amount_ico, R.drawable.invoice);
@@ -154,8 +154,8 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
             }
         }
 
-        private boolean isFailed(StatusEnum status) {
-            return status == StatusEnum.FAILED;
+        private boolean isFailed(Status status) {
+            return status == Status.FAILED;
         }
 
         private String getActionText(Order item) {
