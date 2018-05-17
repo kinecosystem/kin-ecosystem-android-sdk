@@ -23,7 +23,8 @@ public class JwtUtil {
     private static final long DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
 
     private static final String JWT_CLAIM_OBJECT_OFFER_PART = "offer";
-    private static final String JWT_CLAIM_OBJECT_ORDER_PART = "order";
+    private static final String JWT_CLAIM_OBJECT_SENDER_PART = "sender"; // Should be part of native SPEND jwt
+    private static final String JWT_CLAIM_OBJECT_RECIPIENT_PART = "recipient"; // Should be part of native EARN jwt
 
     private static final String JWT_SUBJECT_REGISTER = "register";
     private static final String JWT_SUBJECT_SPEND = "spend";
@@ -49,7 +50,7 @@ public class JwtUtil {
         String jwt = getBasicJWT(appID)
             .setSubject(JWT_SUBJECT_SPEND)
             .claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject())
-            .claim(JWT_CLAIM_OBJECT_ORDER_PART, new JWTOrderPart(userID, "Bought a sticker", "Lion sticker"))
+            .claim(JWT_CLAIM_OBJECT_SENDER_PART, new JWTOrderPart(userID, "Bought a sticker", "Lion sticker"))
             .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
         return jwt;
     }
@@ -58,7 +59,7 @@ public class JwtUtil {
         String jwt = getBasicJWT(appID)
             .setSubject(JWT_SUBJECT_EARN)
             .claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject())
-            .claim(JWT_CLAIM_OBJECT_ORDER_PART, new JWTOrderPart(userID, "Received Kin", "upload profile picture"))
+            .claim(JWT_CLAIM_OBJECT_RECIPIENT_PART, new JWTOrderPart(userID, "Received Kin", "upload profile picture"))
             .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
         return jwt;
     }
