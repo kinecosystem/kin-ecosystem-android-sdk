@@ -93,6 +93,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             if (index != NOT_FOUND) {
                 earnList.remove(index);
                 notifyEarnItemRemoved(index);
+                setEarnEmptyViewIfNeeded();
             }
 
         } else {
@@ -100,6 +101,23 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             if (index != NOT_FOUND) {
                 spendList.remove(index);
                 notifySpendItemRemoved(index);
+                setSpendEmptyViewIfNeeded();
+            }
+        }
+    }
+
+    private void setEarnEmptyViewIfNeeded() {
+        if (earnList.size() == 0) {
+            if (view != null) {
+                view.setEarnEmptyView();
+            }
+        }
+    }
+
+    private void setSpendEmptyViewIfNeeded() {
+        if (spendList.size() == 0) {
+            if (view != null) {
+                view.setSpendEmptyView();
             }
         }
     }
@@ -160,8 +178,13 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             List<Offer> newSpendOffers = new ArrayList<>();
 
             splitOffersByType(offerList.getOffers(), newEarnOffers, newSpendOffers);
+
             syncList(newEarnOffers, earnList, OfferType.EARN);
             syncList(newSpendOffers, spendList, OfferType.SPEND);
+
+            setEarnEmptyViewIfNeeded();
+            setSpendEmptyViewIfNeeded();
+
         }
     }
 
@@ -247,7 +270,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             }
         } else {
             offer = spendList.get(position);
-            if(offer.getContentType() == ContentTypeEnum.EXTERNAL) {
+            if (offer.getContentType() == ContentTypeEnum.EXTERNAL) {
                 nativeSpendOfferClicked(offer);
                 return;
             }
@@ -273,14 +296,14 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
     }
 
     private void showSomethingWentWrong() {
-        if(view != null) {
+        if (view != null) {
             view.showSomethingWentWrong();
         }
     }
 
     @Override
     public void balanceItemClicked() {
-        if(view != null) {
+        if (view != null) {
             view.navigateToOrderHistory();
         }
     }
