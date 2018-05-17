@@ -62,7 +62,7 @@ public class SignInRepo {
             .getSharedPreferences(USER_PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
     }
 
-    private static String getUserId(Context context) {
+    public static String getUserId(Context context) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         String userID = sharedPreferences.getString(USER_UUID_KEY, null);
         if (userID == null) {
