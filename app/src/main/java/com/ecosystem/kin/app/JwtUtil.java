@@ -22,7 +22,8 @@ public class JwtUtil {
 
     private static final long DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
 
-    private static final String JWT_CLAIM_OBJECT_OFFER = "offer";
+    private static final String JWT_CLAIM_OBJECT_OFFER_PART = "offer";
+    private static final String JWT_CLAIM_OBJECT_SENDER_PART = "sender"; // Should be part of native SPEND jwt
 
     private static final String JWT_SUBJECT_REGISTER = "register";
     private static final String JWT_SUBJECT_SPEND = "spend";
@@ -34,7 +35,6 @@ public class JwtUtil {
 
     private static final String JWT = "jwt";
 
-    private static String lastNativeSpendOfferID;
 
     public static String generateSignInExampleJWT(String appID, String userId) {
         String jwt = getBasicJWT(appID)
@@ -44,10 +44,11 @@ public class JwtUtil {
         return jwt;
     }
 
-    public static String generateSpendOfferExampleJWT(String appID) {
+    public static String generateSpendOfferExampleJWT(String appID, String userID) {
         String jwt = getBasicJWT(appID)
             .setSubject(JWT_SUBJECT_SPEND)
-            .claim(JWT_CLAIM_OBJECT_OFFER, createSpendOfferExampleObject())
+            .claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject())
+            .claim(JWT_CLAIM_OBJECT_SENDER_PART, new JWTOrderPart(userID, "Bought a sticker", "Lion sticker"))
             .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
         return jwt;
     }
@@ -87,43 +88,25 @@ public class JwtUtil {
         return privateKey;
     }
 
-    private static JWTSpendOffer createSpendOfferExampleObject() {
+    private static JWTOfferPart createOfferPartExampleObject() {
         int randomID = new Random().nextInt((9999 - 1) + 1) + 1;
-        lastNativeSpendOfferID = String.valueOf(randomID);
-        return new JWTSpendOffer(lastNativeSpendOfferID,
-            "NativeSpend",
-            "Bought a sticker",
-            10,
-            "GDSXU3DVE3M3CTWXGN3DOLJHRDQLII3WV3GUGK5ZDQGWWDHKJFHRVGNB");
+        return new JWTOfferPart(String.valueOf(randomID), 10);
     }
 
-    public static String getLastNativeSpendOfferID() {
-        return lastNativeSpendOfferID;
-    }
-
-    private static class JWTSpendOffer {
+    private static class JWTOfferPart {
 
         private String id;
-        private String title;
-        private String description;
         private int amount;
-        private String wallet_address;
 
         /**
-         * All of these fields are REQUIRED in order to succeed.
+         * These fields are REQUIRED in order to succeed.
          *
          * @param id decided by you (internal)
-         * @param title appears in order history page
-         * @param description appears in order history page
          * @param amount of KIN for this offer / (price)
-         * @param wallet_address address the client should send kin to to acquire this offer
          */
-        public JWTSpendOffer(String id, String title, String description, int amount, String wallet_address) {
+        public JWTOfferPart(String id, int amount) {
             this.id = id;
-            this.title = title;
-            this.description = description;
             this.amount = amount;
-            this.wallet_address = wallet_address;
         }
 
         public String getId() {
@@ -132,6 +115,41 @@ public class JwtUtil {
 
         public void setId(String id) {
             this.id = id;
+        }
+
+        public int getAmount() {
+            return amount;
+        }
+
+        public void setAmount(int amount) {
+            this.amount = amount;
+        }
+    }
+
+
+    private static class JWTOrderPart {
+
+        private String user_id; // Optional in case of spend order
+        private String title;
+        private String description;
+
+        public JWTOrderPart(String user_id, String title, String description) {
+            this.user_id = user_id;
+            this.title = title;
+            this.description = description;
+        }
+
+        public JWTOrderPart(String title, String description) {
+            this.title = title;
+            this.description = description;
+        }
+
+        public String getUser_id() {
+            return user_id;
+        }
+
+        public void setUser_id(String user_id) {
+            this.user_id = user_id;
         }
 
         public String getTitle() {
@@ -148,22 +166,6 @@ public class JwtUtil {
 
         public void setDescription(String description) {
             this.description = description;
-        }
-
-        public int getAmount() {
-            return amount;
-        }
-
-        public void setAmount(int amount) {
-            this.amount = amount;
-        }
-
-        public String getWallet_address() {
-            return wallet_address;
-        }
-
-        public void setWallet_address(String wallet_address) {
-            this.wallet_address = wallet_address;
         }
     }
 }

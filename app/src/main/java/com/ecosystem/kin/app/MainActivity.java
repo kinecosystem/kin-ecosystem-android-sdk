@@ -14,6 +14,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.ecosystem.kin.app.model.SignInRepo;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.base.Observer;
@@ -190,7 +191,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createNativeSpendOffer() {
-        String offerJwt = JwtUtil.generateSpendOfferExampleJWT(BuildConfig.SAMPLE_APP_ID);
+        String userID = SignInRepo.getUserId(getApplicationContext());
+        String offerJwt = JwtUtil.generateSpendOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID);
         Log.d(TAG, "createNativeSpendOffer: " + offerJwt);
         try {
             Kin.purchase(offerJwt, getNativeSpendOrderConfirmationCallback());
