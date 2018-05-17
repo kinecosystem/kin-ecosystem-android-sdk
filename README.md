@@ -95,7 +95,7 @@ As can be seen in the sample app, there are just few step required to integrate 
       ```gradle
        dependencies {
            ...
-           implementation 'com.github.kinfoundation:kin-ecosystem-android-sdk:0.0.2'
+           implementation 'com.github.kinfoundation:kin-ecosystem-android-sdk:0.0.3'
 
        }
     
