@@ -260,6 +260,7 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         nativeSpendOrderConfirmationCallback = null;
         try {
+            Kin.removeNativeOffer(nativeOffer);
             Kin.removeNativeOfferClickedObserver(nativeSpendOfferClickedObserver);
         } catch (TaskFailedException e) {
             Log.d(TAG, "onDestroy: Failed to remove native offer clicked observer");

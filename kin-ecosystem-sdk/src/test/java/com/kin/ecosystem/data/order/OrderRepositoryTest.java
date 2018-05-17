@@ -284,7 +284,7 @@ public class OrderRepositoryTest {
         ArgumentCaptor<Callback<Order>> getOrderCapture = ArgumentCaptor.forClass(Callback.class);
 
         Order confirmedOrder = new Order().orderId(orderID).offerId(offerID).status(Status.COMPLETED);
-        confirmedOrder.setResult(new JWTBodyConfirmPaymentResult().jwt("A JWT CONFIRMATION").type(TypeEnum.CONFIRM_PAYMENT));
+        confirmedOrder.setResult(new JWTBodyConfirmPaymentResult().jwt("A JWT CONFIRMATION").type(TypeEnum.PAYMENT_CONFIRMATION));
         ObservableData<Offer> pendingOffer = ObservableData.create(offer);
 
         when(remote.createExternalOrderSync(anyString())).thenReturn(openOrder);
