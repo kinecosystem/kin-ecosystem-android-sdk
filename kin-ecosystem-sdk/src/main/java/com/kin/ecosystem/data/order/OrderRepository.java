@@ -150,8 +150,8 @@ public class OrderRepository implements OrderDataSource {
         remoteData.getOrder(orderID, new Callback<Order>() {
             @Override
             public void onResponse(Order order) {
-                setCompletedOrder(order);
                 decrementPendingOrdersCount();
+                setCompletedOrder(order);
             }
 
             @Override
