@@ -30,8 +30,8 @@ In order to create a native spend offer in your app
         
        sender: {
               user_id: string; // optional: user_id who will perform the order
-              title: string; // offer title - appears in order history
-              description: string; // offer description - appears in order history
+              title: string; // order title - appears in order history
+              description: string; // order description - appears in order history
        }
     }
 ```
