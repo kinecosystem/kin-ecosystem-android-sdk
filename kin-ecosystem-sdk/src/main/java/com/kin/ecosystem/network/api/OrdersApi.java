@@ -495,6 +495,8 @@ public class OrdersApi {
      * Build call for getHistory
      *
      * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
+     * @param origin filter by origin (optional)
+     * @param offerId filter by offer_id (optional)
      * @param limit maximum number of items in a list (optional)
      * @param before cursor that points to the start of the page of data that has been returned (optional)
      * @param after cursor that points to the end of the page of data that has been returned (optional)
@@ -503,7 +505,7 @@ public class OrdersApi {
      * @return Call to execute
      * @throws ApiException If fail to serialize the request body object
      */
-    public Call getHistoryCall(String X_REQUEST_ID, Integer limit, String before, String after,
+    public Call getHistoryCall(String X_REQUEST_ID, String origin, String offerId, Integer limit, String before, String after,
         final ProgressResponseBody.ProgressListener progressListener,
         final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
         Object localVarPostBody = null;
@@ -513,6 +515,12 @@ public class OrdersApi {
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
         List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        if (origin != null) {
+            localVarQueryParams.addAll(apiClient.parameterToPair("origin", origin));
+        }
+        if (offerId != null) {
+            localVarQueryParams.addAll(apiClient.parameterToPair("offerId", offerId));
+        }
         if (limit != null) {
             localVarQueryParams.addAll(apiClient.parameterToPair("limit", limit));
         }
@@ -563,7 +571,7 @@ public class OrdersApi {
     }
 
     @SuppressWarnings("rawtypes")
-    private Call getHistoryValidateBeforeCall(String X_REQUEST_ID, Integer limit, String before, String after,
+    private Call getHistoryValidateBeforeCall(String X_REQUEST_ID, String origin, String offerId, Integer limit, String before, String after,
         final ProgressResponseBody.ProgressListener progressListener,
         final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
 
@@ -572,7 +580,7 @@ public class OrdersApi {
             throw new ApiException("Missing the required parameter 'X_REQUEST_ID' when calling getHistory(Async)");
         }
 
-        Call call = getHistoryCall(X_REQUEST_ID, limit, before, after, progressListener, progressRequestListener);
+        Call call = getHistoryCall(X_REQUEST_ID, origin, offerId, limit, before, after, progressListener, progressRequestListener);
         return call;
 
 
@@ -583,14 +591,16 @@ public class OrdersApi {
      * get user order history
      *
      * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
+     * @param origin filter by origin (optional)
+     * @param offerId filter by offer_id (optional)
      * @param limit maximum number of items in a list (optional)
      * @param before cursor that points to the start of the page of data that has been returned (optional)
      * @param after cursor that points to the end of the page of data that has been returned (optional)
      * @return OrderList
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public OrderList getHistory(String X_REQUEST_ID, Integer limit, String before, String after) throws ApiException {
-        ApiResponse<OrderList> resp = getHistoryWithHttpInfo(X_REQUEST_ID, limit, before, after);
+    public OrderList getHistory(String X_REQUEST_ID, String origin, String offerId, Integer limit, String before, String after) throws ApiException {
+        ApiResponse<OrderList> resp = getHistoryWithHttpInfo(X_REQUEST_ID, origin, offerId, limit, before, after);
         return resp.getData();
     }
 
@@ -599,15 +609,17 @@ public class OrdersApi {
      * get user order history
      *
      * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
+     * @param origin filter by origin (optional)
+     * @param offerId filter by offer_id (optional)
      * @param limit maximum number of items in a list (optional)
      * @param before cursor that points to the start of the page of data that has been returned (optional)
      * @param after cursor that points to the end of the page of data that has been returned (optional)
      * @return ApiResponse&lt;OrderList&gt;
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
-    public ApiResponse<OrderList> getHistoryWithHttpInfo(String X_REQUEST_ID, Integer limit, String before,
+    public ApiResponse<OrderList> getHistoryWithHttpInfo(String X_REQUEST_ID, String origin, String offerId, Integer limit, String before,
         String after) throws ApiException {
-        Call call = getHistoryValidateBeforeCall(X_REQUEST_ID, limit, before, after, null, null);
+        Call call = getHistoryValidateBeforeCall(X_REQUEST_ID, origin, offerId, limit, before, after, null, null);
         Type localVarReturnType = new TypeToken<OrderList>() {
         }.getType();
         return apiClient.execute(call, localVarReturnType);
@@ -618,6 +630,8 @@ public class OrdersApi {
      * get user order history
      *
      * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
+     * @param origin filter by origin (optional)
+     * @param offerId filter by offer_id (optional)
      * @param limit maximum number of items in a list (optional)
      * @param before cursor that points to the start of the page of data that has been returned (optional)
      * @param after cursor that points to the end of the page of data that has been returned (optional)
@@ -625,7 +639,7 @@ public class OrdersApi {
      * @return The request call
      * @throws ApiException If fail to process the API call, e.g. serializing the request body object
      */
-    public Call getHistoryAsync(String X_REQUEST_ID, Integer limit, String before, String after,
+    public Call getHistoryAsync(String X_REQUEST_ID, String origin, String offerId, Integer limit, String before, String after,
         final ApiCallback<OrderList> callback) throws ApiException {
 
         ProgressResponseBody.ProgressListener progressListener = null;
@@ -647,7 +661,7 @@ public class OrdersApi {
             };
         }
 
-        Call call = getHistoryValidateBeforeCall(X_REQUEST_ID, limit, before, after, progressListener,
+        Call call = getHistoryValidateBeforeCall(X_REQUEST_ID, origin, offerId, limit, before, after, progressListener,
             progressRequestListener);
         Type localVarReturnType = new TypeToken<OrderList>() {
         }.getType();

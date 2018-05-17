@@ -33,7 +33,6 @@ public class OrderList {
     }
 
     public OrderList addOrderAtIndex(final int index, @NonNull final Order orderItem) {
-
         if (this.orders == null) {
             this.orders = new ArrayList<>();
             this.orders.add(orderItem);
