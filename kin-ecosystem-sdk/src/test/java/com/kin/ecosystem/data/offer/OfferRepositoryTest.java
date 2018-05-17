@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.network.model.Offer;
@@ -16,7 +17,6 @@ import com.kin.ecosystem.network.model.OfferList;
 import com.kin.ecosystem.network.model.Paging;
 import com.kin.ecosystem.network.model.PagingCursors;
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -109,20 +109,15 @@ public class OfferRepositoryTest {
 
     @Test
     public void addNativeOfferCallback() throws Exception {
-        Callback<NativeSpendOffer> callback = new Callback<NativeSpendOffer>() {
+        Observer<NativeSpendOffer> callback = new Observer<NativeSpendOffer>() {
             @Override
-            public void onResponse(NativeSpendOffer response) {
-
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-
+            public void onChanged(NativeSpendOffer nativeSpendOffer) {
+                assertEquals("5", nativeSpendOffer.getId());
             }
         };
 
         offerRepository.addNativeOfferClickedObserver(callback);
-        assertEquals(callback, offerRepository.getNativeOfferCallback());
+        offerRepository.getNativeSpendOfferObservable().postValue(new NativeSpendOffer("5"));
     }
 
     @Test
@@ -133,7 +128,6 @@ public class OfferRepositoryTest {
                 .description("Native offer desc")
                 .amount(1000)
                 .image("Native offer image");
-
 
         assertTrue(offerRepository.addNativeOffer(nativeOffer));
         assertEquals(1, offerRepository.getCachedOfferList().getOffers().size());
@@ -152,7 +146,6 @@ public class OfferRepositoryTest {
                 .amount(1000)
                 .image("Native offer image");
 
-
         assertTrue(offerRepository.addNativeOffer(nativeOffer));
         assertEquals(1, offerRepository.getCachedOfferList().getOffers().size());
         assertEquals(nativeOffer, offerRepository.getCachedOfferList().getOffers().get(0));
@@ -166,7 +159,7 @@ public class OfferRepositoryTest {
 
     private OfferList getOfferList() {
         OfferList offerList = new OfferList();
-        offerList.setOffers(Collections.singletonList(offer));
+        offerList.addAtIndex(0, offer);
         offerList.setPaging(new Paging().next("1").previous("0").cursors(new PagingCursors().after("1").before("0")));
         return offerList;
     }

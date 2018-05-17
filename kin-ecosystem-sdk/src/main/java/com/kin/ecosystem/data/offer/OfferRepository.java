@@ -72,7 +72,11 @@ public class OfferRepository implements OfferDataSource {
     }
 
     private OfferList getList() {
-        return new OfferList(nativeOfferList.getOffers()).addAll(cachedOfferList);
+        OfferList masterList = new OfferList();
+        masterList.addAll(nativeOfferList);
+        masterList.addAll(cachedOfferList);
+        masterList.setPaging(cachedOfferList.getPaging());
+        return masterList;
     }
 
     @Override
