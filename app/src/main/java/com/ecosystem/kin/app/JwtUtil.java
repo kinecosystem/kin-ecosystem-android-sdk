@@ -48,7 +48,7 @@ public class JwtUtil {
         String jwt = getBasicJWT(appID)
             .setSubject(JWT_SUBJECT_SPEND)
             .claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject())
-            .claim(JWT_CLAIM_OBJECT_SENDER_PART, new JWTOrderPart(userID, "Bought a sticker", "Lion sticker"))
+            .claim(JWT_CLAIM_OBJECT_SENDER_PART, new JWTSenderPart(userID, "Bought a sticker", "Lion sticker"))
             .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
         return jwt;
     }
@@ -127,19 +127,19 @@ public class JwtUtil {
     }
 
 
-    private static class JWTOrderPart {
+    private static class JWTSenderPart {
 
         private String user_id; // Optional in case of spend order
         private String title;
         private String description;
 
-        public JWTOrderPart(String user_id, String title, String description) {
+        public JWTSenderPart(String user_id, String title, String description) {
             this.user_id = user_id;
             this.title = title;
             this.description = description;
         }
 
-        public JWTOrderPart(String title, String description) {
+        public JWTSenderPart(String title, String description) {
             this.title = title;
             this.description = description;
         }
