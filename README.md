@@ -142,6 +142,9 @@ As can be seen in the sample app, there are just few step required to integrate 
 
 ## [Create Native Spend Offer](NATIVE_SPEND.md)
 A native spend is a mechanism allowing your users to buy virtual goods you define, using Kin on Kin Ecosystem API's.
+
+## [Create Native EARN Offer](NATIVE_EARN.md)
+A native earn is a mechanism allowing your users to earn Kin as a reward for native tasks you define, such as setting a profile picture or adding info.
    
 ## License
 The kin-ecosystem-android-sdk library is licensed under [MIT license](LICENSE.md).
