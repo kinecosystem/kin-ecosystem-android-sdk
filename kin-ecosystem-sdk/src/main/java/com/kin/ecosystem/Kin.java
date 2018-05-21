@@ -151,7 +151,8 @@ public class Kin {
     }
 
     /**
-<<<<<<< HEAD
+     * Allowing your users to earn Kin as a reward for native task you define.
+     * This call might take time, due to transaction validation on the blockchain network.
      *
      * @param offerJwt
      * @param callback
@@ -164,8 +165,6 @@ public class Kin {
     }
 
     /**
-=======
->>>>>>> 98539ef92d53adb8c3dc739fcbda5c590b990866
      * Returns a {@link OrderConfirmation}, with the order status and a jwtConfirmation if the order is completed.
      *
      * @param offerID The offerID that this order created from
