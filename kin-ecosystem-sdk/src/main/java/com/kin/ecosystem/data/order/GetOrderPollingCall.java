@@ -30,7 +30,6 @@ class GetOrderPollingCall extends Thread {
         try {
             if (pollingIndex < DELAY_SECONDS.length) {
                 Order order = remote.getOrderSync(orderID);
-                System.out.println("GetOrderPollingCall Delay: " + DELAY_SECONDS[pollingIndex]);
                 if (order == null || order.getStatus() == Status.PENDING) {
                     sleep(DELAY_SECONDS[pollingIndex] * 1000);
                     getOrder(++pollingIndex);

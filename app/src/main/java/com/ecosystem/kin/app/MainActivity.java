@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         balanceView = findViewById(R.id.get_balance);
         nativeSpendButton = findViewById(R.id.native_spend_button);
         nativeEarnButton = findViewById(R.id.native_earn_button);
+
         showPublicAddressButton = findViewById(R.id.show_public_address);
         publicAddressTextArea = findViewById(R.id.public_text_area);
         showPublicAddressButton.setOnClickListener(new OnClickListener() {

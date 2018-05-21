@@ -18,7 +18,6 @@ import com.kin.ecosystem.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
-
 import com.kin.ecosystem.network.model.OrderList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
