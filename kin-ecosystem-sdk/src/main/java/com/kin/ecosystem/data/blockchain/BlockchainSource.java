@@ -32,7 +32,6 @@ public class BlockchainSource implements IBlockchainSource {
 
     private static volatile BlockchainSource instance;
 
-    private static final String ISSUER_PRIVATE_TEST = "GBQ3DQOA7NF52FVV7ES3CR3ZMHUEY4LTHDAQKDTO6S546JCLFPEQGCPK";
     private KinClient kinClient;
     private KinAccount account;
     private ObservableData<Integer> balance = ObservableData.create(0);
@@ -59,7 +58,7 @@ public class BlockchainSource implements IBlockchainSource {
 
     private BlockchainSource(@NonNull final Context context)
         throws InitializeException {
-        this.kinClient = new KinClient(context, Network.NETWORK_PRIVATE_TEST.getProviderForIssuer(ISSUER_PRIVATE_TEST));
+        this.kinClient = new KinClient(context, Network.NETWORK_PRIVATE_TEST.getProvider());
         createKinAccountIfNeeded();
         getCurrentBalance();
     }
