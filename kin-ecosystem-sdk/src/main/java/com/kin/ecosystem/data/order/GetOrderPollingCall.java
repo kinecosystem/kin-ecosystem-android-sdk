@@ -9,6 +9,7 @@ import java.util.concurrent.TimeoutException;
 class GetOrderPollingCall extends Thread {
 
     private static final int[] DELAY_SECONDS = {2, 4, 8, 16, 32, 32, 32, 32, 32};
+    private static final int SEC_IN_MILLI = 1000;
 
     private final OrderDataSource.Remote remote;
     private final String orderID;
@@ -31,7 +32,7 @@ class GetOrderPollingCall extends Thread {
             if (pollingIndex < DELAY_SECONDS.length) {
                 Order order = remote.getOrderSync(orderID);
                 if (order == null || order.getStatus() == Status.PENDING) {
-                    sleep(DELAY_SECONDS[pollingIndex]);
+                    sleep(DELAY_SECONDS[pollingIndex] * SEC_IN_MILLI);
                     getOrder(++pollingIndex);
                 } else {
                     callback.onResponse(order);
