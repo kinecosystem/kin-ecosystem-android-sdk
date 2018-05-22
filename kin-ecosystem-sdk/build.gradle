@@ -24,7 +24,7 @@ android {
 }
 
 dependencies {
-    implementation devDependencies.kinStellar
+    implementation devDependencies.kinCore
     implementation devDependencies.appCompat_v7
     implementation devDependencies.recyclerView_v7
     implementation devDependencies.constraintLayout
