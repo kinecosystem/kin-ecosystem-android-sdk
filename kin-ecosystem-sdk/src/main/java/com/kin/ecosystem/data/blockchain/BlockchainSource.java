@@ -58,7 +58,7 @@ public class BlockchainSource implements IBlockchainSource {
 
     private BlockchainSource(@NonNull final Context context)
         throws InitializeException {
-        this.kinClient = new KinClient(context, StellarNetwork.NETWORK_TEST.getProvider());
+        this.kinClient = new KinClient(context, Network.NETWORK_PRIVATE_TEST.getProvider());
         createKinAccountIfNeeded();
         getCurrentBalance();
     }
