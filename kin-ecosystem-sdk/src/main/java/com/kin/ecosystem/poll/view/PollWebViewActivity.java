@@ -62,6 +62,11 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
     }
 
     @Override
+    public void onBackPressed() {
+        pollWebViewPresenter.closeClicked();
+    }
+
+    @Override
     public void attachPresenter(PollWebViewPresenter presenter) {
         pollWebViewPresenter = presenter;
         pollWebViewPresenter.onAttach(this);

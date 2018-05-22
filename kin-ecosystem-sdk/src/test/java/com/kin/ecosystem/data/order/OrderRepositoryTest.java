@@ -8,7 +8,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.robolectric.Shadows.shadowOf;
 
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
@@ -91,6 +90,7 @@ public class OrderRepositoryTest {
         MockitoAnnotations.initMocks(this);
         resetInstance();
         resetPendingOrdersCount();
+        resetPaymentObserverCount();
 
         when(offer.getId()).thenReturn(offerID);
 
@@ -114,6 +114,12 @@ public class OrderRepositoryTest {
         Field pendingOrdersCount = OrderRepository.class.getDeclaredField("pendingOrdersCount");
         pendingOrdersCount.setAccessible(true);
         pendingOrdersCount.set(pendingOrdersCount, new AtomicInteger(0));
+    }
+
+    private void resetPaymentObserverCount() throws Exception {
+        Field paymentObserverCount = OrderRepository.class.getDeclaredField("paymentObserverCount");
+        paymentObserverCount.setAccessible(true);
+        paymentObserverCount.set(paymentObserverCount, new AtomicInteger(0));
     }
 
     private void resetInstance() throws Exception {

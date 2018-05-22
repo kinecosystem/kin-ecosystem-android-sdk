@@ -40,6 +40,7 @@ public class OrderRepository implements OrderDataSource {
     private Observer<Payment> paymentObserver;
 
     private static volatile AtomicInteger pendingOrdersCount = new AtomicInteger(0);
+    private static volatile AtomicInteger paymentObserverCount = new AtomicInteger(0);
 
     private OrderRepository(@NonNull final IBlockchainSource blockchainSource,
         @NonNull final OfferDataSource offerRepository, @NonNull final OrderDataSource.Remote remoteData,
@@ -114,6 +115,7 @@ public class OrderRepository implements OrderDataSource {
     public void submitOrder(@NonNull final String offerID, @Nullable String content, @NonNull final String orderID,
         @Nullable final Callback<Order> callback) {
         listenForCompletedPayment();
+        pendingOrdersCount.incrementAndGet();
         offerRepository.setPendingOfferByID(offerID);
         remoteData.submitOrder(content, orderID, new Callback<Order>() {
             @Override
@@ -135,12 +137,12 @@ public class OrderRepository implements OrderDataSource {
     }
 
     private void listenForCompletedPayment() {
-        if (pendingOrdersCount.getAndIncrement() == 0) {
+        if (paymentObserverCount.getAndIncrement() == 0) {
             paymentObserver = new Observer<Payment>() {
                 @Override
                 public void onChanged(Payment payment) {
+                    decrementPaymentObserverCount();
                     getOrder(payment.getOrderID());
-                    decrementPendingOrdersCount();
                 }
             };
             blockchainSource.addPaymentObservable(paymentObserver);
@@ -148,16 +150,26 @@ public class OrderRepository implements OrderDataSource {
         }
     }
 
+    private void decrementPaymentObserverCount() {
+        if (paymentObserverCount.get() > 0 &&
+            paymentObserverCount.decrementAndGet() == 0 &&
+            paymentObserver != null) {
+
+            blockchainSource.removePaymentObserver(paymentObserver);
+        }
+    }
+
     private void getOrder(final String orderID) {
         remoteData.getOrder(orderID, new Callback<Order>() {
             @Override
             public void onResponse(Order order) {
+                decrementPendingOrdersCount();
                 setCompletedOrder(order);
             }
 
             @Override
             public void onFailure(Throwable t) {
-
+                decrementPendingOrdersCount();
             }
         });
     }
@@ -165,11 +177,6 @@ public class OrderRepository implements OrderDataSource {
     private void decrementPendingOrdersCount() {
         if (hasMorePendingOffers()) {
             pendingOrdersCount.decrementAndGet();
-        } else {
-            if (paymentObserver != null) {
-                blockchainSource.removePaymentObserver(paymentObserver);
-                Log.d(TAG, "decrementPendingOrdersCount: removePaymentObserver");
-            }
         }
     }
 
@@ -222,6 +229,7 @@ public class OrderRepository implements OrderDataSource {
     public void cancelOrder(@NonNull final String offerID, @NonNull final String orderID,
         @Nullable final Callback<Void> callback) {
         decrementPendingOrdersCount();
+        decrementPaymentObserverCount();
         remoteData.cancelOrder(orderID, new Callback<Void>() {
             @Override
             public void onResponse(Void response) {
@@ -361,7 +369,8 @@ public class OrderRepository implements OrderDataSource {
                     if (orders != null && orders.size() > 0) {
                         final Order order = orders.get(orders.size());
                         OrderConfirmation orderConfirmation = new OrderConfirmation();
-                        OrderConfirmation.Status status = OrderConfirmation.Status.fromValue(order.getStatus().getValue());
+                        OrderConfirmation.Status status = OrderConfirmation.Status
+                            .fromValue(order.getStatus().getValue());
                         orderConfirmation.setStatus(status);
                         if (status == OrderConfirmation.Status.COMPLETED) {
                             try {
@@ -374,8 +383,7 @@ public class OrderRepository implements OrderDataSource {
 
                         }
                         callback.onResponse(orderConfirmation);
-                    }
-                    else {
+                    } else {
                         callback.onFailure(new DataNotAvailableException());
                     }
                 }
