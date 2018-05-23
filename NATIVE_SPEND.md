@@ -43,6 +43,9 @@ JWT need to be signed by server side where private key is secure.
             Kin.purchase(offerJwt, new Callback<OrderConfirmation>() {
                 @Override
                 public void onResponse(OrderConfirmation orderConfirmation) {
+                    // OrderConfirmation will be called once Ecosystem recieved the payment transaction from user.
+                    // OrderConfirmation can be kept on digital service side as a receipt proving user received his Kin.
+                    
                     // Send confirmation JWT back to the server in order prove that the user
                     // completed the blockchain transaction and purchase can be unlocked for this user.
                     System.out.println("Succeed to create native spend.\n jwtConfirmation: " + orderConfirmation.getJwtConfirmation());

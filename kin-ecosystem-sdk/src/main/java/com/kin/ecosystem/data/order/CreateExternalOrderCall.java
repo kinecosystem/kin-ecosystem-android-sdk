@@ -14,7 +14,7 @@ import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.util.ExecutorsUtil.MainThreadExecutor;
 import java.math.BigDecimal;
 
-abstract class CreateExternalOrderCall extends Thread {
+class CreateExternalOrderCall extends Thread {
 
     private static final String TAG = CreateExternalOrderCall.class.getSimpleName();
 
@@ -25,8 +25,6 @@ abstract class CreateExternalOrderCall extends Thread {
 
     private OpenOrder openOrder;
     private MainThreadExecutor mainThreadExecutor = new MainThreadExecutor();
-
-    abstract OfferType getOfferType();
 
     public CreateExternalOrderCall(@NonNull OrderDataSource.Remote remote, @NonNull IBlockchainSource blockchainSource,
         @NonNull String orderJwt,
@@ -42,9 +40,12 @@ abstract class CreateExternalOrderCall extends Thread {
         try {
             // Create external order
             openOrder = remote.createExternalOrderSync(orderJwt);
-            if (getOfferType() == OfferType.EARN) {
-                ((ExternalEarnOrderCallbacks) externalOrderCallbacks).onOrderCreated(openOrder);
-            }
+            runOnMainThread(new Runnable() {
+                @Override
+                public void run() {
+                    externalOrderCallbacks.onOrderCreated(openOrder);
+                }
+            });
         } catch (final ApiException e) {
             runOnMainThread(new Runnable() {
                 @Override
@@ -59,7 +60,7 @@ abstract class CreateExternalOrderCall extends Thread {
             return;
         }
 
-        if (getOfferType() == OfferType.SPEND) {
+        if (externalOrderCallbacks instanceof ExternalSpendOrderCallbacks) {
             // Send transaction to the network.
             blockchainSource.sendTransaction(openOrder.getBlockchainData().getRecipientAddress(),
                 new BigDecimal(openOrder.getAmount()), openOrder.getId());
@@ -135,6 +136,8 @@ abstract class CreateExternalOrderCall extends Thread {
 
     interface ExternalOrderCallbacks {
 
+        void onOrderCreated(OpenOrder openOrder);
+
         void onOrderConfirmed(String confirmationJwt);
 
         void onOrderFailed(String msg);
@@ -145,10 +148,5 @@ abstract class CreateExternalOrderCall extends Thread {
         void onTransactionSent(OpenOrder openOrder);
 
         void onTransactionFailed(OpenOrder openOrder, String msg);
-    }
-
-    interface ExternalEarnOrderCallbacks extends ExternalOrderCallbacks {
-
-        void onOrderCreated(OpenOrder openOrder);
     }
 }

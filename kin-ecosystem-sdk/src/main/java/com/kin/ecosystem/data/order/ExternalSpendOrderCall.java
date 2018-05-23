@@ -14,9 +14,4 @@ public class ExternalSpendOrderCall extends CreateExternalOrderCall {
         @NonNull ExternalSpendOrderCallbacks externalSpendOrderCallbacks) {
         super(remote, blockchainSource, orderJwt, externalSpendOrderCallbacks);
     }
-
-    @Override
-    OfferType getOfferType() {
-        return OfferType.SPEND;
-    }
 }

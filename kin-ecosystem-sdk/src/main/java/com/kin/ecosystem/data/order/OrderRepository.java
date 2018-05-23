@@ -10,7 +10,7 @@ import com.kin.ecosystem.data.blockchain.IBlockchainSource;
 import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.data.offer.OfferDataSource;
-import com.kin.ecosystem.data.order.CreateExternalOrderCall.ExternalEarnOrderCallbacks;
+import com.kin.ecosystem.data.order.CreateExternalOrderCall.ExternalOrderCallbacks;
 import com.kin.ecosystem.data.order.CreateExternalOrderCall.ExternalSpendOrderCallbacks;
 import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.exception.TaskFailedException;
@@ -253,8 +253,13 @@ public class OrderRepository implements OrderDataSource {
     public void purchase(String offerJwt, @Nullable final Callback<OrderConfirmation> callback) {
         new ExternalSpendOrderCall(remoteData, blockchainSource, offerJwt, new ExternalSpendOrderCallbacks() {
             @Override
+            public void onOrderCreated(OpenOrder openOrder) {
+                cachedOpenOrder.postValue(openOrder);
+            }
+
+            @Override
             public void onTransactionSent(OpenOrder openOrder) {
-                cacheAndSubmitOrder(openOrder);
+                submitOrder(openOrder.getOfferId(), null, openOrder.getId(), null);
             }
 
             @Override
@@ -299,19 +304,17 @@ public class OrderRepository implements OrderDataSource {
 
     @Override
     public void requestPayment(String offerJwt, final Callback<OrderConfirmation> callback) {
-        new ExternalEarnOrderCall(remoteData, blockchainSource, offerJwt, new ExternalEarnOrderCallbacks() {
+        new ExternalEarnOrderCall(remoteData, blockchainSource, offerJwt, new ExternalOrderCallbacks() {
             @Override
             public void onOrderCreated(OpenOrder openOrder) {
-                cacheAndSubmitOrder(openOrder);
+                cachedOpenOrder.postValue(openOrder);
+                submitOrder(openOrder.getOfferId(), null, openOrder.getId(), null);
             }
 
             @Override
             public void onOrderConfirmed(String confirmationJwt) {
                 if (callback != null) {
-                    OrderConfirmation orderConfirmation = new OrderConfirmation();
-                    orderConfirmation.setStatus(OrderConfirmation.Status.COMPLETED);
-                    orderConfirmation.setJwtConfirmation(confirmationJwt);
-                    callback.onResponse(orderConfirmation);
+                    callback.onResponse(createOrderConfirmation(confirmationJwt));
                 }
             }
 
@@ -324,9 +327,11 @@ public class OrderRepository implements OrderDataSource {
         }).start();
     }
 
-    private void cacheAndSubmitOrder(OpenOrder openOrder) {
-        cachedOpenOrder.postValue(openOrder);
-        submitOrder(openOrder.getOfferId(), null, openOrder.getId(), null);
+    private OrderConfirmation createOrderConfirmation(String confirmationJwt) {
+        OrderConfirmation orderConfirmation = new OrderConfirmation();
+        orderConfirmation.setStatus(OrderConfirmation.Status.COMPLETED);
+        orderConfirmation.setJwtConfirmation(confirmationJwt);
+        return orderConfirmation;
     }
 
     @Override
@@ -375,7 +380,8 @@ public class OrderRepository implements OrderDataSource {
                         if (status == OrderConfirmation.Status.COMPLETED) {
                             try {
                                 orderConfirmation
-                                    .setJwtConfirmation(((JWTBodyPaymentConfirmationResult) order.getResult()).getJwt());
+                                    .setJwtConfirmation(
+                                        ((JWTBodyPaymentConfirmationResult) order.getResult()).getJwt());
                             } catch (ClassCastException e) {
                                 Log.d(TAG, "could not cast to jwt confirmation");
                                 callback.onFailure(new DataNotAvailableException());

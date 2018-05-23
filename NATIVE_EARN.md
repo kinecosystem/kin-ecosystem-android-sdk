@@ -2,6 +2,9 @@
 In order to create a native earn offer in your app
 1. Generate a JWT that represent a EarnOffer signed by you. (see [spend offer jwt specs](#earn-offer-jwt-specs))
 2. Call the method: `Kin.requestPayment(offerJwt, callback);` (see [example below](#example-from-sample-app))
+3. The Ecosystem backend service will validate offerJwt and will create a blockchain transactions on behalf of the digital service to the specified user.<br>
+Ecosystem Service backend should hold sufficient Kin funds for this offer. While testing Ecosystem backend service will accept any payment request.<br>
+On real use case digital service need to have an open account with sufficient funds - please contact us for more details.
 
 ### Earn offer jwt specs
 1. We will support `ES256` signature algorithm later on, right now you can use `RS512`.
@@ -43,7 +46,8 @@ JWT need to be signed by server side where private key is secure.
         Kin.requestPayment(offerJwt, new Callback<OrderConfirmation>() {
             @Override
             public void onResponse(OrderConfirmation orderConfirmation) {
-                // Send confirmation JWT back to the server in order prove the transaction completed successfuly.
+                // OrderConfirmation will be called once Ecosystem payment transaction to user completed successfully.
+                // OrderConfirmation can be kept on digital service side as a receipt proving user received his Kin.
                 System.out.println("Succeed to create native earn.\n jwtConfirmation: " + orderConfirmation.getJwtConfirmation());
             }
 
