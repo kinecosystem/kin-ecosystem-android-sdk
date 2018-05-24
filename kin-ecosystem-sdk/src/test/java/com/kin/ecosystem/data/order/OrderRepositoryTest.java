@@ -20,7 +20,7 @@ import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.model.BlockchainData;
-import com.kin.ecosystem.network.model.JWTBodyConfirmPaymentResult;
+import com.kin.ecosystem.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
@@ -290,7 +290,7 @@ public class OrderRepositoryTest {
         ArgumentCaptor<Callback<Order>> getOrderCapture = ArgumentCaptor.forClass(Callback.class);
 
         Order confirmedOrder = new Order().orderId(orderID).offerId(offerID).status(Status.COMPLETED);
-        confirmedOrder.setResult(new JWTBodyConfirmPaymentResult().jwt("A JWT CONFIRMATION").type(TypeEnum.PAYMENT_CONFIRMATION));
+        confirmedOrder.setResult(new JWTBodyPaymentConfirmationResult().jwt("A JWT CONFIRMATION").type(TypeEnum.PAYMENT_CONFIRMATION));
         ObservableData<Offer> pendingOffer = ObservableData.create(offer);
 
         when(remote.createExternalOrderSync(anyString())).thenReturn(openOrder);

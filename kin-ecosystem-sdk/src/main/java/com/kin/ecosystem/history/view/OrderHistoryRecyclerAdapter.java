@@ -19,8 +19,8 @@ import com.chad.library.adapter.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.history.view.OrderHistoryRecyclerAdapter.ViewHolder;
+import com.kin.ecosystem.network.model.Offer.OfferType;
 import com.kin.ecosystem.network.model.Order;
-import com.kin.ecosystem.network.model.Order.OfferTypeEnum;
 import com.kin.ecosystem.network.model.Order.Status;
 
 
@@ -104,7 +104,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
         private void setAmountAndIcon(Order item) {
             if (item.getStatus() == Status.COMPLETED) {
                 String amount = getAmountFormatted(item.getAmount());
-                if (item.getOfferType() == Order.OfferTypeEnum.SPEND) {
+                if (item.getOfferType() == OfferType.SPEND) {
                     setImageResource(R.id.amount_ico, R.drawable.invoice);
                     setText(R.id.amount_text, MINUS_SIGN + amount);
                 } else {
@@ -133,7 +133,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
             setText(R.id.action_text, actionText);
             switch (item.getStatus()) {
                 case COMPLETED:
-                    if (item.getOfferType() == OfferTypeEnum.SPEND) {
+                    if (item.getOfferType() == OfferType.SPEND) {
                         Spannable titleSpannable = new SpannableString(brand + delimiter);
                         titleSpannable.setSpan(new ForegroundColorSpan(colorBlue),
                             0, brand.length(),
@@ -182,7 +182,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
             LayerDrawable layerDrawable = ((LayerDrawable) view.getDrawable());
             Drawable drawable = layerDrawable.getDrawable(1);
             // Timeline dot color
-            if (item.getOfferType() == Order.OfferTypeEnum.SPEND) {
+            if (item.getOfferType() == OfferType.SPEND) {
                 switch (item.getStatus()) {
                     case COMPLETED:
                         drawable.setColorFilter(colorBlue, PorterDuff.Mode.SRC_ATOP);

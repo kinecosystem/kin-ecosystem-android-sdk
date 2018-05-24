@@ -151,6 +151,20 @@ public class Kin {
     }
 
     /**
+     * Allowing your users to earn Kin as a reward for native task you define.
+     * This call might take time, due to transaction validation on the blockchain network.
+     *
+     * @param offerJwt
+     * @param callback
+     * @throws TaskFailedException
+     */
+    public static void requestPayment(String offerJwt, @Nullable Callback<OrderConfirmation> callback)
+        throws TaskFailedException {
+        checkInstanceNotNull();
+        OrderRepository.getInstance().requestPayment(offerJwt, callback);
+    }
+
+    /**
      * Returns a {@link OrderConfirmation}, with the order status and a jwtConfirmation if the order is completed.
      *
      * @param offerID The offerID that this order created from

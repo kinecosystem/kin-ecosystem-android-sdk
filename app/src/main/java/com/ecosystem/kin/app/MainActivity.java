@@ -29,16 +29,18 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView balanceView;
     private Button nativeSpendButton;
+    private Button nativeEarnButton;
     private Button showPublicAddressButton;
     private TextView publicAddressTextArea;
 
     private Callback<OrderConfirmation> nativeSpendOrderConfirmationCallback;
+    private Callback<OrderConfirmation> nativeEarnOrderConfirmationCallback;
     private Observer<NativeSpendOffer> nativeSpendOfferClickedObserver;
 
     private String publicAddress;
 
     int randomID = new Random().nextInt((9999 - 1) + 1) + 1;
-    NativeSpendOffer nativeOffer =
+    NativeSpendOffer nativeSpendOffer =
         new NativeSpendOffer(String.valueOf(randomID))
             .title("Get Themes")
             .description("Personalize your chat")
@@ -51,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         balanceView = findViewById(R.id.get_balance);
         nativeSpendButton = findViewById(R.id.native_spend_button);
+        nativeEarnButton = findViewById(R.id.native_earn_button);
+
         showPublicAddressButton = findViewById(R.id.show_public_address);
         publicAddressTextArea = findViewById(R.id.public_text_area);
         showPublicAddressButton.setOnClickListener(new OnClickListener() {
@@ -78,6 +82,14 @@ public class MainActivity extends AppCompatActivity {
                 createNativeSpendOffer();
             }
         });
+        nativeEarnButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showToast("Native earn flow started");
+                enableView(v, false);
+                createNativeEarnOffer();
+            }
+        });
         findViewById(R.id.launch_marketplace).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,11 +97,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        addNativeSpendOffer(nativeOffer);
+        addNativeSpendOffer(nativeSpendOffer);
         addNativeOfferClickedObserver();
     }
 
-    // Use this method to remove the nativeOffer you added
+    // Use this method to remove the nativeSpendOffer you added
     private void removeNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer) {
         try {
             if (Kin.removeNativeOffer(nativeSpendOffer)) {
@@ -122,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addNativeSpendOffer(@NonNull NativeSpendOffer nativeSpendOffer) {
-
         try {
             if (Kin.addNativeOffer(nativeSpendOffer)) {
                 showToast("Native offer added");
@@ -201,6 +212,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void createNativeEarnOffer() {
+        String userID = SignInRepo.getUserId(getApplicationContext());
+        String offerJwt = JwtUtil.generateEarnOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID);
+        try {
+            Kin.requestPayment(offerJwt, getNativeEarnOrderConfirmationCallback());
+        } catch (TaskFailedException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Use this method with the offerID you created, to get {@link OrderConfirmation}
      */
@@ -245,6 +266,27 @@ public class MainActivity extends AppCompatActivity {
         return nativeSpendOrderConfirmationCallback;
     }
 
+    private Callback<OrderConfirmation> getNativeEarnOrderConfirmationCallback() {
+        if (nativeEarnOrderConfirmationCallback == null) {
+            nativeEarnOrderConfirmationCallback = new Callback<OrderConfirmation>() {
+                @Override
+                public void onResponse(OrderConfirmation orderConfirmation) {
+                    getBalance();
+                    showToast("Succeed to create native earn");
+                    Log.d(TAG, "Jwt confirmation: \n" + orderConfirmation.getJwtConfirmation());
+                    enableView(nativeEarnButton, true);
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    showToast("Failed - " + t.getMessage());
+                    enableView(nativeEarnButton, true);
+                }
+            };
+        }
+        return nativeEarnOrderConfirmationCallback;
+    }
+
     private void enableView(View v, boolean enable) {
         v.setEnabled(enable);
         v.setClickable(enable);
@@ -259,8 +301,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         nativeSpendOrderConfirmationCallback = null;
+        nativeEarnOrderConfirmationCallback = null;
         try {
-            Kin.removeNativeOffer(nativeOffer);
+            Kin.removeNativeOffer(nativeSpendOffer);
             Kin.removeNativeOfferClickedObserver(nativeSpendOfferClickedObserver);
         } catch (TaskFailedException e) {
             Log.d(TAG, "onDestroy: Failed to remove native offer clicked observer");

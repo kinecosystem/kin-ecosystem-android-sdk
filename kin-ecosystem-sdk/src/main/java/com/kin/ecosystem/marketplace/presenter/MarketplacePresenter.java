@@ -178,13 +178,11 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             List<Offer> newSpendOffers = new ArrayList<>();
 
             splitOffersByType(offerList.getOffers(), newEarnOffers, newSpendOffers);
-
             syncList(newEarnOffers, earnList, OfferType.EARN);
             syncList(newSpendOffers, spendList, OfferType.SPEND);
 
             setEarnEmptyViewIfNeeded();
             setSpendEmptyViewIfNeeded();
-
         }
     }
 

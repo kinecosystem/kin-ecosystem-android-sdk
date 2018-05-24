@@ -143,8 +143,8 @@ public class OrderSpendResult {
             if(spendResult instanceof CouponCodeResult) {
                 out.name("coupon_code").value(((CouponCodeResult) spendResult).getCode());
             }
-            if(spendResult instanceof JWTBodyConfirmPaymentResult) {
-                out.name("jwt").value(((JWTBodyConfirmPaymentResult) spendResult).getJwt());
+            if(spendResult instanceof JWTBodyPaymentConfirmationResult) {
+                out.name("jwt").value(((JWTBodyPaymentConfirmationResult) spendResult).getJwt());
             }
             out.endObject();
         }
@@ -163,7 +163,7 @@ public class OrderSpendResult {
                                     result = new CouponCodeResult();
                                     break;
                                 case PAYMENT_CONFIRMATION:
-                                    result = new JWTBodyConfirmPaymentResult();
+                                    result = new JWTBodyPaymentConfirmationResult();
                                     break;
                             }
                         }
@@ -173,7 +173,7 @@ public class OrderSpendResult {
                         ((CouponCodeResult) result).setCode(in.nextString());
                         break;
                     case "jwt":
-                        ((JWTBodyConfirmPaymentResult)result).setJwt(in.nextString());
+                        ((JWTBodyPaymentConfirmationResult)result).setJwt(in.nextString());
                         break;
                 }
             }

@@ -1,6 +1,5 @@
 package com.kin.ecosystem.data.model;
 
-
 public class OrderConfirmation {
 
     public enum Status {

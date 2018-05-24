@@ -38,13 +38,14 @@ In order to create a native spend offer in your app
 ### Example from sample app
 In the sample app the spend JWT is created and signed by the Android client side for presentation purpose only- do not use this approach on real production app.
 JWT need to be signed by server side where private key is secure.
-```java
-    String offerJwt = JwtUtil.generateSpendOfferExampleJWT(BuildConfig.SAMPLE_APP_ID);
-        
+```java    
         try {
             Kin.purchase(offerJwt, new Callback<OrderConfirmation>() {
                 @Override
                 public void onResponse(OrderConfirmation orderConfirmation) {
+                    // OrderConfirmation will be called once Ecosystem recieved the payment transaction from user.
+                    // OrderConfirmation can be kept on digital service side as a receipt proving user received his Kin.
+                    
                     // Send confirmation JWT back to the server in order prove that the user
                     // completed the blockchain transaction and purchase can be unlocked for this user.
                     System.out.println("Succeed to create native spend.\n jwtConfirmation: " + orderConfirmation.getJwtConfirmation());

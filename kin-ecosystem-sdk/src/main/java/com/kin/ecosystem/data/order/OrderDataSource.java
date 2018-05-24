@@ -30,6 +30,8 @@ public interface OrderDataSource {
 
     void purchase(String offerJwt, @Nullable final Callback<OrderConfirmation> callback);
 
+    void requestPayment(String offerJwt, Callback<OrderConfirmation> callback);
+
     void addCompletedOrderObserver(@NonNull final Observer<Order> observer);
 
     void removeCompletedOrderObserver(@NonNull final Observer<Order> observer);
