@@ -165,9 +165,10 @@ public class OrderRepositoryTest {
         orderRepository.createOrder(offerID, openOrderCallback);
         verify(remote).createOrder(anyString(), createOrderCapture.capture());
 
-        createOrderCapture.getValue().onFailure(any(Throwable.class));
+        TaskFailedException exception = new TaskFailedException("Some error");
+        createOrderCapture.getValue().onFailure(exception);
         assertNull(orderRepository.getOpenOrder().getValue());
-        verify(openOrderCallback).onFailure(any(Throwable.class));
+        verify(openOrderCallback).onFailure(exception);
         verify(openOrderCallback, never()).onResponse(any(OpenOrder.class));
     }
 

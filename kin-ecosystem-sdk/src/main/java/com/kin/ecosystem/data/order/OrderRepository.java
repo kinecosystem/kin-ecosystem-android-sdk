@@ -244,7 +244,7 @@ public class OrderRepository implements OrderDataSource {
             @Override
             public void onFailure(Throwable t) {
                 if (callback != null) {
-                    callback.onFailure(t);
+                    callback.onFailure(new TaskFailedException(getApiExceptionsMessage(t)));
                 }
             }
         });
