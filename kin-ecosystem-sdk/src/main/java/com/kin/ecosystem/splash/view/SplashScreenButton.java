@@ -15,7 +15,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -46,13 +45,13 @@ public class SplashScreenButton extends FrameLayout {
     private AnimatorSet buttonAnimation;
 
     private int image_index = 0;
-    private final int[] imageResIDs = new int[]{R.drawable.diamond_1, R.drawable.diamond_2, R.drawable.diamond_3};
+    private final int[] imageResIDs = new int[]{R.drawable.kinecosystem_diamond_1, R.drawable.kinecosystem_diamond_2, R.drawable.kinecosystem_diamond_3};
 
-    private final int initialWidth = getResources().getDimensionPixelSize(R.dimen.round_button_width);
-    private final int toWidth = getResources().getDimensionPixelSize(R.dimen.round_button_height);
-    private final int startColor = ContextCompat.getColor(getContext(), R.color.bluePrimary);
+    private final int initialWidth = getResources().getDimensionPixelSize(R.dimen.kinecosystem_round_button_width);
+    private final int toWidth = getResources().getDimensionPixelSize(R.dimen.kinecosystem_round_button_height);
+    private final int startColor = ContextCompat.getColor(getContext(), R.color.kinecosystem_bluePrimary);
 
-    private final float startRadius = getResources().getDimension(R.dimen.button_corners_radius);
+    private final float startRadius = getResources().getDimension(R.dimen.kinecosystem_button_corners_radius);
 
     private static final int BUTTON_ANIM_DURATION = 500;
     private static final int IMAGE_SHOW_DURATION = 400;
@@ -82,7 +81,7 @@ public class SplashScreenButton extends FrameLayout {
     }
 
     private void init() {
-        inflate(getContext(), R.layout.splash_loader, this);
+        inflate(getContext(), R.layout.kinecosystem_splash_loader, this);
         setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         letsGetStartedBtn = findViewById(R.id.lets_get_started_button);

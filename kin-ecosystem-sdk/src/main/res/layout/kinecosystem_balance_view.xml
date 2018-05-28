@@ -10,9 +10,9 @@
         style="@style/KinecosysTitleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/tiny_margin"
-        android:layout_marginLeft="@dimen/main_margin"
-        android:text="@string/kin_balance"
+        android:layout_marginBottom="@dimen/kinecosystem_tiny_margin"
+        android:layout_marginLeft="@dimen/kinecosystem_main_margin"
+        android:text="@string/kinecosystem_kin_balance"
         app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
@@ -20,17 +20,17 @@
         style="@style/KinecosysSubTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/main_margin"
-        android:text="@string/welcome_to_kin_marketplace"
+        android:layout_marginLeft="@dimen/kinecosystem_main_margin"
+        android:text="@string/kinecosystem_welcome_to_kin_marketplace"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/balance_title"
-        tools:text="@string/welcome_to_kin_marketplace"/>
+        tools:text="@string/kinecosystem_welcome_to_kin_marketplace"/>
 
     <TextSwitcher
         android:id="@+id/balance_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/margin_large"
+        android:layout_marginRight="@dimen/kinecosystem_margin_large"
         android:measureAllChildren="false"
         app:layout_constraintBottom_toBottomOf="@+id/sub_title"
         app:layout_constraintRight_toRightOf="parent"
@@ -38,14 +38,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/bluePrimary"
-            android:textSize="@dimen/title_xlarge_size"
+            android:textColor="@color/kinecosystem_bluePrimary"
+            android:textSize="@dimen/kinecosystem_title_xlarge_size"
             tools:text="12,000"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/bluePrimary"
-            android:textSize="@dimen/title_xlarge_size"
+            android:textColor="@color/kinecosystem_bluePrimary"
+            android:textSize="@dimen/kinecosystem_title_xlarge_size"
             />
     </TextSwitcher>
 
@@ -53,8 +53,8 @@
         android:id="@+id/arrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/main_medium_margin"
-        android:src="@drawable/arrow_right"
+        android:layout_marginRight="@dimen/kinecosystem_main_medium_margin"
+        android:src="@drawable/kinecosystem_arrow_right"
         app:layout_constraintBottom_toBottomOf="@+id/sub_title"
         app:layout_constraintLeft_toRightOf="@id/balance_text"
         app:layout_constraintTop_toTopOf="@+id/balance_title"
@@ -64,8 +64,8 @@
         android:id="@+id/bar"
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:layout_marginTop="@dimen/main_medium_margin"
-        android:background="@color/gray_darker"
+        android:layout_marginTop="@dimen/kinecosystem_main_medium_margin"
+        android:background="@color/kinecosystem_gray_darker"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sub_title"/>

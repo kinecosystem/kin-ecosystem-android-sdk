@@ -4,17 +4,17 @@
 
     <application>
         <activity
-            android:label="@string/welcome_to_kin"
+            android:label="@string/kinecosystem_welcome_to_kin"
             android:name=".splash.view.SplashViewActivity"
             android:screenOrientation="portrait"
             android:theme="@style/KinecosysNoActionBar"/>
         <activity
-            android:label="@string/kin_marketplace"
+            android:label="@string/kinecosystem_kin_marketplace"
             android:name=".marketplace.view.MarketplaceActivity"
             android:screenOrientation="portrait"
             android:theme="@style/KinecosysNoActionBar"/>
         <activity
-            android:label="@string/transaction_history"
+            android:label="@string/kinecosystem_transaction_history"
             android:name=".history.view.OrderHistoryActivity"
             android:screenOrientation="portrait"
             android:theme="@style/KinecosysNoActionBar"/>

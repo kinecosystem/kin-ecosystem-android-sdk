@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_bg">
+    android:background="@drawable/kinecosystem_gradient_bg">
 
     <TextView
         android:id="@+id/text"
@@ -14,7 +14,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:textColor="@color/white"
+        android:textColor="@color/kinecosystem_white"
         android:textSize="24sp"
         android:fontFamily="sans-serif-medium"
         android:text="Native Offer Content Activity"

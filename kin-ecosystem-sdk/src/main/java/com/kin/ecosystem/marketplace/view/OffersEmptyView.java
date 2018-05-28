@@ -36,7 +36,7 @@ public class OffersEmptyView extends ConstraintLayout {
     }
 
     private void init() {
-        inflate(getContext(), R.layout.offers_empty_view, this);
+        inflate(getContext(), R.layout.kinecosystem_offers_empty_view, this);
         setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT));
         ovalTop = findViewById(R.id.oval_top);
@@ -73,7 +73,7 @@ public class OffersEmptyView extends ConstraintLayout {
 
     private Animation getSpaceAnimation() {
         if (animation == null) {
-            animation = AnimationUtils.loadAnimation(getContext(), R.anim.oval_spaceship_slide_top);
+            animation = AnimationUtils.loadAnimation(getContext(), R.anim.kinecosystem_oval_spaceship_slide_top);
         }
         return animation;
     }

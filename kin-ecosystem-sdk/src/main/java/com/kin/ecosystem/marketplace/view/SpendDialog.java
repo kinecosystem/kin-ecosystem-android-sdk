@@ -15,7 +15,7 @@ public class SpendDialog extends BottomDialog<ISpendDialogPresenter> implements 
     private ImageView confirmationImage;
 
     public SpendDialog(@NonNull Activity activity, @NonNull ISpendDialogPresenter presenter) {
-        super(activity, presenter, R.layout.dialog_spend);
+        super(activity, presenter, R.layout.kinecosystem_dialog_spend);
         setOwnerActivity(activity);
     }
 
@@ -40,7 +40,7 @@ public class SpendDialog extends BottomDialog<ISpendDialogPresenter> implements 
         Activity owner = getOwnerActivity();
         if (owner != null) {
             owner.startActivity(OrderHistoryActivity.createIntent(getContext(), true));
-            owner.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            owner.overridePendingTransition(R.anim.kinecosystem_slide_in_right, R.anim.kinecosystem_slide_out_left);
         }
     }
 

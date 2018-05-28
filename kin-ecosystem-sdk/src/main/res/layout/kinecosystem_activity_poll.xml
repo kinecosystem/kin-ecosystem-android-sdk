@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:id="@+id/webview_container">
 
-    <include layout="@layout/toolbar_layout"/>
+    <include layout="@layout/kinecosystem_toolbar_layout"/>
 
     <com.kin.ecosystem.web.EcosystemWebView
         android:id="@+id/webview"
