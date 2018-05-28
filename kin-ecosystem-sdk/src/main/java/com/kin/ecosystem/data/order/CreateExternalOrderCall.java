@@ -46,11 +46,7 @@ class CreateExternalOrderCall extends Thread {
             runOnMainThread(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        externalOrderCallbacks.onOrderFailed(e.getResponseBody().getError());
-                    } catch (Exception e) {
-                        externalOrderCallbacks.onOrderFailed("Could not create order");
-                    }
+                    externalOrderCallbacks.onOrderFailed(getApiExceptionsMessage(e));
                 }
             });
             return;
@@ -127,6 +123,18 @@ class CreateExternalOrderCall extends Thread {
 
     private void runOnMainThread(Runnable runnable) {
         mainThreadExecutor.execute(runnable);
+    }
+
+    private String getApiExceptionsMessage(Throwable t) {
+        try {
+            return ((ApiException) t).getResponseBody().getMessage();
+        } catch (Exception e) {
+            return hasMessage(t) ? t.getMessage() : "Task failed";
+        }
+    }
+
+    private boolean hasMessage(Throwable t) {
+        return t != null && t.getMessage() != null && !t.getMessage().isEmpty();
     }
 
     interface ExternalOrderCallbacks {

@@ -420,7 +420,11 @@ public class OrderRepository implements OrderDataSource {
         try {
             return ((ApiException) t).getResponseBody().getMessage();
         } catch (Exception e) {
-            return "task failed";
+            return hasMessage(t) ? t.getMessage() : "Task failed";
         }
+    }
+
+    private boolean hasMessage(Throwable t) {
+        return t != null && t.getMessage() != null && !t.getMessage().isEmpty();
     }
 }
