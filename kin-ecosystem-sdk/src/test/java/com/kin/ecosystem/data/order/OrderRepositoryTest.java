@@ -165,9 +165,10 @@ public class OrderRepositoryTest {
         orderRepository.createOrder(offerID, openOrderCallback);
         verify(remote).createOrder(anyString(), createOrderCapture.capture());
 
-        createOrderCapture.getValue().onFailure(any(Throwable.class));
+        TaskFailedException exception = new TaskFailedException("Some error");
+        createOrderCapture.getValue().onFailure(exception);
         assertNull(orderRepository.getOpenOrder().getValue());
-        verify(openOrderCallback).onFailure(any(TaskFailedException.class));
+        verify(openOrderCallback).onFailure(exception);
         verify(openOrderCallback, never()).onResponse(any(OpenOrder.class));
     }
 
@@ -231,7 +232,7 @@ public class OrderRepositoryTest {
         when(offerRepository.getPendingOffer()).thenReturn(pendingOffer);
 
         submitOrderCapture.getValue().onFailure(new Throwable());
-        verify(orderCallback).onFailure(any(TaskFailedException.class));
+        verify(orderCallback).onFailure(any(Throwable.class));
         verify(orderCallback, never()).onResponse(any(Order.class));
         assertNull(orderRepository.getOpenOrder().getValue());
         verify(offerRepository).setPendingOfferByID(null);
@@ -279,7 +280,7 @@ public class OrderRepositoryTest {
         verify(remote).cancelOrder(anyString(), cancelOrderCapture.capture());
 
         cancelOrderCapture.getValue().onFailure(any(Throwable.class));
-        verify(cancelOrderCallback).onFailure(any(TaskFailedException.class));
+        verify(cancelOrderCallback).onFailure(any(Throwable.class));
         verify(cancelOrderCallback, never()).onResponse(null);
     }
 
