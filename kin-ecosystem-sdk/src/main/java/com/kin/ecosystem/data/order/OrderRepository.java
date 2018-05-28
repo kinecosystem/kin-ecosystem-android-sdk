@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.CallbackAdapter;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.blockchain.IBlockchainSource;
@@ -14,6 +15,7 @@ import com.kin.ecosystem.data.order.CreateExternalOrderCall.ExternalOrderCallbac
 import com.kin.ecosystem.data.order.CreateExternalOrderCall.ExternalSpendOrderCallbacks;
 import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.exception.TaskFailedException;
+import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OpenOrder;
@@ -82,7 +84,7 @@ public class OrderRepository implements OrderDataSource {
 
             @Override
             public void onFailure(Throwable t) {
-                callback.onFailure(new DataNotAvailableException());
+                callback.onFailure(t);
             }
         });
     }
@@ -105,7 +107,7 @@ public class OrderRepository implements OrderDataSource {
             @Override
             public void onFailure(Throwable t) {
                 if (callback != null) {
-                    callback.onFailure(new TaskFailedException("Could not create order for offer: " + offerID));
+                    callback.onFailure(t);
                 }
             }
         });
@@ -130,7 +132,7 @@ public class OrderRepository implements OrderDataSource {
                 removeCachedOpenOrderByID(orderID);
                 removePendingOfferByID(offerID);
                 if (callback != null) {
-                    callback.onFailure(new TaskFailedException("Order: " + orderID + " submission failed"));
+                    callback.onFailure(t);
                 }
             }
         });
@@ -228,8 +230,7 @@ public class OrderRepository implements OrderDataSource {
     @Override
     public void cancelOrder(@NonNull final String offerID, @NonNull final String orderID,
         @Nullable final Callback<Void> callback) {
-        decrementPendingOrdersCount();
-        decrementPaymentObserverCount();
+        decrementCount();
         remoteData.cancelOrder(orderID, new Callback<Void>() {
             @Override
             public void onResponse(Void response) {
@@ -243,7 +244,7 @@ public class OrderRepository implements OrderDataSource {
             @Override
             public void onFailure(Throwable t) {
                 if (callback != null) {
-                    callback.onFailure(new TaskFailedException("Could not cancel order: " + orderID));
+                    callback.onFailure(new TaskFailedException(getApiExceptionsMessage(t)));
                 }
             }
         });
@@ -281,15 +282,13 @@ public class OrderRepository implements OrderDataSource {
             @Override
             public void onOrderConfirmed(String confirmationJwt) {
                 if (callback != null) {
-                    OrderConfirmation orderConfirmation = new OrderConfirmation();
-                    orderConfirmation.setStatus(OrderConfirmation.Status.COMPLETED);
-                    orderConfirmation.setJwtConfirmation(confirmationJwt);
-                    callback.onResponse(orderConfirmation);
+                    callback.onResponse(createOrderConfirmation(confirmationJwt));
                 }
             }
 
             @Override
             public void onOrderFailed(String msg) {
+                decrementCount();
                 handleOnFailure(msg);
             }
 
@@ -308,7 +307,12 @@ public class OrderRepository implements OrderDataSource {
             @Override
             public void onOrderCreated(OpenOrder openOrder) {
                 cachedOpenOrder.postValue(openOrder);
-                submitOrder(openOrder.getOfferId(), null, openOrder.getId(), null);
+                submitOrder(openOrder.getOfferId(), null, openOrder.getId(), new CallbackAdapter<Order>() {
+                    @Override
+                    public void onFailure(Throwable t) {
+                        handleOnFailure(getApiExceptionsMessage(t));
+                    }
+                });
             }
 
             @Override
@@ -320,6 +324,11 @@ public class OrderRepository implements OrderDataSource {
 
             @Override
             public void onOrderFailed(String msg) {
+                decrementCount();
+                handleOnFailure(msg);
+            }
+
+            private void handleOnFailure(String msg) {
                 if (callback != null) {
                     callback.onFailure(new TaskFailedException(msg));
                 }
@@ -400,5 +409,22 @@ public class OrderRepository implements OrderDataSource {
                 callback.onFailure(t);
             }
         });
+    }
+
+    private void decrementCount() {
+        decrementPendingOrdersCount();
+        decrementPaymentObserverCount();
+    }
+
+    private String getApiExceptionsMessage(Throwable t) {
+        try {
+            return ((ApiException) t).getResponseBody().getMessage();
+        } catch (Exception e) {
+            return hasMessage(t) ? t.getMessage() : "Task failed";
+        }
+    }
+
+    private boolean hasMessage(Throwable t) {
+        return t != null && t.getMessage() != null && !t.getMessage().isEmpty();
     }
 }
