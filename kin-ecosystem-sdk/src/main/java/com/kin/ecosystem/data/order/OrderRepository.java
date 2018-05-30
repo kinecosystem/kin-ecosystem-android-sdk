@@ -7,7 +7,7 @@ import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.CallbackAdapter;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.data.blockchain.IBlockchainSource;
+import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.data.offer.OfferDataSource;
@@ -34,7 +34,7 @@ public class OrderRepository implements OrderDataSource {
     private final OrderDataSource.Remote remoteData;
 
     private final OfferDataSource offerRepository;
-    private final IBlockchainSource blockchainSource;
+    private final BlockchainSource blockchainSource;
 
     private OrderList cachedOrderList;
     private ObservableData<OpenOrder> cachedOpenOrder = ObservableData.create();
@@ -44,7 +44,7 @@ public class OrderRepository implements OrderDataSource {
     private static volatile AtomicInteger pendingOrdersCount = new AtomicInteger(0);
     private static volatile AtomicInteger paymentObserverCount = new AtomicInteger(0);
 
-    private OrderRepository(@NonNull final IBlockchainSource blockchainSource,
+    private OrderRepository(@NonNull final BlockchainSource blockchainSource,
         @NonNull final OfferDataSource offerRepository, @NonNull final OrderDataSource.Remote remoteData,
         @NonNull final OrderDataSource.Local localData) {
         this.remoteData = remoteData;
@@ -53,7 +53,7 @@ public class OrderRepository implements OrderDataSource {
         this.blockchainSource = blockchainSource;
     }
 
-    public static void init(@NonNull final IBlockchainSource blockchainSource,
+    public static void init(@NonNull final BlockchainSource blockchainSource,
         @NonNull final OfferDataSource offerRepository, @NonNull final OrderDataSource.Remote remoteData,
         @NonNull final OrderDataSource.Local localData) {
         if (instance == null) {

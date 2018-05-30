@@ -5,7 +5,6 @@ import android.util.Log;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.BaseDialogPresenter;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
-import com.kin.ecosystem.data.blockchain.IBlockchainSource;
 import com.kin.ecosystem.data.order.OrderDataSource;
 import com.kin.ecosystem.marketplace.view.ISpendDialog;
 import com.kin.ecosystem.network.model.Offer;
@@ -21,7 +20,7 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
     private static final String TAG = SpendDialogPresenter.class.getSimpleName();
 
     private final OrderDataSource orderRepository;
-    private final IBlockchainSource blockchainSource;
+    private final BlockchainSource blockchainSource;
 
     private final Handler handler = new Handler();
 

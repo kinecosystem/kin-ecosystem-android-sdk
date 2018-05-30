@@ -10,7 +10,8 @@ import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.auth.AuthLocalData;
 import com.kin.ecosystem.data.auth.AuthRemoteData;
 import com.kin.ecosystem.data.auth.AuthRepository;
-import com.kin.ecosystem.data.blockchain.BlockchainSource;
+import com.kin.ecosystem.data.blockchain.BlockchainSourceImpl;
+import com.kin.ecosystem.data.blockchain.BlockchainSourceLocal;
 import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.offer.OfferRemoteData;
 import com.kin.ecosystem.data.offer.OfferRepository;
@@ -66,15 +67,15 @@ public class Kin {
         observableData.addObserver(new Observer<String>() {
             @Override
             public void onChanged(String appID) {
-                BlockchainSource.getInstance().setAppID(appID);
+                BlockchainSourceImpl.getInstance().setAppID(appID);
             }
         });
 
-        BlockchainSource.getInstance().setAppID(appID);
+        BlockchainSourceImpl.getInstance().setAppID(appID);
     }
 
     private static void initBlockchain(Context context) throws InitializeException {
-        BlockchainSource.init(context);
+        BlockchainSourceImpl.init(context, BlockchainSourceLocal.getInstance(context));
     }
 
     private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
@@ -96,7 +97,7 @@ public class Kin {
     }
 
     private static void initOrderRepository(@NonNull final Context context) {
-        OrderRepository.init(BlockchainSource.getInstance(), OfferRepository.getInstance(),
+        OrderRepository.init(BlockchainSourceImpl.getInstance(), OfferRepository.getInstance(),
             OrderRemoteData.getInstance(instance.executorsUtil),
             OrderLocalData.getInstance(context, instance.executorsUtil));
     }
@@ -107,6 +108,11 @@ public class Kin {
         }
     }
 
+    /**
+     * Launch Kin Marketplace if the user is activated, otherwise it will launch Welcome to Kin page.
+     * @param activity the activity user can go back to.
+     * @throws TaskFailedException
+     */
     public static void launchMarketplace(@NonNull final Activity activity) throws TaskFailedException {
         checkInstanceNotNull();
         boolean isActivated = AuthRepository.getInstance().isActivated();
@@ -127,14 +133,33 @@ public class Kin {
         activity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
+    /**
+     * @return The account public address
+     * @throws TaskFailedException
+     */
     public static String getPublicAddress() throws TaskFailedException {
         checkInstanceNotNull();
-        return BlockchainSource.getInstance().getPublicAddress();
+        return BlockchainSourceImpl.getInstance().getPublicAddress();
     }
 
+    /**
+     * Get the cached balance, can be different from the current balance on the network.
+     * @return balance amount
+     * @throws TaskFailedException
+     */
+    public static Integer getCachedBalance() throws TaskFailedException {
+        checkInstanceNotNull();
+        return BlockchainSourceImpl.getInstance().getBalance();
+    }
+
+    /**
+     * Get the current account balance from the network.
+     * @param callback balance amount
+     * @throws TaskFailedException
+     */
     public static void getBalance(@NonNull final Callback<Integer> callback) throws TaskFailedException {
         checkInstanceNotNull();
-        BlockchainSource.getInstance().getBalance(callback);
+        BlockchainSourceImpl.getInstance().getBalance(callback);
     }
 
     /**

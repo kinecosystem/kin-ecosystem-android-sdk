@@ -174,6 +174,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void getBalance() {
         try {
+            //Get Cached Balance
+            int cachedBalance = Kin.getCachedBalance();
+            Log.d(TAG, "getBalance: Cached Balance is: " + cachedBalance);
+
+
             Kin.getBalance(new Callback<Integer>() {
                 @Override
                 public void onResponse(Integer balance) {

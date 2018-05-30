@@ -11,7 +11,7 @@ import com.chad.library.adapter.base.BaseRecyclerAdapter;
 import com.chad.library.adapter.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseToolbarActivity;
-import com.kin.ecosystem.data.blockchain.BlockchainSource;
+import com.kin.ecosystem.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.exception.TaskFailedException;
@@ -63,7 +63,7 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         attachPresenter(new MarketplacePresenter(OfferRepository.getInstance(), OrderRepository.getInstance(),
-            BlockchainSource.getInstance()));
+            BlockchainSourceImpl.getInstance()));
     }
 
     @Override
