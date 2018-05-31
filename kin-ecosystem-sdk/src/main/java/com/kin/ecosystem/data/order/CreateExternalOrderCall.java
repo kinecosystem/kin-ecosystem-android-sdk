@@ -11,6 +11,8 @@ import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.util.ExecutorsUtil.MainThreadExecutor;
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 class CreateExternalOrderCall extends Thread {
 
@@ -43,12 +45,17 @@ class CreateExternalOrderCall extends Thread {
                 }
             });
         } catch (final ApiException e) {
-            runOnMainThread(new Runnable() {
-                @Override
-                public void run() {
-                    externalOrderCallbacks.onOrderFailed(getApiExceptionsMessage(e));
-                }
-            });
+            if (isOrderConflictError(e)) {
+                String orderID = extractOrderID(e.getResponseHeaders());
+                getOrder(orderID);
+            } else {
+                runOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        externalOrderCallbacks.onOrderFailed(getApiExceptionsMessage(e));
+                    }
+                });
+            }
             return;
         }
 
@@ -87,6 +94,22 @@ class CreateExternalOrderCall extends Thread {
                 }
             }
         });
+    }
+
+    private String extractOrderID(Map<String, List<String>> responseHeaders) {
+        String orderID = null;
+        List<String> locationList = responseHeaders.get("location");
+        if (locationList != null && locationList.size() > 0) {
+            String url = locationList.get(0);
+            String[] parts = url.split("/");
+            orderID = parts[parts.length - 1];
+        }
+
+        return orderID;
+    }
+
+    private boolean isOrderConflictError(ApiException e) {
+        return e.getCode() == 409 && e.getResponseBody().getCode() == 4091;
     }
 
     private boolean isPaymentOrderEquals(Payment payment, String orderId) {
