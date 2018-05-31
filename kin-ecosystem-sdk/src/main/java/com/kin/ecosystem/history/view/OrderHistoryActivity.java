@@ -35,17 +35,17 @@ public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderH
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.activity_order_history;
+        return R.layout.kinecosystem_activity_order_history;
     }
 
     @Override
     protected int getTitleRes() {
-        return R.string.transaction_history;
+        return R.string.kinecosystem_transaction_history;
     }
 
     @Override
     public int getNavigationIcon() {
-        return R.drawable.ic_back;
+        return R.drawable.kinecosystem_ic_back;
     }
 
     @Override

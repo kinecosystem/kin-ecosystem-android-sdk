@@ -39,29 +39,29 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
     private static final String TRANSACTION_FAILED_MSG = "Transaction failed";
 
     OrderHistoryRecyclerAdapter() {
-        super(R.layout.order_history_recycler_item);
+        super(R.layout.kinecosystem_order_history_recycler_item);
         openLoadAnimation(SLIDEIN_TOP);
     }
 
     private void initColors(Context context) {
         if (colorBlue == NOT_INITIALIZED) {
-            colorBlue = ContextCompat.getColor(context, R.color.bluePrimary);
+            colorBlue = ContextCompat.getColor(context, R.color.kinecosystem_bluePrimary);
         }
         if (colorRed == NOT_INITIALIZED) {
-            colorRed = ContextCompat.getColor(context, R.color.red);
+            colorRed = ContextCompat.getColor(context, R.color.kinecosystem_red);
         }
         if (colorGrayLight == NOT_INITIALIZED) {
-            colorGrayLight = ContextCompat.getColor(context, R.color.gray_light);
+            colorGrayLight = ContextCompat.getColor(context, R.color.kinecosystem_gray_light);
         }
     }
 
     private void initSizes(Context context) {
         Resources resources = context.getResources();
         if (subTitleFontSize == NOT_INITIALIZED) {
-            subTitleFontSize = resources.getDimensionPixelSize(R.dimen.sub_title_size);
+            subTitleFontSize = resources.getDimensionPixelSize(R.dimen.kinecosystem_sub_title_size);
         }
         if (itemHeight == NOT_INITIALIZED) {
-            itemHeight = resources.getDimensionPixelOffset(R.dimen.order_history_item_height);
+            itemHeight = resources.getDimensionPixelOffset(R.dimen.kinecosystem_order_history_item_height);
             itemHalfHeight = itemHeight / 2;
         }
     }
@@ -105,10 +105,10 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
             if (item.getStatus() == Status.COMPLETED) {
                 String amount = getAmountFormatted(item.getAmount());
                 if (item.getOfferType() == OfferType.SPEND) {
-                    setImageResource(R.id.amount_ico, R.drawable.invoice);
+                    setImageResource(R.id.amount_ico, R.drawable.kinecosystem_invoice);
                     setText(R.id.amount_text, MINUS_SIGN + amount);
                 } else {
-                    setImageResource(R.id.amount_ico, R.drawable.coins);
+                    setImageResource(R.id.amount_ico, R.drawable.kinecosystem_coins);
                     setText(R.id.amount_text, PLUS_SIGN + amount);
                 }
             }

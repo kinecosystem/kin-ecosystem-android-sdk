@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/info_menu"
-        android:title="@string/info_menu"
+        android:title="@string/kinecosystem_info_menu"
         app:showAsAction="always"
-        android:icon="@drawable/info_icon"/>
+        android:icon="@drawable/kinecosystem_info_icon"/>
 
 </menu>

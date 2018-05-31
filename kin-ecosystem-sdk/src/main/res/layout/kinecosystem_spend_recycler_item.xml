@@ -11,13 +11,13 @@
         android:id="@+id/image"
         android:layout_width="300dp"
         android:layout_height="90dp"
-        android:background="@drawable/item_bg_placeholder"/>
+        android:background="@drawable/kinecosystem_item_bg_placeholder"/>
 
     <FrameLayout
         android:id="@+id/earn_title_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/block_medium_margin">
+        android:layout_marginTop="@dimen/kinecosystem_block_medium_margin">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -29,7 +29,7 @@
                 style="@style/KinecosysSubTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/title"
+                android:textColor="@color/kinecosystem_title"
                 android:maxLength="24"
                 tools:text="Spotify"/>
 
@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:gravity="right"
-            android:textColor="@color/bluePrimary"
+            android:textColor="@color/kinecosystem_bluePrimary"
             tools:text="2,000 KIN"/>
 
     </FrameLayout>

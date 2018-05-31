@@ -1,28 +1,28 @@
 <resources>
     <!--Activity Name-->
-    <string name="kin_marketplace">Kin Marketplace</string>
-    <string name="transaction_history">Transaction History</string>
+    <string name="kinecosystem_kin_marketplace">Kin Marketplace</string>
+    <string name="kinecosystem_transaction_history">Transaction History</string>
 
     <!--Button-->
-    <string name="more">MORE</string>
-    <string name="spend">Spend</string>
-    <string name="earn">Earn</string>
-    <string name="let_s_get_started">Let\'s Get Started!</string>
-    <string name="confirm">Confirm</string>
-    <string name="copy_code">Copy Code</string>
+    <string name="kinecosystem_more">MORE</string>
+    <string name="kinecosystem_spend">Spend</string>
+    <string name="kinecosystem_earn">Earn</string>
+    <string name="kinecosystem_let_s_get_started">Let\'s Get Started!</string>
+    <string name="kinecosystem_confirm">Confirm</string>
+    <string name="kinecosystem_copy_code">Copy Code</string>
 
     <!--Sentence-->
-    <string name="kin_balance">Kin Balance</string>
-    <string name="complete_tasks_and_earn_kin">Complete tasks and earn KIN</string>
-    <string name="use_your_kin_to_enjoy_stuff_you_like">Use your KIN to enjoy stuff you like</string>
-    <string name="welcome_to_kin">Welcome to Kin!</string>
-    <string name="welcome_kin_info">Kin puts you at the center of your digital life\nby letting you get recognized and rewarded\nfor the time, energy, ideas, opinions,\nand creativity you share online.</string>
-    <string name="digging_for_gems">Digging for Gems…</string>
-    <string name="welcome_to_kin_marketplace">Welcome to Kin Marketplace</string>
-    <string name="something_went_wrong">Oops something went wrong…</string>
+    <string name="kinecosystem_kin_balance">Kin Balance</string>
+    <string name="kinecosystem_complete_tasks_and_earn_kin">Complete tasks and earn KIN</string>
+    <string name="kinecosystem_use_your_kin_to_enjoy_stuff_you_like">Use your KIN to enjoy stuff you like</string>
+    <string name="kinecosystem_welcome_to_kin">Welcome to Kin!</string>
+    <string name="kinecosystem_welcome_kin_info">Kin puts you at the center of your digital life\nby letting you get recognized and rewarded\nfor the time, energy, ideas, opinions,\nand creativity you share online.</string>
+    <string name="kinecosystem_digging_for_gems">Digging for Gems…</string>
+    <string name="kinecosystem_welcome_to_kin_marketplace">Welcome to Kin Marketplace</string>
+    <string name="kinecosystem_something_went_wrong">Oops something went wrong…</string>
 
     <!--Menu-->
-    <string name="info_menu">Info</string>
+    <string name="kinecosystem_info_menu">Info</string>
 
 
 </resources>

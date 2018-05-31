@@ -2,17 +2,17 @@
 <resources>
 
     <style name="KinecosysNoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/bluePrimary</item>
-        <item name="colorPrimaryDark">@color/bluePrimaryDark</item>
+        <item name="colorPrimary">@color/kinecosystem_bluePrimary</item>
+        <item name="colorPrimaryDark">@color/kinecosystem_bluePrimaryDark</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name = "android:windowBackground">@color/white</item>
+        <item name = "android:windowBackground">@color/kinecosystem_white</item>
     </style>
 
     <style name="KinecosysToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="android:background">@color/bluePrimary</item>
+        <item name="android:background">@color/kinecosystem_bluePrimary</item>
         <!-- android:textColorPrimary is the color of the title text in the Toolbar  -->
-        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorPrimary">@color/kinecosystem_white</item>
 
         <!-- Enable clicking icons to trigger a ripple effect -->
         <item name="selectableItemBackground">?android:selectableItemBackground</item>
@@ -27,16 +27,16 @@
     </style>
 
     <style name="KinecosysTextBase">
-        <item name="android:textColor">@color/title</item>
+        <item name="android:textColor">@color/kinecosystem_title</item>
         <item name="android:ellipsize">end</item>
     </style>
 
     <style name="KinecosysLargeTitleText" parent="KinecosysTextBase">
-        <item name="android:textSize">@dimen/title_large_size</item>
+        <item name="android:textSize">@dimen/kinecosystem_title_large_size</item>
     </style>
 
     <style name="KinecosysTitleText" parent="KinecosysTextBase">
-        <item name="android:textSize">@dimen/title_size</item>
+        <item name="android:textSize">@dimen/kinecosystem_title_size</item>
     </style>
 
     <style name="KinecosysTitleTextMedium" parent="KinecosysTitleText">
@@ -44,8 +44,8 @@
     </style>
 
     <style name="KinecosysSubTitle" parent="KinecosysTitleText">
-        <item name="android:textSize">@dimen/sub_title_size</item>
-        <item name="android:textColor">@color/subtitle</item>
+        <item name="android:textSize">@dimen/kinecosystem_sub_title_size</item>
+        <item name="android:textColor">@color/kinecosystem_subtitle</item>
     </style>
 
     <style name="KinecosysSubTitleMedium" parent="KinecosysSubTitle">
@@ -53,10 +53,10 @@
     </style>
 
     <style name="KinecosysSmallTitle" parent="KinecosysTitleText">
-        <item name="android:textSize">@dimen/small_title_size</item>
+        <item name="android:textSize">@dimen/kinecosystem_small_title_size</item>
     </style>
 
-    <style name="FullScreenDialogStyle">
+    <style name="KinecosysFullScreenDialogStyle">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:backgroundDimEnabled">true</item>
@@ -64,8 +64,8 @@
         <item name="android:windowCloseOnTouchOutside">true</item>
     </style>
 
-    <style name="BottomAnimationDialog">
-        <item name="android:windowEnterAnimation">@anim/slide_up</item>
-        <item name="android:windowExitAnimation">@anim/slide_down</item>
+    <style name="KinecosysBottomAnimationDialog">
+        <item name="android:windowEnterAnimation">@anim/kinecosystem_slide_up</item>
+        <item name="android:windowExitAnimation">@anim/kinecosystem_slide_down</item>
     </style>
 </resources>

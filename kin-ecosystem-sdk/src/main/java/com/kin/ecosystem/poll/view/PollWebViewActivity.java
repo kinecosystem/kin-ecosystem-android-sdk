@@ -29,7 +29,7 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.activity_poll;
+        return R.layout.kinecosystem_activity_poll;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
 
     @Override
     protected int getNavigationIcon() {
-        return R.drawable.ic_close_white_24dp;
+        return R.drawable.kinecosystem_ic_close_white_24dp;
     }
 
     @Override

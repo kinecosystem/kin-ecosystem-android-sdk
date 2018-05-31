@@ -34,7 +34,7 @@ public class CouponDialogPresenter extends BaseDialogPresenter<ICouponDialog> im
             if(coupon.getCouponCode() != null) {
                 view.setupCouponCode(coupon.getCouponCode().getCode());
             }
-            view.setUpButtonText(R.string.copy_code);
+            view.setUpButtonText(R.string.kinecosystem_copy_code);
         }
     }
 

@@ -36,17 +36,17 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.activity_marketplace;
+        return R.layout.kinecosystem_activity_marketplace;
     }
 
     @Override
     protected int getTitleRes() {
-        return R.string.kin_marketplace;
+        return R.string.kinecosystem_kin_marketplace;
     }
 
     @Override
     protected int getNavigationIcon() {
-        return R.drawable.ic_back;
+        return R.drawable.kinecosystem_ic_back;
     }
 
     @Override
@@ -81,8 +81,8 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     @Override
     protected void initViews() {
         //Space item decoration for both of the recyclers
-        int margin = getResources().getDimensionPixelOffset(R.dimen.main_margin);
-        int space = getResources().getDimensionPixelOffset(R.dimen.offer_item_list_space);
+        int margin = getResources().getDimensionPixelOffset(R.dimen.kinecosystem_main_margin);
+        int space = getResources().getDimensionPixelOffset(R.dimen.kinecosystem_offer_item_list_space);
         SpaceItemDecoration itemDecoration = new SpaceItemDecoration(margin, space);
 
         //Spend Recycler
@@ -122,7 +122,7 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        overridePendingTransition(0, R.anim.slide_out_right);
+        overridePendingTransition(0, R.anim.kinecosystem_slide_out_right);
     }
 
     @Override
@@ -183,7 +183,7 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
 
     @Override
     public void showSomethingWentWrong() {
-        showToast(getString(R.string.something_went_wrong));
+        showToast(getString(R.string.kinecosystem_something_went_wrong));
     }
 
     @Override

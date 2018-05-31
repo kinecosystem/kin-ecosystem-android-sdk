@@ -21,14 +21,14 @@ public class KinDashView extends View {
         super(context, attrs);
         int dashGap, dashLength, dashThickness;
         int color;
-        TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.KinDashView, 0, 0);
+        TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.KinEcosystemDashView, 0, 0);
 
         try {
-            dashGap = styledAttributes.getDimensionPixelSize(R.styleable.KinDashView_dashGap, 5);
-            dashLength = styledAttributes.getDimensionPixelSize(R.styleable.KinDashView_dashLength, 5);
-            dashThickness = styledAttributes.getDimensionPixelSize(R.styleable.KinDashView_dashThickness, 3);
-            color = styledAttributes.getColor(R.styleable.KinDashView_color, 0xff000000);
-            orientation = styledAttributes.getInt(R.styleable.KinDashView_orientation, ORIENTATION_HORIZONTAL);
+            dashGap = styledAttributes.getDimensionPixelSize(R.styleable.KinEcosystemDashView_dashGap, 5);
+            dashLength = styledAttributes.getDimensionPixelSize(R.styleable.KinEcosystemDashView_dashLength, 5);
+            dashThickness = styledAttributes.getDimensionPixelSize(R.styleable.KinEcosystemDashView_dashThickness, 3);
+            color = styledAttributes.getColor(R.styleable.KinEcosystemDashView_color, 0xff000000);
+            orientation = styledAttributes.getInt(R.styleable.KinEcosystemDashView_orientation, ORIENTATION_HORIZONTAL);
         } finally {
             styledAttributes.recycle();
         }

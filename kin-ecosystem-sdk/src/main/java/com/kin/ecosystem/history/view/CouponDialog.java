@@ -20,7 +20,7 @@ public class CouponDialog extends BottomDialog<IBottomDialogPresenter> implement
     private TextView couponCode;
 
     public CouponDialog(@NonNull Context context, @NonNull IBottomDialogPresenter presenter) {
-        super(context, presenter, R.layout.dialog_coupon_code);
+        super(context, presenter, R.layout.kinecosystem_dialog_coupon_code);
 
     }
 
