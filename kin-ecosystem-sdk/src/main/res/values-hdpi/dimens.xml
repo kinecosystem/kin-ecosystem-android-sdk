@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<dimen name="main_margin">14dp</dimen>
-	<dimen name="main_medium_margin">12dp</dimen>
-	<dimen name="main_small_margin">9dp</dimen>
+	<dimen name="kinecosystem_main_margin">14dp</dimen>
+	<dimen name="kinecosystem_main_medium_margin">12dp</dimen>
+	<dimen name="kinecosystem_main_small_margin">9dp</dimen>
 
-	<dimen name="block_margin">7dp</dimen>
-	<dimen name="block_medium_margin">5dp</dimen>
-	<dimen name="tiny_margin">0.5dp</dimen>
+	<dimen name="kinecosystem_block_margin">7dp</dimen>
+	<dimen name="kinecosystem_block_medium_margin">5dp</dimen>
+	<dimen name="kinecosystem_tiny_margin">0.5dp</dimen>
 
-	<dimen name="offer_item_list_space">18dp</dimen>
+	<dimen name="kinecosystem_offer_item_list_space">18dp</dimen>
 
-	<dimen name="round_button_height">35dp</dimen>
-	<dimen name="round_button_width">250dp</dimen>
+	<dimen name="kinecosystem_round_button_height">35dp</dimen>
+	<dimen name="kinecosystem_round_button_width">250dp</dimen>
 
-	<dimen name="margin_large">20dp</dimen>
-	<dimen name="margin_xlarge">50dp</dimen>
+	<dimen name="kinecosystem_margin_large">20dp</dimen>
+	<dimen name="kinecosystem_margin_xlarge">50dp</dimen>
 
-	<dimen name="bottom_margin">35dp</dimen>
+	<dimen name="kinecosystem_bottom_margin">35dp</dimen>
 
 	<!--Text size-->
-	<dimen name="welcome_text_size">25sp</dimen>
-	<dimen name="title_xlarge_size">19sp</dimen>
-	<dimen name="title_large_size">17sp</dimen>
-	<dimen name="title_size">13sp</dimen>
-	<dimen name="sub_title_size">11sp</dimen>
-	<dimen name="small_title_size">9sp</dimen>
-	<dimen name="text_line_spacing">1sp</dimen>
+	<dimen name="kinecosystem_welcome_text_size">25sp</dimen>
+	<dimen name="kinecosystem_title_xlarge_size">19sp</dimen>
+	<dimen name="kinecosystem_title_large_size">17sp</dimen>
+	<dimen name="kinecosystem_title_size">13sp</dimen>
+	<dimen name="kinecosystem_sub_title_size">11sp</dimen>
+	<dimen name="kinecosystem_small_title_size">9sp</dimen>
+	<dimen name="kinecosystem_text_line_spacing">1sp</dimen>
 </resources>

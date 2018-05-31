@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<dimen name="main_margin">16dp</dimen>
-	<dimen name="main_medium_margin">14dp</dimen>
-	<dimen name="main_small_margin">12dp</dimen>
+	<dimen name="kinecosystem_main_margin">16dp</dimen>
+	<dimen name="kinecosystem_main_medium_margin">14dp</dimen>
+	<dimen name="kinecosystem_main_small_margin">12dp</dimen>
 
-	<dimen name="block_margin">9dp</dimen>
-	<dimen name="block_medium_margin">7dp</dimen>
-	<dimen name="tiny_margin">2dp</dimen>
+	<dimen name="kinecosystem_block_margin">9dp</dimen>
+	<dimen name="kinecosystem_block_medium_margin">7dp</dimen>
+	<dimen name="kinecosystem_tiny_margin">2dp</dimen>
 
-	<dimen name="offer_item_list_space">20dp</dimen>
+	<dimen name="kinecosystem_offer_item_list_space">20dp</dimen>
 
-	<dimen name="round_button_height">50dp</dimen>
-	<dimen name="round_button_width">300dp</dimen>
+	<dimen name="kinecosystem_round_button_height">50dp</dimen>
+	<dimen name="kinecosystem_round_button_width">300dp</dimen>
 
-	<dimen name="margin_large">30dp</dimen>
-	<dimen name="margin_xlarge">60dp</dimen>
+	<dimen name="kinecosystem_margin_large">30dp</dimen>
+	<dimen name="kinecosystem_margin_xlarge">60dp</dimen>
 
-	<dimen name="bottom_margin">60dp</dimen>
+	<dimen name="kinecosystem_bottom_margin">60dp</dimen>
 
 
 	<!--Text size-->
-	<dimen name="welcome_text_size">30sp</dimen>
-	<dimen name="title_xlarge_size">24sp</dimen>
-	<dimen name="title_large_size">22sp</dimen>
-	<dimen name="title_size">18sp</dimen>
-	<dimen name="sub_title_size">14sp</dimen>
-	<dimen name="small_title_size">12sp</dimen>
-	<dimen name="text_line_spacing">4sp</dimen>
+	<dimen name="kinecosystem_welcome_text_size">30sp</dimen>
+	<dimen name="kinecosystem_title_xlarge_size">24sp</dimen>
+	<dimen name="kinecosystem_title_large_size">22sp</dimen>
+	<dimen name="kinecosystem_title_size">18sp</dimen>
+	<dimen name="kinecosystem_sub_title_size">14sp</dimen>
+	<dimen name="kinecosystem_small_title_size">12sp</dimen>
+	<dimen name="kinecosystem_text_line_spacing">4sp</dimen>
 
 </resources>

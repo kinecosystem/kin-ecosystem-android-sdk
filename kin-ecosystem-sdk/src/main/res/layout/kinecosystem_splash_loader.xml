@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="android.widget.FrameLayout">
+
+    <Button
+        android:id="@+id/lets_get_started_button"
+        android:layout_width="@dimen/kinecosystem_round_button_width"
+        android:layout_height="@dimen/kinecosystem_round_button_height"
+        android:layout_margin="@dimen/kinecosystem_block_margin"
+        android:layout_gravity="center"
+        android:background="@drawable/kinecosystem_button_background_white_rounded"
+        android:gravity="center"
+        android:text="@string/kinecosystem_let_s_get_started"
+        android:textAllCaps="false"
+        android:textColor="@color/kinecosystem_bluePrimary"
+        android:visibility="visible"/>
+
+    <View
+        android:id="@+id/circle_dash"
+        android:layout_width="@dimen/kinecosystem_round_button_height"
+        android:layout_height="@dimen/kinecosystem_round_button_height"
+        android:layout_gravity="center"
+        android:background="@drawable/kinecosystem_circle_dash_line"/>
+
+    <ImageView
+        android:id="@+id/center_image"
+        android:layout_width="@dimen/kinecosystem_round_button_height"
+        android:layout_height="@dimen/kinecosystem_round_button_height"
+        android:layout_gravity="center"
+        android:padding="@dimen/kinecosystem_main_small_margin"
+        android:src="@drawable/kinecosystem_diamond_1"
+        />
+
+</merge>

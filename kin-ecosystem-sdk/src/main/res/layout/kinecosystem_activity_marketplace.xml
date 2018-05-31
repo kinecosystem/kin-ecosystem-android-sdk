@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:weightSum="1">
 
-    <include layout="@layout/toolbar_layout"/>
+    <include layout="@layout/kinecosystem_toolbar_layout"/>
 
     <com.kin.ecosystem.balance.view.BalanceView
         android:id="@+id/balance_view"
@@ -27,9 +27,9 @@
             android:id="@+id/earn_title_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/block_margin"
-            android:layout_marginLeft="@dimen/main_margin"
-            android:layout_marginRight="@dimen/main_margin"
+            android:layout_marginTop="@dimen/kinecosystem_block_margin"
+            android:layout_marginLeft="@dimen/kinecosystem_main_margin"
+            android:layout_marginRight="@dimen/kinecosystem_main_margin"
             android:orientation="vertical"
             >
 
@@ -38,15 +38,15 @@
                 style="@style/KinecosysTitleTextMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/tiny_margin"
-                android:text="@string/earn"/>
+                android:layout_marginBottom="@dimen/kinecosystem_tiny_margin"
+                android:text="@string/kinecosystem_earn"/>
 
             <TextView
                 android:id="@+id/earn_subtitle"
                 style="@style/KinecosysSubTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/complete_tasks_and_earn_kin"/>
+                android:text="@string/kinecosystem_complete_tasks_and_earn_kin"/>
 
         </LinearLayout>
 
@@ -55,14 +55,14 @@
             android:id="@+id/earn_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/main_small_margin"/>
+            android:layout_marginTop="@dimen/kinecosystem_main_small_margin"/>
 
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/gray_darker"/>
+        android:background="@color/kinecosystem_gray_darker"/>
 
     <LinearLayout
         android:id="@+id/spend_container"
@@ -76,9 +76,9 @@
             android:id="@+id/spend_title_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/block_margin"
-            android:layout_marginLeft="@dimen/main_margin"
-            android:layout_marginRight="@dimen/main_margin"
+            android:layout_marginTop="@dimen/kinecosystem_block_margin"
+            android:layout_marginLeft="@dimen/kinecosystem_main_margin"
+            android:layout_marginRight="@dimen/kinecosystem_main_margin"
             android:orientation="vertical">
 
             <TextView
@@ -86,15 +86,15 @@
                 style="@style/KinecosysTitleTextMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/tiny_margin"
-                android:text="@string/spend"/>
+                android:layout_marginBottom="@dimen/kinecosystem_tiny_margin"
+                android:text="@string/kinecosystem_spend"/>
 
             <TextView
                 android:id="@+id/spend_subtitle"
                 style="@style/KinecosysSubTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/use_your_kin_to_enjoy_stuff_you_like"/>
+                android:text="@string/kinecosystem_use_your_kin_to_enjoy_stuff_you_like"/>
         </LinearLayout>
 
 
@@ -102,7 +102,7 @@
             android:id="@+id/spend_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/main_small_margin"/>
+            android:layout_marginTop="@dimen/kinecosystem_main_small_margin"/>
     </LinearLayout>
 
 </LinearLayout>

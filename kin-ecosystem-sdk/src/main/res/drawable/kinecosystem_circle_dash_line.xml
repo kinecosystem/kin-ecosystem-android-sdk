@@ -6,13 +6,13 @@
             android:shape="oval"
             android:thicknessRatio="2">
 
-            <solid android:color="@color/transparent"/>
+            <solid android:color="@color/kinecosystem_transparent"/>
 
             <stroke
-                android:color="@color/cyan"
+                android:color="@color/kinecosystem_cyan"
                 android:dashGap="3dp"
                 android:dashWidth="5dp"
-                android:width="@dimen/stroke_padding"/>
+                android:width="@dimen/kinecosystem_stroke_padding"/>
 
         </shape>
     </item>
@@ -26,7 +26,7 @@
             android:shape="oval"
             android:thicknessRatio="2">
 
-            <solid android:color="@color/white"/>
+            <solid android:color="@color/kinecosystem_white"/>
 
         </shape>
     </item>

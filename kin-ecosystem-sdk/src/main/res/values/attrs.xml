@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="KinDashView">
+    <declare-styleable name="KinEcosystemDashView">
         <attr format="color" name="color"/>
         <attr format="dimension" name="dashLength"/>
         <attr format="dimension" name="dashGap"/>
@@ -11,7 +11,7 @@
         </attr>
     </declare-styleable>
 
-    <declare-styleable name="BalanceView">
+    <declare-styleable name="KinEcosystemBalanceView">
         <attr format="boolean" name="showArrow"/>
     </declare-styleable>
 </resources>

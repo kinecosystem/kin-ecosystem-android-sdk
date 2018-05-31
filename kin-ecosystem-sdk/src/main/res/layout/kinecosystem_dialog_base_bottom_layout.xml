@@ -6,16 +6,16 @@
     android:id="@+id/spend_dialog_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
+    android:background="@color/kinecosystem_white"
     android:animateLayoutChanges="true">
 
     <ImageView
         android:id="@+id/close_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/main_margin"
-        android:layout_marginRight="@dimen/main_margin"
-        android:src="@drawable/close_icon"
+        android:layout_marginTop="@dimen/kinecosystem_main_margin"
+        android:layout_marginRight="@dimen/kinecosystem_main_margin"
+        android:src="@drawable/kinecosystem_close_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
@@ -23,12 +23,13 @@
         android:id="@+id/brand_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
+        android:layout_marginTop="@dimen/kinecosystem_main_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/close_button"
         tools:layout_height="110dp"
-        tools:layout_width="152dp"/>
+        tools:layout_width="152dp"
+        tools:background="@drawable/kinecosystem_placeholder"/>
 
     <TextView
         android:id="@+id/title"
@@ -38,7 +39,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/brand_image"
-        tools:text="Redeem code - 8,000 Kin"/>
+        tools:text="Title"/>
 
     <TextView
         android:id="@+id/description"
@@ -46,43 +47,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxLines="2"
-        android:layout_marginTop="@dimen/block_margin"
-        android:paddingLeft="@dimen/margin_large"
-        android:paddingRight="@dimen/margin_large"
+        android:layout_marginTop="@dimen/kinecosystem_block_margin"
+        android:paddingLeft="@dimen/kinecosystem_margin_large"
+        android:paddingRight="@dimen/kinecosystem_margin_large"
         android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title"
-        tools:text="Once you have confirmed this purchase,  you can go to your balance to get your code"/>
+        tools:text="Description"/>
 
 
     <Button
         android:id="@+id/confirm_button"
-        android:layout_width="@dimen/round_button_width"
-        android:layout_height="@dimen/round_button_height"
-        android:layout_marginTop="@dimen/margin_xlarge"
-        android:layout_marginBottom="@dimen/margin_large"
-        android:background="@drawable/button_blue_rounded"
+        android:layout_width="@dimen/kinecosystem_round_button_width"
+        android:layout_height="@dimen/kinecosystem_round_button_height"
+        android:layout_marginTop="@dimen/kinecosystem_margin_xlarge"
+        android:layout_marginBottom="@dimen/kinecosystem_margin_large"
+        android:background="@drawable/kinecosystem_button_blue_rounded"
         android:gravity="center"
-        android:text="@string/confirm"
+        android:text="@string/kinecosystem_confirm"
         android:textAllCaps="false"
-        android:textColor="@color/white"
+        android:textColor="@color/kinecosystem_white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title"/>
-
-    <ImageView
-        android:id="@+id/confirmation_image"
-        android:layout_width="@dimen/round_button_height"
-        android:layout_height="@dimen/round_button_height"
-        android:layout_marginTop="@dimen/margin_xlarge"
-        android:layout_marginBottom="@dimen/margin_large"
-        android:src="@drawable/v_mark"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title"/>
-
 
 </android.support.constraint.ConstraintLayout>
