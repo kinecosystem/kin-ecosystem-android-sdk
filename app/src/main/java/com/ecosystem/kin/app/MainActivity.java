@@ -176,26 +176,33 @@ public class MainActivity extends AppCompatActivity {
         try {
             //Get Cached Balance
             int cachedBalance = Kin.getCachedBalance();
-            Log.d(TAG, "getBalance: Cached Balance is: " + cachedBalance);
-
+            setBalanceWithAmount(cachedBalance);
 
             Kin.getBalance(new Callback<Integer>() {
                 @Override
                 public void onResponse(Integer balance) {
                     enableView(balanceView, true);
-                    balanceView.setText(getString(R.string.get_balance_d, balance));
+                    setBalanceWithAmount(balance);
                 }
 
                 @Override
                 public void onFailure(Throwable t) {
                     enableView(balanceView, true);
-                    balanceView.setText(R.string.failed_to_get_balance);
+                    setBalanceFailed();
                 }
             });
         } catch (TaskFailedException e) {
-            balanceView.setText(R.string.failed_to_get_balance);
+            setBalanceFailed();
             e.printStackTrace();
         }
+    }
+
+    private void setBalanceFailed() {
+        balanceView.setText(R.string.failed_to_get_balance);
+    }
+
+    private void setBalanceWithAmount(int cachedBalance) {
+        balanceView.setText(getString(R.string.get_balance_d, cachedBalance));
     }
 
     private void openKinMarketplace() {
