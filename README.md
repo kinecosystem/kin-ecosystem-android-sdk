@@ -100,12 +100,12 @@ As can be seen in the sample app, there are just few step required to integrate 
        }
     
        ```
-1. Create WhiteListData object and set userID, appID, apiKey etc or just pass a JWT String on `Kin.start`.
+1. Create WhitelistData object and set userID, appID, apiKey etc or just pass a JWT String on `Kin.start`.
 
     1. Option 1 - Should be use only for first time rapid integration and internal testing.
     
           ```java
-               whiteListData = new WhiteListData("userID", "appID", "apiKey");           
+               whitelistData = new WhitelistData("userID", "appID", "apiKey");           
          ```
     1. Option 2 - recommended integration using JWT token signed by digital service server side.
           ```java
@@ -120,7 +120,7 @@ As can be seen in the sample app, there are just few step required to integrate 
 1. Initiate the SDK when the application starts calling Kin. The first start will begin the blocakchain wallet and account creation process.
       ```java
                try {
-                   Kin.start(getApplicationContext(), whiteListData);
+                   Kin.start(getApplicationContext(), whitelistData);
                } catch (InitializeException e) {
                    //
                }

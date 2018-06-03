@@ -1,12 +1,12 @@
 package com.kin.ecosystem.data.model;
 
-public class WhiteListData {
+public class WhitelistData {
 
     private String userID;
     private String appID;
     private String apiKey;
 
-    public WhiteListData(String userID, String appID, String apiKey) {
+    public WhitelistData(String userID, String appID, String apiKey) {
         this.userID = userID;
         this.appID = appID;
         this.apiKey = apiKey;
@@ -33,7 +33,7 @@ public class WhiteListData {
             return false;
         }
 
-        WhiteListData that = (WhiteListData) o;
+        WhitelistData that = (WhitelistData) o;
 
         if (userID != null ? !userID.equals(that.userID) : that.userID != null) {
             return false;

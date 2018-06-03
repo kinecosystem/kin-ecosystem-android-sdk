@@ -12,7 +12,7 @@ import com.kin.ecosystem.data.auth.AuthRemoteData;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.model.OrderConfirmation;
-import com.kin.ecosystem.data.model.WhiteListData;
+import com.kin.ecosystem.data.model.WhitelistData;
 import com.kin.ecosystem.data.offer.OfferRemoteData;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderLocalData;
@@ -50,10 +50,10 @@ public class Kin {
         return instance;
     }
 
-    public static void start(@NonNull Context appContext, @NonNull WhiteListData whiteListData)
+    public static void start(@NonNull Context appContext, @NonNull WhitelistData whitelistData)
         throws InitializeException {
         if (isInstanceNull()) {
-            SignInData signInData = getWhiteListSignInData(whiteListData);
+            SignInData signInData = getWhiteListSignInData(whitelistData);
             init(appContext, signInData);
         }
     }
@@ -65,12 +65,12 @@ public class Kin {
         }
     }
 
-    private static SignInData getWhiteListSignInData(@NonNull final WhiteListData whiteListData) {
+    private static SignInData getWhiteListSignInData(@NonNull final WhitelistData whitelistData) {
         SignInData signInData = new SignInData()
             .signInType(SignInTypeEnum.WHITELIST)
-            .userId(whiteListData.getUserID())
-            .appId(whiteListData.getAppID())
-            .apiKey(whiteListData.getApiKey());
+            .userId(whitelistData.getUserID())
+            .appId(whitelistData.getAppID())
+            .apiKey(whitelistData.getApiKey());
 
         return signInData;
     }

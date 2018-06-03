@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import com.crashlytics.android.Crashlytics;
 import com.ecosystem.kin.app.model.SignInRepo;
 import com.kin.ecosystem.Kin;
-import com.kin.ecosystem.data.model.WhiteListData;
+import com.kin.ecosystem.data.model.WhitelistData;
 import com.kin.ecosystem.exception.InitializeException;
 import io.fabric.sdk.android.Fabric;
 
@@ -34,9 +34,9 @@ public class App extends Application {
             }
         } else {
             //Use whitelist signing data for small scale testing
-            WhiteListData whiteListData = SignInRepo.getWhitelistSignInData(this, getAppId(), getApiKey());
+            WhitelistData whitelistData = SignInRepo.getWhitelistSignInData(this, getAppId(), getApiKey());
             try {
-                Kin.start(getApplicationContext(), whiteListData);
+                Kin.start(getApplicationContext(), whitelistData);
             } catch (InitializeException e) {
                 e.printStackTrace();
             }
