@@ -100,7 +100,7 @@ As can be seen in the sample app, there are just few step required to integrate 
        }
     
        ```
-1. Create WhitelistData object and set userID, appID, apiKey etc or just pass a JWT String on `Kin.start`.
+1. Create WhitelistData object and set userID, appID, apiKey or just pass a registration JWT String on `Kin.start`.
 
     1. Option 1 - Should be use only for first time rapid integration and internal testing.
     

@@ -20,9 +20,9 @@ public class App extends Application {
         Fabric.with(this, new Crashlytics());
 
         if (BuildConfig.IS_JWT_REGISTRATION) {
-            /*
+            /**
             * SignInData should be created with registration JWT {see https://jwt.io/} created securely by server side
-            * In the the this example 'SignInRepo.getJWT' receive an empty/null JWT String and the sample app generate the JWT locally.
+            * In the the this example {@link SignInRepo#getJWT} generate the JWT locally.
             * DO NOT!!!! use this approach in your real app.
             * */
             String jwt = SignInRepo.getJWT(this);
@@ -33,7 +33,7 @@ public class App extends Application {
                 e.printStackTrace();
             }
         } else {
-            //Use whitelist signing data for small scale testing
+            /** Use {@link WhitelistData} for small scale testing */
             WhitelistData whitelistData = SignInRepo.getWhitelistSignInData(this, getAppId(), getApiKey());
             try {
                 Kin.start(getApplicationContext(), whitelistData);

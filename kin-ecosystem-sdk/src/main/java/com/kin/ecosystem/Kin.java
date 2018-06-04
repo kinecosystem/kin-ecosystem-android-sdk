@@ -114,13 +114,16 @@ public class Kin {
 
     private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
         throws InitializeException {
-        String publicAddress = null;
+        String publicAddress;
         try {
+            AuthRepository.init(AuthLocalData.getInstance(context, instance.executorsUtil),
+                AuthRemoteData.getInstance(instance.executorsUtil));
+            if (AuthRepository.getInstance().getDeviceID() == null) {
+                signInData.setDeviceId(UUID.randomUUID().toString());
+            }
             publicAddress = getPublicAddress();
             signInData.setWalletAddress(publicAddress);
-            signInData.setDeviceId(UUID.randomUUID().toString());
-            AuthRepository.init(signInData, AuthLocalData.getInstance(context, instance.executorsUtil),
-                AuthRemoteData.getInstance(instance.executorsUtil));
+            AuthRepository.getInstance().setSignInData(signInData);
         } catch (TaskFailedException e) {
             throw new InitializeException(e.getMessage());
         }
