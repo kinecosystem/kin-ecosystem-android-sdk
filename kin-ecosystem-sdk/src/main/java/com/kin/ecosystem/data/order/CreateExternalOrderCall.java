@@ -3,7 +3,7 @@ package com.kin.ecosystem.data.order;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.data.blockchain.IBlockchainSource;
+import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.model.JWTBodyPaymentConfirmationResult;
@@ -17,14 +17,14 @@ import java.util.Map;
 class CreateExternalOrderCall extends Thread {
 
     private final OrderDataSource.Remote remote;
-    private final IBlockchainSource blockchainSource;
+    private final BlockchainSource blockchainSource;
     private final String orderJwt;
     private final ExternalOrderCallbacks externalOrderCallbacks;
 
     private OpenOrder openOrder;
     private MainThreadExecutor mainThreadExecutor = new MainThreadExecutor();
 
-    CreateExternalOrderCall(@NonNull OrderDataSource.Remote remote, @NonNull IBlockchainSource blockchainSource,
+    CreateExternalOrderCall(@NonNull OrderDataSource.Remote remote, @NonNull BlockchainSource blockchainSource,
         @NonNull String orderJwt,
         @NonNull ExternalOrderCallbacks externalOrderCallbacks) {
         this.remote = remote;

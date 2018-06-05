@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.data.blockchain.IBlockchainSource;
+import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.data.offer.OfferDataSource;
@@ -51,7 +51,7 @@ public class OrderRepositoryTest {
     private static String orderID = "2";
 
     @Mock
-    private IBlockchainSource blockchainSource;
+    private BlockchainSource blockchainSource;
 
     @Mock
     private OfferDataSource offerRepository;

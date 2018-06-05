@@ -5,17 +5,17 @@ import com.kin.ecosystem.balance.view.IBalanceView;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.IBasePresenter;
 import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.data.blockchain.IBlockchainSource;
+import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.util.StringUtil;
 
 public class BalancePresenter extends BasePresenter<IBalanceView> implements IBasePresenter<IBalanceView> {
 
     private Observer<Integer> balanceObserver;
-    private final IBlockchainSource blockchainSource;
+    private final BlockchainSource blockchainSource;
 
     private static final String BALANCE_ZERO_TEXT = "0.00";
 
-    public BalancePresenter(@NonNull final IBlockchainSource blockchainSource) {
+    public BalancePresenter(@NonNull final BlockchainSource blockchainSource) {
         this.blockchainSource = blockchainSource;
         createBalanceObserver();
     }

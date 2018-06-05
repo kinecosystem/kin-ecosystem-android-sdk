@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.balance.presenter.BalancePresenter;
 import com.kin.ecosystem.base.IBasePresenter;
-import com.kin.ecosystem.data.blockchain.BlockchainSource;
+import com.kin.ecosystem.data.blockchain.BlockchainSourceImpl;
 
 public class BalanceView extends ConstraintLayout implements IBalanceView {
 
@@ -60,7 +60,7 @@ public class BalanceView extends ConstraintLayout implements IBalanceView {
         setBalanceTextAnimations();
         setArrowVisibility(showArrow);
 
-        attachPresenter(new BalancePresenter(BlockchainSource.getInstance()));
+        attachPresenter(new BalancePresenter(BlockchainSourceImpl.getInstance()));
     }
 
     private void setBalanceTextAnimations() {
