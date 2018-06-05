@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         new NativeSpendOffer(String.valueOf(randomID))
             .title("Get Themes")
             .description("Personalize your chat")
-            .amount(1000)
+            .amount(100)
             .image("https://s3.amazonaws.com/kinmarketplace-assets/version1/kik_theme_offer+2.png");
 
     @Override
