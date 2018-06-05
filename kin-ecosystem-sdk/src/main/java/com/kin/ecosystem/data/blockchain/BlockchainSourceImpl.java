@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.CallbackAdapter;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.model.Payment;
@@ -125,18 +126,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
     private void getCurrentBalance() {
         getBalance();
-        getBalance(new Callback<Integer>() {
-            @Override
-            public void onResponse(Integer response) {
-                Log.d(TAG, "getCurrentBalance onResponse: " + response);
-                setBalance(response);
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                Log.d(TAG, "getCurrentBalance onFailure: " + t.getMessage());
-            }
-        });
+        getBalance(new CallbackAdapter<Integer>() {});
     }
 
     @Override
