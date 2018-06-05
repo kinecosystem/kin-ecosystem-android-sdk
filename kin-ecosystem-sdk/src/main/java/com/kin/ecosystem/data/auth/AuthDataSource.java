@@ -12,6 +12,8 @@ public interface AuthDataSource {
 
     ObservableData<String> getAppID();
 
+    String getDeviceID();
+
     void setAuthToken(@NonNull final AuthToken authToken);
 
     AuthToken getAuthTokenSync();
@@ -27,6 +29,8 @@ public interface AuthDataSource {
         void setAuthToken(@NonNull final AuthToken authToken);
 
         void getAppId(@NonNull final Callback<String> callback);
+
+        String getDeviceID();
 
         AuthToken getAuthTokenSync();
 

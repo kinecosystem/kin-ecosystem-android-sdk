@@ -100,32 +100,27 @@ As can be seen in the sample app, there are just few step required to integrate 
        }
     
        ```
-1. Create SignInData object and set userID, appID, apiKey etc.
+1. Create WhitelistData object and set userID, appID, apiKey or just pass a registration JWT String on `Kin.start`.
 
     1. Option 1 - Should be use only for first time rapid integration and internal testing.
     
           ```java
-                signInData = new SignInData()
-                     .signInType(SignInTypeEnum.WHITELIST)
-                     .appId("appID")
-                     .deviceId("deviceUUID")
-                     .userId("userID"")
-                     .apiKey("apiKey");
+               whitelistData = new WhitelistData("userID", "appID", "apiKey");           
          ```
-    1. Option 2 - recommended integration using JWT token signed by digital service server side.     
-        
+    1. Option 2 - recommended integration using JWT token signed by digital service server side.
           ```java
-                signInData = new SignInData()
-                      .signInType(SignInTypeEnum.JWT)
-                      .jwt("jwt")
-                      .deviceId("deviceUUID")
+               try {
+                   Kin.start(getApplicationContext(), jwt);
+               } catch (InitializeException e) {
+                   //
+               }
           ```
          JWT spec can be found at [ecosystem-api repository](https://github.com/kinfoundation/ecosystem-api)
    
 1. Initiate the SDK when the application starts calling Kin. The first start will begin the blocakchain wallet and account creation process.
       ```java
                try {
-                   Kin.start(getApplicationContext(), signInData);
+                   Kin.start(getApplicationContext(), whitelistData);
                } catch (InitializeException e) {
                    //
                }

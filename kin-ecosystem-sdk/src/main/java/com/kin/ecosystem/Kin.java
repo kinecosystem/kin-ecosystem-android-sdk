@@ -12,6 +12,7 @@ import com.kin.ecosystem.data.auth.AuthRemoteData;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.model.OrderConfirmation;
+import com.kin.ecosystem.data.model.WhitelistData;
 import com.kin.ecosystem.data.offer.OfferRemoteData;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderLocalData;
@@ -22,9 +23,11 @@ import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
 import com.kin.ecosystem.network.model.SignInData;
+import com.kin.ecosystem.network.model.SignInData.SignInTypeEnum;
 import com.kin.ecosystem.splash.view.SplashViewActivity;
 import com.kin.ecosystem.util.DeviceUtils;
 import com.kin.ecosystem.util.ExecutorsUtil;
+import java.util.UUID;
 
 
 public class Kin {
@@ -47,8 +50,40 @@ public class Kin {
         return instance;
     }
 
-    public static Kin start(@NonNull Context appContext, @NonNull SignInData signInData)
+    public static void start(@NonNull Context appContext, @NonNull WhitelistData whitelistData)
         throws InitializeException {
+        if (isInstanceNull()) {
+            SignInData signInData = getWhiteListSignInData(whitelistData);
+            init(appContext, signInData);
+        }
+    }
+
+    public static void start(@NonNull Context appContext, @NonNull String jwt) throws InitializeException {
+        if (isInstanceNull()) {
+            SignInData signInData = getJwtSignInData(jwt);
+            init(appContext, signInData);
+        }
+    }
+
+    private static SignInData getWhiteListSignInData(@NonNull final WhitelistData whitelistData) {
+        SignInData signInData = new SignInData()
+            .signInType(SignInTypeEnum.WHITELIST)
+            .userId(whitelistData.getUserID())
+            .appId(whitelistData.getAppID())
+            .apiKey(whitelistData.getApiKey());
+
+        return signInData;
+    }
+
+    private static SignInData getJwtSignInData(@NonNull final String jwt) {
+        SignInData signInData = new SignInData()
+            .signInType(SignInTypeEnum.JWT)
+            .jwt(jwt);
+
+        return signInData;
+    }
+
+    private static void init(@NonNull Context appContext, @NonNull SignInData signInData) throws InitializeException {
         instance = getInstance();
         appContext = appContext.getApplicationContext(); // use application context to avoid leaks.
         DeviceUtils.init(appContext);
@@ -57,8 +92,8 @@ public class Kin {
         initOfferRepository();
         initOrderRepository(appContext);
         setAppID();
-        return instance;
     }
+
 
     private static void setAppID() {
         ObservableData<String> observableData = AuthRepository.getInstance().getAppID();
@@ -79,12 +114,16 @@ public class Kin {
 
     private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
         throws InitializeException {
-        String publicAddress = null;
+        String publicAddress;
         try {
+            AuthRepository.init(AuthLocalData.getInstance(context, instance.executorsUtil),
+                AuthRemoteData.getInstance(instance.executorsUtil));
+            if (AuthRepository.getInstance().getDeviceID() == null) {
+                signInData.setDeviceId(UUID.randomUUID().toString());
+            }
             publicAddress = getPublicAddress();
             signInData.setWalletAddress(publicAddress);
-            AuthRepository.init(signInData, AuthLocalData.getInstance(context, instance.executorsUtil),
-                AuthRemoteData.getInstance(instance.executorsUtil));
+            AuthRepository.getInstance().setSignInData(signInData);
         } catch (TaskFailedException e) {
             throw new InitializeException(e.getMessage());
         }
@@ -101,8 +140,12 @@ public class Kin {
             OrderLocalData.getInstance(context, instance.executorsUtil));
     }
 
+    private static boolean isInstanceNull() {
+        return instance == null;
+    }
+
     private static void checkInstanceNotNull() throws TaskFailedException {
-        if (instance == null) {
+        if (isInstanceNull()) {
             throw new TaskFailedException("Kin.start(...) should be called first");
         }
     }
@@ -143,9 +186,9 @@ public class Kin {
      *
      * @param offerJwt Represents the offer in a JWT manner.
      * @param callback Confirmation callback, the result will be a failure or a succeed with a jwt confirmation.
-     * @throws TaskFailedException
      */
-    public static void purchase(String offerJwt, @Nullable Callback<OrderConfirmation> callback) throws TaskFailedException {
+    public static void purchase(String offerJwt, @Nullable Callback<OrderConfirmation> callback)
+        throws TaskFailedException {
         checkInstanceNotNull();
         OrderRepository.getInstance().purchase(offerJwt, callback);
     }
@@ -153,10 +196,6 @@ public class Kin {
     /**
      * Allowing your users to earn Kin as a reward for native task you define.
      * This call might take time, due to transaction validation on the blockchain network.
-     *
-     * @param offerJwt
-     * @param callback
-     * @throws TaskFailedException
      */
     public static void requestPayment(String offerJwt, @Nullable Callback<OrderConfirmation> callback)
         throws TaskFailedException {
@@ -168,8 +207,6 @@ public class Kin {
      * Returns a {@link OrderConfirmation}, with the order status and a jwtConfirmation if the order is completed.
      *
      * @param offerID The offerID that this order created from
-     * @param callback
-     * @throws TaskFailedException
      */
     public static void getOrderConfirmation(@NonNull String offerID, @NonNull Callback<OrderConfirmation> callback)
         throws TaskFailedException {
@@ -179,18 +216,15 @@ public class Kin {
 
     /**
      * Add a native offer {@link Observer} to receive a trigger when you native offers on Kin Marketplace are clicked.
-     *
-     * @param observer
-     * @throws TaskFailedException
      */
-    public static void addNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer) throws TaskFailedException {
+    public static void addNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer)
+        throws TaskFailedException {
         checkInstanceNotNull();
         OfferRepository.getInstance().addNativeOfferClickedObserver(observer);
     }
 
     /**
      * Remove the callback if you no longer want to get triggered when your offer on Kin marketplace are clicked.
-     * @throws TaskFailedException
      */
     public static void removeNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer)
         throws TaskFailedException {
