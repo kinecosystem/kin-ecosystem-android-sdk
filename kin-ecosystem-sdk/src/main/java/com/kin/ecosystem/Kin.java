@@ -12,6 +12,7 @@ import com.kin.ecosystem.data.auth.AuthRemoteData;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.data.blockchain.BlockchainSourceLocal;
+import com.kin.ecosystem.data.model.BalanceUpdate;
 import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.model.WhitelistData;
 import com.kin.ecosystem.data.offer.OfferRemoteData;
@@ -153,6 +154,7 @@ public class Kin {
 
     /**
      * Launch Kin Marketplace if the user is activated, otherwise it will launch Welcome to Kin page.
+     *
      * @param activity the activity user can go back to.
      * @throws TaskFailedException
      */
@@ -187,22 +189,46 @@ public class Kin {
 
     /**
      * Get the cached balance, can be different from the current balance on the network.
+     *
      * @return balance amount
      * @throws TaskFailedException
      */
-    public static Integer getCachedBalance() throws TaskFailedException {
+    public static BalanceUpdate getCachedBalance() throws TaskFailedException {
         checkInstanceNotNull();
         return BlockchainSourceImpl.getInstance().getBalance();
     }
 
     /**
      * Get the current account balance from the network.
+     *
      * @param callback balance amount
      * @throws TaskFailedException
      */
-    public static void getBalance(@NonNull final Callback<Integer> callback) throws TaskFailedException {
+    public static void getBalance(@NonNull final Callback<BalanceUpdate> callback) throws TaskFailedException {
         checkInstanceNotNull();
         BlockchainSourceImpl.getInstance().getBalance(callback);
+    }
+
+    /**
+     * Add balance observer to start getting notified when the balance is changed on the blockchain network.
+     * On balance changes you will get {@link BalanceUpdate} with the balance amount.
+     *
+     * @param observer
+     * @throws TaskFailedException
+     */
+    public static void addBalanceObserver(@NonNull final Observer<BalanceUpdate> observer) throws TaskFailedException {
+        checkInstanceNotNull();
+        BlockchainSourceImpl.getInstance().addBalanceObserverAndStartListen(observer);
+    }
+
+    /**
+     *
+     * @param observer
+     * @throws TaskFailedException
+     */
+    public static void removeBalanceObserver(@NonNull final Observer<BalanceUpdate> observer) throws TaskFailedException {
+        checkInstanceNotNull();
+        BlockchainSourceImpl.getInstance().removeBalanceObserver(observer);
     }
 
     /**
@@ -221,6 +247,11 @@ public class Kin {
     /**
      * Allowing your users to earn Kin as a reward for native task you define.
      * This call might take time, due to transaction validation on the blockchain network.
+     *
+     * @param offerJwt the offer details represented in a JWT manner.
+     * @param callback after validating the info and sending the payment to the user, you will receive {@link OrderConfirmation},
+     * with the jwtConfirmation and you can validate the order when the order status is Com.
+     * @throws TaskFailedException
      */
     public static void requestPayment(String offerJwt, @Nullable Callback<OrderConfirmation> callback)
         throws TaskFailedException {

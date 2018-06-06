@@ -18,6 +18,7 @@ import com.ecosystem.kin.app.model.SignInRepo;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.data.model.BalanceUpdate;
 import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private Callback<OrderConfirmation> nativeSpendOrderConfirmationCallback;
     private Callback<OrderConfirmation> nativeEarnOrderConfirmationCallback;
     private Observer<NativeSpendOffer> nativeSpendOfferClickedObserver;
+    private Observer<BalanceUpdate> balanceUpdateObserver;
 
     private String publicAddress;
 
@@ -99,6 +101,24 @@ public class MainActivity extends AppCompatActivity {
 
         addNativeSpendOffer(nativeSpendOffer);
         addNativeOfferClickedObserver();
+
+        addBalanceObserver();
+    }
+
+    private void addBalanceObserver() {
+        if (balanceUpdateObserver == null) {
+            balanceUpdateObserver = new Observer<BalanceUpdate>() {
+                @Override
+                public void onChanged(BalanceUpdate value) {
+                    showToast("BalanceUpdate - " + value.getAmount().intValue());
+                }
+            };
+        }
+        try {
+            Kin.addBalanceObserver(balanceUpdateObserver);
+        } catch (TaskFailedException e) {
+            e.printStackTrace();
+        }
     }
 
     // Use this method to remove the nativeSpendOffer you added
@@ -175,12 +195,12 @@ public class MainActivity extends AppCompatActivity {
     private void getBalance() {
         try {
             //Get Cached Balance
-            int cachedBalance = Kin.getCachedBalance();
+            BalanceUpdate cachedBalance = Kin.getCachedBalance();
             setBalanceWithAmount(cachedBalance);
 
-            Kin.getBalance(new Callback<Integer>() {
+            Kin.getBalance(new Callback<BalanceUpdate>() {
                 @Override
-                public void onResponse(Integer balance) {
+                public void onResponse(BalanceUpdate balance) {
                     enableView(balanceView, true);
                     setBalanceWithAmount(balance);
                 }
@@ -201,8 +221,9 @@ public class MainActivity extends AppCompatActivity {
         balanceView.setText(R.string.failed_to_get_balance);
     }
 
-    private void setBalanceWithAmount(int cachedBalance) {
-        balanceView.setText(getString(R.string.get_balance_d, cachedBalance));
+    private void setBalanceWithAmount(BalanceUpdate balanceUpdate) {
+        int balanceValue = balanceUpdate.getAmount().intValue();
+        balanceView.setText(getString(R.string.get_balance_d, balanceValue));
     }
 
     private void openKinMarketplace() {
@@ -315,6 +336,7 @@ public class MainActivity extends AppCompatActivity {
         nativeSpendOrderConfirmationCallback = null;
         nativeEarnOrderConfirmationCallback = null;
         try {
+            Kin.removeBalanceObserver(balanceUpdateObserver);
             Kin.removeNativeOffer(nativeSpendOffer);
             Kin.removeNativeOfferClickedObserver(nativeSpendOfferClickedObserver);
         } catch (TaskFailedException e) {

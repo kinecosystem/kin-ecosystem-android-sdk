@@ -270,7 +270,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
                 nativeSpendOfferClicked(offer);
                 return;
             }
-            int balance = blockchainSource.getBalance();
+            int balance = blockchainSource.getBalance().getAmount().intValue();
             final BigDecimal amount = new BigDecimal(offer.getAmount());
 
             if (balance < amount.intValue()) {

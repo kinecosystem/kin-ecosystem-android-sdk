@@ -3,6 +3,7 @@ package com.kin.ecosystem.data.blockchain;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.data.model.BalanceUpdate;
 import com.kin.ecosystem.data.model.Payment;
 import java.math.BigDecimal;
 
@@ -24,25 +25,31 @@ public interface BlockchainSource {
     /**
      * @return the cached balance.
      */
-    int getBalance();
+    BalanceUpdate getBalance();
 
     /**
      * Get balance from network
      * @param callback
      */
-    void getBalance(@NonNull final Callback<Integer> callback);
+    void getBalance(@NonNull final Callback<BalanceUpdate> callback);
 
     /**
      * Add balance observer in order to listen for updates
      * @param observer
      */
-    void addBalanceObserver(@NonNull final Observer<Integer> observer);
+    void addBalanceObserver(@NonNull final Observer<BalanceUpdate> observer);
+
+    /**
+     * Add balance observer and start listen on account balance changed events from the blockchain network.
+     * @param observer
+     */
+    void addBalanceObserverAndStartListen(@NonNull final Observer<BalanceUpdate> observer);
 
     /**
      * Remove the balance observer in order to stop listening for balance updates.
      * @param observer
      */
-    void removeBalanceObserver(@NonNull final Observer<Integer> observer);
+    void removeBalanceObserver(@NonNull final Observer<BalanceUpdate> observer);
 
     /**
      * Create the initiated account trustline with Kin Asset
