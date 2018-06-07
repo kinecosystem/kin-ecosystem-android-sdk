@@ -11,7 +11,7 @@
  */
 
 
-package com.kin.ecosystem.network.model;
+package kin.ecosystem.core.network.model;
 
 import com.google.gson.annotations.SerializedName;
 

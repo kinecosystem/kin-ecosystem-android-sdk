@@ -1,4 +1,4 @@
-package com.kin.ecosystem.util;
+package kin.ecosystem.core.util;
 
 import android.os.Handler;
 import android.os.Looper;

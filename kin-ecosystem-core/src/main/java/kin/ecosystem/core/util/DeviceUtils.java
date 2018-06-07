@@ -1,4 +1,4 @@
-package com.kin.ecosystem.util;
+package kin.ecosystem.core.util;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -11,9 +11,9 @@ import java.lang.annotation.RetentionPolicy;
 import static android.util.DisplayMetrics.DENSITY_HIGH;
 import static android.util.DisplayMetrics.DENSITY_XHIGH;
 import static android.util.DisplayMetrics.DENSITY_XXHIGH;
-import static com.kin.ecosystem.util.DeviceUtils.DensityDpi.HDPI;
-import static com.kin.ecosystem.util.DeviceUtils.DensityDpi.XHDPI;
-import static com.kin.ecosystem.util.DeviceUtils.DensityDpi.XXHDPI;
+import static kin.ecosystem.core.util.DeviceUtils.DensityDpi.HDPI;
+import static kin.ecosystem.core.util.DeviceUtils.DensityDpi.XHDPI;
+import static kin.ecosystem.core.util.DeviceUtils.DensityDpi.XXHDPI;
 
 public class DeviceUtils {
 

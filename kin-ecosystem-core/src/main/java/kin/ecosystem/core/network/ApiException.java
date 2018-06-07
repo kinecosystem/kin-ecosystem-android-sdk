@@ -11,9 +11,9 @@
  */
 
 
-package com.kin.ecosystem.network;
+package kin.ecosystem.core.network;
 
-import com.kin.ecosystem.network.model.Error;
+import kin.ecosystem.core.network.model.Error;
 import java.util.List;
 import java.util.Map;
 

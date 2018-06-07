@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.Callback;
-import com.kin.ecosystem.util.ExecutorsUtil;
+import kin.ecosystem.core.util.ExecutorsUtil;
 
 public class OrderLocalData implements OrderDataSource.Local {
 

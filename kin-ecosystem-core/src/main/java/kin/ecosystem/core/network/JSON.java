@@ -11,7 +11,7 @@
  */
 
 
-package com.kin.ecosystem.network;
+package kin.ecosystem.core.network;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

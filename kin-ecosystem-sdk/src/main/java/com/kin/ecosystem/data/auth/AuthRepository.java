@@ -1,18 +1,16 @@
 package com.kin.ecosystem.data.auth;
 
-import static com.kin.ecosystem.util.DateUtil.getDateFromUTCString;
+import static kin.ecosystem.core.util.DateUtil.getDateFromUTCString;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
-import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.network.model.SignInData;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Observable;
 
 public class AuthRepository implements AuthDataSource {
 

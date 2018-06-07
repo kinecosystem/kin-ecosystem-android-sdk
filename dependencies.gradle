@@ -7,6 +7,7 @@ ext {
     picassoVersion = '2.5.2'
     okhttp3Version = '3.9.1'
     gsonVersion = '2.8.2'
+    supportVersion = '26.1.0'
     baseRecyclerAdapterVersion = '18191dd'
 
     //Packages
@@ -16,6 +17,7 @@ ext {
     picassoPackage = 'com.squareup.picasso'
     okhttp3Packace = 'com.squareup.okhttp3'
     gsonPackage = 'com.google.code.gson'
+    supportPackage = 'com.android.support'
     baseRecyclerAdapterPackage = 'com.github.OrenZak'
 
     //Testing Version
@@ -29,7 +31,7 @@ ext {
     robolectricPackage = 'org.robolectric'
 
     devDependencies = [
-            kinCore         : buildDependency(kinFoundationPackage, 'kin-core-android', kinCoreVersion),
+            kinCore            : buildDependency(kinFoundationPackage, 'kin-core-android', kinCoreVersion),
             appCompat_v7       : buildDependency(supportPackage, 'appcompat-v7', supportVersion),
             recyclerView_v7    : buildDependency(supportPackage, 'recyclerview-v7', supportVersion),
             constraintLayout   : buildDependency(constraintLayoutPackage, 'constraint-layout', constraintLayoutVersion),
@@ -37,13 +39,14 @@ ext {
             gson               : buildDependency(gsonPackage, 'gson', gsonVersion),
             okhttp3            : buildDependency(okhttp3Packace, 'okhttp', okhttp3Version),
             loginInterceptor3  : buildDependency(okhttp3Packace, 'logging-interceptor', okhttp3Version),
+            supportAnnotations : buildDependency(supportPackage, 'support-annotations', supportVersion),
             baseRecyclerAdapter: buildDependency(baseRecyclerAdapterPackage, 'BaseRecyclerViewAdapterHelper', baseRecyclerAdapterVersion),
     ]
 
     testingDependencies = [
-            junit  : buildDependency(junitPackage, 'junit', junitVersion),
-            mockito: buildDependency(mockitoPackage, 'mockito-core', mockitoVersion),
-            robolectric : buildDependency(robolectricPackage, 'robolectric', robolectricVersion),
+            junit      : buildDependency(junitPackage, 'junit', junitVersion),
+            mockito    : buildDependency(mockitoPackage, 'mockito-core', mockitoVersion),
+            robolectric: buildDependency(robolectricPackage, 'robolectric', robolectricVersion),
     ]
 }
 

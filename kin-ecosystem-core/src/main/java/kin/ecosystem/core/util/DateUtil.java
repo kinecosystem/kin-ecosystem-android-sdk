@@ -1,4 +1,4 @@
-package com.kin.ecosystem.util;
+package kin.ecosystem.core.util;
 
 import java.text.DateFormat;
 import java.text.ParseException;

@@ -11,9 +11,7 @@
  */
 
 
-package com.kin.ecosystem.network.auth;
-
-import com.kin.ecosystem.network.Pair;
+package kin.ecosystem.core.network;
 
 import java.util.Map;
 import java.util.List;

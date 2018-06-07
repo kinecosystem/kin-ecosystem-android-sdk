@@ -2,20 +2,16 @@
  * Kin Ecosystem
  * Apis for client to server interaction
  */
-package com.kin.ecosystem.network;
+package kin.ecosystem.core.network;
 
-import static com.kin.ecosystem.BuildConfig.DEBUG;
-
+import android.support.annotation.StringDef;
 import com.google.gson.reflect.TypeToken;
-import com.kin.ecosystem.data.auth.AuthRepository;
-import com.kin.ecosystem.network.auth.Authentication;
-import com.kin.ecosystem.network.model.AuthToken;
-import com.kin.ecosystem.network.model.Error;
-import com.kin.ecosystem.util.StringUtil;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Type;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -44,6 +40,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+import kin.ecosystem.core.BuildConfig;
+import kin.ecosystem.core.network.model.Error;
+import kin.ecosystem.core.util.StringUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -63,7 +62,7 @@ import okio.Okio;
 
 public class ApiClient {
 
-    private String basePath = "http://api.kinmarketplace.com/v1";
+    private  String basePath = "http://api.kinmarketplace.com/v1";
 //    private String basePath = "http://10.0.2.2:3000/v1";
 
     private boolean debugging = false;
@@ -81,10 +80,17 @@ public class ApiClient {
 
     private HttpLoggingInterceptor loggingInterceptor;
 
-    private static final String BEARER = "Bearer ";
-    private static final String AUTHORIZATION = "Authorization";
+    public static final String APPLICATION_JSON_KEY = "application/json";
 
-    private static final String USERS_PATH = "/v1/users";
+    public static final String POST = "POST";
+    public static final String GET = "GET";
+    public static final String DELETE = "DELETE";
+
+    @StringDef({POST, GET, DELETE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Methods {
+
+    }
 
     /*
      * Constructor for ApiClient
@@ -92,10 +98,9 @@ public class ApiClient {
     public ApiClient() {
         httpClientBuilder = new OkHttpClient.Builder();
         httpClientBuilder.connectTimeout(30, TimeUnit.SECONDS);
-        addAccessTokenInterceptor();
 
         //Depends on build variants
-        setDebugging(DEBUG);
+        setDebugging(BuildConfig.DEBUG);
 
         verifyingSsl = true;
 
@@ -263,37 +268,6 @@ public class ApiClient {
      */
     public boolean isDebugging() {
         return debugging;
-    }
-
-    /**
-     * Add access token interceptor for handling refresh token and set as header to
-     * each call on out ApiClient.
-     *
-     * @return ApiClient
-     */
-    public ApiClient addAccessTokenInterceptor() {
-        httpClientBuilder.addInterceptor(new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                Request originalRequest = chain.request();
-
-                final String path = originalRequest.url().encodedPath();
-                AuthToken authToken = null;
-                if (!path.equals(USERS_PATH)) {
-                    authToken = AuthRepository.getInstance().getAuthTokenSync();
-                }
-
-                if (authToken != null) {
-                    Request authorisedRequest = originalRequest.newBuilder()
-                        .header(AUTHORIZATION, BEARER + authToken.getToken())
-                        .build();
-                    return chain.proceed(authorisedRequest);
-                } else {
-                    return chain.proceed(originalRequest);
-                }
-            }
-        });
-        return this;
     }
 
     /**
@@ -600,7 +574,7 @@ public class ApiClient {
         try {
             return (Error) (json.deserialize(respBody, new TypeToken<Error>() {
             }.getType()));
-        }catch (Throwable throwable) {
+        } catch (Throwable throwable) {
             return null;
         }
     }
@@ -802,7 +776,8 @@ public class ApiClient {
                     throw new ApiException(response.message(), e, response.code(), response.headers().toMultimap());
                 }
             }
-            throw new ApiException(response.message(), response.code(), response.headers().toMultimap(), deserializeError(respBody));
+            throw new ApiException(response.message(), response.code(), response.headers().toMultimap(),
+                deserializeError(respBody));
         }
     }
 
@@ -821,7 +796,7 @@ public class ApiClient {
      * @return The HTTP call
      * @throws ApiException If fail to serialize the request body object
      */
-    public Call buildCall(String path, String method, List<Pair> queryParams, List<Pair> collectionQueryParams,
+    public Call buildCall(String path, @Methods String method, List<Pair> queryParams, List<Pair> collectionQueryParams,
         Object body, Map<String, String> headerParams, Map<String, Object> formParams, String[] authNames,
         ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
         Request request = buildRequest(path, method, queryParams, collectionQueryParams, body, headerParams, formParams,
@@ -845,7 +820,8 @@ public class ApiClient {
      * @return The HTTP request
      * @throws ApiException If fail to serialize the request body object
      */
-    public Request buildRequest(String path, String method, List<Pair> queryParams, List<Pair> collectionQueryParams,
+    public Request buildRequest(String path, @Methods String method, List<Pair> queryParams,
+        List<Pair> collectionQueryParams,
         Object body, Map<String, String> headerParams, Map<String, Object> formParams, String[] authNames,
         ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
         updateParamsForAuth(authNames, queryParams, headerParams);
@@ -965,12 +941,14 @@ public class ApiClient {
      * @param headerParams Map of header parameters
      */
     public void updateParamsForAuth(String[] authNames, List<Pair> queryParams, Map<String, String> headerParams) {
-        for (String authName : authNames) {
-            Authentication auth = authentications.get(authName);
-            if (auth == null) {
-                throw new RuntimeException("Authentication undefined: " + authName);
+        if (authNames != null) {
+            for (String authName : authNames) {
+                Authentication auth = authentications.get(authName);
+                if (auth == null) {
+                    throw new RuntimeException("Authentication undefined: " + authName);
+                }
+                auth.applyToParams(queryParams, headerParams);
             }
-            auth.applyToParams(queryParams, headerParams);
         }
     }
 
@@ -1101,6 +1079,10 @@ public class ApiClient {
         } catch (IOException e) {
             throw new AssertionError(e);
         }
+    }
+
+    public void addInterceptor(Interceptor interceptor) {
+        httpClientBuilder.addInterceptor(interceptor);
     }
 
     public void addNetworkInterceptor(Interceptor interceptor) {

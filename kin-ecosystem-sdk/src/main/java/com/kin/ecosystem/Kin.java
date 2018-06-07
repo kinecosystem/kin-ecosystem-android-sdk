@@ -26,9 +26,11 @@ import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
 import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.network.model.SignInData.SignInTypeEnum;
 import com.kin.ecosystem.splash.view.SplashViewActivity;
-import com.kin.ecosystem.util.DeviceUtils;
-import com.kin.ecosystem.util.ExecutorsUtil;
 import java.util.UUID;
+import kin.ecosystem.core.bi.EventLogger;
+import kin.ecosystem.core.bi.EventLoggerImpl;
+import kin.ecosystem.core.util.DeviceUtils;
+import kin.ecosystem.core.util.ExecutorsUtil;
 
 
 public class Kin {
@@ -36,9 +38,11 @@ public class Kin {
     private static Kin instance;
 
     private final ExecutorsUtil executorsUtil;
+    private final EventLogger eventLogger;
 
     private Kin() {
         executorsUtil = new ExecutorsUtil();
+        eventLogger = EventLoggerImpl.init();
     }
 
     private static Kin getInstance() {
@@ -113,7 +117,7 @@ public class Kin {
         BlockchainSourceImpl.init(context, BlockchainSourceLocal.getInstance(context));
     }
 
-    private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
+    private static void  registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
         throws InitializeException {
         String publicAddress;
         try {
