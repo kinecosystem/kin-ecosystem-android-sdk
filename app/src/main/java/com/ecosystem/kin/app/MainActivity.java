@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
         balanceView = findViewById(R.id.get_balance);
         nativeSpendButton = findViewById(R.id.native_spend_button);
         nativeEarnButton = findViewById(R.id.native_earn_button);
-
         showPublicAddressButton = findViewById(R.id.show_public_address);
         publicAddressTextArea = findViewById(R.id.public_text_area);
         showPublicAddressButton.setOnClickListener(new OnClickListener() {
@@ -101,8 +100,18 @@ public class MainActivity extends AppCompatActivity {
 
         addNativeSpendOffer(nativeSpendOffer);
         addNativeOfferClickedObserver();
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
         addBalanceObserver();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        removeBalanceObserver();
     }
 
     private void addBalanceObserver() {
@@ -113,9 +122,20 @@ public class MainActivity extends AppCompatActivity {
                     showToast("BalanceUpdate - " + value.getAmount().intValue());
                 }
             };
+
+            try {
+                Kin.addBalanceObserver(balanceUpdateObserver);
+            } catch (TaskFailedException e) {
+                e.printStackTrace();
+            }
         }
+
+    }
+
+    private void removeBalanceObserver() {
         try {
-            Kin.addBalanceObserver(balanceUpdateObserver);
+            Kin.removeBalanceObserver(balanceUpdateObserver);
+            balanceUpdateObserver = null;
         } catch (TaskFailedException e) {
             e.printStackTrace();
         }
@@ -336,7 +356,9 @@ public class MainActivity extends AppCompatActivity {
         nativeSpendOrderConfirmationCallback = null;
         nativeEarnOrderConfirmationCallback = null;
         try {
-            Kin.removeBalanceObserver(balanceUpdateObserver);
+            if(balanceUpdateObserver != null) {
+                Kin.removeBalanceObserver(balanceUpdateObserver);
+            }
             Kin.removeNativeOffer(nativeSpendOffer);
             Kin.removeNativeOfferClickedObserver(nativeSpendOfferClickedObserver);
         } catch (TaskFailedException e) {

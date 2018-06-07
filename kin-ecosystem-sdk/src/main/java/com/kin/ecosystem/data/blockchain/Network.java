@@ -3,7 +3,7 @@ package com.kin.ecosystem.data.blockchain;
 
 import kin.core.ServiceProvider;
 
-enum Network {
+public enum Network {
 
     NETWORK_MAIN(ServiceProvider.NETWORK_ID_MAIN, "https://horizon.stellar.org"),
     NETWORK_TEST(ServiceProvider.NETWORK_ID_TEST, "https://horizon-testnet.stellar.org"),
@@ -26,7 +26,7 @@ enum Network {
         this.issuer = issuer;
     }
 
-    ServiceProvider getProvider() {
+    public ServiceProvider getProvider() {
         if (issuer != null) {
             return new ServiceProvider(networkUrl, networkId) {
                 @Override

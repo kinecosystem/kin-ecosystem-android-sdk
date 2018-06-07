@@ -34,27 +34,28 @@ public interface BlockchainSource {
     void getBalance(@NonNull final Callback<BalanceUpdate> callback);
 
     /**
-     * Add balance observer in order to listen for updates
+     * Add balance observer in order to start receive balance updates
      * @param observer
      */
     void addBalanceObserver(@NonNull final Observer<BalanceUpdate> observer);
 
     /**
-     * Add balance observer and start listen on account balance changed events from the blockchain network.
+     * Add balance observer and start SSE connection on account balance updates from the blockchain network.
      * @param observer
      */
     void addBalanceObserverAndStartListen(@NonNull final Observer<BalanceUpdate> observer);
 
     /**
-     * Remove the balance observer in order to stop listening for balance updates.
+     * Remove the balance observer in order to stop receiving balance updates.
      * @param observer
      */
     void removeBalanceObserver(@NonNull final Observer<BalanceUpdate> observer);
 
     /**
-     * Create the initiated account trustline with Kin Asset
+     * Remove the balance observer, and close SSE connection if no other observers.
+     * @param observer
      */
-    void createTrustLine();
+    void removeBalanceObserverAndStopListen(@NonNull final Observer<BalanceUpdate> observer);
 
     /**
      * @return the public address of the initiated account

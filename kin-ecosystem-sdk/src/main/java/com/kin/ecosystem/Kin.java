@@ -12,6 +12,7 @@ import com.kin.ecosystem.data.auth.AuthRemoteData;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.data.blockchain.BlockchainSourceLocal;
+import com.kin.ecosystem.data.blockchain.Network;
 import com.kin.ecosystem.data.model.BalanceUpdate;
 import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.model.WhitelistData;
@@ -30,6 +31,7 @@ import com.kin.ecosystem.splash.view.SplashViewActivity;
 import com.kin.ecosystem.util.DeviceUtils;
 import com.kin.ecosystem.util.ExecutorsUtil;
 import java.util.UUID;
+import kin.core.KinClient;
 
 
 public class Kin {
@@ -40,6 +42,7 @@ public class Kin {
 
     private Kin() {
         executorsUtil = new ExecutorsUtil();
+
     }
 
     private static Kin getInstance() {
@@ -111,7 +114,8 @@ public class Kin {
     }
 
     private static void initBlockchain(Context context) throws InitializeException {
-        BlockchainSourceImpl.init(context, BlockchainSourceLocal.getInstance(context));
+        KinClient kinClient = new KinClient(context, Network.NETWORK_PRIVATE_TEST.getProvider());
+        BlockchainSourceImpl.init(kinClient, BlockchainSourceLocal.getInstance(context));
     }
 
     private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
@@ -213,6 +217,10 @@ public class Kin {
      * Add balance observer to start getting notified when the balance is changed on the blockchain network.
      * On balance changes you will get {@link BalanceUpdate} with the balance amount.
      *
+     * Take in consideration that on adding this observer, an SSE connection will be open to the blockchain network,
+     * In order to close the connection use {@link #removeBalanceObserver(Observer)} with the same observer.
+     * If no other observers on this connection, the connection will be closed.
+     *
      * @param observer
      * @throws TaskFailedException
      */
@@ -222,13 +230,15 @@ public class Kin {
     }
 
     /**
+     *  Remove the balance observer, this method will close the SSE connection to the blockchain network
+     *  if there is no more observers.
      *
      * @param observer
      * @throws TaskFailedException
      */
     public static void removeBalanceObserver(@NonNull final Observer<BalanceUpdate> observer) throws TaskFailedException {
         checkInstanceNotNull();
-        BlockchainSourceImpl.getInstance().removeBalanceObserver(observer);
+        BlockchainSourceImpl.getInstance().removeBalanceObserverAndStopListen(observer);
     }
 
     /**
