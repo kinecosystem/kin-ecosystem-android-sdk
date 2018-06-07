@@ -3,7 +3,10 @@ package com.kin.ecosystem.data.blockchain;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -109,7 +112,7 @@ public class BlockchainSourceImplTest {
         // init Balance
         verify(getBalanceReq).run(getBalanceCaptor.capture());
         getBalanceCaptor.getValue().onResult(balanceObj);
-        verify(local).setBalance(20);
+        verify(local).setBalance(balanceObj.value().intValue());
 
         when(kinClient.getAccount(0)).thenReturn(kinAccount);
         balanceUpdate = new BalanceUpdate();
@@ -173,9 +176,9 @@ public class BlockchainSourceImplTest {
         BigDecimal amount = new BigDecimal(10);
         final String orderID = "someID";
 
-        Request<TransactionId> transactionRequest = Mockito.mock(Request.class);
-        ArgumentCaptor<ResultCallback<TransactionId>> resultCallbackArgumentCaptor = ArgumentCaptor
-            .forClass(ResultCallback.class);
+        Request<TransactionId> transactionRequest = mock(Request.class);
+        ArgumentCaptor<ResultCallback<TransactionId>> resultCallbackArgumentCaptor =
+            forClass(ResultCallback.class);
         when(kinAccount.sendTransaction(any(String.class), any(BigDecimal.class), any(String.class)))
             .thenReturn(transactionRequest);
 
@@ -215,5 +218,33 @@ public class BlockchainSourceImplTest {
         blockchainSource.setBalance(balanceObj);
         assertEquals(value, balanceUpdate.getAmount());
         verify(local).setBalance(value.intValue());
+
+        value = new BigDecimal(50);
+        when(balanceObj.value()).thenReturn(value);
+        blockchainSource.setBalance(balanceObj);
+        assertEquals(value, balanceUpdate.getAmount());
+        verify(local, never()).setBalance(value.intValue());
+    }
+
+    @Test
+    public void add_balance_observer_and_start_listen() throws Exception {
+        ArgumentCaptor<EventListener<Balance>> balanceEventListener = forClass(EventListener.class);
+
+        blockchainSource.addBalanceObserverAndStartListen(new Observer<BalanceUpdate>() {
+            @Override
+            public void onChanged(BalanceUpdate value) {
+                balanceUpdate = value;
+            }
+        });
+
+        verify(blockchainEvents).addBalanceListener(balanceEventListener.capture());
+        BigDecimal value = new BigDecimal(123);
+
+        when(balanceObj.value()).thenReturn(value);
+        balanceEventListener.getValue().onEvent(balanceObj);
+
+        assertEquals(value, balanceUpdate.getAmount());
+        verify(local).setBalance(value.intValue());
+
     }
 }
