@@ -52,3 +52,10 @@ freeline.py
 freeline/
 freeline_project_description.json
 .DS_Store
+
+# bi events
+bi-events-generator/node_modules
+bi-events-generator/*.js
+bi-events-generator/*.js.map
+bi-events-generator/*.d.ts
+bi-events-generator/package-lock.json
