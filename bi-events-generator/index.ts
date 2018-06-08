@@ -6,7 +6,7 @@ import { exec } from"child_process";
 const SOURCE_PATH = "../../kin-bi/json_schemas";
 const TMP_PATH = "./java-gen-tmp";
 const TARGET_PATH = "../kin-ecosystem-core/src/main/java";
-const PACKAGE_PATH = "kin/ecosystem/core/bi/events";
+const PACKAGE_PATH = "kin/ecosystem/core/bi/simple/events";
 const AUGEMENTED_BY_SCRIPT_COMMENT = "// Augmented by script\n";
 
 /**
@@ -34,7 +34,15 @@ async function runCommand(cmd: string) {
  * @returns {Promise<Promise<void>>}
  */
 async function prepare() {
-    const command = `rm -f ${ TARGET_PATH }/${ PACKAGE_PATH }/*`;
+    const path = `${ TARGET_PATH }/${ PACKAGE_PATH }`;
+    let command: string;
+
+    if (!existsSync(path)) {
+        command = `mkdir ${ path }`;
+    } else {
+        command = `rm -f ${ path }/*`;
+    }
+
     return runCommand(command);
 }
 
@@ -44,7 +52,7 @@ async function prepare() {
  * @returns {Promise<Promise<void>>}
  */
 async function generate() {
-    const command = `jsonschema2pojo -a GSON -c -E -S -R -ds -s ${ SOURCE_PATH } -t ${ TMP_PATH } -p kin.ecosystem.core.bi.events`;
+    const command = `jsonschema2pojo -a GSON -c -E -S -R -ds -s ${ SOURCE_PATH } -t ${ TMP_PATH } -p kin.ecosystem.core.bi.simple.events`;
     return runCommand(command);
 }
 
@@ -155,7 +163,10 @@ function processSourceFile(path: string): string {
         return content;
     }
 
-    content = content.replace(/(import [^;]+;)/, AUGEMENTED_BY_SCRIPT_COMMENT + "import kin.ecosystem.core.bi.Store;\n\n$1")
+    content = content
+        .replace(/(import [^;]+;)/, AUGEMENTED_BY_SCRIPT_COMMENT
+            + "import kin.ecosystem.core.bi.Event;\n"
+            + "import kin.ecosystem.core.bi.simple.Store;\n\n$1");
 
     const ctorRegEx = new RegExp("public " + className + "\\((.+)\\)", "g");
     const ctors = [] as EventConstructor[];
@@ -166,7 +177,8 @@ function processSourceFile(path: string): string {
     }
 
     const classDef = `public class ${ className } {\n`;
-    return content.replace(classDef, classDef + ctors.map(ctor => ctor.createFactory()).join("\n"));
+    const newClassDef = `public class ${ className } implements Event {\n`;
+    return content.replace(classDef, newClassDef + ctors.map(ctor => ctor.createFactory()).join("\n"));
 }
 
 /**

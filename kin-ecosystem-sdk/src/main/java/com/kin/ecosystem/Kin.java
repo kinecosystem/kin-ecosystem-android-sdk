@@ -28,7 +28,7 @@ import com.kin.ecosystem.network.model.SignInData.SignInTypeEnum;
 import com.kin.ecosystem.splash.view.SplashViewActivity;
 import java.util.UUID;
 import kin.ecosystem.core.bi.EventLogger;
-import kin.ecosystem.core.bi.EventLoggerImpl;
+import kin.ecosystem.core.bi.simple.EventLoggerImpl;
 import kin.ecosystem.core.util.DeviceUtils;
 import kin.ecosystem.core.util.ExecutorsUtil;
 
