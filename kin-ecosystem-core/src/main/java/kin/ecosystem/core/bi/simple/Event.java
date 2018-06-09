@@ -1,4 +1,4 @@
-package kin.ecosystem.core.bi;
+package kin.ecosystem.core.bi.simple;
 
 import kin.ecosystem.core.bi.simple.events.Common;
 import kin.ecosystem.core.bi.simple.events.User;

@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import kin.ecosystem.core.bi.Event;
 import kin.ecosystem.core.network.ApiCallback;
 import kin.ecosystem.core.network.ApiClient;
 import kin.ecosystem.core.network.ApiException;

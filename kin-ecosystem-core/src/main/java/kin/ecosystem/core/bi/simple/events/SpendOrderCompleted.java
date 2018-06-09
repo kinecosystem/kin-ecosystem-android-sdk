@@ -2,7 +2,7 @@
 package kin.ecosystem.core.bi.simple.events;
 
 // Augmented by script
-import kin.ecosystem.core.bi.Event;
+import kin.ecosystem.core.bi.simple.Event;
 import kin.ecosystem.core.bi.simple.Store;
 
 import java.util.HashMap;

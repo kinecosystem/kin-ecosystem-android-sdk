@@ -1,4 +1,4 @@
-package kin.ecosystem.core.bi;
+package kin.ecosystem.core.bi.simple;
 
 public interface EventLogger {
 
@@ -8,5 +8,5 @@ public interface EventLogger {
      * @param event - the variables should be annotated with {@link com.google.gson.annotations.SerializedName} to
      * ensure correct serialization.
      */
-    void send(Object event);
+    void send(Event event);
 }

@@ -1,6 +1,5 @@
 package kin.ecosystem.core.bi.simple;
 
-import kin.ecosystem.core.bi.EventLogger;
 import kin.ecosystem.core.network.ApiException;
 
 public class EventLoggerImpl implements EventLogger {
@@ -26,7 +25,7 @@ public class EventLoggerImpl implements EventLogger {
 
 
     @Override
-    public void send(Object event) {
+    public void send(Event event) {
         try {
             eventsApi.sendEventAsync(event, null);
         } catch (ApiException e) {
