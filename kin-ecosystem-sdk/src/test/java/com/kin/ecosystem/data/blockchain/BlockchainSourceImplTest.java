@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.kin.ecosystem.base.Observer;
@@ -30,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -85,6 +87,7 @@ public class BlockchainSourceImplTest {
 
     private BlockchainSourceImpl blockchainSource;
     private BalanceUpdate balanceUpdate;
+    private int x = 0;
 
     @Before
     public void setUp() throws Exception {
@@ -200,30 +203,35 @@ public class BlockchainSourceImplTest {
 
     @Test
     public void add_balance_observer_get_onChanged() {
+        Balance innerBalance = mock(Balance.class);
         blockchainSource.addBalanceObserver(new Observer<BalanceUpdate>() {
             @Override
             public void onChanged(BalanceUpdate value) {
+                x++;
                 balanceUpdate = value;
             }
         });
+        assertEquals(new BigDecimal(20), balanceUpdate.getAmount());
 
-        BigDecimal value = new BigDecimal(22);
-        when(balanceObj.value()).thenReturn(value);
-        blockchainSource.setBalance(balanceObj);
+        InOrder inOrder = Mockito.inOrder(local);
+        BigDecimal value = new BigDecimal(25);
+        when(innerBalance.value()).thenReturn(value);
+        blockchainSource.setBalance(innerBalance);
         assertEquals(value, balanceUpdate.getAmount());
-        verify(local).setBalance(value.intValue());
-
-        value = new BigDecimal(50);
-        when(balanceObj.value()).thenReturn(value);
-        blockchainSource.setBalance(balanceObj);
-        assertEquals(value, balanceUpdate.getAmount());
-        verify(local).setBalance(value.intValue());
 
         value = new BigDecimal(50);
-        when(balanceObj.value()).thenReturn(value);
-        blockchainSource.setBalance(balanceObj);
+        when(innerBalance.value()).thenReturn(value);
+        blockchainSource.setBalance(innerBalance);
         assertEquals(value, balanceUpdate.getAmount());
-        verify(local, never()).setBalance(value.intValue());
+
+        value = new BigDecimal(50);
+        when(innerBalance.value()).thenReturn(value);
+        blockchainSource.setBalance(innerBalance);
+        assertEquals(value, balanceUpdate.getAmount());
+
+        inOrder.verify(local).setBalance(25);
+        inOrder.verify(local).setBalance(50);
+        inOrder.verify(local, never()).setBalance(any(Integer.class));
     }
 
     @Test
