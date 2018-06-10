@@ -17,20 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class KinBalanceUpdated implements Event {
-    // Augmented by script
-    public static KinBalanceUpdated create(Double previousBalance) {
-        return new KinBalanceUpdated(
-            EventName.KIN_BALANCE_UPDATED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            previousBalance);
-
-    }
+    public static final String EVENT_NAME = "kin_balance_updated";
+    public static final String EVENT_TYPE = "business";
 
     // Augmented by script
     public static void fire(Double previousBalance) {
         final KinBalanceUpdated event = new KinBalanceUpdated(
-            EventName.KIN_BALANCE_UPDATED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             previousBalance);
@@ -45,7 +37,15 @@ public class KinBalanceUpdated implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private KinBalanceUpdated.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -81,13 +81,13 @@ public class KinBalanceUpdated implements Event {
     /**
      * 
      * @param common
-     * @param eventName
+
+
      * @param user
      * @param previousBalance
      */
-    public KinBalanceUpdated(KinBalanceUpdated.EventName eventName, Common common, User user, Double previousBalance) {
+    public KinBalanceUpdated(Common common, User user, Double previousBalance) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.previousBalance = previousBalance;
@@ -98,7 +98,7 @@ public class KinBalanceUpdated implements Event {
      * (Required)
      * 
      */
-    public KinBalanceUpdated.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -107,8 +107,26 @@ public class KinBalanceUpdated implements Event {
      * (Required)
      * 
      */
-    public void setEventName(KinBalanceUpdated.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -163,43 +181,6 @@ public class KinBalanceUpdated implements Event {
      */
     public void setPreviousBalance(Double previousBalance) {
         this.previousBalance = previousBalance;
-    }
-
-    public enum EventName {
-
-        @SerializedName("kin_balance_updated")
-        KIN_BALANCE_UPDATED("kin_balance_updated");
-        private final String value;
-        private final static Map<String, KinBalanceUpdated.EventName> CONSTANTS = new HashMap<String, KinBalanceUpdated.EventName>();
-
-        static {
-            for (KinBalanceUpdated.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static KinBalanceUpdated.EventName fromValue(String value) {
-            KinBalanceUpdated.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

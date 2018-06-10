@@ -17,21 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class OrderHistoryItemTapped implements Event {
-    // Augmented by script
-    public static OrderHistoryItemTapped create(String offerId, String orderId) {
-        return new OrderHistoryItemTapped(
-            EventName.ORDER_HISTORY_ITEM_TAPPED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "order_history_item_tapped";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire(String offerId, String orderId) {
         final OrderHistoryItemTapped event = new OrderHistoryItemTapped(
-            EventName.ORDER_HISTORY_ITEM_TAPPED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             offerId,
@@ -47,7 +38,15 @@ public class OrderHistoryItemTapped implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private OrderHistoryItemTapped.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -92,13 +91,13 @@ public class OrderHistoryItemTapped implements Event {
      * 
      * @param common
      * @param orderId
-     * @param eventName
+
      * @param offerId
+
      * @param user
      */
-    public OrderHistoryItemTapped(OrderHistoryItemTapped.EventName eventName, Common common, User user, String offerId, String orderId) {
+    public OrderHistoryItemTapped(Common common, User user, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.offerId = offerId;
@@ -110,7 +109,7 @@ public class OrderHistoryItemTapped implements Event {
      * (Required)
      * 
      */
-    public OrderHistoryItemTapped.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -119,8 +118,26 @@ public class OrderHistoryItemTapped implements Event {
      * (Required)
      * 
      */
-    public void setEventName(OrderHistoryItemTapped.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -193,43 +210,6 @@ public class OrderHistoryItemTapped implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("order_history_item_tapped")
-        ORDER_HISTORY_ITEM_TAPPED("order_history_item_tapped");
-        private final String value;
-        private final static Map<String, OrderHistoryItemTapped.EventName> CONSTANTS = new HashMap<String, OrderHistoryItemTapped.EventName>();
-
-        static {
-            for (OrderHistoryItemTapped.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static OrderHistoryItemTapped.EventName fromValue(String value) {
-            OrderHistoryItemTapped.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

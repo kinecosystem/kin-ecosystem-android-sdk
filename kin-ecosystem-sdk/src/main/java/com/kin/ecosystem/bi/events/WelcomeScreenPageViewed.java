@@ -17,19 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class WelcomeScreenPageViewed implements Event {
-    // Augmented by script
-    public static WelcomeScreenPageViewed create() {
-        return new WelcomeScreenPageViewed(
-            EventName.WELCOME_SCREEN_PAGE_VIEWED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user());
-
-    }
+    public static final String EVENT_NAME = "welcome_screen_page_viewed";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire() {
         final WelcomeScreenPageViewed event = new WelcomeScreenPageViewed(
-            EventName.WELCOME_SCREEN_PAGE_VIEWED,
             (Common) EventsStore.common(),
             (User) EventsStore.user());
 
@@ -43,7 +36,15 @@ public class WelcomeScreenPageViewed implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private WelcomeScreenPageViewed.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -71,12 +72,12 @@ public class WelcomeScreenPageViewed implements Event {
     /**
      * 
      * @param common
-     * @param eventName
+
+
      * @param user
      */
-    public WelcomeScreenPageViewed(WelcomeScreenPageViewed.EventName eventName, Common common, User user) {
+    public WelcomeScreenPageViewed(Common common, User user) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
     }
@@ -86,7 +87,7 @@ public class WelcomeScreenPageViewed implements Event {
      * (Required)
      * 
      */
-    public WelcomeScreenPageViewed.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -95,8 +96,26 @@ public class WelcomeScreenPageViewed implements Event {
      * (Required)
      * 
      */
-    public void setEventName(WelcomeScreenPageViewed.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -133,43 +152,6 @@ public class WelcomeScreenPageViewed implements Event {
      */
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public enum EventName {
-
-        @SerializedName("welcome_screen_page_viewed")
-        WELCOME_SCREEN_PAGE_VIEWED("welcome_screen_page_viewed");
-        private final String value;
-        private final static Map<String, WelcomeScreenPageViewed.EventName> CONSTANTS = new HashMap<String, WelcomeScreenPageViewed.EventName>();
-
-        static {
-            for (WelcomeScreenPageViewed.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static WelcomeScreenPageViewed.EventName fromValue(String value) {
-            WelcomeScreenPageViewed.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

@@ -17,21 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class CloseButtonOnOfferPageTapped implements Event {
-    // Augmented by script
-    public static CloseButtonOnOfferPageTapped create(String offerId, String orderId) {
-        return new CloseButtonOnOfferPageTapped(
-            EventName.CLOSE_BUTTON_ON_OFFER_PAGE_TAPPED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "close_button_on_offer_page_tapped";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire(String offerId, String orderId) {
         final CloseButtonOnOfferPageTapped event = new CloseButtonOnOfferPageTapped(
-            EventName.CLOSE_BUTTON_ON_OFFER_PAGE_TAPPED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             offerId,
@@ -47,7 +38,15 @@ public class CloseButtonOnOfferPageTapped implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private CloseButtonOnOfferPageTapped.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -92,13 +91,13 @@ public class CloseButtonOnOfferPageTapped implements Event {
      * 
      * @param common
      * @param orderId
-     * @param eventName
+
      * @param offerId
+
      * @param user
      */
-    public CloseButtonOnOfferPageTapped(CloseButtonOnOfferPageTapped.EventName eventName, Common common, User user, String offerId, String orderId) {
+    public CloseButtonOnOfferPageTapped(Common common, User user, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.offerId = offerId;
@@ -110,7 +109,7 @@ public class CloseButtonOnOfferPageTapped implements Event {
      * (Required)
      * 
      */
-    public CloseButtonOnOfferPageTapped.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -119,8 +118,26 @@ public class CloseButtonOnOfferPageTapped implements Event {
      * (Required)
      * 
      */
-    public void setEventName(CloseButtonOnOfferPageTapped.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -193,43 +210,6 @@ public class CloseButtonOnOfferPageTapped implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("close_button_on_offer_page_tapped")
-        CLOSE_BUTTON_ON_OFFER_PAGE_TAPPED("close_button_on_offer_page_tapped");
-        private final String value;
-        private final static Map<String, CloseButtonOnOfferPageTapped.EventName> CONSTANTS = new HashMap<String, CloseButtonOnOfferPageTapped.EventName>();
-
-        static {
-            for (CloseButtonOnOfferPageTapped.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static CloseButtonOnOfferPageTapped.EventName fromValue(String value) {
-            CloseButtonOnOfferPageTapped.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

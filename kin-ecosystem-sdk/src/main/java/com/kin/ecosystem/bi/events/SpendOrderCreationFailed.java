@@ -17,22 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class SpendOrderCreationFailed implements Event {
-    // Augmented by script
-    public static SpendOrderCreationFailed create(String errorReason, String offerId, String orderId) {
-        return new SpendOrderCreationFailed(
-            EventName.SPEND_ORDER_CREATION_FAILED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            errorReason,
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "spend_order_creation_failed";
+    public static final String EVENT_TYPE = "business";
 
     // Augmented by script
     public static void fire(String errorReason, String offerId, String orderId) {
         final SpendOrderCreationFailed event = new SpendOrderCreationFailed(
-            EventName.SPEND_ORDER_CREATION_FAILED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             errorReason,
@@ -49,7 +39,15 @@ public class SpendOrderCreationFailed implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private SpendOrderCreationFailed.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -103,13 +101,13 @@ public class SpendOrderCreationFailed implements Event {
      * @param common
      * @param orderId
      * @param errorReason
-     * @param eventName
+
      * @param offerId
+
      * @param user
      */
-    public SpendOrderCreationFailed(SpendOrderCreationFailed.EventName eventName, Common common, User user, String errorReason, String offerId, String orderId) {
+    public SpendOrderCreationFailed(Common common, User user, String errorReason, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.errorReason = errorReason;
@@ -122,7 +120,7 @@ public class SpendOrderCreationFailed implements Event {
      * (Required)
      * 
      */
-    public SpendOrderCreationFailed.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -131,8 +129,26 @@ public class SpendOrderCreationFailed implements Event {
      * (Required)
      * 
      */
-    public void setEventName(SpendOrderCreationFailed.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -223,43 +239,6 @@ public class SpendOrderCreationFailed implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("spend_order_creation_failed")
-        SPEND_ORDER_CREATION_FAILED("spend_order_creation_failed");
-        private final String value;
-        private final static Map<String, SpendOrderCreationFailed.EventName> CONSTANTS = new HashMap<String, SpendOrderCreationFailed.EventName>();
-
-        static {
-            for (SpendOrderCreationFailed.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static SpendOrderCreationFailed.EventName fromValue(String value) {
-            SpendOrderCreationFailed.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

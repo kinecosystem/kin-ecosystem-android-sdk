@@ -17,23 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class SpendRedeemPageViewed implements Event {
-    // Augmented by script
-    public static SpendRedeemPageViewed create(SpendRedeemPageViewed.RedeemTrigger redeemTrigger, Double kinAmount, String offerId, String orderId) {
-        return new SpendRedeemPageViewed(
-            EventName.SPEND_REDEEM_PAGE_VIEWED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            redeemTrigger,
-            kinAmount,
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "spend_redeem_page_viewed";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire(SpendRedeemPageViewed.RedeemTrigger redeemTrigger, Double kinAmount, String offerId, String orderId) {
         final SpendRedeemPageViewed event = new SpendRedeemPageViewed(
-            EventName.SPEND_REDEEM_PAGE_VIEWED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             redeemTrigger,
@@ -51,7 +40,15 @@ public class SpendRedeemPageViewed implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private SpendRedeemPageViewed.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -113,14 +110,14 @@ public class SpendRedeemPageViewed implements Event {
      * @param common
      * @param orderId
      * @param redeemTrigger
-     * @param eventName
+
      * @param offerId
      * @param kinAmount
+
      * @param user
      */
-    public SpendRedeemPageViewed(SpendRedeemPageViewed.EventName eventName, Common common, User user, SpendRedeemPageViewed.RedeemTrigger redeemTrigger, Double kinAmount, String offerId, String orderId) {
+    public SpendRedeemPageViewed(Common common, User user, SpendRedeemPageViewed.RedeemTrigger redeemTrigger, Double kinAmount, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.redeemTrigger = redeemTrigger;
@@ -134,7 +131,7 @@ public class SpendRedeemPageViewed implements Event {
      * (Required)
      * 
      */
-    public SpendRedeemPageViewed.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -143,8 +140,26 @@ public class SpendRedeemPageViewed implements Event {
      * (Required)
      * 
      */
-    public void setEventName(SpendRedeemPageViewed.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -253,43 +268,6 @@ public class SpendRedeemPageViewed implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("spend_redeem_page_viewed")
-        SPEND_REDEEM_PAGE_VIEWED("spend_redeem_page_viewed");
-        private final String value;
-        private final static Map<String, SpendRedeemPageViewed.EventName> CONSTANTS = new HashMap<String, SpendRedeemPageViewed.EventName>();
-
-        static {
-            for (SpendRedeemPageViewed.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static SpendRedeemPageViewed.EventName fromValue(String value) {
-            SpendRedeemPageViewed.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
     public enum RedeemTrigger {

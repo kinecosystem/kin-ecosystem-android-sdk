@@ -66,14 +66,6 @@ public class Common implements CommonInterface {
      * (Required)
      * 
      */
-    @SerializedName("event_type")
-    @Expose
-    private Common.EventType eventType;
-    /**
-     * 
-     * (Required)
-     * 
-     */
     @SerializedName("user_id")
     @Expose
     private String userId;
@@ -85,14 +77,6 @@ public class Common implements CommonInterface {
     @SerializedName("timestamp")
     @Expose
     private Double timestamp;
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    @SerializedName("device_type")
-    @Expose
-    private String deviceType;
     /**
      * 
      * (Required)
@@ -127,21 +111,19 @@ public class Common implements CommonInterface {
 
     /**
      * 
-     * @param deviceType
      * @param eventId
+     * @param carrier
      * @param os
      * @param language
-     * @param eventType
+     * @param deviceModel
+     * @param deviceManufacturer
      * @param version
      * @param deviceId
      * @param userId
      * @param platform
-     * @param carrier
-     * @param deviceModel
-     * @param deviceManufacturer
      * @param timestamp
      */
-    public Common(String eventId, String os, String version, String language, String carrier, String deviceId, Common.EventType eventType, String userId, Double timestamp, String deviceType, Common.Platform platform, String deviceManufacturer, String deviceModel) {
+    public Common(String eventId, String os, String version, String language, String carrier, String deviceId, String userId, Double timestamp, Common.Platform platform, String deviceManufacturer, String deviceModel) {
         super();
         this.eventId = eventId;
         this.os = os;
@@ -149,10 +131,8 @@ public class Common implements CommonInterface {
         this.language = language;
         this.carrier = carrier;
         this.deviceId = deviceId;
-        this.eventType = eventType;
         this.userId = userId;
         this.timestamp = timestamp;
-        this.deviceType = deviceType;
         this.platform = platform;
         this.deviceManufacturer = deviceManufacturer;
         this.deviceModel = deviceModel;
@@ -271,24 +251,6 @@ public class Common implements CommonInterface {
      * (Required)
      * 
      */
-    public Common.EventType getEventType() {
-        return eventType;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setEventType(Common.EventType eventType) {
-        this.eventType = eventType;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
     public String getUserId() {
         return userId;
     }
@@ -318,24 +280,6 @@ public class Common implements CommonInterface {
      */
     public void setTimestamp(Double timestamp) {
         this.timestamp = timestamp;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public String getDeviceType() {
-        return deviceType;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setDeviceType(String deviceType) {
-        this.deviceType = deviceType;
     }
 
     /**
@@ -390,47 +334,6 @@ public class Common implements CommonInterface {
      */
     public void setDeviceModel(String deviceModel) {
         this.deviceModel = deviceModel;
-    }
-
-    public enum EventType {
-
-        @SerializedName("business")
-        BUSINESS("business"),
-        @SerializedName("analytics")
-        ANALYTICS("analytics"),
-        @SerializedName("log")
-        LOG("log");
-        private final String value;
-        private final static Map<String, Common.EventType> CONSTANTS = new HashMap<String, Common.EventType>();
-
-        static {
-            for (Common.EventType c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventType(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static Common.EventType fromValue(String value) {
-            Common.EventType constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
     public enum Platform {

@@ -17,19 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class CloseButtonOnMarketplacePageTapped implements Event {
-    // Augmented by script
-    public static CloseButtonOnMarketplacePageTapped create() {
-        return new CloseButtonOnMarketplacePageTapped(
-            EventName.CLOSE_BUTTON_ON_MARKETPLACE_PAGE_TAPPED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user());
-
-    }
+    public static final String EVENT_NAME = "close_button_on_marketplace_page_tapped";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire() {
         final CloseButtonOnMarketplacePageTapped event = new CloseButtonOnMarketplacePageTapped(
-            EventName.CLOSE_BUTTON_ON_MARKETPLACE_PAGE_TAPPED,
             (Common) EventsStore.common(),
             (User) EventsStore.user());
 
@@ -43,7 +36,15 @@ public class CloseButtonOnMarketplacePageTapped implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private CloseButtonOnMarketplacePageTapped.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -71,12 +72,12 @@ public class CloseButtonOnMarketplacePageTapped implements Event {
     /**
      * 
      * @param common
-     * @param eventName
+
+
      * @param user
      */
-    public CloseButtonOnMarketplacePageTapped(CloseButtonOnMarketplacePageTapped.EventName eventName, Common common, User user) {
+    public CloseButtonOnMarketplacePageTapped(Common common, User user) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
     }
@@ -86,7 +87,7 @@ public class CloseButtonOnMarketplacePageTapped implements Event {
      * (Required)
      * 
      */
-    public CloseButtonOnMarketplacePageTapped.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -95,8 +96,26 @@ public class CloseButtonOnMarketplacePageTapped implements Event {
      * (Required)
      * 
      */
-    public void setEventName(CloseButtonOnMarketplacePageTapped.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -133,43 +152,6 @@ public class CloseButtonOnMarketplacePageTapped implements Event {
      */
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public enum EventName {
-
-        @SerializedName("close_button_on_marketplace_page_tapped")
-        CLOSE_BUTTON_ON_MARKETPLACE_PAGE_TAPPED("close_button_on_marketplace_page_tapped");
-        private final String value;
-        private final static Map<String, CloseButtonOnMarketplacePageTapped.EventName> CONSTANTS = new HashMap<String, CloseButtonOnMarketplacePageTapped.EventName>();
-
-        static {
-            for (CloseButtonOnMarketplacePageTapped.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static CloseButtonOnMarketplacePageTapped.EventName fromValue(String value) {
-            CloseButtonOnMarketplacePageTapped.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

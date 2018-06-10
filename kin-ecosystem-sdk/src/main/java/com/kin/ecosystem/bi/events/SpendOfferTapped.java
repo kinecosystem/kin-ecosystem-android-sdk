@@ -17,22 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class SpendOfferTapped implements Event {
-    // Augmented by script
-    public static SpendOfferTapped create(Double kinAmount, String offerId, String orderId) {
-        return new SpendOfferTapped(
-            EventName.SPEND_OFFER_TAPPED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            kinAmount,
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "spend_offer_tapped";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire(Double kinAmount, String offerId, String orderId) {
         final SpendOfferTapped event = new SpendOfferTapped(
-            EventName.SPEND_OFFER_TAPPED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             kinAmount,
@@ -49,7 +39,15 @@ public class SpendOfferTapped implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private SpendOfferTapped.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -102,14 +100,14 @@ public class SpendOfferTapped implements Event {
      * 
      * @param common
      * @param orderId
-     * @param eventName
+
      * @param offerId
      * @param kinAmount
+
      * @param user
      */
-    public SpendOfferTapped(SpendOfferTapped.EventName eventName, Common common, User user, Double kinAmount, String offerId, String orderId) {
+    public SpendOfferTapped(Common common, User user, Double kinAmount, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.kinAmount = kinAmount;
@@ -122,7 +120,7 @@ public class SpendOfferTapped implements Event {
      * (Required)
      * 
      */
-    public SpendOfferTapped.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -131,8 +129,26 @@ public class SpendOfferTapped implements Event {
      * (Required)
      * 
      */
-    public void setEventName(SpendOfferTapped.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -223,43 +239,6 @@ public class SpendOfferTapped implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("spend_offer_tapped")
-        SPEND_OFFER_TAPPED("spend_offer_tapped");
-        private final String value;
-        private final static Map<String, SpendOfferTapped.EventName> CONSTANTS = new HashMap<String, SpendOfferTapped.EventName>();
-
-        static {
-            for (SpendOfferTapped.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static SpendOfferTapped.EventName fromValue(String value) {
-            SpendOfferTapped.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

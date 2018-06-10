@@ -17,20 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class SpendOrderCreationRequested implements Event {
-    // Augmented by script
-    public static SpendOrderCreationRequested create(String offerId) {
-        return new SpendOrderCreationRequested(
-            EventName.SPEND_ORDER_CREATION_REQUESTED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            offerId);
-
-    }
+    public static final String EVENT_NAME = "spend_order_creation_requested";
+    public static final String EVENT_TYPE = "business";
 
     // Augmented by script
     public static void fire(String offerId) {
         final SpendOrderCreationRequested event = new SpendOrderCreationRequested(
-            EventName.SPEND_ORDER_CREATION_REQUESTED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             offerId);
@@ -45,7 +37,15 @@ public class SpendOrderCreationRequested implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private SpendOrderCreationRequested.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -81,13 +81,13 @@ public class SpendOrderCreationRequested implements Event {
     /**
      * 
      * @param common
-     * @param eventName
+
      * @param offerId
+
      * @param user
      */
-    public SpendOrderCreationRequested(SpendOrderCreationRequested.EventName eventName, Common common, User user, String offerId) {
+    public SpendOrderCreationRequested(Common common, User user, String offerId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.offerId = offerId;
@@ -98,7 +98,7 @@ public class SpendOrderCreationRequested implements Event {
      * (Required)
      * 
      */
-    public SpendOrderCreationRequested.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -107,8 +107,26 @@ public class SpendOrderCreationRequested implements Event {
      * (Required)
      * 
      */
-    public void setEventName(SpendOrderCreationRequested.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -163,43 +181,6 @@ public class SpendOrderCreationRequested implements Event {
      */
     public void setOfferId(String offerId) {
         this.offerId = offerId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("spend_order_creation_requested")
-        SPEND_ORDER_CREATION_REQUESTED("spend_order_creation_requested");
-        private final String value;
-        private final static Map<String, SpendOrderCreationRequested.EventName> CONSTANTS = new HashMap<String, SpendOrderCreationRequested.EventName>();
-
-        static {
-            for (SpendOrderCreationRequested.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static SpendOrderCreationRequested.EventName fromValue(String value) {
-            SpendOrderCreationRequested.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

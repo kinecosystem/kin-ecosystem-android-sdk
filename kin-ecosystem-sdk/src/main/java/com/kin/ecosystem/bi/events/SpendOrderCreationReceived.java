@@ -17,21 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class SpendOrderCreationReceived implements Event {
-    // Augmented by script
-    public static SpendOrderCreationReceived create(String offerId, String orderId) {
-        return new SpendOrderCreationReceived(
-            EventName.SPEND_ORDER_CREATION_RECEIVED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "spend_order_creation_received";
+    public static final String EVENT_TYPE = "business";
 
     // Augmented by script
     public static void fire(String offerId, String orderId) {
         final SpendOrderCreationReceived event = new SpendOrderCreationReceived(
-            EventName.SPEND_ORDER_CREATION_RECEIVED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             offerId,
@@ -47,7 +38,15 @@ public class SpendOrderCreationReceived implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private SpendOrderCreationReceived.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -92,13 +91,13 @@ public class SpendOrderCreationReceived implements Event {
      * 
      * @param common
      * @param orderId
-     * @param eventName
+
      * @param offerId
+
      * @param user
      */
-    public SpendOrderCreationReceived(SpendOrderCreationReceived.EventName eventName, Common common, User user, String offerId, String orderId) {
+    public SpendOrderCreationReceived(Common common, User user, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.offerId = offerId;
@@ -110,7 +109,7 @@ public class SpendOrderCreationReceived implements Event {
      * (Required)
      * 
      */
-    public SpendOrderCreationReceived.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -119,8 +118,26 @@ public class SpendOrderCreationReceived implements Event {
      * (Required)
      * 
      */
-    public void setEventName(SpendOrderCreationReceived.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -193,43 +210,6 @@ public class SpendOrderCreationReceived implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("spend_order_creation_received")
-        SPEND_ORDER_CREATION_RECEIVED("spend_order_creation_received");
-        private final String value;
-        private final static Map<String, SpendOrderCreationReceived.EventName> CONSTANTS = new HashMap<String, SpendOrderCreationReceived.EventName>();
-
-        static {
-            for (SpendOrderCreationReceived.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static SpendOrderCreationReceived.EventName fromValue(String value) {
-            SpendOrderCreationReceived.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

@@ -17,22 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class SpendThankyouPageViewed implements Event {
-    // Augmented by script
-    public static SpendThankyouPageViewed create(Double kinAmount, String offerId, String orderId) {
-        return new SpendThankyouPageViewed(
-            EventName.SPEND_THANKYOU_PAGE_VIEWED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            kinAmount,
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "spend_thankyou_page_viewed";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire(Double kinAmount, String offerId, String orderId) {
         final SpendThankyouPageViewed event = new SpendThankyouPageViewed(
-            EventName.SPEND_THANKYOU_PAGE_VIEWED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             kinAmount,
@@ -49,7 +39,15 @@ public class SpendThankyouPageViewed implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private SpendThankyouPageViewed.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -102,14 +100,14 @@ public class SpendThankyouPageViewed implements Event {
      * 
      * @param common
      * @param orderId
-     * @param eventName
+
      * @param offerId
      * @param kinAmount
+
      * @param user
      */
-    public SpendThankyouPageViewed(SpendThankyouPageViewed.EventName eventName, Common common, User user, Double kinAmount, String offerId, String orderId) {
+    public SpendThankyouPageViewed(Common common, User user, Double kinAmount, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.kinAmount = kinAmount;
@@ -122,7 +120,7 @@ public class SpendThankyouPageViewed implements Event {
      * (Required)
      * 
      */
-    public SpendThankyouPageViewed.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -131,8 +129,26 @@ public class SpendThankyouPageViewed implements Event {
      * (Required)
      * 
      */
-    public void setEventName(SpendThankyouPageViewed.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -223,43 +239,6 @@ public class SpendThankyouPageViewed implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("spend_thankyou_page_viewed")
-        SPEND_THANKYOU_PAGE_VIEWED("spend_thankyou_page_viewed");
-        private final String value;
-        private final static Map<String, SpendThankyouPageViewed.EventName> CONSTANTS = new HashMap<String, SpendThankyouPageViewed.EventName>();
-
-        static {
-            for (SpendThankyouPageViewed.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static SpendThankyouPageViewed.EventName fromValue(String value) {
-            SpendThankyouPageViewed.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

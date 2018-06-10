@@ -17,20 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class StellarKinTrustlineSetupFailed implements Event {
-    // Augmented by script
-    public static StellarKinTrustlineSetupFailed create(String errorReason) {
-        return new StellarKinTrustlineSetupFailed(
-            EventName.STELLAR_KIN_TRUSTLINE_SETUP_FAILED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            errorReason);
-
-    }
+    public static final String EVENT_NAME = "stellar_kin_trustline_setup_failed";
+    public static final String EVENT_TYPE = "business";
 
     // Augmented by script
     public static void fire(String errorReason) {
         final StellarKinTrustlineSetupFailed event = new StellarKinTrustlineSetupFailed(
-            EventName.STELLAR_KIN_TRUSTLINE_SETUP_FAILED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             errorReason);
@@ -45,7 +37,15 @@ public class StellarKinTrustlineSetupFailed implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private StellarKinTrustlineSetupFailed.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -82,12 +82,12 @@ public class StellarKinTrustlineSetupFailed implements Event {
      * 
      * @param common
      * @param errorReason
-     * @param eventName
+
+
      * @param user
      */
-    public StellarKinTrustlineSetupFailed(StellarKinTrustlineSetupFailed.EventName eventName, Common common, User user, String errorReason) {
+    public StellarKinTrustlineSetupFailed(Common common, User user, String errorReason) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.errorReason = errorReason;
@@ -98,7 +98,7 @@ public class StellarKinTrustlineSetupFailed implements Event {
      * (Required)
      * 
      */
-    public StellarKinTrustlineSetupFailed.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -107,8 +107,26 @@ public class StellarKinTrustlineSetupFailed implements Event {
      * (Required)
      * 
      */
-    public void setEventName(StellarKinTrustlineSetupFailed.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -163,43 +181,6 @@ public class StellarKinTrustlineSetupFailed implements Event {
      */
     public void setErrorReason(String errorReason) {
         this.errorReason = errorReason;
-    }
-
-    public enum EventName {
-
-        @SerializedName("stellar_kin_trustline_setup_failed")
-        STELLAR_KIN_TRUSTLINE_SETUP_FAILED("stellar_kin_trustline_setup_failed");
-        private final String value;
-        private final static Map<String, StellarKinTrustlineSetupFailed.EventName> CONSTANTS = new HashMap<String, StellarKinTrustlineSetupFailed.EventName>();
-
-        static {
-            for (StellarKinTrustlineSetupFailed.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static StellarKinTrustlineSetupFailed.EventName fromValue(String value) {
-            StellarKinTrustlineSetupFailed.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

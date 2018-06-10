@@ -6,7 +6,6 @@ public class UserProxy implements UserInterface {
     public User snapshot() {
         return new User(
             this.getDigitalServiceUserId(),
-            this.getDigitalServiceName(),
             this.getBalance(),
             this.getEarnCount(),
             this.getTotalKinSpent(),
@@ -20,7 +19,7 @@ public class UserProxy implements UserInterface {
     private String digitalServiceUserId;
     private EventsStore.DynamicValue<String> dynamicDigitalServiceUserId;
     public String getDigitalServiceUserId() {
-        return this.digitalServiceUserId == null ? this.digitalServiceUserId : this.dynamicDigitalServiceUserId.get();
+        return this.digitalServiceUserId != null ? this.digitalServiceUserId : this.dynamicDigitalServiceUserId.get();
     }
     public void setDigitalServiceUserId(String digitalServiceUserId) {
         this.digitalServiceUserId = digitalServiceUserId;
@@ -29,22 +28,10 @@ public class UserProxy implements UserInterface {
         this.dynamicDigitalServiceUserId = digitalServiceUserId;
     }
 
-    private String digitalServiceName;
-    private EventsStore.DynamicValue<String> dynamicDigitalServiceName;
-    public String getDigitalServiceName() {
-        return this.digitalServiceName == null ? this.digitalServiceName : this.dynamicDigitalServiceName.get();
-    }
-    public void setDigitalServiceName(String digitalServiceName) {
-        this.digitalServiceName = digitalServiceName;
-    }
-    public void setDigitalServiceName(EventsStore.DynamicValue<String> digitalServiceName) {
-        this.dynamicDigitalServiceName = digitalServiceName;
-    }
-
     private Double balance;
     private EventsStore.DynamicValue<Double> dynamicBalance;
     public Double getBalance() {
-        return this.balance == null ? this.balance : this.dynamicBalance.get();
+        return this.balance != null ? this.balance : this.dynamicBalance.get();
     }
     public void setBalance(Double balance) {
         this.balance = balance;
@@ -56,7 +43,7 @@ public class UserProxy implements UserInterface {
     private Integer earnCount;
     private EventsStore.DynamicValue<Integer> dynamicEarnCount;
     public Integer getEarnCount() {
-        return this.earnCount == null ? this.earnCount : this.dynamicEarnCount.get();
+        return this.earnCount != null ? this.earnCount : this.dynamicEarnCount.get();
     }
     public void setEarnCount(Integer earnCount) {
         this.earnCount = earnCount;
@@ -68,7 +55,7 @@ public class UserProxy implements UserInterface {
     private Double totalKinSpent;
     private EventsStore.DynamicValue<Double> dynamicTotalKinSpent;
     public Double getTotalKinSpent() {
-        return this.totalKinSpent == null ? this.totalKinSpent : this.dynamicTotalKinSpent.get();
+        return this.totalKinSpent != null ? this.totalKinSpent : this.dynamicTotalKinSpent.get();
     }
     public void setTotalKinSpent(Double totalKinSpent) {
         this.totalKinSpent = totalKinSpent;
@@ -80,7 +67,7 @@ public class UserProxy implements UserInterface {
     private String digitalServiceId;
     private EventsStore.DynamicValue<String> dynamicDigitalServiceId;
     public String getDigitalServiceId() {
-        return this.digitalServiceId == null ? this.digitalServiceId : this.dynamicDigitalServiceId.get();
+        return this.digitalServiceId != null ? this.digitalServiceId : this.dynamicDigitalServiceId.get();
     }
     public void setDigitalServiceId(String digitalServiceId) {
         this.digitalServiceId = digitalServiceId;
@@ -92,7 +79,7 @@ public class UserProxy implements UserInterface {
     private Integer transactionCount;
     private EventsStore.DynamicValue<Integer> dynamicTransactionCount;
     public Integer getTransactionCount() {
-        return this.transactionCount == null ? this.transactionCount : this.dynamicTransactionCount.get();
+        return this.transactionCount != null ? this.transactionCount : this.dynamicTransactionCount.get();
     }
     public void setTransactionCount(Integer transactionCount) {
         this.transactionCount = transactionCount;
@@ -104,7 +91,7 @@ public class UserProxy implements UserInterface {
     private String entryPointParam;
     private EventsStore.DynamicValue<String> dynamicEntryPointParam;
     public String getEntryPointParam() {
-        return this.entryPointParam == null ? this.entryPointParam : this.dynamicEntryPointParam.get();
+        return this.entryPointParam != null ? this.entryPointParam : this.dynamicEntryPointParam.get();
     }
     public void setEntryPointParam(String entryPointParam) {
         this.entryPointParam = entryPointParam;
@@ -116,7 +103,7 @@ public class UserProxy implements UserInterface {
     private Integer spendCount;
     private EventsStore.DynamicValue<Integer> dynamicSpendCount;
     public Integer getSpendCount() {
-        return this.spendCount == null ? this.spendCount : this.dynamicSpendCount.get();
+        return this.spendCount != null ? this.spendCount : this.dynamicSpendCount.get();
     }
     public void setSpendCount(Integer spendCount) {
         this.spendCount = spendCount;
@@ -128,7 +115,7 @@ public class UserProxy implements UserInterface {
     private Double totalKinEarned;
     private EventsStore.DynamicValue<Double> dynamicTotalKinEarned;
     public Double getTotalKinEarned() {
-        return this.totalKinEarned == null ? this.totalKinEarned : this.dynamicTotalKinEarned.get();
+        return this.totalKinEarned != null ? this.totalKinEarned : this.dynamicTotalKinEarned.get();
     }
     public void setTotalKinEarned(Double totalKinEarned) {
         this.totalKinEarned = totalKinEarned;

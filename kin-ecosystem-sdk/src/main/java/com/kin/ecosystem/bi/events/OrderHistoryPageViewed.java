@@ -17,19 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class OrderHistoryPageViewed implements Event {
-    // Augmented by script
-    public static OrderHistoryPageViewed create() {
-        return new OrderHistoryPageViewed(
-            EventName.ORDER_HISTORY_PAGE_VIEWED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user());
-
-    }
+    public static final String EVENT_NAME = "order_history_page_viewed";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire() {
         final OrderHistoryPageViewed event = new OrderHistoryPageViewed(
-            EventName.ORDER_HISTORY_PAGE_VIEWED,
             (Common) EventsStore.common(),
             (User) EventsStore.user());
 
@@ -43,7 +36,15 @@ public class OrderHistoryPageViewed implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private OrderHistoryPageViewed.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -71,12 +72,12 @@ public class OrderHistoryPageViewed implements Event {
     /**
      * 
      * @param common
-     * @param eventName
+
+
      * @param user
      */
-    public OrderHistoryPageViewed(OrderHistoryPageViewed.EventName eventName, Common common, User user) {
+    public OrderHistoryPageViewed(Common common, User user) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
     }
@@ -86,7 +87,7 @@ public class OrderHistoryPageViewed implements Event {
      * (Required)
      * 
      */
-    public OrderHistoryPageViewed.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -95,8 +96,26 @@ public class OrderHistoryPageViewed implements Event {
      * (Required)
      * 
      */
-    public void setEventName(OrderHistoryPageViewed.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -133,43 +152,6 @@ public class OrderHistoryPageViewed implements Event {
      */
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public enum EventName {
-
-        @SerializedName("order_history_page_viewed")
-        ORDER_HISTORY_PAGE_VIEWED("order_history_page_viewed");
-        private final String value;
-        private final static Map<String, OrderHistoryPageViewed.EventName> CONSTANTS = new HashMap<String, OrderHistoryPageViewed.EventName>();
-
-        static {
-            for (OrderHistoryPageViewed.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static OrderHistoryPageViewed.EventName fromValue(String value) {
-            OrderHistoryPageViewed.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

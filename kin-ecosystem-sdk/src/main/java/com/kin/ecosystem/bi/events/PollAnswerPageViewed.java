@@ -17,22 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class PollAnswerPageViewed implements Event {
-    // Augmented by script
-    public static PollAnswerPageViewed create(String questionId, String offerId, String orderId) {
-        return new PollAnswerPageViewed(
-            EventName.POLL_ANSWER_PAGE_VIEWED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            questionId,
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "poll_answer_page_viewed";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire(String questionId, String offerId, String orderId) {
         final PollAnswerPageViewed event = new PollAnswerPageViewed(
-            EventName.POLL_ANSWER_PAGE_VIEWED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             questionId,
@@ -49,7 +39,15 @@ public class PollAnswerPageViewed implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private PollAnswerPageViewed.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -103,13 +101,13 @@ public class PollAnswerPageViewed implements Event {
      * @param questionId
      * @param common
      * @param orderId
-     * @param eventName
+
      * @param offerId
+
      * @param user
      */
-    public PollAnswerPageViewed(PollAnswerPageViewed.EventName eventName, Common common, User user, String questionId, String offerId, String orderId) {
+    public PollAnswerPageViewed(Common common, User user, String questionId, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.questionId = questionId;
@@ -122,7 +120,7 @@ public class PollAnswerPageViewed implements Event {
      * (Required)
      * 
      */
-    public PollAnswerPageViewed.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -131,8 +129,26 @@ public class PollAnswerPageViewed implements Event {
      * (Required)
      * 
      */
-    public void setEventName(PollAnswerPageViewed.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -223,43 +239,6 @@ public class PollAnswerPageViewed implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("poll_answer_page_viewed")
-        POLL_ANSWER_PAGE_VIEWED("poll_answer_page_viewed");
-        private final String value;
-        private final static Map<String, PollAnswerPageViewed.EventName> CONSTANTS = new HashMap<String, PollAnswerPageViewed.EventName>();
-
-        static {
-            for (PollAnswerPageViewed.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static PollAnswerPageViewed.EventName fromValue(String value) {
-            PollAnswerPageViewed.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

@@ -17,23 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class EarnOrderCreationRequested implements Event {
-    // Augmented by script
-    public static EarnOrderCreationRequested create(EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId, String orderId) {
-        return new EarnOrderCreationRequested(
-            EventName.EARN_ORDER_CREATION_REQUESTED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            offerType,
-            kinAmount,
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "earn_order_creation_requested";
+    public static final String EVENT_TYPE = "business";
 
     // Augmented by script
     public static void fire(EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId, String orderId) {
         final EarnOrderCreationRequested event = new EarnOrderCreationRequested(
-            EventName.EARN_ORDER_CREATION_REQUESTED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             offerType,
@@ -51,7 +40,15 @@ public class EarnOrderCreationRequested implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private EarnOrderCreationRequested.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -113,14 +110,14 @@ public class EarnOrderCreationRequested implements Event {
      * @param offerType
      * @param common
      * @param orderId
-     * @param eventName
+
      * @param offerId
      * @param kinAmount
+
      * @param user
      */
-    public EarnOrderCreationRequested(EarnOrderCreationRequested.EventName eventName, Common common, User user, EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId, String orderId) {
+    public EarnOrderCreationRequested(Common common, User user, EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.offerType = offerType;
@@ -134,7 +131,7 @@ public class EarnOrderCreationRequested implements Event {
      * (Required)
      * 
      */
-    public EarnOrderCreationRequested.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -143,8 +140,26 @@ public class EarnOrderCreationRequested implements Event {
      * (Required)
      * 
      */
-    public void setEventName(EarnOrderCreationRequested.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -253,43 +268,6 @@ public class EarnOrderCreationRequested implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("earn_order_creation_requested")
-        EARN_ORDER_CREATION_REQUESTED("earn_order_creation_requested");
-        private final String value;
-        private final static Map<String, EarnOrderCreationRequested.EventName> CONSTANTS = new HashMap<String, EarnOrderCreationRequested.EventName>();
-
-        static {
-            for (EarnOrderCreationRequested.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static EarnOrderCreationRequested.EventName fromValue(String value) {
-            EarnOrderCreationRequested.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
     public enum OfferType {

@@ -13,13 +13,9 @@ public interface CommonReadonly {
 
     String getDeviceId();
 
-    Common.EventType getEventType();
-
     String getUserId();
 
     Double getTimestamp();
-
-    String getDeviceType();
 
     Common.Platform getPlatform();
 

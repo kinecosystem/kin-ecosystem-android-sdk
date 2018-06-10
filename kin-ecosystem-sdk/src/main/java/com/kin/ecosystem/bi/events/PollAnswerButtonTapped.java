@@ -17,23 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class PollAnswerButtonTapped implements Event {
-    // Augmented by script
-    public static PollAnswerButtonTapped create(String answerId, String questionId, String offerId, String orderId) {
-        return new PollAnswerButtonTapped(
-            EventName.POLL_ANSWER_BUTTON_TAPPED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            answerId,
-            questionId,
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "poll_answer_button_tapped";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire(String answerId, String questionId, String offerId, String orderId) {
         final PollAnswerButtonTapped event = new PollAnswerButtonTapped(
-            EventName.POLL_ANSWER_BUTTON_TAPPED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             answerId,
@@ -51,7 +40,15 @@ public class PollAnswerButtonTapped implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private PollAnswerButtonTapped.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -114,13 +111,13 @@ public class PollAnswerButtonTapped implements Event {
      * @param questionId
      * @param common
      * @param orderId
-     * @param eventName
+
      * @param offerId
+
      * @param user
      */
-    public PollAnswerButtonTapped(PollAnswerButtonTapped.EventName eventName, Common common, User user, String answerId, String questionId, String offerId, String orderId) {
+    public PollAnswerButtonTapped(Common common, User user, String answerId, String questionId, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.answerId = answerId;
@@ -134,7 +131,7 @@ public class PollAnswerButtonTapped implements Event {
      * (Required)
      * 
      */
-    public PollAnswerButtonTapped.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -143,8 +140,26 @@ public class PollAnswerButtonTapped implements Event {
      * (Required)
      * 
      */
-    public void setEventName(PollAnswerButtonTapped.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -253,43 +268,6 @@ public class PollAnswerButtonTapped implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("poll_answer_button_tapped")
-        POLL_ANSWER_BUTTON_TAPPED("poll_answer_button_tapped");
-        private final String value;
-        private final static Map<String, PollAnswerButtonTapped.EventName> CONSTANTS = new HashMap<String, PollAnswerButtonTapped.EventName>();
-
-        static {
-            for (PollAnswerButtonTapped.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static PollAnswerButtonTapped.EventName fromValue(String value) {
-            PollAnswerButtonTapped.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

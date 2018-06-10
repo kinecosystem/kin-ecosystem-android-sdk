@@ -17,19 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class RedeemUrlTapped implements Event {
-    // Augmented by script
-    public static RedeemUrlTapped create() {
-        return new RedeemUrlTapped(
-            EventName.REDEEM_URL_TAPPED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user());
-
-    }
+    public static final String EVENT_NAME = "redeem_url_tapped";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire() {
         final RedeemUrlTapped event = new RedeemUrlTapped(
-            EventName.REDEEM_URL_TAPPED,
             (Common) EventsStore.common(),
             (User) EventsStore.user());
 
@@ -43,7 +36,15 @@ public class RedeemUrlTapped implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private RedeemUrlTapped.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -71,12 +72,12 @@ public class RedeemUrlTapped implements Event {
     /**
      * 
      * @param common
-     * @param eventName
+
+
      * @param user
      */
-    public RedeemUrlTapped(RedeemUrlTapped.EventName eventName, Common common, User user) {
+    public RedeemUrlTapped(Common common, User user) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
     }
@@ -86,7 +87,7 @@ public class RedeemUrlTapped implements Event {
      * (Required)
      * 
      */
-    public RedeemUrlTapped.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -95,8 +96,26 @@ public class RedeemUrlTapped implements Event {
      * (Required)
      * 
      */
-    public void setEventName(RedeemUrlTapped.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -133,43 +152,6 @@ public class RedeemUrlTapped implements Event {
      */
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public enum EventName {
-
-        @SerializedName("redeem_url_tapped")
-        REDEEM_URL_TAPPED("redeem_url_tapped");
-        private final String value;
-        private final static Map<String, RedeemUrlTapped.EventName> CONSTANTS = new HashMap<String, RedeemUrlTapped.EventName>();
-
-        static {
-            for (RedeemUrlTapped.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static RedeemUrlTapped.EventName fromValue(String value) {
-            RedeemUrlTapped.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

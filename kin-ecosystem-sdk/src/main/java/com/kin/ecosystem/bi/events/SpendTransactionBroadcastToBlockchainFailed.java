@@ -17,22 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class SpendTransactionBroadcastToBlockchainFailed implements Event {
-    // Augmented by script
-    public static SpendTransactionBroadcastToBlockchainFailed create(String errorReason, String offerId, String orderId) {
-        return new SpendTransactionBroadcastToBlockchainFailed(
-            EventName.SPEND_TRANSACTION_BROADCAST_TO_BLOCKCHAIN_FAILED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            errorReason,
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "spend_transaction_broadcast_to_blockchain_failed";
+    public static final String EVENT_TYPE = "business";
 
     // Augmented by script
     public static void fire(String errorReason, String offerId, String orderId) {
         final SpendTransactionBroadcastToBlockchainFailed event = new SpendTransactionBroadcastToBlockchainFailed(
-            EventName.SPEND_TRANSACTION_BROADCAST_TO_BLOCKCHAIN_FAILED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             errorReason,
@@ -49,7 +39,15 @@ public class SpendTransactionBroadcastToBlockchainFailed implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private SpendTransactionBroadcastToBlockchainFailed.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -103,13 +101,13 @@ public class SpendTransactionBroadcastToBlockchainFailed implements Event {
      * @param common
      * @param orderId
      * @param errorReason
-     * @param eventName
+
      * @param offerId
+
      * @param user
      */
-    public SpendTransactionBroadcastToBlockchainFailed(SpendTransactionBroadcastToBlockchainFailed.EventName eventName, Common common, User user, String errorReason, String offerId, String orderId) {
+    public SpendTransactionBroadcastToBlockchainFailed(Common common, User user, String errorReason, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.errorReason = errorReason;
@@ -122,7 +120,7 @@ public class SpendTransactionBroadcastToBlockchainFailed implements Event {
      * (Required)
      * 
      */
-    public SpendTransactionBroadcastToBlockchainFailed.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -131,8 +129,26 @@ public class SpendTransactionBroadcastToBlockchainFailed implements Event {
      * (Required)
      * 
      */
-    public void setEventName(SpendTransactionBroadcastToBlockchainFailed.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -223,43 +239,6 @@ public class SpendTransactionBroadcastToBlockchainFailed implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("spend_transaction_broadcast_to_blockchain_failed")
-        SPEND_TRANSACTION_BROADCAST_TO_BLOCKCHAIN_FAILED("spend_transaction_broadcast_to_blockchain_failed");
-        private final String value;
-        private final static Map<String, SpendTransactionBroadcastToBlockchainFailed.EventName> CONSTANTS = new HashMap<String, SpendTransactionBroadcastToBlockchainFailed.EventName>();
-
-        static {
-            for (SpendTransactionBroadcastToBlockchainFailed.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static SpendTransactionBroadcastToBlockchainFailed.EventName fromValue(String value) {
-            SpendTransactionBroadcastToBlockchainFailed.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

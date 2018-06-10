@@ -3,8 +3,6 @@ package com.kin.ecosystem.bi.events;
 public interface UserInterface extends UserReadonly {
     void setDigitalServiceUserId(String digitalServiceUserId);
 
-    void setDigitalServiceName(String digitalServiceName);
-
     void setBalance(Double balance);
 
     void setEarnCount(Integer earnCount);

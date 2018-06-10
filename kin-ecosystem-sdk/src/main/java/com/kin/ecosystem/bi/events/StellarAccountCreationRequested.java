@@ -17,19 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class StellarAccountCreationRequested implements Event {
-    // Augmented by script
-    public static StellarAccountCreationRequested create() {
-        return new StellarAccountCreationRequested(
-            EventName.STELLAR_ACCOUNT_CREATION_REQUESTED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user());
-
-    }
+    public static final String EVENT_NAME = "stellar_account_creation_requested";
+    public static final String EVENT_TYPE = "business";
 
     // Augmented by script
     public static void fire() {
         final StellarAccountCreationRequested event = new StellarAccountCreationRequested(
-            EventName.STELLAR_ACCOUNT_CREATION_REQUESTED,
             (Common) EventsStore.common(),
             (User) EventsStore.user());
 
@@ -43,7 +36,15 @@ public class StellarAccountCreationRequested implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private StellarAccountCreationRequested.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -71,12 +72,12 @@ public class StellarAccountCreationRequested implements Event {
     /**
      * 
      * @param common
-     * @param eventName
+
+
      * @param user
      */
-    public StellarAccountCreationRequested(StellarAccountCreationRequested.EventName eventName, Common common, User user) {
+    public StellarAccountCreationRequested(Common common, User user) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
     }
@@ -86,7 +87,7 @@ public class StellarAccountCreationRequested implements Event {
      * (Required)
      * 
      */
-    public StellarAccountCreationRequested.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -95,8 +96,26 @@ public class StellarAccountCreationRequested implements Event {
      * (Required)
      * 
      */
-    public void setEventName(StellarAccountCreationRequested.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -133,43 +152,6 @@ public class StellarAccountCreationRequested implements Event {
      */
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public enum EventName {
-
-        @SerializedName("stellar_account_creation_requested")
-        STELLAR_ACCOUNT_CREATION_REQUESTED("stellar_account_creation_requested");
-        private final String value;
-        private final static Map<String, StellarAccountCreationRequested.EventName> CONSTANTS = new HashMap<String, StellarAccountCreationRequested.EventName>();
-
-        static {
-            for (StellarAccountCreationRequested.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static StellarAccountCreationRequested.EventName fromValue(String value) {
-            StellarAccountCreationRequested.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

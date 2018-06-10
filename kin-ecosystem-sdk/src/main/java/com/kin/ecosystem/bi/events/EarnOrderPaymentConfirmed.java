@@ -17,22 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class EarnOrderPaymentConfirmed implements Event {
-    // Augmented by script
-    public static EarnOrderPaymentConfirmed create(String transactionId, String offerId, String orderId) {
-        return new EarnOrderPaymentConfirmed(
-            EventName.EARN_ORDER_PAYMENT_CONFIRMED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            transactionId,
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "earn_order_payment_confirmed";
+    public static final String EVENT_TYPE = "business";
 
     // Augmented by script
     public static void fire(String transactionId, String offerId, String orderId) {
         final EarnOrderPaymentConfirmed event = new EarnOrderPaymentConfirmed(
-            EventName.EARN_ORDER_PAYMENT_CONFIRMED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             transactionId,
@@ -49,7 +39,15 @@ public class EarnOrderPaymentConfirmed implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private EarnOrderPaymentConfirmed.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -102,14 +100,14 @@ public class EarnOrderPaymentConfirmed implements Event {
      * 
      * @param common
      * @param orderId
-     * @param eventName
+
      * @param offerId
+
      * @param user
      * @param transactionId
      */
-    public EarnOrderPaymentConfirmed(EarnOrderPaymentConfirmed.EventName eventName, Common common, User user, String transactionId, String offerId, String orderId) {
+    public EarnOrderPaymentConfirmed(Common common, User user, String transactionId, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.transactionId = transactionId;
@@ -122,7 +120,7 @@ public class EarnOrderPaymentConfirmed implements Event {
      * (Required)
      * 
      */
-    public EarnOrderPaymentConfirmed.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -131,8 +129,26 @@ public class EarnOrderPaymentConfirmed implements Event {
      * (Required)
      * 
      */
-    public void setEventName(EarnOrderPaymentConfirmed.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -223,43 +239,6 @@ public class EarnOrderPaymentConfirmed implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("earn_order_payment_confirmed")
-        EARN_ORDER_PAYMENT_CONFIRMED("earn_order_payment_confirmed");
-        private final String value;
-        private final static Map<String, EarnOrderPaymentConfirmed.EventName> CONSTANTS = new HashMap<String, EarnOrderPaymentConfirmed.EventName>();
-
-        static {
-            for (EarnOrderPaymentConfirmed.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static EarnOrderPaymentConfirmed.EventName fromValue(String value) {
-            EarnOrderPaymentConfirmed.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

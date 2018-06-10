@@ -11,10 +11,8 @@ public class CommonProxy implements CommonInterface {
             this.getLanguage(),
             this.getCarrier(),
             this.getDeviceId(),
-            this.getEventType(),
             this.getUserId(),
             this.getTimestamp(),
-            this.getDeviceType(),
             this.getPlatform(),
             this.getDeviceManufacturer(),
             this.getDeviceModel());
@@ -23,7 +21,7 @@ public class CommonProxy implements CommonInterface {
     private String eventId;
     private EventsStore.DynamicValue<String> dynamicEventId;
     public String getEventId() {
-        return this.eventId == null ? this.eventId : this.dynamicEventId.get();
+        return this.eventId != null ? this.eventId : this.dynamicEventId.get();
     }
     public void setEventId(String eventId) {
         this.eventId = eventId;
@@ -35,7 +33,7 @@ public class CommonProxy implements CommonInterface {
     private String os;
     private EventsStore.DynamicValue<String> dynamicOs;
     public String getOs() {
-        return this.os == null ? this.os : this.dynamicOs.get();
+        return this.os != null ? this.os : this.dynamicOs.get();
     }
     public void setOs(String os) {
         this.os = os;
@@ -47,7 +45,7 @@ public class CommonProxy implements CommonInterface {
     private String version;
     private EventsStore.DynamicValue<String> dynamicVersion;
     public String getVersion() {
-        return this.version == null ? this.version : this.dynamicVersion.get();
+        return this.version != null ? this.version : this.dynamicVersion.get();
     }
     public void setVersion(String version) {
         this.version = version;
@@ -59,7 +57,7 @@ public class CommonProxy implements CommonInterface {
     private String language;
     private EventsStore.DynamicValue<String> dynamicLanguage;
     public String getLanguage() {
-        return this.language == null ? this.language : this.dynamicLanguage.get();
+        return this.language != null ? this.language : this.dynamicLanguage.get();
     }
     public void setLanguage(String language) {
         this.language = language;
@@ -71,7 +69,7 @@ public class CommonProxy implements CommonInterface {
     private String carrier;
     private EventsStore.DynamicValue<String> dynamicCarrier;
     public String getCarrier() {
-        return this.carrier == null ? this.carrier : this.dynamicCarrier.get();
+        return this.carrier != null ? this.carrier : this.dynamicCarrier.get();
     }
     public void setCarrier(String carrier) {
         this.carrier = carrier;
@@ -83,7 +81,7 @@ public class CommonProxy implements CommonInterface {
     private String deviceId;
     private EventsStore.DynamicValue<String> dynamicDeviceId;
     public String getDeviceId() {
-        return this.deviceId == null ? this.deviceId : this.dynamicDeviceId.get();
+        return this.deviceId != null ? this.deviceId : this.dynamicDeviceId.get();
     }
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
@@ -92,22 +90,10 @@ public class CommonProxy implements CommonInterface {
         this.dynamicDeviceId = deviceId;
     }
 
-    private Common.EventType eventType;
-    private EventsStore.DynamicValue<Common.EventType> dynamicEventType;
-    public Common.EventType getEventType() {
-        return this.eventType == null ? this.eventType : this.dynamicEventType.get();
-    }
-    public void setEventType(Common.EventType eventType) {
-        this.eventType = eventType;
-    }
-    public void setEventType(EventsStore.DynamicValue<Common.EventType> eventType) {
-        this.dynamicEventType = eventType;
-    }
-
     private String userId;
     private EventsStore.DynamicValue<String> dynamicUserId;
     public String getUserId() {
-        return this.userId == null ? this.userId : this.dynamicUserId.get();
+        return this.userId != null ? this.userId : this.dynamicUserId.get();
     }
     public void setUserId(String userId) {
         this.userId = userId;
@@ -119,7 +105,7 @@ public class CommonProxy implements CommonInterface {
     private Double timestamp;
     private EventsStore.DynamicValue<Double> dynamicTimestamp;
     public Double getTimestamp() {
-        return this.timestamp == null ? this.timestamp : this.dynamicTimestamp.get();
+        return this.timestamp != null ? this.timestamp : this.dynamicTimestamp.get();
     }
     public void setTimestamp(Double timestamp) {
         this.timestamp = timestamp;
@@ -128,22 +114,10 @@ public class CommonProxy implements CommonInterface {
         this.dynamicTimestamp = timestamp;
     }
 
-    private String deviceType;
-    private EventsStore.DynamicValue<String> dynamicDeviceType;
-    public String getDeviceType() {
-        return this.deviceType == null ? this.deviceType : this.dynamicDeviceType.get();
-    }
-    public void setDeviceType(String deviceType) {
-        this.deviceType = deviceType;
-    }
-    public void setDeviceType(EventsStore.DynamicValue<String> deviceType) {
-        this.dynamicDeviceType = deviceType;
-    }
-
     private Common.Platform platform;
     private EventsStore.DynamicValue<Common.Platform> dynamicPlatform;
     public Common.Platform getPlatform() {
-        return this.platform == null ? this.platform : this.dynamicPlatform.get();
+        return this.platform != null ? this.platform : this.dynamicPlatform.get();
     }
     public void setPlatform(Common.Platform platform) {
         this.platform = platform;
@@ -155,7 +129,7 @@ public class CommonProxy implements CommonInterface {
     private String deviceManufacturer;
     private EventsStore.DynamicValue<String> dynamicDeviceManufacturer;
     public String getDeviceManufacturer() {
-        return this.deviceManufacturer == null ? this.deviceManufacturer : this.dynamicDeviceManufacturer.get();
+        return this.deviceManufacturer != null ? this.deviceManufacturer : this.dynamicDeviceManufacturer.get();
     }
     public void setDeviceManufacturer(String deviceManufacturer) {
         this.deviceManufacturer = deviceManufacturer;
@@ -167,7 +141,7 @@ public class CommonProxy implements CommonInterface {
     private String deviceModel;
     private EventsStore.DynamicValue<String> dynamicDeviceModel;
     public String getDeviceModel() {
-        return this.deviceModel == null ? this.deviceModel : this.dynamicDeviceModel.get();
+        return this.deviceModel != null ? this.deviceModel : this.dynamicDeviceModel.get();
     }
     public void setDeviceModel(String deviceModel) {
         this.deviceModel = deviceModel;

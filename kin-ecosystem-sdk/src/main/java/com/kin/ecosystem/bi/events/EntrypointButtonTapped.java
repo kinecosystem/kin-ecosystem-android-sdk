@@ -17,19 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class EntrypointButtonTapped implements Event {
-    // Augmented by script
-    public static EntrypointButtonTapped create() {
-        return new EntrypointButtonTapped(
-            EventName.ENTRYPOINT_BUTTON_TAPPED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user());
-
-    }
+    public static final String EVENT_NAME = "entrypoint_button_tapped";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire() {
         final EntrypointButtonTapped event = new EntrypointButtonTapped(
-            EventName.ENTRYPOINT_BUTTON_TAPPED,
             (Common) EventsStore.common(),
             (User) EventsStore.user());
 
@@ -43,7 +36,15 @@ public class EntrypointButtonTapped implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private EntrypointButtonTapped.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -71,12 +72,12 @@ public class EntrypointButtonTapped implements Event {
     /**
      * 
      * @param common
-     * @param eventName
+
+
      * @param user
      */
-    public EntrypointButtonTapped(EntrypointButtonTapped.EventName eventName, Common common, User user) {
+    public EntrypointButtonTapped(Common common, User user) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
     }
@@ -86,7 +87,7 @@ public class EntrypointButtonTapped implements Event {
      * (Required)
      * 
      */
-    public EntrypointButtonTapped.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -95,8 +96,26 @@ public class EntrypointButtonTapped implements Event {
      * (Required)
      * 
      */
-    public void setEventName(EntrypointButtonTapped.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -133,43 +152,6 @@ public class EntrypointButtonTapped implements Event {
      */
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public enum EventName {
-
-        @SerializedName("entrypoint_button_tapped")
-        ENTRYPOINT_BUTTON_TAPPED("entrypoint_button_tapped");
-        private final String value;
-        private final static Map<String, EntrypointButtonTapped.EventName> CONSTANTS = new HashMap<String, EntrypointButtonTapped.EventName>();
-
-        static {
-            for (EntrypointButtonTapped.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static EntrypointButtonTapped.EventName fromValue(String value) {
-            EntrypointButtonTapped.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

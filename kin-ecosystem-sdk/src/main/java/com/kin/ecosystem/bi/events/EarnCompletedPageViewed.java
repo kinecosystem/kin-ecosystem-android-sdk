@@ -17,23 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class EarnCompletedPageViewed implements Event {
-    // Augmented by script
-    public static EarnCompletedPageViewed create(EarnCompletedPageViewed.OfferType offerType, Double kinAmount, String offerId, String orderId) {
-        return new EarnCompletedPageViewed(
-            EventName.EARN_COMPLETED_PAGE_VIEWED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            offerType,
-            kinAmount,
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "earn_completed_page_viewed";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire(EarnCompletedPageViewed.OfferType offerType, Double kinAmount, String offerId, String orderId) {
         final EarnCompletedPageViewed event = new EarnCompletedPageViewed(
-            EventName.EARN_COMPLETED_PAGE_VIEWED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             offerType,
@@ -51,7 +40,15 @@ public class EarnCompletedPageViewed implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private EarnCompletedPageViewed.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -113,14 +110,14 @@ public class EarnCompletedPageViewed implements Event {
      * @param offerType
      * @param common
      * @param orderId
-     * @param eventName
+
      * @param offerId
      * @param kinAmount
+
      * @param user
      */
-    public EarnCompletedPageViewed(EarnCompletedPageViewed.EventName eventName, Common common, User user, EarnCompletedPageViewed.OfferType offerType, Double kinAmount, String offerId, String orderId) {
+    public EarnCompletedPageViewed(Common common, User user, EarnCompletedPageViewed.OfferType offerType, Double kinAmount, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.offerType = offerType;
@@ -134,7 +131,7 @@ public class EarnCompletedPageViewed implements Event {
      * (Required)
      * 
      */
-    public EarnCompletedPageViewed.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -143,8 +140,26 @@ public class EarnCompletedPageViewed implements Event {
      * (Required)
      * 
      */
-    public void setEventName(EarnCompletedPageViewed.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -253,43 +268,6 @@ public class EarnCompletedPageViewed implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("earn_completed_page_viewed")
-        EARN_COMPLETED_PAGE_VIEWED("earn_completed_page_viewed");
-        private final String value;
-        private final static Map<String, EarnCompletedPageViewed.EventName> CONSTANTS = new HashMap<String, EarnCompletedPageViewed.EventName>();
-
-        static {
-            for (EarnCompletedPageViewed.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static EarnCompletedPageViewed.EventName fromValue(String value) {
-            EarnCompletedPageViewed.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
     public enum OfferType {

@@ -3,8 +3,6 @@ package com.kin.ecosystem.bi.events;
 public interface UserReadonly {
     String getDigitalServiceUserId();
 
-    String getDigitalServiceName();
-
     Double getBalance();
 
     Integer getEarnCount();

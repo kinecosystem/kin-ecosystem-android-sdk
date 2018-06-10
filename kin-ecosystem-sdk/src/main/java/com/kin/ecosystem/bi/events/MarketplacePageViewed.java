@@ -17,19 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class MarketplacePageViewed implements Event {
-    // Augmented by script
-    public static MarketplacePageViewed create() {
-        return new MarketplacePageViewed(
-            EventName.MARKETPLACE_PAGE_VIEWED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user());
-
-    }
+    public static final String EVENT_NAME = "marketplace_page_viewed";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire() {
         final MarketplacePageViewed event = new MarketplacePageViewed(
-            EventName.MARKETPLACE_PAGE_VIEWED,
             (Common) EventsStore.common(),
             (User) EventsStore.user());
 
@@ -43,7 +36,15 @@ public class MarketplacePageViewed implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private MarketplacePageViewed.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -71,12 +72,12 @@ public class MarketplacePageViewed implements Event {
     /**
      * 
      * @param common
-     * @param eventName
+
+
      * @param user
      */
-    public MarketplacePageViewed(MarketplacePageViewed.EventName eventName, Common common, User user) {
+    public MarketplacePageViewed(Common common, User user) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
     }
@@ -86,7 +87,7 @@ public class MarketplacePageViewed implements Event {
      * (Required)
      * 
      */
-    public MarketplacePageViewed.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -95,8 +96,26 @@ public class MarketplacePageViewed implements Event {
      * (Required)
      * 
      */
-    public void setEventName(MarketplacePageViewed.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -133,43 +152,6 @@ public class MarketplacePageViewed implements Event {
      */
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public enum EventName {
-
-        @SerializedName("marketplace_page_viewed")
-        MARKETPLACE_PAGE_VIEWED("marketplace_page_viewed");
-        private final String value;
-        private final static Map<String, MarketplacePageViewed.EventName> CONSTANTS = new HashMap<String, MarketplacePageViewed.EventName>();
-
-        static {
-            for (MarketplacePageViewed.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static MarketplacePageViewed.EventName fromValue(String value) {
-            MarketplacePageViewed.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

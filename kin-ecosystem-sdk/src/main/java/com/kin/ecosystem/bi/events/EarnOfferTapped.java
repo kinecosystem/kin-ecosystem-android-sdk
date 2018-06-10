@@ -17,23 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class EarnOfferTapped implements Event {
-    // Augmented by script
-    public static EarnOfferTapped create(EarnOfferTapped.OfferType offerType, Double kinAmount, String offerId, String orderId) {
-        return new EarnOfferTapped(
-            EventName.EARN_OFFER_TAPPED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            offerType,
-            kinAmount,
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "earn_offer_tapped";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire(EarnOfferTapped.OfferType offerType, Double kinAmount, String offerId, String orderId) {
         final EarnOfferTapped event = new EarnOfferTapped(
-            EventName.EARN_OFFER_TAPPED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             offerType,
@@ -51,7 +40,15 @@ public class EarnOfferTapped implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private EarnOfferTapped.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -113,14 +110,14 @@ public class EarnOfferTapped implements Event {
      * @param offerType
      * @param common
      * @param orderId
-     * @param eventName
+
      * @param offerId
      * @param kinAmount
+
      * @param user
      */
-    public EarnOfferTapped(EarnOfferTapped.EventName eventName, Common common, User user, EarnOfferTapped.OfferType offerType, Double kinAmount, String offerId, String orderId) {
+    public EarnOfferTapped(Common common, User user, EarnOfferTapped.OfferType offerType, Double kinAmount, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.offerType = offerType;
@@ -134,7 +131,7 @@ public class EarnOfferTapped implements Event {
      * (Required)
      * 
      */
-    public EarnOfferTapped.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -143,8 +140,26 @@ public class EarnOfferTapped implements Event {
      * (Required)
      * 
      */
-    public void setEventName(EarnOfferTapped.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -253,43 +268,6 @@ public class EarnOfferTapped implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("earn_offer_tapped")
-        EARN_OFFER_TAPPED("earn_offer_tapped");
-        private final String value;
-        private final static Map<String, EarnOfferTapped.EventName> CONSTANTS = new HashMap<String, EarnOfferTapped.EventName>();
-
-        static {
-            for (EarnOfferTapped.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static EarnOfferTapped.EventName fromValue(String value) {
-            EarnOfferTapped.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
     public enum OfferType {

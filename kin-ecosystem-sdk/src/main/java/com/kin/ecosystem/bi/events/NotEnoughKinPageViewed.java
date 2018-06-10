@@ -17,19 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class NotEnoughKinPageViewed implements Event {
-    // Augmented by script
-    public static NotEnoughKinPageViewed create() {
-        return new NotEnoughKinPageViewed(
-            EventName.NOT_ENOUGH_KIN_PAGE_VIEWED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user());
-
-    }
+    public static final String EVENT_NAME = "not_enough_kin_page_viewed";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire() {
         final NotEnoughKinPageViewed event = new NotEnoughKinPageViewed(
-            EventName.NOT_ENOUGH_KIN_PAGE_VIEWED,
             (Common) EventsStore.common(),
             (User) EventsStore.user());
 
@@ -43,7 +36,15 @@ public class NotEnoughKinPageViewed implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private NotEnoughKinPageViewed.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -71,12 +72,12 @@ public class NotEnoughKinPageViewed implements Event {
     /**
      * 
      * @param common
-     * @param eventName
+
+
      * @param user
      */
-    public NotEnoughKinPageViewed(NotEnoughKinPageViewed.EventName eventName, Common common, User user) {
+    public NotEnoughKinPageViewed(Common common, User user) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
     }
@@ -86,7 +87,7 @@ public class NotEnoughKinPageViewed implements Event {
      * (Required)
      * 
      */
-    public NotEnoughKinPageViewed.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -95,8 +96,26 @@ public class NotEnoughKinPageViewed implements Event {
      * (Required)
      * 
      */
-    public void setEventName(NotEnoughKinPageViewed.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -133,43 +152,6 @@ public class NotEnoughKinPageViewed implements Event {
      */
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public enum EventName {
-
-        @SerializedName("not_enough_kin_page_viewed")
-        NOT_ENOUGH_KIN_PAGE_VIEWED("not_enough_kin_page_viewed");
-        private final String value;
-        private final static Map<String, NotEnoughKinPageViewed.EventName> CONSTANTS = new HashMap<String, NotEnoughKinPageViewed.EventName>();
-
-        static {
-            for (NotEnoughKinPageViewed.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static NotEnoughKinPageViewed.EventName fromValue(String value) {
-            NotEnoughKinPageViewed.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

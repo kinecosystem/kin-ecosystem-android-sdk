@@ -17,19 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class StellarKinTrustlineSetupSucceeded implements Event {
-    // Augmented by script
-    public static StellarKinTrustlineSetupSucceeded create() {
-        return new StellarKinTrustlineSetupSucceeded(
-            EventName.STELLAR_KIN_TRUSTLINE_SETUP_SUCCEEDED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user());
-
-    }
+    public static final String EVENT_NAME = "stellar_kin_trustline_setup_succeeded";
+    public static final String EVENT_TYPE = "business";
 
     // Augmented by script
     public static void fire() {
         final StellarKinTrustlineSetupSucceeded event = new StellarKinTrustlineSetupSucceeded(
-            EventName.STELLAR_KIN_TRUSTLINE_SETUP_SUCCEEDED,
             (Common) EventsStore.common(),
             (User) EventsStore.user());
 
@@ -43,7 +36,15 @@ public class StellarKinTrustlineSetupSucceeded implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private StellarKinTrustlineSetupSucceeded.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -71,12 +72,12 @@ public class StellarKinTrustlineSetupSucceeded implements Event {
     /**
      * 
      * @param common
-     * @param eventName
+
+
      * @param user
      */
-    public StellarKinTrustlineSetupSucceeded(StellarKinTrustlineSetupSucceeded.EventName eventName, Common common, User user) {
+    public StellarKinTrustlineSetupSucceeded(Common common, User user) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
     }
@@ -86,7 +87,7 @@ public class StellarKinTrustlineSetupSucceeded implements Event {
      * (Required)
      * 
      */
-    public StellarKinTrustlineSetupSucceeded.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -95,8 +96,26 @@ public class StellarKinTrustlineSetupSucceeded implements Event {
      * (Required)
      * 
      */
-    public void setEventName(StellarKinTrustlineSetupSucceeded.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -133,43 +152,6 @@ public class StellarKinTrustlineSetupSucceeded implements Event {
      */
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public enum EventName {
-
-        @SerializedName("stellar_kin_trustline_setup_succeeded")
-        STELLAR_KIN_TRUSTLINE_SETUP_SUCCEEDED("stellar_kin_trustline_setup_succeeded");
-        private final String value;
-        private final static Map<String, StellarKinTrustlineSetupSucceeded.EventName> CONSTANTS = new HashMap<String, StellarKinTrustlineSetupSucceeded.EventName>();
-
-        static {
-            for (StellarKinTrustlineSetupSucceeded.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static StellarKinTrustlineSetupSucceeded.EventName fromValue(String value) {
-            StellarKinTrustlineSetupSucceeded.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

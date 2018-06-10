@@ -17,19 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class KinSdkInitiated implements Event {
-    // Augmented by script
-    public static KinSdkInitiated create() {
-        return new KinSdkInitiated(
-            EventName.KIN_SDK_INITIATED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user());
-
-    }
+    public static final String EVENT_NAME = "kin_sdk_initiated";
+    public static final String EVENT_TYPE = "business";
 
     // Augmented by script
     public static void fire() {
         final KinSdkInitiated event = new KinSdkInitiated(
-            EventName.KIN_SDK_INITIATED,
             (Common) EventsStore.common(),
             (User) EventsStore.user());
 
@@ -43,7 +36,15 @@ public class KinSdkInitiated implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private KinSdkInitiated.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -71,12 +72,12 @@ public class KinSdkInitiated implements Event {
     /**
      * 
      * @param common
-     * @param eventName
+
+
      * @param user
      */
-    public KinSdkInitiated(KinSdkInitiated.EventName eventName, Common common, User user) {
+    public KinSdkInitiated(Common common, User user) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
     }
@@ -86,7 +87,7 @@ public class KinSdkInitiated implements Event {
      * (Required)
      * 
      */
-    public KinSdkInitiated.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -95,8 +96,26 @@ public class KinSdkInitiated implements Event {
      * (Required)
      * 
      */
-    public void setEventName(KinSdkInitiated.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -133,43 +152,6 @@ public class KinSdkInitiated implements Event {
      */
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public enum EventName {
-
-        @SerializedName("kin_sdk_initiated")
-        KIN_SDK_INITIATED("kin_sdk_initiated");
-        private final String value;
-        private final static Map<String, KinSdkInitiated.EventName> CONSTANTS = new HashMap<String, KinSdkInitiated.EventName>();
-
-        static {
-            for (KinSdkInitiated.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static KinSdkInitiated.EventName fromValue(String value) {
-            KinSdkInitiated.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

@@ -17,23 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class KinTutorialButtonTapped implements Event {
-    // Augmented by script
-    public static KinTutorialButtonTapped create(Integer tutorialStep, KinTutorialButtonTapped.OfferType offerType, String offerId, String orderId) {
-        return new KinTutorialButtonTapped(
-            EventName.KIN_TUTORIAL_BUTTON_TAPPED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            tutorialStep,
-            offerType,
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "kin_tutorial_button_tapped";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire(Integer tutorialStep, KinTutorialButtonTapped.OfferType offerType, String offerId, String orderId) {
         final KinTutorialButtonTapped event = new KinTutorialButtonTapped(
-            EventName.KIN_TUTORIAL_BUTTON_TAPPED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             tutorialStep,
@@ -51,7 +40,15 @@ public class KinTutorialButtonTapped implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private KinTutorialButtonTapped.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -114,13 +111,13 @@ public class KinTutorialButtonTapped implements Event {
      * @param offerType
      * @param common
      * @param orderId
-     * @param eventName
+
      * @param offerId
+
      * @param user
      */
-    public KinTutorialButtonTapped(KinTutorialButtonTapped.EventName eventName, Common common, User user, Integer tutorialStep, KinTutorialButtonTapped.OfferType offerType, String offerId, String orderId) {
+    public KinTutorialButtonTapped(Common common, User user, Integer tutorialStep, KinTutorialButtonTapped.OfferType offerType, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.tutorialStep = tutorialStep;
@@ -134,7 +131,7 @@ public class KinTutorialButtonTapped implements Event {
      * (Required)
      * 
      */
-    public KinTutorialButtonTapped.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -143,8 +140,26 @@ public class KinTutorialButtonTapped implements Event {
      * (Required)
      * 
      */
-    public void setEventName(KinTutorialButtonTapped.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -253,43 +268,6 @@ public class KinTutorialButtonTapped implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("kin_tutorial_button_tapped")
-        KIN_TUTORIAL_BUTTON_TAPPED("kin_tutorial_button_tapped");
-        private final String value;
-        private final static Map<String, KinTutorialButtonTapped.EventName> CONSTANTS = new HashMap<String, KinTutorialButtonTapped.EventName>();
-
-        static {
-            for (KinTutorialButtonTapped.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static KinTutorialButtonTapped.EventName fromValue(String value) {
-            KinTutorialButtonTapped.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
     public enum OfferType {

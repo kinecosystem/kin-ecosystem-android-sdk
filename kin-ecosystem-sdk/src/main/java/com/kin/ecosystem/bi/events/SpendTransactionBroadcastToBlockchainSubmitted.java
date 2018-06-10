@@ -17,21 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class SpendTransactionBroadcastToBlockchainSubmitted implements Event {
-    // Augmented by script
-    public static SpendTransactionBroadcastToBlockchainSubmitted create(String offerId, String orderId) {
-        return new SpendTransactionBroadcastToBlockchainSubmitted(
-            EventName.SPEND_TRANSACTION_BROADCAST_TO_BLOCKCHAIN_SUBMITTED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "spend_transaction_broadcast_to_blockchain_submitted";
+    public static final String EVENT_TYPE = "business";
 
     // Augmented by script
     public static void fire(String offerId, String orderId) {
         final SpendTransactionBroadcastToBlockchainSubmitted event = new SpendTransactionBroadcastToBlockchainSubmitted(
-            EventName.SPEND_TRANSACTION_BROADCAST_TO_BLOCKCHAIN_SUBMITTED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             offerId,
@@ -47,7 +38,15 @@ public class SpendTransactionBroadcastToBlockchainSubmitted implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private SpendTransactionBroadcastToBlockchainSubmitted.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -92,13 +91,13 @@ public class SpendTransactionBroadcastToBlockchainSubmitted implements Event {
      * 
      * @param common
      * @param orderId
-     * @param eventName
+
      * @param offerId
+
      * @param user
      */
-    public SpendTransactionBroadcastToBlockchainSubmitted(SpendTransactionBroadcastToBlockchainSubmitted.EventName eventName, Common common, User user, String offerId, String orderId) {
+    public SpendTransactionBroadcastToBlockchainSubmitted(Common common, User user, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.offerId = offerId;
@@ -110,7 +109,7 @@ public class SpendTransactionBroadcastToBlockchainSubmitted implements Event {
      * (Required)
      * 
      */
-    public SpendTransactionBroadcastToBlockchainSubmitted.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -119,8 +118,26 @@ public class SpendTransactionBroadcastToBlockchainSubmitted implements Event {
      * (Required)
      * 
      */
-    public void setEventName(SpendTransactionBroadcastToBlockchainSubmitted.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -193,43 +210,6 @@ public class SpendTransactionBroadcastToBlockchainSubmitted implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("spend_transaction_broadcast_to_blockchain_submitted")
-        SPEND_TRANSACTION_BROADCAST_TO_BLOCKCHAIN_SUBMITTED("spend_transaction_broadcast_to_blockchain_submitted");
-        private final String value;
-        private final static Map<String, SpendTransactionBroadcastToBlockchainSubmitted.EventName> CONSTANTS = new HashMap<String, SpendTransactionBroadcastToBlockchainSubmitted.EventName>();
-
-        static {
-            for (SpendTransactionBroadcastToBlockchainSubmitted.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static SpendTransactionBroadcastToBlockchainSubmitted.EventName fromValue(String value) {
-            SpendTransactionBroadcastToBlockchainSubmitted.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

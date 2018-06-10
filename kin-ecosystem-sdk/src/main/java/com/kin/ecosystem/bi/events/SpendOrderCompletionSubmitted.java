@@ -17,21 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class SpendOrderCompletionSubmitted implements Event {
-    // Augmented by script
-    public static SpendOrderCompletionSubmitted create(String offerId, String orderId) {
-        return new SpendOrderCompletionSubmitted(
-            EventName.SPEND_ORDER_COMPLETION_SUBMITTED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "spend_order_completion_submitted";
+    public static final String EVENT_TYPE = "business";
 
     // Augmented by script
     public static void fire(String offerId, String orderId) {
         final SpendOrderCompletionSubmitted event = new SpendOrderCompletionSubmitted(
-            EventName.SPEND_ORDER_COMPLETION_SUBMITTED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             offerId,
@@ -47,7 +38,15 @@ public class SpendOrderCompletionSubmitted implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private SpendOrderCompletionSubmitted.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -92,13 +91,13 @@ public class SpendOrderCompletionSubmitted implements Event {
      * 
      * @param common
      * @param orderId
-     * @param eventName
+
      * @param offerId
+
      * @param user
      */
-    public SpendOrderCompletionSubmitted(SpendOrderCompletionSubmitted.EventName eventName, Common common, User user, String offerId, String orderId) {
+    public SpendOrderCompletionSubmitted(Common common, User user, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.offerId = offerId;
@@ -110,7 +109,7 @@ public class SpendOrderCompletionSubmitted implements Event {
      * (Required)
      * 
      */
-    public SpendOrderCompletionSubmitted.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -119,8 +118,26 @@ public class SpendOrderCompletionSubmitted implements Event {
      * (Required)
      * 
      */
-    public void setEventName(SpendOrderCompletionSubmitted.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -193,43 +210,6 @@ public class SpendOrderCompletionSubmitted implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("spend_order_completion_submitted")
-        SPEND_ORDER_COMPLETION_SUBMITTED("spend_order_completion_submitted");
-        private final String value;
-        private final static Map<String, SpendOrderCompletionSubmitted.EventName> CONSTANTS = new HashMap<String, SpendOrderCompletionSubmitted.EventName>();
-
-        static {
-            for (SpendOrderCompletionSubmitted.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static SpendOrderCompletionSubmitted.EventName fromValue(String value) {
-            SpendOrderCompletionSubmitted.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

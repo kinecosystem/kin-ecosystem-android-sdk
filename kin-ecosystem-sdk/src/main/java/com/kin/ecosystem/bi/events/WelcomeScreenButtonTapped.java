@@ -17,19 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class WelcomeScreenButtonTapped implements Event {
-    // Augmented by script
-    public static WelcomeScreenButtonTapped create() {
-        return new WelcomeScreenButtonTapped(
-            EventName.WELCOME_SCREEN_BUTTON_TAPPED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user());
-
-    }
+    public static final String EVENT_NAME = "welcome_screen_button_tapped";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire() {
         final WelcomeScreenButtonTapped event = new WelcomeScreenButtonTapped(
-            EventName.WELCOME_SCREEN_BUTTON_TAPPED,
             (Common) EventsStore.common(),
             (User) EventsStore.user());
 
@@ -43,7 +36,15 @@ public class WelcomeScreenButtonTapped implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private WelcomeScreenButtonTapped.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -71,12 +72,12 @@ public class WelcomeScreenButtonTapped implements Event {
     /**
      * 
      * @param common
-     * @param eventName
+
+
      * @param user
      */
-    public WelcomeScreenButtonTapped(WelcomeScreenButtonTapped.EventName eventName, Common common, User user) {
+    public WelcomeScreenButtonTapped(Common common, User user) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
     }
@@ -86,7 +87,7 @@ public class WelcomeScreenButtonTapped implements Event {
      * (Required)
      * 
      */
-    public WelcomeScreenButtonTapped.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -95,8 +96,26 @@ public class WelcomeScreenButtonTapped implements Event {
      * (Required)
      * 
      */
-    public void setEventName(WelcomeScreenButtonTapped.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -133,43 +152,6 @@ public class WelcomeScreenButtonTapped implements Event {
      */
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public enum EventName {
-
-        @SerializedName("welcome_screen_button_tapped")
-        WELCOME_SCREEN_BUTTON_TAPPED("welcome_screen_button_tapped");
-        private final String value;
-        private final static Map<String, WelcomeScreenButtonTapped.EventName> CONSTANTS = new HashMap<String, WelcomeScreenButtonTapped.EventName>();
-
-        static {
-            for (WelcomeScreenButtonTapped.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static WelcomeScreenButtonTapped.EventName fromValue(String value) {
-            WelcomeScreenButtonTapped.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

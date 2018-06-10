@@ -3,7 +3,7 @@
 import { readdirSync, unlinkSync, existsSync, readFileSync, writeFileSync } from "fs";
 import { exec } from"child_process";
 
-const SOURCE_PATH = "../../kin-bi/json_schemas";
+const SOURCE_PATH = "../../kin-bi/json_schemas/client";
 const TMP_PATH = "./java-gen-tmp";
 const TARGET_PATH = "../kin-ecosystem-sdk/src/main/java";
 const PACKAGE_PATH = `com/kin/ecosystem/bi/events`;
@@ -72,20 +72,38 @@ class Argument {
 
 class EventConstructor {
     private static readonly ARGS_REG_EX = /\s*,\s*/g;
-    private static readonly AUGMENTED_ARGS = ["eventName", "common", "user"];
+    private static readonly AUGMENTED_ARGS = ["eventName", "eventType", "common", "user"];
 
     private readonly className: string;
     private readonly args: Argument[];
 
-    constructor(className: string, args: string) {
+    public readonly source: string;
+
+    constructor(className: string, args: string, source: string) {
         this.className = className;
         this.args = args
             .split(EventConstructor.ARGS_REG_EX)
             .map(arg => arg.split(/\s+/))
             .map(arg => new Argument(arg[0], arg[1]));
 
+        const endToken = "\n    }\n";
+        let startIndex = source.search(new RegExp(`\\n    public ${ className }\\([\\w\\d]+`));
+        startIndex = source.lastIndexOf("    /**", startIndex);
+        const endIndex = source.indexOf(endToken, startIndex) + endToken.length;
+        this.source = source.substring(startIndex, endIndex);
+
         // needed because it is passed as a callback
         this.superCallValueFor = this.superCallValueFor.bind(this);
+    }
+
+    public newSource(): string {
+        return this.source
+            .replace("     * @param eventName", "")
+            .replace("     * @param eventType", "")
+            .replace(`${ this.className }.EventName eventName, `, "")
+            .replace(`${ this.className }.EventType eventType, `, "")
+            .replace(/\s+this\.eventName = eventName;/, "")
+            .replace(/\s+this\.eventType = eventType;/, "");
     }
 
     public createFactory(): string {
@@ -117,7 +135,10 @@ class EventConstructor {
         content += ") {\n";
         content += `${ EventConstructor.indent(2) }final ${ this.className } event = new ${ this.className }(\n`;
 
-        content += this.args.map(arg => EventConstructor.indent(3) + this.superCallValueFor(arg)).join(",\n") + ");\n\n";
+        content += this.args
+            .filter(arg => arg.name !== "eventName" && arg.name !== "eventType")
+            .map(arg => EventConstructor.indent(3) + this.superCallValueFor(arg))
+            .join(",\n") + ");\n\n";
         content += EventConstructor.indent(2) + "EventLoggerImpl.Send(event);\n"
 
         content += `${ EventConstructor.indent(1) }}\n`;
@@ -165,6 +186,23 @@ class EventConstructor {
         }
 
         return copy;
+    }
+}
+
+class EventSourceEnum {
+    public readonly name: string;
+    public readonly value: string;
+    public readonly source: string;
+
+    constructor(name: string, source: string) {
+        this.name = name;
+
+        const endToken = "\n    }\n";
+        const startIndex = source.indexOf(`\n    public enum ${ name }`);
+        const endIndex = source.indexOf(endToken, startIndex) + endToken.length;
+        this.source = source.substring(startIndex, endIndex);
+
+        this.value = this.source.match(/@SerializedName\("([\w\d]+)"\)/)![1];
     }
 }
 
@@ -353,7 +391,7 @@ namespace parser {
             content += indent(1) + `private ${ dynamicArgumentType } ${ dynamicArgumentName };\n`;
 
             content += indent(1) + getter.signature + " {\n";
-            content += indent(2) + `return this.${ argumentName } == null ? this.${ argumentName } : this.${ dynamicArgumentName }.get();\n`;
+            content += indent(2) + `return this.${ argumentName } != null ? this.${ argumentName } : this.${ dynamicArgumentName }.get();\n`;
             content += indent(1) + "}\n";
 
             content += indent(1) + setter.signature + " {\n";
@@ -480,6 +518,9 @@ namespace parser {
 function processSourceFile(className: string, path: string): string {
     let content = readFileSync(path, "utf8");
 
+    const eventNameEnum = new EventSourceEnum("EventName", content);
+    const eventTypeEnum = new EventSourceEnum("EventType", content);
+
     content = content
         .replace(/(import [^;]+;)/, AUGEMENTED_BY_SCRIPT_COMMENT
             + "import com.kin.ecosystem.bi.Event;\n"
@@ -491,15 +532,45 @@ function processSourceFile(className: string, path: string): string {
 
     let match: RegExpExecArray | null = null;
     while ((match = ctorRegEx.exec(content)) !== null) {
-        ctors.push(new EventConstructor(className, match[1]));
+        const ctor = new EventConstructor(className, match[1], content);
+        content = content.replace(ctor.source, ctor.newSource());
+        ctors.push(ctor);
     }
 
     const classDef = `public class ${ className } {\n`;
     const newClassDef = `public class ${ className } implements Event {\n`;
+
+    const eventNameDef = `private ${ className }.EventName eventName`;
+    const newEventNameDef = `private String eventName = EVENT_NAME`;
+    const eventNameGetterDef = `public ${ className }.EventName getEventName()`;
+    const newEventNameGetterDef = `public String getEventName()`;
+    const eventNameSetterDef = `public void setEventName(${ className }.EventName eventName)`;
+    const newEventNameSetterDef = `public void setEventName(String eventName)`;
+
+    const eventTypeDef = `private ${ className }.EventType eventType`;
+    const newEventTypeDef = `private String eventType = EVENT_TYPE`;
+    const eventTypeGetterDef = `public ${ className }.EventType getEventType()`;
+    const newEventTypeGetterDef = `public String getEventType()`;
+    const eventTypeSetterDef = `public void setEventType(${ className }.EventType eventType)`;
+    const newEventTypeSetterDef = `public void setEventType(String eventType)`;
+
     return content
-        .replace(classDef, newClassDef + ctors
-            .map(ctor => ctor.createFactory() + "\n" + ctor.createSender())
-            .join("\n"));
+        .replace(
+            classDef,
+            newClassDef
+                + `    public static final String EVENT_NAME = "${ eventNameEnum.value }";\n`
+                + `    public static final String EVENT_TYPE = "${ eventTypeEnum.value }";\n\n`
+                + ctors
+                    .map(ctor => ctor.createSender())
+                    .join("\n"))
+        .replace(eventNameDef, newEventNameDef)
+        .replace(eventTypeDef, newEventTypeDef)
+        .replace(eventNameEnum.source, "")
+        .replace(eventNameGetterDef, newEventNameGetterDef)
+        .replace(eventNameSetterDef, newEventNameSetterDef)
+        .replace(eventTypeEnum.source, "")
+        .replace(eventTypeGetterDef, newEventTypeGetterDef)
+        .replace(eventTypeSetterDef, newEventTypeSetterDef);
 }
 
 /**

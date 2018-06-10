@@ -17,22 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class ConfirmPurchaseButtonTapped implements Event {
-    // Augmented by script
-    public static ConfirmPurchaseButtonTapped create(Double kinAmount, String offerId, String orderId) {
-        return new ConfirmPurchaseButtonTapped(
-            EventName.CONFIRM_PURCHASE_BUTTON_TAPPED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            kinAmount,
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "confirm_purchase_button_tapped";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire(Double kinAmount, String offerId, String orderId) {
         final ConfirmPurchaseButtonTapped event = new ConfirmPurchaseButtonTapped(
-            EventName.CONFIRM_PURCHASE_BUTTON_TAPPED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             kinAmount,
@@ -49,7 +39,15 @@ public class ConfirmPurchaseButtonTapped implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private ConfirmPurchaseButtonTapped.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -102,14 +100,14 @@ public class ConfirmPurchaseButtonTapped implements Event {
      * 
      * @param common
      * @param orderId
-     * @param eventName
+
      * @param offerId
      * @param kinAmount
+
      * @param user
      */
-    public ConfirmPurchaseButtonTapped(ConfirmPurchaseButtonTapped.EventName eventName, Common common, User user, Double kinAmount, String offerId, String orderId) {
+    public ConfirmPurchaseButtonTapped(Common common, User user, Double kinAmount, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.kinAmount = kinAmount;
@@ -122,7 +120,7 @@ public class ConfirmPurchaseButtonTapped implements Event {
      * (Required)
      * 
      */
-    public ConfirmPurchaseButtonTapped.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -131,8 +129,26 @@ public class ConfirmPurchaseButtonTapped implements Event {
      * (Required)
      * 
      */
-    public void setEventName(ConfirmPurchaseButtonTapped.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -223,43 +239,6 @@ public class ConfirmPurchaseButtonTapped implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("confirm_purchase_button_tapped")
-        CONFIRM_PURCHASE_BUTTON_TAPPED("confirm_purchase_button_tapped");
-        private final String value;
-        private final static Map<String, ConfirmPurchaseButtonTapped.EventName> CONSTANTS = new HashMap<String, ConfirmPurchaseButtonTapped.EventName>();
-
-        static {
-            for (ConfirmPurchaseButtonTapped.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static ConfirmPurchaseButtonTapped.EventName fromValue(String value) {
-            ConfirmPurchaseButtonTapped.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

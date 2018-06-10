@@ -24,14 +24,6 @@ public class User implements UserInterface {
      * (Required)
      * 
      */
-    @SerializedName("digital_service_name")
-    @Expose
-    private String digitalServiceName;
-    /**
-     * 
-     * (Required)
-     * 
-     */
     @SerializedName("balance")
     @Expose
     private Double balance;
@@ -107,15 +99,13 @@ public class User implements UserInterface {
      * @param earnCount
      * @param totalKinSpent
      * @param spendCount
-     * @param digitalServiceName
      * @param transactionCount
      * @param digitalServiceId
      * @param entryPointParam
      */
-    public User(String digitalServiceUserId, String digitalServiceName, Double balance, Integer earnCount, Double totalKinSpent, String digitalServiceId, Integer transactionCount, String entryPointParam, Integer spendCount, Double totalKinEarned) {
+    public User(String digitalServiceUserId, Double balance, Integer earnCount, Double totalKinSpent, String digitalServiceId, Integer transactionCount, String entryPointParam, Integer spendCount, Double totalKinEarned) {
         super();
         this.digitalServiceUserId = digitalServiceUserId;
-        this.digitalServiceName = digitalServiceName;
         this.balance = balance;
         this.earnCount = earnCount;
         this.totalKinSpent = totalKinSpent;
@@ -142,24 +132,6 @@ public class User implements UserInterface {
      */
     public void setDigitalServiceUserId(String digitalServiceUserId) {
         this.digitalServiceUserId = digitalServiceUserId;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public String getDigitalServiceName() {
-        return digitalServiceName;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setDigitalServiceName(String digitalServiceName) {
-        this.digitalServiceName = digitalServiceName;
     }
 
     /**

@@ -17,22 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class SpendOrderFailed implements Event {
-    // Augmented by script
-    public static SpendOrderFailed create(String errorReason, String offerId, String orderId) {
-        return new SpendOrderFailed(
-            EventName.SPEND_ORDER_FAILED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            errorReason,
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "spend_order_failed";
+    public static final String EVENT_TYPE = "business";
 
     // Augmented by script
     public static void fire(String errorReason, String offerId, String orderId) {
         final SpendOrderFailed event = new SpendOrderFailed(
-            EventName.SPEND_ORDER_FAILED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             errorReason,
@@ -49,7 +39,15 @@ public class SpendOrderFailed implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private SpendOrderFailed.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -103,13 +101,13 @@ public class SpendOrderFailed implements Event {
      * @param common
      * @param orderId
      * @param errorReason
-     * @param eventName
+
      * @param offerId
+
      * @param user
      */
-    public SpendOrderFailed(SpendOrderFailed.EventName eventName, Common common, User user, String errorReason, String offerId, String orderId) {
+    public SpendOrderFailed(Common common, User user, String errorReason, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.errorReason = errorReason;
@@ -122,7 +120,7 @@ public class SpendOrderFailed implements Event {
      * (Required)
      * 
      */
-    public SpendOrderFailed.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -131,8 +129,26 @@ public class SpendOrderFailed implements Event {
      * (Required)
      * 
      */
-    public void setEventName(SpendOrderFailed.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -223,43 +239,6 @@ public class SpendOrderFailed implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("spend_order_failed")
-        SPEND_ORDER_FAILED("spend_order_failed");
-        private final String value;
-        private final static Map<String, SpendOrderFailed.EventName> CONSTANTS = new HashMap<String, SpendOrderFailed.EventName>();
-
-        static {
-            for (SpendOrderFailed.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static SpendOrderFailed.EventName fromValue(String value) {
-            SpendOrderFailed.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

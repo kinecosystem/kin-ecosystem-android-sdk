@@ -13,13 +13,9 @@ public interface CommonInterface extends CommonReadonly {
 
     void setDeviceId(String deviceId);
 
-    void setEventType(Common.EventType eventType);
-
     void setUserId(String userId);
 
     void setTimestamp(Double timestamp);
-
-    void setDeviceType(String deviceType);
 
     void setPlatform(Common.Platform platform);
 

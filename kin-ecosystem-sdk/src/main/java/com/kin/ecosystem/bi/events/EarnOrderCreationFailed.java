@@ -17,22 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class EarnOrderCreationFailed implements Event {
-    // Augmented by script
-    public static EarnOrderCreationFailed create(String errorReason, String offerId, String orderId) {
-        return new EarnOrderCreationFailed(
-            EventName.EARN_ORDER_CREATION_FAILED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            errorReason,
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "earn_order_creation_failed";
+    public static final String EVENT_TYPE = "business";
 
     // Augmented by script
     public static void fire(String errorReason, String offerId, String orderId) {
         final EarnOrderCreationFailed event = new EarnOrderCreationFailed(
-            EventName.EARN_ORDER_CREATION_FAILED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             errorReason,
@@ -49,7 +39,15 @@ public class EarnOrderCreationFailed implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private EarnOrderCreationFailed.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -103,13 +101,13 @@ public class EarnOrderCreationFailed implements Event {
      * @param common
      * @param orderId
      * @param errorReason
-     * @param eventName
+
      * @param offerId
+
      * @param user
      */
-    public EarnOrderCreationFailed(EarnOrderCreationFailed.EventName eventName, Common common, User user, String errorReason, String offerId, String orderId) {
+    public EarnOrderCreationFailed(Common common, User user, String errorReason, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.errorReason = errorReason;
@@ -122,7 +120,7 @@ public class EarnOrderCreationFailed implements Event {
      * (Required)
      * 
      */
-    public EarnOrderCreationFailed.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -131,8 +129,26 @@ public class EarnOrderCreationFailed implements Event {
      * (Required)
      * 
      */
-    public void setEventName(EarnOrderCreationFailed.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -223,43 +239,6 @@ public class EarnOrderCreationFailed implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("earn_order_creation_failed")
-        EARN_ORDER_CREATION_FAILED("earn_order_creation_failed");
-        private final String value;
-        private final static Map<String, EarnOrderCreationFailed.EventName> CONSTANTS = new HashMap<String, EarnOrderCreationFailed.EventName>();
-
-        static {
-            for (EarnOrderCreationFailed.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static EarnOrderCreationFailed.EventName fromValue(String value) {
-            EarnOrderCreationFailed.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

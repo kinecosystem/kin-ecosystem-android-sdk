@@ -17,21 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class EarnOrderCancelled implements Event {
-    // Augmented by script
-    public static EarnOrderCancelled create(String offerId, String orderId) {
-        return new EarnOrderCancelled(
-            EventName.EARN_ORDER_CANCELLED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "earn_order_cancelled";
+    public static final String EVENT_TYPE = "business";
 
     // Augmented by script
     public static void fire(String offerId, String orderId) {
         final EarnOrderCancelled event = new EarnOrderCancelled(
-            EventName.EARN_ORDER_CANCELLED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             offerId,
@@ -47,7 +38,15 @@ public class EarnOrderCancelled implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private EarnOrderCancelled.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -92,13 +91,13 @@ public class EarnOrderCancelled implements Event {
      * 
      * @param common
      * @param orderId
-     * @param eventName
+
      * @param offerId
+
      * @param user
      */
-    public EarnOrderCancelled(EarnOrderCancelled.EventName eventName, Common common, User user, String offerId, String orderId) {
+    public EarnOrderCancelled(Common common, User user, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.offerId = offerId;
@@ -110,7 +109,7 @@ public class EarnOrderCancelled implements Event {
      * (Required)
      * 
      */
-    public EarnOrderCancelled.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -119,8 +118,26 @@ public class EarnOrderCancelled implements Event {
      * (Required)
      * 
      */
-    public void setEventName(EarnOrderCancelled.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -193,43 +210,6 @@ public class EarnOrderCancelled implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("earn_order_cancelled")
-        EARN_ORDER_CANCELLED("earn_order_cancelled");
-        private final String value;
-        private final static Map<String, EarnOrderCancelled.EventName> CONSTANTS = new HashMap<String, EarnOrderCancelled.EventName>();
-
-        static {
-            for (EarnOrderCancelled.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static EarnOrderCancelled.EventName fromValue(String value) {
-            EarnOrderCancelled.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

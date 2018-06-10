@@ -17,22 +17,12 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class ConfirmPurchasePageViewed implements Event {
-    // Augmented by script
-    public static ConfirmPurchasePageViewed create(Double kinAmount, String offerId, String orderId) {
-        return new ConfirmPurchasePageViewed(
-            EventName.CONFIRM_PURCHASE_PAGE_VIEWED,
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            kinAmount,
-            offerId,
-            orderId);
-
-    }
+    public static final String EVENT_NAME = "confirm_purchase_page_viewed";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
     public static void fire(Double kinAmount, String offerId, String orderId) {
         final ConfirmPurchasePageViewed event = new ConfirmPurchasePageViewed(
-            EventName.CONFIRM_PURCHASE_PAGE_VIEWED,
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             kinAmount,
@@ -49,7 +39,15 @@ public class ConfirmPurchasePageViewed implements Event {
      */
     @SerializedName("event_name")
     @Expose
-    private ConfirmPurchasePageViewed.EventName eventName;
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
     /**
      * common properties for all events
      * (Required)
@@ -102,14 +100,14 @@ public class ConfirmPurchasePageViewed implements Event {
      * 
      * @param common
      * @param orderId
-     * @param eventName
+
      * @param offerId
      * @param kinAmount
+
      * @param user
      */
-    public ConfirmPurchasePageViewed(ConfirmPurchasePageViewed.EventName eventName, Common common, User user, Double kinAmount, String offerId, String orderId) {
+    public ConfirmPurchasePageViewed(Common common, User user, Double kinAmount, String offerId, String orderId) {
         super();
-        this.eventName = eventName;
         this.common = common;
         this.user = user;
         this.kinAmount = kinAmount;
@@ -122,7 +120,7 @@ public class ConfirmPurchasePageViewed implements Event {
      * (Required)
      * 
      */
-    public ConfirmPurchasePageViewed.EventName getEventName() {
+    public String getEventName() {
         return eventName;
     }
 
@@ -131,8 +129,26 @@ public class ConfirmPurchasePageViewed implements Event {
      * (Required)
      * 
      */
-    public void setEventName(ConfirmPurchasePageViewed.EventName eventName) {
+    public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     /**
@@ -223,43 +239,6 @@ public class ConfirmPurchasePageViewed implements Event {
      */
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public enum EventName {
-
-        @SerializedName("confirm_purchase_page_viewed")
-        CONFIRM_PURCHASE_PAGE_VIEWED("confirm_purchase_page_viewed");
-        private final String value;
-        private final static Map<String, ConfirmPurchasePageViewed.EventName> CONSTANTS = new HashMap<String, ConfirmPurchasePageViewed.EventName>();
-
-        static {
-            for (ConfirmPurchasePageViewed.EventName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private EventName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static ConfirmPurchasePageViewed.EventName fromValue(String value) {
-            ConfirmPurchasePageViewed.EventName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }
