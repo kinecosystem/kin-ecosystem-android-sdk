@@ -15,7 +15,6 @@ import com.kin.ecosystem.data.order.CreateExternalOrderCall.ExternalOrderCallbac
 import com.kin.ecosystem.data.order.CreateExternalOrderCall.ExternalSpendOrderCallbacks;
 import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.exception.TaskFailedException;
-import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OpenOrder;
@@ -23,6 +22,7 @@ import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.OrderList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import kin.ecosystem.core.network.ApiException;
 
 public class OrderRepository implements OrderDataSource {
 
