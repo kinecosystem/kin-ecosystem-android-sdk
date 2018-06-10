@@ -74,14 +74,6 @@ public class Common implements CommonInterface {
      * (Required)
      * 
      */
-    @SerializedName("latitude")
-    @Expose
-    private String latitude;
-    /**
-     * 
-     * (Required)
-     * 
-     */
     @SerializedName("user_id")
     @Expose
     private String userId;
@@ -98,14 +90,6 @@ public class Common implements CommonInterface {
      * (Required)
      * 
      */
-    @SerializedName("city")
-    @Expose
-    private String city;
-    /**
-     * 
-     * (Required)
-     * 
-     */
     @SerializedName("device_type")
     @Expose
     private String deviceType;
@@ -114,41 +98,9 @@ public class Common implements CommonInterface {
      * (Required)
      * 
      */
-    @SerializedName("longitude")
-    @Expose
-    private String longitude;
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    @SerializedName("country")
-    @Expose
-    private String country;
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    @SerializedName("ip_address")
-    @Expose
-    private String ipAddress;
-    /**
-     * 
-     * (Required)
-     * 
-     */
     @SerializedName("platform")
     @Expose
     private Common.Platform platform;
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    @SerializedName("region")
-    @Expose
-    private String region;
     /**
      * 
      * (Required)
@@ -165,14 +117,6 @@ public class Common implements CommonInterface {
     @SerializedName("device_model")
     @Expose
     private String deviceModel;
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    @SerializedName("ingest_timestamp")
-    @Expose
-    private Double ingestTimestamp;
 
     /**
      * No args constructor for use in serialization
@@ -185,12 +129,7 @@ public class Common implements CommonInterface {
      * 
      * @param deviceType
      * @param eventId
-     * @param country
      * @param os
-     * @param city
-     * @param ingestTimestamp
-     * @param latitude
-     * @param ipAddress
      * @param language
      * @param eventType
      * @param version
@@ -199,12 +138,10 @@ public class Common implements CommonInterface {
      * @param platform
      * @param carrier
      * @param deviceModel
-     * @param region
      * @param deviceManufacturer
      * @param timestamp
-     * @param longitude
      */
-    public Common(String eventId, String os, String version, String language, String carrier, String deviceId, Common.EventType eventType, String latitude, String userId, Double timestamp, String city, String deviceType, String longitude, String country, String ipAddress, Common.Platform platform, String region, String deviceManufacturer, String deviceModel, Double ingestTimestamp) {
+    public Common(String eventId, String os, String version, String language, String carrier, String deviceId, Common.EventType eventType, String userId, Double timestamp, String deviceType, Common.Platform platform, String deviceManufacturer, String deviceModel) {
         super();
         this.eventId = eventId;
         this.os = os;
@@ -213,19 +150,12 @@ public class Common implements CommonInterface {
         this.carrier = carrier;
         this.deviceId = deviceId;
         this.eventType = eventType;
-        this.latitude = latitude;
         this.userId = userId;
         this.timestamp = timestamp;
-        this.city = city;
         this.deviceType = deviceType;
-        this.longitude = longitude;
-        this.country = country;
-        this.ipAddress = ipAddress;
         this.platform = platform;
-        this.region = region;
         this.deviceManufacturer = deviceManufacturer;
         this.deviceModel = deviceModel;
-        this.ingestTimestamp = ingestTimestamp;
     }
 
     /**
@@ -359,24 +289,6 @@ public class Common implements CommonInterface {
      * (Required)
      * 
      */
-    public String getLatitude() {
-        return latitude;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
     public String getUserId() {
         return userId;
     }
@@ -413,24 +325,6 @@ public class Common implements CommonInterface {
      * (Required)
      * 
      */
-    public String getCity() {
-        return city;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
     public String getDeviceType() {
         return deviceType;
     }
@@ -449,60 +343,6 @@ public class Common implements CommonInterface {
      * (Required)
      * 
      */
-    public String getLongitude() {
-        return longitude;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public String getCountry() {
-        return country;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public String getIpAddress() {
-        return ipAddress;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
     public Common.Platform getPlatform() {
         return platform;
     }
@@ -514,24 +354,6 @@ public class Common implements CommonInterface {
      */
     public void setPlatform(Common.Platform platform) {
         this.platform = platform;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public String getRegion() {
-        return region;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setRegion(String region) {
-        this.region = region;
     }
 
     /**
@@ -568,24 +390,6 @@ public class Common implements CommonInterface {
      */
     public void setDeviceModel(String deviceModel) {
         this.deviceModel = deviceModel;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public Double getIngestTimestamp() {
-        return ingestTimestamp;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setIngestTimestamp(Double ingestTimestamp) {
-        this.ingestTimestamp = ingestTimestamp;
     }
 
     public enum EventType {

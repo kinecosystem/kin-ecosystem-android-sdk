@@ -15,30 +15,16 @@ public interface CommonInterface extends CommonReadonly {
 
     void setEventType(Common.EventType eventType);
 
-    void setLatitude(String latitude);
-
     void setUserId(String userId);
 
     void setTimestamp(Double timestamp);
 
-    void setCity(String city);
-
     void setDeviceType(String deviceType);
 
-    void setLongitude(String longitude);
-
-    void setCountry(String country);
-
-    void setIpAddress(String ipAddress);
-
     void setPlatform(Common.Platform platform);
-
-    void setRegion(String region);
 
     void setDeviceManufacturer(String deviceManufacturer);
 
     void setDeviceModel(String deviceModel);
-
-    void setIngestTimestamp(Double ingestTimestamp);
 
 }

@@ -12,19 +12,12 @@ public class CommonProxy implements CommonInterface {
             this.getCarrier(),
             this.getDeviceId(),
             this.getEventType(),
-            this.getLatitude(),
             this.getUserId(),
             this.getTimestamp(),
-            this.getCity(),
             this.getDeviceType(),
-            this.getLongitude(),
-            this.getCountry(),
-            this.getIpAddress(),
             this.getPlatform(),
-            this.getRegion(),
             this.getDeviceManufacturer(),
-            this.getDeviceModel(),
-            this.getIngestTimestamp());
+            this.getDeviceModel());
     }
 
     private String eventId;
@@ -111,18 +104,6 @@ public class CommonProxy implements CommonInterface {
         this.dynamicEventType = eventType;
     }
 
-    private String latitude;
-    private EventsStore.DynamicValue<String> dynamicLatitude;
-    public String getLatitude() {
-        return this.latitude == null ? this.latitude : this.dynamicLatitude.get();
-    }
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
-    public void setLatitude(EventsStore.DynamicValue<String> latitude) {
-        this.dynamicLatitude = latitude;
-    }
-
     private String userId;
     private EventsStore.DynamicValue<String> dynamicUserId;
     public String getUserId() {
@@ -147,18 +128,6 @@ public class CommonProxy implements CommonInterface {
         this.dynamicTimestamp = timestamp;
     }
 
-    private String city;
-    private EventsStore.DynamicValue<String> dynamicCity;
-    public String getCity() {
-        return this.city == null ? this.city : this.dynamicCity.get();
-    }
-    public void setCity(String city) {
-        this.city = city;
-    }
-    public void setCity(EventsStore.DynamicValue<String> city) {
-        this.dynamicCity = city;
-    }
-
     private String deviceType;
     private EventsStore.DynamicValue<String> dynamicDeviceType;
     public String getDeviceType() {
@@ -171,42 +140,6 @@ public class CommonProxy implements CommonInterface {
         this.dynamicDeviceType = deviceType;
     }
 
-    private String longitude;
-    private EventsStore.DynamicValue<String> dynamicLongitude;
-    public String getLongitude() {
-        return this.longitude == null ? this.longitude : this.dynamicLongitude.get();
-    }
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
-    }
-    public void setLongitude(EventsStore.DynamicValue<String> longitude) {
-        this.dynamicLongitude = longitude;
-    }
-
-    private String country;
-    private EventsStore.DynamicValue<String> dynamicCountry;
-    public String getCountry() {
-        return this.country == null ? this.country : this.dynamicCountry.get();
-    }
-    public void setCountry(String country) {
-        this.country = country;
-    }
-    public void setCountry(EventsStore.DynamicValue<String> country) {
-        this.dynamicCountry = country;
-    }
-
-    private String ipAddress;
-    private EventsStore.DynamicValue<String> dynamicIpAddress;
-    public String getIpAddress() {
-        return this.ipAddress == null ? this.ipAddress : this.dynamicIpAddress.get();
-    }
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-    public void setIpAddress(EventsStore.DynamicValue<String> ipAddress) {
-        this.dynamicIpAddress = ipAddress;
-    }
-
     private Common.Platform platform;
     private EventsStore.DynamicValue<Common.Platform> dynamicPlatform;
     public Common.Platform getPlatform() {
@@ -217,18 +150,6 @@ public class CommonProxy implements CommonInterface {
     }
     public void setPlatform(EventsStore.DynamicValue<Common.Platform> platform) {
         this.dynamicPlatform = platform;
-    }
-
-    private String region;
-    private EventsStore.DynamicValue<String> dynamicRegion;
-    public String getRegion() {
-        return this.region == null ? this.region : this.dynamicRegion.get();
-    }
-    public void setRegion(String region) {
-        this.region = region;
-    }
-    public void setRegion(EventsStore.DynamicValue<String> region) {
-        this.dynamicRegion = region;
     }
 
     private String deviceManufacturer;
@@ -253,18 +174,6 @@ public class CommonProxy implements CommonInterface {
     }
     public void setDeviceModel(EventsStore.DynamicValue<String> deviceModel) {
         this.dynamicDeviceModel = deviceModel;
-    }
-
-    private Double ingestTimestamp;
-    private EventsStore.DynamicValue<Double> dynamicIngestTimestamp;
-    public Double getIngestTimestamp() {
-        return this.ingestTimestamp == null ? this.ingestTimestamp : this.dynamicIngestTimestamp.get();
-    }
-    public void setIngestTimestamp(Double ingestTimestamp) {
-        this.ingestTimestamp = ingestTimestamp;
-    }
-    public void setIngestTimestamp(EventsStore.DynamicValue<Double> ingestTimestamp) {
-        this.dynamicIngestTimestamp = ingestTimestamp;
     }
 
 }
