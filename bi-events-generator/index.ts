@@ -3,11 +3,10 @@
 import { readdirSync, unlinkSync, existsSync, readFileSync, writeFileSync } from "fs";
 import { exec } from"child_process";
 
-const TYPE: "simple" | "threaded" = "threaded";
 const SOURCE_PATH = "../../kin-bi/json_schemas";
 const TMP_PATH = "./java-gen-tmp";
 const TARGET_PATH = "../kin-ecosystem-core/src/main/java";
-const PACKAGE_PATH = `kin/ecosystem/core/bi/${ TYPE }/events`;
+const PACKAGE_PATH = `kin/ecosystem/core/bi/events`;
 const AUGEMENTED_BY_SCRIPT_COMMENT = "// Augmented by script\n";
 
 /**
@@ -53,7 +52,7 @@ async function prepare() {
  * @returns {Promise<Promise<void>>}
  */
 async function generate() {
-    const command = `jsonschema2pojo -a GSON -c -E -S -R -ds -s ${ SOURCE_PATH } -t ${ TMP_PATH } -p kin.ecosystem.core.bi.${ TYPE }.events`;
+    const command = `jsonschema2pojo -a GSON -c -E -S -R -ds -s ${ SOURCE_PATH } -t ${ TMP_PATH } -p kin.ecosystem.core.bi.events`;
     return runCommand(command);
 }
 
@@ -483,9 +482,9 @@ function processSourceFile(className: string, path: string): string {
 
     content = content
         .replace(/(import [^;]+;)/, AUGEMENTED_BY_SCRIPT_COMMENT
-            + "import kin.ecosystem.core.bi.threaded.Event;\n"
-            + "import kin.ecosystem.core.bi.threaded.EventLoggerImpl;\n"
-            + `import kin.ecosystem.core.bi.${ TYPE }.EventsStore;\n\n$1`);
+            + "import kin.ecosystem.core.bi.Event;\n"
+            + "import kin.ecosystem.core.bi.EventLoggerImpl;\n"
+            + `import kin.ecosystem.core.bi.EventsStore;\n\n$1`);
 
     const ctorRegEx = new RegExp("public " + className + "\\((.+)\\)", "g");
     const ctors = [] as EventConstructor[];
