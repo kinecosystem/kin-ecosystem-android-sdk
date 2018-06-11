@@ -6,7 +6,7 @@ import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.IBasePresenter;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
-import com.kin.ecosystem.util.StringUtil;
+import kin.ecosystem.core.util.StringUtil;
 
 public class BalancePresenter extends BasePresenter<IBalanceView> implements IBasePresenter<IBalanceView> {
 

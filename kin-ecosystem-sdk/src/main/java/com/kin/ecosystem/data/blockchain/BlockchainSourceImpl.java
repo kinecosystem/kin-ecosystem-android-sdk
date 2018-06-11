@@ -11,7 +11,6 @@ import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.exception.InitializeException;
-import com.kin.ecosystem.util.ExecutorsUtil.MainThreadExecutor;
 import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicInteger;
 import kin.core.Balance;
@@ -26,6 +25,7 @@ import kin.core.TransactionId;
 
 import kin.core.exception.AccountNotFoundException;
 import kin.core.exception.CreateAccountException;
+import kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
 
 public class BlockchainSourceImpl implements BlockchainSource {
 

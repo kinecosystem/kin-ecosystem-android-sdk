@@ -3,13 +3,12 @@ package com.kin.ecosystem.data.auth;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.Callback;
-import com.kin.ecosystem.network.ApiCallback;
-import com.kin.ecosystem.network.ApiClient;
-import com.kin.ecosystem.network.ApiException;
+import kin.ecosystem.core.network.ApiCallback;
+import kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.network.api.AuthApi;
 import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.network.model.SignInData;
-import com.kin.ecosystem.util.ExecutorsUtil;
+import kin.ecosystem.core.util.ExecutorsUtil;
 import java.util.List;
 import java.util.Map;
 

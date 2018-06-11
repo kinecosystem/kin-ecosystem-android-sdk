@@ -18,7 +18,7 @@ import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.data.offer.OfferDataSource;
 import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.exception.TaskFailedException;
-import com.kin.ecosystem.network.ApiException;
+import kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.network.model.BlockchainData;
 import com.kin.ecosystem.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.network.model.Offer;

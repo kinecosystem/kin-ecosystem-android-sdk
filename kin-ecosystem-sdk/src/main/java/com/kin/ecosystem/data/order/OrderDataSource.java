@@ -6,12 +6,10 @@ import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.model.OrderConfirmation;
-import com.kin.ecosystem.network.ApiException;
+import kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
-import com.kin.ecosystem.network.model.Order.Status;
 import com.kin.ecosystem.network.model.OrderList;
-import java.lang.ref.WeakReference;
 
 public interface OrderDataSource {
 

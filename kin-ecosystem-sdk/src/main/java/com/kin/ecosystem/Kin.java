@@ -7,6 +7,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.bi.EventLogger;
+import com.kin.ecosystem.bi.EventLoggerImpl;
+import com.kin.ecosystem.bi.EventsStore;
+import com.kin.ecosystem.bi.EventsStore.CommonModifier;
+import com.kin.ecosystem.bi.EventsStore.DynamicValue;
+import com.kin.ecosystem.bi.EventsStore.UserModifier;
+import com.kin.ecosystem.bi.events.BackButtonOnWelcomeScreenPageTapped;
+import com.kin.ecosystem.bi.events.CommonProxy;
+import com.kin.ecosystem.bi.events.UserProxy;
 import com.kin.ecosystem.data.auth.AuthLocalData;
 import com.kin.ecosystem.data.auth.AuthRemoteData;
 import com.kin.ecosystem.data.auth.AuthRepository;
@@ -26,9 +35,10 @@ import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
 import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.network.model.SignInData.SignInTypeEnum;
 import com.kin.ecosystem.splash.view.SplashViewActivity;
-import com.kin.ecosystem.util.DeviceUtils;
-import com.kin.ecosystem.util.ExecutorsUtil;
 import java.util.UUID;
+import kin.ecosystem.core.util.DeviceUtils;
+import kin.ecosystem.core.util.ExecutorsUtil;
+import org.stellar.sdk.xdr.Auth;
 
 
 public class Kin {
@@ -36,9 +46,11 @@ public class Kin {
     private static Kin instance;
 
     private final ExecutorsUtil executorsUtil;
+    private final EventLogger eventLogger;
 
     private Kin() {
         executorsUtil = new ExecutorsUtil();
+        eventLogger = EventLoggerImpl.init();
     }
 
     private static Kin getInstance() {
@@ -93,6 +105,19 @@ public class Kin {
         initOfferRepository();
         initOrderRepository(appContext);
         setAppID();
+
+        EventsStore.init(new CommonModifier() {
+            @Override
+            public void modify(CommonProxy mutable) {
+                mutable.setTimestamp(new DynamicValue<Double>() {
+                    @Override
+                    public Double get() {
+                        return new Double(System.currentTimeMillis());
+                    }
+                });
+
+            }
+        });
     }
 
 
@@ -113,7 +138,7 @@ public class Kin {
         BlockchainSourceImpl.init(context, BlockchainSourceLocal.getInstance(context));
     }
 
-    private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
+    private static void  registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
         throws InitializeException {
         String publicAddress;
         try {

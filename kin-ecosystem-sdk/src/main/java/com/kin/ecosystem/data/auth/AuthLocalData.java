@@ -9,7 +9,7 @@ import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.network.model.SignInData.SignInTypeEnum;
-import com.kin.ecosystem.util.ExecutorsUtil;
+import kin.ecosystem.core.util.ExecutorsUtil;
 
 public class AuthLocalData implements AuthDataSource.Local {
 
