@@ -18,13 +18,23 @@ import com.google.gson.annotations.SerializedName;
  */
 public class StellarKinTrustlineSetupFailed implements Event {
     public static final String EVENT_NAME = "stellar_kin_trustline_setup_failed";
-    public static final String EVENT_TYPE = "business";
+    public static final String EVENT_TYPE = "log";
+
+    // Augmented by script
+    public static StellarKinTrustlineSetupFailed create(String errorReason) {
+        return new StellarKinTrustlineSetupFailed(
+            (Common) EventsStore.common(),
+            (User) EventsStore.user(),
+            (Client) EventsStore.client(),
+            errorReason);
+    }
 
     // Augmented by script
     public static void fire(String errorReason) {
         final StellarKinTrustlineSetupFailed event = new StellarKinTrustlineSetupFailed(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
+            (Client) EventsStore.client(),
             errorReason);
 
         EventLoggerImpl.Send(event);
@@ -55,13 +65,21 @@ public class StellarKinTrustlineSetupFailed implements Event {
     @Expose
     private Common common;
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
     @SerializedName("user")
     @Expose
     private User user;
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    @SerializedName("client")
+    @Expose
+    private Client client;
     /**
      * 
      * (Required)
@@ -83,13 +101,15 @@ public class StellarKinTrustlineSetupFailed implements Event {
      * @param common
      * @param errorReason
 
+     * @param client
 
      * @param user
      */
-    public StellarKinTrustlineSetupFailed(Common common, User user, String errorReason) {
+    public StellarKinTrustlineSetupFailed(Common common, User user, Client client, String errorReason) {
         super();
         this.common = common;
         this.user = user;
+        this.client = client;
         this.errorReason = errorReason;
     }
 
@@ -148,7 +168,7 @@ public class StellarKinTrustlineSetupFailed implements Event {
     }
 
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
@@ -157,12 +177,30 @@ public class StellarKinTrustlineSetupFailed implements Event {
     }
 
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
     public void setUser(User user) {
         this.user = user;
+    }
+
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    public Client getClient() {
+        return client;
+    }
+
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     /**

@@ -72,7 +72,7 @@ class Argument {
 
 class EventConstructor {
     private static readonly ARGS_REG_EX = /\s*,\s*/g;
-    private static readonly AUGMENTED_ARGS = ["eventName", "eventType", "common", "user"];
+    private static readonly AUGMENTED_ARGS = ["eventName", "eventType", "common", "user", "client"];
 
     private readonly className: string;
     private readonly args: Argument[];
@@ -117,9 +117,12 @@ class EventConstructor {
         content += ") {\n";
         content += `${ EventConstructor.indent(2) }return new ${ this.className }(\n`;
 
-        content += this.args.map(arg => EventConstructor.indent(3) + this.superCallValueFor(arg)).join(",\n") + ");\n\n";
+        content += this.args
+            .filter(arg => arg.name !== "eventName" && arg.name !== "eventType")
+            .map(arg => EventConstructor.indent(3) + this.superCallValueFor(arg))
+            .join(",\n") + ");\n";
 
-        content += `${ EventConstructor.indent(1) }}\n`;
+        content += `${ EventConstructor.indent(1) }}`;
 
         return content;
     }
@@ -151,11 +154,14 @@ class EventConstructor {
             case "eventName":
                 return `EventName.${ EventConstructor.toSnakeCase(this.className).toUpperCase() }`;
 
+            case "user":
+                return "(User) EventsStore.user()";
+
             case "common":
                 return "(Common) EventsStore.common()";
 
-            case "user":
-                return "(User) EventsStore.user()";
+            case "client":
+                return "(Client) EventsStore.client()";
 
             default:
                 return arg.name;
@@ -633,7 +639,7 @@ function processSourceFile(className: string, path: string): string {
                 + `    public static final String EVENT_NAME = "${ eventNameEnum.values[0] }";\n`
                 + `    public static final String EVENT_TYPE = "${ eventTypeEnum.values[0] }";\n\n`
                 + ctors
-                    .map(ctor => ctor.createSender())
+                    .map(ctor => ctor.createFactory() + "\n\n" + ctor.createSender())
                     .join("\n"))
         .replace(eventNameDef, newEventNameDef)
         .replace(eventTypeDef, newEventTypeDef)
@@ -658,7 +664,7 @@ async function postProcess() {
 
         if (className.endsWith("_")) {
             unlinkSync(file);
-        } else if (["User", "Common"].includes(className)) {
+        } else if (["User", "Common", "Client"].includes(className)) {
             // parser.processSharedSourcedFiles(path);
             new parser.CommonClassParser(file).commitChanges();
         } else {

@@ -28,41 +28,9 @@ public class Common implements CommonInterface {
      * (Required)
      * 
      */
-    @SerializedName("os")
-    @Expose
-    private String os;
-    /**
-     * 
-     * (Required)
-     * 
-     */
     @SerializedName("version")
     @Expose
     private String version;
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    @SerializedName("language")
-    @Expose
-    private String language;
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    @SerializedName("carrier")
-    @Expose
-    private String carrier;
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    @SerializedName("device_id")
-    @Expose
-    private String deviceId;
     /**
      * 
      * (Required)
@@ -87,22 +55,6 @@ public class Common implements CommonInterface {
     @SerializedName("platform")
     @Expose
     private String platform = PLATFORM;
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    @SerializedName("device_manufacturer")
-    @Expose
-    private String deviceManufacturer;
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    @SerializedName("device_model")
-    @Expose
-    private String deviceModel;
 
     /**
      * No args constructor for use in serialization
@@ -114,28 +66,16 @@ public class Common implements CommonInterface {
     /**
      * 
      * @param eventId
-     * @param carrier
-     * @param os
-     * @param language
-     * @param deviceModel
-     * @param deviceManufacturer
      * @param version
-     * @param deviceId
      * @param userId
      * @param timestamp
      */
-    public Common(UUID eventId, String os, String version, String language, String carrier, String deviceId, String userId, Long timestamp, String deviceManufacturer, String deviceModel) {
+    public Common(UUID eventId, String version, String userId, Long timestamp) {
         super();
         this.eventId = eventId;
-        this.os = os;
         this.version = version;
-        this.language = language;
-        this.carrier = carrier;
-        this.deviceId = deviceId;
         this.userId = userId;
         this.timestamp = timestamp;
-        this.deviceManufacturer = deviceManufacturer;
-        this.deviceModel = deviceModel;
     }
 
     /**
@@ -161,24 +101,6 @@ public class Common implements CommonInterface {
      * (Required)
      * 
      */
-    public String getOs() {
-        return os;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setOs(String os) {
-        this.os = os;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
     public String getVersion() {
         return version;
     }
@@ -190,60 +112,6 @@ public class Common implements CommonInterface {
      */
     public void setVersion(String version) {
         this.version = version;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public String getLanguage() {
-        return language;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public String getCarrier() {
-        return carrier;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setCarrier(String carrier) {
-        this.carrier = carrier;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public String getDeviceId() {
-        return deviceId;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
     }
 
     /**
@@ -298,42 +166,6 @@ public class Common implements CommonInterface {
      */
     public void setPlatform(String platform) {
         this.platform = platform;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public String getDeviceManufacturer() {
-        return deviceManufacturer;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setDeviceManufacturer(String deviceManufacturer) {
-        this.deviceManufacturer = deviceManufacturer;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public String getDeviceModel() {
-        return deviceModel;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setDeviceModel(String deviceModel) {
-        this.deviceModel = deviceModel;
     }
 
 }
