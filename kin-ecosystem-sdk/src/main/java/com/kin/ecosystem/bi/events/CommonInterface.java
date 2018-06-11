@@ -1,7 +1,9 @@
 package com.kin.ecosystem.bi.events;
 
+import java.util.UUID;
+
 public interface CommonInterface extends CommonReadonly {
-    void setEventId(String eventId);
+    void setEventId(UUID eventId);
 
     void setOs(String os);
 
@@ -15,9 +17,9 @@ public interface CommonInterface extends CommonReadonly {
 
     void setUserId(String userId);
 
-    void setTimestamp(Double timestamp);
+    void setTimestamp(Long timestamp);
 
-    void setPlatform(Common.Platform platform);
+    void setPlatform(String platform);
 
     void setDeviceManufacturer(String deviceManufacturer);
 

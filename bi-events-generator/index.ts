@@ -191,8 +191,12 @@ class EventConstructor {
 
 class EventSourceEnum {
     public readonly name: string;
-    public readonly value: string;
     public readonly source: string;
+    public readonly values: string[];
+
+    static contains(name: string, source: string): boolean {
+        return source.indexOf(`public enum ${ name }`) > 0;
+    }
 
     constructor(name: string, source: string) {
         this.name = name;
@@ -202,15 +206,20 @@ class EventSourceEnum {
         const endIndex = source.indexOf(endToken, startIndex) + endToken.length;
         this.source = source.substring(startIndex, endIndex);
 
-        this.value = this.source.match(/@SerializedName\("([\w\d]+)"\)/)![1];
+        this.values = [];
+
+        let match: RegExpExecArray | null;
+        const regex = /@SerializedName\("([\w\d]+)"\)/g;
+        while ((match = regex.exec(this.source)) !== null) {
+            this.values.push(match[1]);
+        }
     }
 }
 
 namespace parser {
     class Method {
         public readonly signature: string;
-
-        protected readonly methodName: string;
+        public readonly methodName: string;
 
         constructor(signature: string, methodName: string) {
             this.signature = signature;
@@ -225,7 +234,7 @@ namespace parser {
             const ctors = [] as Constructor[];
             const regex = new RegExp("public (" + className + ")\\((.+)\\)", "g");
 
-            let match: RegExpExecArray | null = null;
+            let match: RegExpExecArray | null;
             while ((match = regex.exec(content)) !== null) {
                 ctors.push(new Constructor(match));
             }
@@ -255,7 +264,7 @@ namespace parser {
             const getters = [] as Getter[];
             Getter.REG_EX.lastIndex = 0;
 
-            let match: RegExpExecArray | null = null;
+            let match: RegExpExecArray | null;
             while ((match = Getter.REG_EX.exec(content)) !== null) {
                 getters.push(new Getter(match));
             }
@@ -320,8 +329,8 @@ namespace parser {
             return "package " + this.package.join(".") + ";\n\n";
         }
 
-        protected imports() {
-            return "";
+        protected imports(): string[] {
+            return [];
         }
     }
 
@@ -337,7 +346,28 @@ namespace parser {
         }
 
         write() {
-            const newContent = this.content.replace(
+            let newContent = this.content;
+
+            const platformEnum = EventSourceEnum.contains("Platform", this.content) ? new EventSourceEnum("Platform", this.content) : null;
+
+            if (platformEnum) {
+                const regex = /android/i;
+                const platformValue = platformEnum.values.filter(value => regex.test(value))[0];
+
+                newContent = newContent
+                    .replace(
+                        /public class Common[^\n]+\n/,
+                        `$&    public static final String PLATFORM = "${ platformValue }";\n`)
+                    .replace(platformEnum.source, "")
+                    .replace(/\n\s+\* @param platform/, "")
+                    .replace("private Common.Platform platform;", "private String platform = PLATFORM;")
+                    .replace(", Common.Platform platform", "")
+                    .replace(/\n\s+this.platform = platform;/, "")
+                    .replace("public Common.Platform getPlatform()", "public String getPlatform()")
+                    .replace("public void setPlatform(Common.Platform platform)", "public void setPlatform(String platform)");
+            }
+
+            newContent = newContent.replace(
                 `class ${ this.className }`,
                 `class ${ this.className } implements ${ this.className }Interface`);
 
@@ -355,17 +385,19 @@ namespace parser {
 
         write() {
             let content = this.packageLine();
-            content += this.imports();
+            content += this.imports().map(path => `import ${ path };`).join("\n") + "\n\n";
             content += `public class ${ this.className }Proxy implements ${ this.className }Interface {\n`;
 
             content += indent(1) + `public ${ this.className } snapshot() {\n`;
             content += indent(2) + `return new ${ this.className }(\n`;
             content += this.ctorArguments.map(arg => {
                 const getter = this.getters.find(item => new RegExp(`get${ arg.name }`, "i").test(item.signature))!;
+                if (getter.methodName === "Platform") {
+                    return "";
+                }
                 const getterName = getter.signature.match(/public\s+[\w\d\.-_]+\s+([\w\d\.-_]+)\(\)/)![1];
-                //return indent(3) + `this.${ arg.name }`;
                 return indent(3) + `this.${ getterName }()`;
-            }).join(",\n") + ");\n";
+            }).filter(item => item !== "").join(",\n") + ");\n";
             content += indent(1) + "}\n\n";
 
             for (let i = 0; i < this.getters.length; i++) {
@@ -377,28 +409,40 @@ namespace parser {
         }
 
         protected imports() {
-            return "import " + this.package.slice(0, this.package.length - 1).concat(["EventsStore"]).join(".") + ";\n\n";
+            const imports = super.imports();
+
+            if (this.className.startsWith("Common")) {
+                imports.push("java.util.UUID");
+            }
+
+            imports.push(this.package.slice(0, this.package.length - 1).concat(["EventsStore"]).join("."));
+
+            return imports;
         }
 
         private static section(getter: Getter, setter: Setter): string {
             const argumentName = setter.argumentName;
-            const argumentType = setter.argumentType;
+            const argumentType = setter.methodName === "Platform" ? "String" : setter.argumentType;
+
             const dynamicArgumentName = "dynamic" + argumentName[0].toUpperCase() + argumentName.substring(1);
             const dynamicArgumentType = `EventsStore.DynamicValue<${ argumentType }>`;
+
+            const getterSignature = getter.methodName === "Platform" ? "public String getPlatform()" : getter.signature;
+            const setterSignature = setter.methodName === "Platform" ? "public void setPlatform(String platform)" : setter.signature;
 
 
             let content = indent(1) + `private ${ argumentType } ${ argumentName };\n`;
             content += indent(1) + `private ${ dynamicArgumentType } ${ dynamicArgumentName };\n`;
 
-            content += indent(1) + getter.signature + " {\n";
+            content += indent(1) + getterSignature + " {\n";
             content += indent(2) + `return this.${ argumentName } != null ? this.${ argumentName } : this.${ dynamicArgumentName }.get();\n`;
             content += indent(1) + "}\n";
 
-            content += indent(1) + setter.signature + " {\n";
+            content += indent(1) + setterSignature + " {\n";
             content += indent(2) + `this.${ argumentName } = ${ argumentName };\n`;
             content += indent(1) + "}\n";
 
-            content += indent(1) + setter.signature.replace(argumentType, dynamicArgumentType) + " {\n";
+            content += indent(1) + setterSignature.replace(argumentType, dynamicArgumentType) + " {\n";
             content += indent(2) + `this.${ dynamicArgumentName } = ${ argumentName };\n`;
             content += indent(1) + "}\n\n";
 
@@ -413,14 +457,28 @@ namespace parser {
 
         write() {
             let content = this.packageLine();
-            content += this.imports();
+            content += this.imports().map(path => `import ${ path };`).join("\n") + "\n\n";
             content += `public interface ${ this.className }Readonly {\n`;
             for (let i = 0; i < this.getters.length; i++) {
-                content += indent(1) + removePublic(this.getters[i].signature) + ";\n\n";
+                if (this.getters[i].methodName === "Platform") {
+                    content += indent(1) + "String getPlatform();\n\n";
+                } else {
+                    content += indent(1) + removePublic(this.getters[i].signature) + ";\n\n";
+                }
             }
 
             content += "}\n";
             writeFileSync(this.file, content, "utf-8");
+        }
+
+        protected imports() {
+            const imports = super.imports();
+
+            if (this.className.startsWith("Common")) {
+                imports.push("java.util.UUID");
+            }
+
+            return imports;
         }
     }
 
@@ -431,14 +489,28 @@ namespace parser {
 
         write() {
             let content = this.packageLine();
-            content += this.imports();
+            content += this.imports().map(path => `import ${ path };`).join("\n") + "\n\n";
             content += `public interface ${ this.className }Interface extends ${ this.className }Readonly {\n`;
-            for (let i = 0; i < this.getters.length; i++) {
-                content += indent(1) + removePublic(this.setters[i].signature) + ";\n\n";
+            for (let i = 0; i < this.setters.length; i++) {
+                if (this.setters[i].methodName === "Platform") {
+                    content += indent(1) + "void setPlatform(String platform);\n\n";
+                } else {
+                    content += indent(1) + removePublic(this.setters[i].signature) + ";\n\n";
+                }
             }
 
             content += "}\n";
             writeFileSync(this.file, content, "utf-8");
+        }
+
+        protected imports() {
+            const imports = super.imports();
+
+            if (this.className.startsWith("Common")) {
+                imports.push("java.util.UUID");
+            }
+
+            return imports;
         }
     }
 
@@ -558,8 +630,8 @@ function processSourceFile(className: string, path: string): string {
         .replace(
             classDef,
             newClassDef
-                + `    public static final String EVENT_NAME = "${ eventNameEnum.value }";\n`
-                + `    public static final String EVENT_TYPE = "${ eventTypeEnum.value }";\n\n`
+                + `    public static final String EVENT_NAME = "${ eventNameEnum.values[0] }";\n`
+                + `    public static final String EVENT_TYPE = "${ eventTypeEnum.values[0] }";\n\n`
                 + ctors
                     .map(ctor => ctor.createSender())
                     .join("\n"))

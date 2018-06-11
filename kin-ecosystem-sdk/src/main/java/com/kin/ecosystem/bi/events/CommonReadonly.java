@@ -1,7 +1,9 @@
 package com.kin.ecosystem.bi.events;
 
+import java.util.UUID;
+
 public interface CommonReadonly {
-    String getEventId();
+    UUID getEventId();
 
     String getOs();
 
@@ -15,9 +17,9 @@ public interface CommonReadonly {
 
     String getUserId();
 
-    Double getTimestamp();
+    Long getTimestamp();
 
-    Common.Platform getPlatform();
+    String getPlatform();
 
     String getDeviceManufacturer();
 

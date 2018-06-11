@@ -1,5 +1,6 @@
 package com.kin.ecosystem.bi.events;
 
+import java.util.UUID;
 import com.kin.ecosystem.bi.EventsStore;
 
 public class CommonProxy implements CommonInterface {
@@ -13,20 +14,19 @@ public class CommonProxy implements CommonInterface {
             this.getDeviceId(),
             this.getUserId(),
             this.getTimestamp(),
-            this.getPlatform(),
             this.getDeviceManufacturer(),
             this.getDeviceModel());
     }
 
-    private String eventId;
-    private EventsStore.DynamicValue<String> dynamicEventId;
-    public String getEventId() {
+    private UUID eventId;
+    private EventsStore.DynamicValue<UUID> dynamicEventId;
+    public UUID getEventId() {
         return this.eventId != null ? this.eventId : this.dynamicEventId.get();
     }
-    public void setEventId(String eventId) {
+    public void setEventId(UUID eventId) {
         this.eventId = eventId;
     }
-    public void setEventId(EventsStore.DynamicValue<String> eventId) {
+    public void setEventId(EventsStore.DynamicValue<UUID> eventId) {
         this.dynamicEventId = eventId;
     }
 
@@ -102,27 +102,27 @@ public class CommonProxy implements CommonInterface {
         this.dynamicUserId = userId;
     }
 
-    private Double timestamp;
-    private EventsStore.DynamicValue<Double> dynamicTimestamp;
-    public Double getTimestamp() {
+    private Long timestamp;
+    private EventsStore.DynamicValue<Long> dynamicTimestamp;
+    public Long getTimestamp() {
         return this.timestamp != null ? this.timestamp : this.dynamicTimestamp.get();
     }
-    public void setTimestamp(Double timestamp) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
-    public void setTimestamp(EventsStore.DynamicValue<Double> timestamp) {
+    public void setTimestamp(EventsStore.DynamicValue<Long> timestamp) {
         this.dynamicTimestamp = timestamp;
     }
 
-    private Common.Platform platform;
-    private EventsStore.DynamicValue<Common.Platform> dynamicPlatform;
-    public Common.Platform getPlatform() {
+    private String platform;
+    private EventsStore.DynamicValue<String> dynamicPlatform;
+    public String getPlatform() {
         return this.platform != null ? this.platform : this.dynamicPlatform.get();
     }
-    public void setPlatform(Common.Platform platform) {
+    public void setPlatform(String platform) {
         this.platform = platform;
     }
-    public void setPlatform(EventsStore.DynamicValue<Common.Platform> platform) {
+    public void setPlatform(EventsStore.DynamicValue<String> platform) {
         this.dynamicPlatform = platform;
     }
 
