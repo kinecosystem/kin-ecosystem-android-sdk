@@ -116,6 +116,11 @@ public class AuthLocalData implements AuthDataSource.Local {
     }
 
     @Override
+    public String getUserID() {
+        return signInSharedPreferences.getString(USER_ID_KEY, null);
+    }
+
+    @Override
     public AuthToken getAuthTokenSync() {
         String token = signInSharedPreferences.getString(TOKEN_KEY, null);
         String appID = signInSharedPreferences.getString(APP_ID_KEY, null);

@@ -1,5 +1,9 @@
 package com.kin.ecosystem.bi;
 
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import kin.ecosystem.core.network.ApiCallback;
 import kin.ecosystem.core.network.ApiException;
 
 public class EventLoggerImpl implements EventLogger {
@@ -12,7 +16,7 @@ public class EventLoggerImpl implements EventLogger {
         this.eventsApi = eventsApi;
     }
 
-    public static EventLoggerImpl init() {
+    public static EventLoggerImpl getInstance() {
         if (instance == null) {
             synchronized (EventLoggerImpl.class) {
                 if (instance == null) {
@@ -27,7 +31,28 @@ public class EventLoggerImpl implements EventLogger {
     @Override
     public void send(Event event) {
         try {
-            eventsApi.sendEventAsync(event, null);
+            event.getCommon().setEventId(getUniqueID());
+            eventsApi.sendEventAsync(event, new ApiCallback<String>() {
+                @Override
+                public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+
+                }
+
+                @Override
+                public void onSuccess(String result, int statusCode, Map<String, List<String>> responseHeaders) {
+
+                }
+
+                @Override
+                public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
+
+                }
+
+                @Override
+                public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+
+                }
+            });
         } catch (ApiException e) {
             e.printStackTrace();
         }
@@ -36,5 +61,9 @@ public class EventLoggerImpl implements EventLogger {
     // TODO: should be removed and pass an instance to who ever uses this
     public static void Send(Event event) {
         instance.send(event);
+    }
+
+    private String getUniqueID() {
+        return UUID.randomUUID().toString();
     }
 }

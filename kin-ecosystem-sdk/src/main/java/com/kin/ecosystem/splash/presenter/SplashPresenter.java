@@ -3,6 +3,8 @@ package com.kin.ecosystem.splash.presenter;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.BasePresenter;
+import com.kin.ecosystem.bi.events.WelcomeScreenButtonTapped;
+import com.kin.ecosystem.bi.events.WelcomeScreenPageViewed;
 import com.kin.ecosystem.data.auth.AuthDataSource;
 import com.kin.ecosystem.splash.view.ISplashView;
 
@@ -15,10 +17,12 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 
     public SplashPresenter(@NonNull final AuthDataSource authRepository) {
         this.authRepository = authRepository;
+        WelcomeScreenPageViewed.fire();
     }
 
     @Override
     public void getStartedClicked() {
+        WelcomeScreenButtonTapped.fire();
         animateLoading();
         activateAccount();
     }

@@ -14,6 +14,8 @@ public interface AuthDataSource {
 
     String getDeviceID();
 
+    String getUserID();
+
     void setAuthToken(@NonNull final AuthToken authToken);
 
     AuthToken getAuthTokenSync();
@@ -31,6 +33,8 @@ public interface AuthDataSource {
         void getAppId(@NonNull final Callback<String> callback);
 
         String getDeviceID();
+
+        String getUserID();
 
         AuthToken getAuthTokenSync();
 

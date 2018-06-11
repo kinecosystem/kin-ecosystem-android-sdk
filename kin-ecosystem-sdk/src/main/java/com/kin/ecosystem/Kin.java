@@ -3,8 +3,11 @@ package com.kin.ecosystem;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.os.Build.VERSION;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.telephony.TelephonyManager;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
@@ -13,8 +16,9 @@ import com.kin.ecosystem.bi.EventsStore;
 import com.kin.ecosystem.bi.EventsStore.CommonModifier;
 import com.kin.ecosystem.bi.EventsStore.DynamicValue;
 import com.kin.ecosystem.bi.EventsStore.UserModifier;
-import com.kin.ecosystem.bi.events.BackButtonOnWelcomeScreenPageTapped;
+import com.kin.ecosystem.bi.events.Common.Platform;
 import com.kin.ecosystem.bi.events.CommonProxy;
+import com.kin.ecosystem.bi.events.KinSdkInitiated;
 import com.kin.ecosystem.bi.events.UserProxy;
 import com.kin.ecosystem.data.auth.AuthLocalData;
 import com.kin.ecosystem.data.auth.AuthRemoteData;
@@ -35,10 +39,10 @@ import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
 import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.network.model.SignInData.SignInTypeEnum;
 import com.kin.ecosystem.splash.view.SplashViewActivity;
+import java.util.Locale;
 import java.util.UUID;
 import kin.ecosystem.core.util.DeviceUtils;
 import kin.ecosystem.core.util.ExecutorsUtil;
-import org.stellar.sdk.xdr.Auth;
 
 
 public class Kin {
@@ -50,7 +54,7 @@ public class Kin {
 
     private Kin() {
         executorsUtil = new ExecutorsUtil();
-        eventLogger = EventLoggerImpl.init();
+        eventLogger = EventLoggerImpl.getInstance();
     }
 
     private static Kin getInstance() {
@@ -105,19 +109,81 @@ public class Kin {
         initOfferRepository();
         initOrderRepository(appContext);
         setAppID();
+        setUpEventsCommonData(appContext);
+        KinSdkInitiated.fire();
+    }
 
-        EventsStore.init(new CommonModifier() {
+    private static void setUpEventsCommonData(@NonNull Context context) {
+        TelephonyManager telephonyManager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+        final String carrierName = telephonyManager != null ? telephonyManager.getNetworkOperatorName() : "Unknown";
+        final CommonModifier commonModifier = new CommonModifier() {
             @Override
-            public void modify(CommonProxy mutable) {
-                mutable.setTimestamp(new DynamicValue<Double>() {
+            public void modify(CommonProxy commonProxy) {
+                commonProxy.setTimestamp(new DynamicValue<Double>() {
                     @Override
                     public Double get() {
                         return new Double(System.currentTimeMillis());
                     }
                 });
+                commonProxy.setDeviceId(new DynamicValue<String>() {
+                    @Override
+                    public String get() {
+                        return AuthRepository.getInstance().getDeviceID();
+                    }
+                });
+                commonProxy.setUserId(new DynamicValue<String>() {
+                    @Override
+                    public String get() {
+                        final String userID = AuthRepository.getInstance().getUserID();
+                        return  userID != null ? userID : "Unknown";
+                    }
+                });
+
+                commonProxy.setPlatform(Platform.ANDROID);
+                commonProxy.setEventId(""); // being updated on send
+                commonProxy.setCarrier(carrierName);
+                commonProxy.setOs(VERSION.RELEASE);
+                commonProxy.setDeviceManufacturer(Build.MANUFACTURER);
+                commonProxy.setDeviceModel(Build.MODEL);
+                commonProxy.setLanguage(Locale.getDefault().getDisplayLanguage());
+                commonProxy.setVersion(BuildConfig.VERSION_NAME);
+            }
+        };
+
+        final UserModifier userModifier = new UserModifier() {
+            @Override
+            public void modify(UserProxy userProxy) {
+                userProxy.setBalance(new DynamicValue<Double>() {
+                    @Override
+                    public Double get() {
+                        return new Double(BlockchainSourceImpl.getInstance().getBalance());
+                    }
+                });
+
+                userProxy.setDigitalServiceId(new DynamicValue<String>() {
+                    @Override
+                    public String get() {
+                        return AuthRepository.getInstance().getAppID().getValue();
+                    }
+                });
+                userProxy.setDigitalServiceUserId(new DynamicValue<String>() {
+                    @Override
+                    public String get() {
+                        final String userID = AuthRepository.getInstance().getUserID();
+                        return  userID != null ? userID : "Unknown";
+                    }
+                });
+
+                userProxy.setEarnCount(0);
+                userProxy.setSpendCount(0);
+                userProxy.setTotalKinEarned(0.0);
+                userProxy.setTotalKinSpent(0.0);
+                userProxy.setTransactionCount(0);
 
             }
-        });
+        };
+
+        EventsStore.init(userModifier, commonModifier);
     }
 
 

@@ -9,6 +9,9 @@ import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.CallbackAdapter;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.bi.events.StellarAccountCreationFailed;
+import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupSucceeded;
+import com.kin.ecosystem.bi.events.WalletCreationSucceeded;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.exception.InitializeException;
 import java.math.BigDecimal;
@@ -188,11 +191,13 @@ public class BlockchainSourceImpl implements BlockchainSource {
         account.activate().run(new ResultCallback<Void>() {
             @Override
             public void onResult(Void result) {
+                StellarKinTrustlineSetupSucceeded.fire();
                 Log.d(TAG, "createTrustLine onResult");
             }
 
             @Override
             public void onError(Exception e) {
+                StellarAccountCreationFailed.fire(e.getMessage());
                 Log.d(TAG, "createTrustLine onError");
             }
         });

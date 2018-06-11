@@ -61,6 +61,11 @@ public class AuthRepository implements AuthDataSource {
         return localData.getDeviceID();
     }
 
+    @Override
+    public String getUserID() {
+        return localData.getUserID();
+    }
+
     private void loadCachedAppIDIfNeeded() {
         if (TextUtils.isEmpty(appId.getValue())) {
             localData.getAppId(new Callback<String>() {
