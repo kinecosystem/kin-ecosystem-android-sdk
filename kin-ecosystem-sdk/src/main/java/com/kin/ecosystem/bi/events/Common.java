@@ -3,6 +3,7 @@ package com.kin.ecosystem.bi.events;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -12,6 +13,7 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 public class Common implements CommonInterface {
+    public static final String PLATFORM = "Android";
 
     /**
      * 
@@ -20,7 +22,7 @@ public class Common implements CommonInterface {
      */
     @SerializedName("event_id")
     @Expose
-    private String eventId;
+    private UUID eventId;
     /**
      * 
      * (Required)
@@ -76,7 +78,7 @@ public class Common implements CommonInterface {
      */
     @SerializedName("timestamp")
     @Expose
-    private Double timestamp;
+    private Long timestamp;
     /**
      * 
      * (Required)
@@ -84,7 +86,7 @@ public class Common implements CommonInterface {
      */
     @SerializedName("platform")
     @Expose
-    private Common.Platform platform;
+    private String platform = PLATFORM;
     /**
      * 
      * (Required)
@@ -120,10 +122,9 @@ public class Common implements CommonInterface {
      * @param version
      * @param deviceId
      * @param userId
-     * @param platform
      * @param timestamp
      */
-    public Common(String eventId, String os, String version, String language, String carrier, String deviceId, String userId, Double timestamp, Common.Platform platform, String deviceManufacturer, String deviceModel) {
+    public Common(UUID eventId, String os, String version, String language, String carrier, String deviceId, String userId, Long timestamp, String deviceManufacturer, String deviceModel) {
         super();
         this.eventId = eventId;
         this.os = os;
@@ -133,7 +134,6 @@ public class Common implements CommonInterface {
         this.deviceId = deviceId;
         this.userId = userId;
         this.timestamp = timestamp;
-        this.platform = platform;
         this.deviceManufacturer = deviceManufacturer;
         this.deviceModel = deviceModel;
     }
@@ -143,7 +143,7 @@ public class Common implements CommonInterface {
      * (Required)
      * 
      */
-    public String getEventId() {
+    public UUID getEventId() {
         return eventId;
     }
 
@@ -152,7 +152,7 @@ public class Common implements CommonInterface {
      * (Required)
      * 
      */
-    public void setEventId(String eventId) {
+    public void setEventId(UUID eventId) {
         this.eventId = eventId;
     }
 
@@ -269,7 +269,7 @@ public class Common implements CommonInterface {
      * (Required)
      * 
      */
-    public Double getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 
@@ -278,7 +278,7 @@ public class Common implements CommonInterface {
      * (Required)
      * 
      */
-    public void setTimestamp(Double timestamp) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -287,7 +287,7 @@ public class Common implements CommonInterface {
      * (Required)
      * 
      */
-    public Common.Platform getPlatform() {
+    public String getPlatform() {
         return platform;
     }
 
@@ -296,7 +296,7 @@ public class Common implements CommonInterface {
      * (Required)
      * 
      */
-    public void setPlatform(Common.Platform platform) {
+    public void setPlatform(String platform) {
         this.platform = platform;
     }
 
@@ -334,47 +334,6 @@ public class Common implements CommonInterface {
      */
     public void setDeviceModel(String deviceModel) {
         this.deviceModel = deviceModel;
-    }
-
-    public enum Platform {
-
-        @SerializedName("iOS")
-        I_OS("iOS"),
-        @SerializedName("Android")
-        ANDROID("Android"),
-        @SerializedName("Web")
-        WEB("Web");
-        private final String value;
-        private final static Map<String, Common.Platform> CONSTANTS = new HashMap<String, Common.Platform>();
-
-        static {
-            for (Common.Platform c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private Platform(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static Common.Platform fromValue(String value) {
-            Common.Platform constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }
