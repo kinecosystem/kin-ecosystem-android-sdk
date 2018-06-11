@@ -173,7 +173,9 @@ public class Kin {
                         return  userID != null ? userID : "Unknown";
                     }
                 });
-
+                userProxy.setEntryPointParam("");
+                userProxy.setEarnCount(0);
+                userProxy.setEarnCount(0);
                 userProxy.setEarnCount(0);
                 userProxy.setSpendCount(0);
                 userProxy.setTotalKinEarned(0.0);

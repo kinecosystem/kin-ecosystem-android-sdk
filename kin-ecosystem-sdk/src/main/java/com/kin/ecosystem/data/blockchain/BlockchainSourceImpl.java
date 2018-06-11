@@ -9,9 +9,8 @@ import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.CallbackAdapter;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.bi.events.StellarAccountCreationFailed;
+import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupFailed;
 import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupSucceeded;
-import com.kin.ecosystem.bi.events.WalletCreationSucceeded;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.exception.InitializeException;
 import java.math.BigDecimal;
@@ -22,10 +21,8 @@ import kin.core.KinAccount;
 import kin.core.KinClient;
 import kin.core.ListenerRegistration;
 import kin.core.PaymentInfo;
-
 import kin.core.ResultCallback;
 import kin.core.TransactionId;
-
 import kin.core.exception.AccountNotFoundException;
 import kin.core.exception.CreateAccountException;
 import kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
@@ -197,7 +194,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
             @Override
             public void onError(Exception e) {
-                StellarAccountCreationFailed.fire(e.getMessage());
+                StellarKinTrustlineSetupFailed.fire(e.getMessage());
                 Log.d(TAG, "createTrustLine onError");
             }
         });
