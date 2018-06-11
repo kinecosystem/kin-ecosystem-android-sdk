@@ -6,12 +6,12 @@ import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.IBasePresenter;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
-import com.kin.ecosystem.data.model.BalanceUpdate;
+import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.util.StringUtil;
 
 public class BalancePresenter extends BasePresenter<IBalanceView> implements IBasePresenter<IBalanceView> {
 
-    private Observer<BalanceUpdate> balanceObserver;
+    private Observer<Balance> balanceObserver;
     private final BlockchainSource blockchainSource;
 
     private static final String BALANCE_ZERO_TEXT = "0.00";
@@ -22,15 +22,15 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
     }
 
     private void createBalanceObserver() {
-        balanceObserver = new Observer<BalanceUpdate>() {
+        balanceObserver = new Observer<Balance>() {
             @Override
-            public void onChanged(BalanceUpdate balance) {
+            public void onChanged(Balance balance) {
                 updateBalance(balance);
             }
         };
     }
 
-    private void updateBalance(BalanceUpdate balance) {
+    private void updateBalance(Balance balance) {
         int balanceValue = balance.getAmount().intValue();
         String balanceString;
         if (balanceValue == 0) {

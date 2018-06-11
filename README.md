@@ -134,12 +134,15 @@ As can be seen in the sample app, there are just few step required to integrate 
                   //
             }
       ```
+      
+## [Balance](docs/BALANCE.md)
+The balance API lets you get the last known balance (cached balance), blockchain confirmed balance and observe on balance updates.[(see more)](docs/BALANCE.md) 
 
-## [Create Native Spend Offer](NATIVE_SPEND.md)
-A native spend is a mechanism allowing your users to buy virtual goods you define, using Kin on Kin Ecosystem API's. [(see more)](NATIVE_SPEND.md) 
+## [Create Native Spend Offer](docs/NATIVE_SPEND.md)
+A native spend is a mechanism allowing your users to buy virtual goods you define, using Kin on Kin Ecosystem API's. [(see more)](docs/NATIVE_SPEND.md) 
 
-## [Create Native EARN Offer](NATIVE_EARN.md)
-A native earn is a mechanism allowing your users to earn Kin as a reward for native tasks you define, such as setting a profile picture or adding info. [(see more)](NATIVE_EARN.md) 
+## [Create Native EARN Offer](docs/NATIVE_EARN.md)
+A native earn is a mechanism allowing your users to earn Kin as a reward for native tasks you define, such as setting a profile picture or adding info. [(see more)](docs/NATIVE_EARN.md) 
    
 ## License
 The kin-ecosystem-android-sdk library is licensed under [MIT license](LICENSE.md).

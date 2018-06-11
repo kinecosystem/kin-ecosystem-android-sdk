@@ -3,7 +3,7 @@ package com.kin.ecosystem.data.blockchain;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.data.model.BalanceUpdate;
+import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.Payment;
 import java.math.BigDecimal;
 
@@ -25,37 +25,37 @@ public interface BlockchainSource {
     /**
      * @return the cached balance.
      */
-    BalanceUpdate getBalance();
+    Balance getBalance();
 
     /**
      * Get balance from network
      * @param callback
      */
-    void getBalance(@NonNull final Callback<BalanceUpdate> callback);
+    void getBalance(@NonNull final Callback<Balance> callback);
 
     /**
      * Add balance observer in order to start receive balance updates
      * @param observer
      */
-    void addBalanceObserver(@NonNull final Observer<BalanceUpdate> observer);
+    void addBalanceObserver(@NonNull final Observer<Balance> observer);
 
     /**
-     * Add balance observer and start SSE connection on account balance updates from the blockchain network.
+     * Add balance observer that will keep a connection on account balance updates from the blockchain network.
      * @param observer
      */
-    void addBalanceObserverAndStartListen(@NonNull final Observer<BalanceUpdate> observer);
+    void addBalanceObserverAndStartListen(@NonNull final Observer<Balance> observer);
 
     /**
      * Remove the balance observer in order to stop receiving balance updates.
      * @param observer
      */
-    void removeBalanceObserver(@NonNull final Observer<BalanceUpdate> observer);
+    void removeBalanceObserver(@NonNull final Observer<Balance> observer);
 
     /**
-     * Remove the balance observer, and close SSE connection if no other observers.
+     * Remove the balance observer, and close the connection if no other observers.
      * @param observer
      */
-    void removeBalanceObserverAndStopListen(@NonNull final Observer<BalanceUpdate> observer);
+    void removeBalanceObserverAndStopListen(@NonNull final Observer<Balance> observer);
 
     /**
      * @return the public address of the initiated account

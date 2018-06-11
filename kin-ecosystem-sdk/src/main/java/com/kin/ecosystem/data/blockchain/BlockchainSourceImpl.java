@@ -9,13 +9,12 @@ import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.CallbackAdapter;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.data.model.BalanceUpdate;
+import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.util.ExecutorsUtil.MainThreadExecutor;
 import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicInteger;
-import kin.core.Balance;
 import kin.core.EventListener;
 import kin.core.KinAccount;
 import kin.core.KinClient;
@@ -35,7 +34,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
     private final KinClient kinClient;
     private KinAccount account;
-    private ObservableData<BalanceUpdate> balance = ObservableData.create(new BalanceUpdate());
+    private ObservableData<Balance> balance = ObservableData.create(new Balance());
     /**
      * Listen for {@code completedPayment} in order to be notify about completed transaction sent to
      * the blockchain, it could failed or succeed.
@@ -155,22 +154,22 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
     private void initBalance() {
         balance.postValue(getBalance());
-        getBalance(new CallbackAdapter<BalanceUpdate>() {
+        getBalance(new CallbackAdapter<Balance>() {
         });
     }
 
     @Override
-    public BalanceUpdate getBalance() {
-        BalanceUpdate balanceUpdate = new BalanceUpdate();
-        balanceUpdate.setAmount(new BigDecimal(local.getBalance()));
-        return balanceUpdate;
+    public Balance getBalance() {
+        Balance balance = new Balance();
+        balance.setAmount(new BigDecimal(local.getBalance()));
+        return balance;
     }
 
     @Override
-    public void getBalance(@NonNull final Callback<BalanceUpdate> callback) {
-        account.getBalance().run(new ResultCallback<Balance>() {
+    public void getBalance(@NonNull final Callback<Balance> callback) {
+        account.getBalance().run(new ResultCallback<kin.core.Balance>() {
             @Override
-            public void onResult(final Balance balanceObj) {
+            public void onResult(final kin.core.Balance balanceObj) {
                 setBalance(balanceObj);
                 mainThread.execute(new Runnable() {
                     @Override
@@ -199,26 +198,26 @@ public class BlockchainSourceImpl implements BlockchainSource {
     }
 
     @VisibleForTesting
-    void setBalance(final Balance balanceObj) {
-        BalanceUpdate balanceUpdate = balance.getValue();
+    void setBalance(final kin.core.Balance balanceObj) {
+        Balance balanceTemp = balance.getValue();
         // if the values are not equals so we need to update,
         // no need to update for equal values.
-        if (balanceUpdate.getAmount().compareTo(balanceObj.value()) != 0) {
+        if (balanceTemp.getAmount().compareTo(balanceObj.value()) != 0) {
             Log.d(TAG, "setBalance: Balance changed, should get update");
-            balanceUpdate.setAmount(balanceObj.value());
-            balance.postValue(balanceUpdate);
+            balanceTemp.setAmount(balanceObj.value());
+            balance.postValue(balanceTemp);
             local.setBalance(balanceObj.value().intValue());
         }
     }
 
     @Override
-    public void addBalanceObserver(@NonNull Observer<BalanceUpdate> observer) {
+    public void addBalanceObserver(@NonNull Observer<Balance> observer) {
         balance.addObserver(observer);
         observer.onChanged(balance.getValue());
     }
 
     @Override
-    public void addBalanceObserverAndStartListen(@NonNull Observer<BalanceUpdate> observer) {
+    public void addBalanceObserverAndStartListen(@NonNull Observer<Balance> observer) {
         addBalanceObserver(observer);
         Log.d(TAG, "addBalanceObserverAndStartListen: " + balanceObserversCount.get());
         if (balanceObserversCount.getAndIncrement() == 0) {
@@ -229,22 +228,22 @@ public class BlockchainSourceImpl implements BlockchainSource {
     private void startBalanceListener() {
         Log.d(TAG, "startBalanceListener: ");
         balanceRegistration = account.blockchainEvents()
-            .addBalanceListener(new EventListener<Balance>() {
+            .addBalanceListener(new EventListener<kin.core.Balance>() {
                 @Override
-                public void onEvent(Balance data) {
+                public void onEvent(kin.core.Balance data) {
                     setBalance(data);
                 }
             });
     }
 
     @Override
-    public void removeBalanceObserver(@NonNull Observer<BalanceUpdate> observer) {
+    public void removeBalanceObserver(@NonNull Observer<Balance> observer) {
         Log.d(TAG, "removeBalanceObserver: ");
         balance.removeObserver(observer);
     }
 
     @Override
-    public void removeBalanceObserverAndStopListen(@NonNull Observer<BalanceUpdate> observer) {
+    public void removeBalanceObserverAndStopListen(@NonNull Observer<Balance> observer) {
         removeBalanceObserver(observer);
         decrementBalanceCount();
     }
@@ -288,7 +287,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
                     }
                     // UpdateBalance if there is no balance sse open connection.
                     if (balanceObserversCount.get() == 0) {
-                        getBalance(new CallbackAdapter<BalanceUpdate>() {
+                        getBalance(new CallbackAdapter<Balance>() {
                         });
                     }
                 }

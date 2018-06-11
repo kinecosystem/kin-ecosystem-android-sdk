@@ -13,7 +13,7 @@ import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.data.blockchain.BlockchainSourceLocal;
 import com.kin.ecosystem.data.blockchain.Network;
-import com.kin.ecosystem.data.model.BalanceUpdate;
+import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.model.WhitelistData;
 import com.kin.ecosystem.data.offer.OfferRemoteData;
@@ -197,7 +197,7 @@ public class Kin {
      * @return balance amount
      * @throws TaskFailedException
      */
-    public static BalanceUpdate getCachedBalance() throws TaskFailedException {
+    public static Balance getCachedBalance() throws TaskFailedException {
         checkInstanceNotNull();
         return BlockchainSourceImpl.getInstance().getBalance();
     }
@@ -208,35 +208,35 @@ public class Kin {
      * @param callback balance amount
      * @throws TaskFailedException
      */
-    public static void getBalance(@NonNull final Callback<BalanceUpdate> callback) throws TaskFailedException {
+    public static void getBalance(@NonNull final Callback<Balance> callback) throws TaskFailedException {
         checkInstanceNotNull();
         BlockchainSourceImpl.getInstance().getBalance(callback);
     }
 
     /**
      * Add balance observer to start getting notified when the balance is changed on the blockchain network.
-     * On balance changes you will get {@link BalanceUpdate} with the balance amount.
+     * On balance changes you will get {@link Balance} with the balance amount.
      *
-     * Take in consideration that on adding this observer, an SSE connection will be open to the blockchain network,
+     * Take in consideration that on adding this observer, a live network connection will be open to the blockchain network,
      * In order to close the connection use {@link #removeBalanceObserver(Observer)} with the same observer.
      * If no other observers on this connection, the connection will be closed.
      *
      * @param observer
      * @throws TaskFailedException
      */
-    public static void addBalanceObserver(@NonNull final Observer<BalanceUpdate> observer) throws TaskFailedException {
+    public static void addBalanceObserver(@NonNull final Observer<Balance> observer) throws TaskFailedException {
         checkInstanceNotNull();
         BlockchainSourceImpl.getInstance().addBalanceObserverAndStartListen(observer);
     }
 
     /**
-     *  Remove the balance observer, this method will close the SSE connection to the blockchain network
+     *  Remove the balance observer, this method will close the live network connection to the blockchain network
      *  if there is no more observers.
      *
      * @param observer
      * @throws TaskFailedException
      */
-    public static void removeBalanceObserver(@NonNull final Observer<BalanceUpdate> observer) throws TaskFailedException {
+    public static void removeBalanceObserver(@NonNull final Observer<Balance> observer) throws TaskFailedException {
         checkInstanceNotNull();
         BlockchainSourceImpl.getInstance().removeBalanceObserverAndStopListen(observer);
     }
@@ -260,7 +260,7 @@ public class Kin {
      *
      * @param offerJwt the offer details represented in a JWT manner.
      * @param callback after validating the info and sending the payment to the user, you will receive {@link OrderConfirmation},
-     * with the jwtConfirmation and you can validate the order when the order status is Com.
+     * with the jwtConfirmation and you can validate the order when the order status is completed.
      * @throws TaskFailedException
      */
     public static void requestPayment(String offerJwt, @Nullable Callback<OrderConfirmation> callback)

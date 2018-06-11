@@ -2,15 +2,15 @@ package com.kin.ecosystem.data.model;
 
 import java.math.BigDecimal;
 
-public class BalanceUpdate {
+public class Balance {
 
     private BigDecimal amount;
 
-    public BalanceUpdate() {
+    public Balance() {
         this.amount = new BigDecimal(0);
     }
 
-    public BalanceUpdate(BigDecimal amount) {
+    public Balance(BigDecimal amount) {
         this.amount = amount;
     }
 

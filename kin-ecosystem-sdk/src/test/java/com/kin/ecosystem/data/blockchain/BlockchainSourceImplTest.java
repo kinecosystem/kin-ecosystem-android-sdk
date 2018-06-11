@@ -8,16 +8,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.data.model.BalanceUpdate;
+import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.Payment;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicInteger;
-import kin.core.Balance;
 import kin.core.BlockchainEvents;
 import kin.core.EventListener;
 import kin.core.KinAccount;
@@ -76,18 +74,17 @@ public class BlockchainSourceImplTest {
 
 
     @Mock
-    private Request<Balance> getBalanceReq;
+    private Request<kin.core.Balance> getBalanceReq;
 
     @Captor
-    private ArgumentCaptor<ResultCallback<Balance>> getBalanceCaptor;
+    private ArgumentCaptor<ResultCallback<kin.core.Balance>> getBalanceCaptor;
 
     @Mock
-    private Balance balanceObj;
+    private kin.core.Balance balanceObj;
 
 
     private BlockchainSourceImpl blockchainSource;
-    private BalanceUpdate balanceUpdate;
-    private int x = 0;
+    private Balance balance;
 
     @Before
     public void setUp() throws Exception {
@@ -118,7 +115,7 @@ public class BlockchainSourceImplTest {
         verify(local).setBalance(balanceObj.value().intValue());
 
         when(kinClient.getAccount(0)).thenReturn(kinAccount);
-        balanceUpdate = new BalanceUpdate();
+        balance = new Balance();
     }
 
 
@@ -203,31 +200,30 @@ public class BlockchainSourceImplTest {
 
     @Test
     public void add_balance_observer_get_onChanged() {
-        Balance innerBalance = mock(Balance.class);
-        blockchainSource.addBalanceObserver(new Observer<BalanceUpdate>() {
+        kin.core.Balance innerBalance = mock(kin.core.Balance.class);
+        blockchainSource.addBalanceObserver(new Observer<Balance>() {
             @Override
-            public void onChanged(BalanceUpdate value) {
-                x++;
-                balanceUpdate = value;
+            public void onChanged(Balance value) {
+                balance = value;
             }
         });
-        assertEquals(new BigDecimal(20), balanceUpdate.getAmount());
+        assertEquals(new BigDecimal(20), balance.getAmount());
 
         InOrder inOrder = Mockito.inOrder(local);
         BigDecimal value = new BigDecimal(25);
         when(innerBalance.value()).thenReturn(value);
         blockchainSource.setBalance(innerBalance);
-        assertEquals(value, balanceUpdate.getAmount());
+        assertEquals(value, balance.getAmount());
 
         value = new BigDecimal(50);
         when(innerBalance.value()).thenReturn(value);
         blockchainSource.setBalance(innerBalance);
-        assertEquals(value, balanceUpdate.getAmount());
+        assertEquals(value, balance.getAmount());
 
         value = new BigDecimal(50);
         when(innerBalance.value()).thenReturn(value);
         blockchainSource.setBalance(innerBalance);
-        assertEquals(value, balanceUpdate.getAmount());
+        assertEquals(value, balance.getAmount());
 
         inOrder.verify(local).setBalance(25);
         inOrder.verify(local).setBalance(50);
@@ -236,12 +232,12 @@ public class BlockchainSourceImplTest {
 
     @Test
     public void add_balance_observer_and_start_listen() throws Exception {
-        ArgumentCaptor<EventListener<Balance>> balanceEventListener = forClass(EventListener.class);
+        ArgumentCaptor<EventListener<kin.core.Balance>> balanceEventListener = forClass(EventListener.class);
 
-        blockchainSource.addBalanceObserverAndStartListen(new Observer<BalanceUpdate>() {
+        blockchainSource.addBalanceObserverAndStartListen(new Observer<Balance>() {
             @Override
-            public void onChanged(BalanceUpdate value) {
-                balanceUpdate = value;
+            public void onChanged(Balance value) {
+                balance = value;
             }
         });
 
@@ -251,7 +247,7 @@ public class BlockchainSourceImplTest {
         when(balanceObj.value()).thenReturn(value);
         balanceEventListener.getValue().onEvent(balanceObj);
 
-        assertEquals(value, balanceUpdate.getAmount());
+        assertEquals(value, balance.getAmount());
         verify(local).setBalance(value.intValue());
 
     }

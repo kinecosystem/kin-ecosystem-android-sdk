@@ -87,7 +87,7 @@ JWT need to be signed by server side where private key is secure.
 ```
 You can remove the observer also by `Kin.removeNativeOfferClickedObserver(nativeSpendOfferClickedObserver)`
 
-2. Create a [NativeSpendOffer](/kin-ecosystem-sdk/src/main/java/com/kin/ecosystem/marketplace/model/NativeSpendOffer.java) object:
+2. Create a [NativeSpendOffer](/com/kin/ecosystem/marketplace/model/NativeSpendOffer.java) object:
 ```java
     NativeSpendOffer nativeOffer =
         new NativeSpendOffer("The offerID") // OfferId should be uniqe
