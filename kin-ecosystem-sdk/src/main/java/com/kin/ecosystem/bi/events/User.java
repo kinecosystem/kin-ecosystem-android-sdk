@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 
 /**
- * common properties for all events
+ * common user properties
  * 
  */
 public class User implements UserInterface {

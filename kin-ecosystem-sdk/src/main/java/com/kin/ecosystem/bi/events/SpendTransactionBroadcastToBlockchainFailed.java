@@ -18,13 +18,25 @@ import com.google.gson.annotations.SerializedName;
  */
 public class SpendTransactionBroadcastToBlockchainFailed implements Event {
     public static final String EVENT_NAME = "spend_transaction_broadcast_to_blockchain_failed";
-    public static final String EVENT_TYPE = "business";
+    public static final String EVENT_TYPE = "log";
+
+    // Augmented by script
+    public static SpendTransactionBroadcastToBlockchainFailed create(String errorReason, String offerId, String orderId) {
+        return new SpendTransactionBroadcastToBlockchainFailed(
+            (Common) EventsStore.common(),
+            (User) EventsStore.user(),
+            (Client) EventsStore.client(),
+            errorReason,
+            offerId,
+            orderId);
+    }
 
     // Augmented by script
     public static void fire(String errorReason, String offerId, String orderId) {
         final SpendTransactionBroadcastToBlockchainFailed event = new SpendTransactionBroadcastToBlockchainFailed(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
+            (Client) EventsStore.client(),
             errorReason,
             offerId,
             orderId);
@@ -57,13 +69,21 @@ public class SpendTransactionBroadcastToBlockchainFailed implements Event {
     @Expose
     private Common common;
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
     @SerializedName("user")
     @Expose
     private User user;
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    @SerializedName("client")
+    @Expose
+    private Client client;
     /**
      * 
      * (Required)
@@ -102,14 +122,16 @@ public class SpendTransactionBroadcastToBlockchainFailed implements Event {
      * @param orderId
      * @param errorReason
 
+     * @param client
      * @param offerId
 
      * @param user
      */
-    public SpendTransactionBroadcastToBlockchainFailed(Common common, User user, String errorReason, String offerId, String orderId) {
+    public SpendTransactionBroadcastToBlockchainFailed(Common common, User user, Client client, String errorReason, String offerId, String orderId) {
         super();
         this.common = common;
         this.user = user;
+        this.client = client;
         this.errorReason = errorReason;
         this.offerId = offerId;
         this.orderId = orderId;
@@ -170,7 +192,7 @@ public class SpendTransactionBroadcastToBlockchainFailed implements Event {
     }
 
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
@@ -179,12 +201,30 @@ public class SpendTransactionBroadcastToBlockchainFailed implements Event {
     }
 
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
     public void setUser(User user) {
         this.user = user;
+    }
+
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    public Client getClient() {
+        return client;
+    }
+
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     /**

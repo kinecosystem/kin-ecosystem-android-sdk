@@ -109,10 +109,10 @@ public class Kin {
         EventsStore.init(new CommonModifier() {
             @Override
             public void modify(CommonProxy mutable) {
-                mutable.setTimestamp(new DynamicValue<Double>() {
+                mutable.setTimestamp(new DynamicValue<Long>() {
                     @Override
-                    public Double get() {
-                        return new Double(System.currentTimeMillis());
+                    public Long get() {
+                        return new Long(System.currentTimeMillis());
                     }
                 });
 

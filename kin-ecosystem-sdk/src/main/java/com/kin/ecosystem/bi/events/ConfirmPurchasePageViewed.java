@@ -21,10 +21,22 @@ public class ConfirmPurchasePageViewed implements Event {
     public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
+    public static ConfirmPurchasePageViewed create(Double kinAmount, String offerId, String orderId) {
+        return new ConfirmPurchasePageViewed(
+            (Common) EventsStore.common(),
+            (User) EventsStore.user(),
+            (Client) EventsStore.client(),
+            kinAmount,
+            offerId,
+            orderId);
+    }
+
+    // Augmented by script
     public static void fire(Double kinAmount, String offerId, String orderId) {
         final ConfirmPurchasePageViewed event = new ConfirmPurchasePageViewed(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
+            (Client) EventsStore.client(),
             kinAmount,
             offerId,
             orderId);
@@ -57,13 +69,21 @@ public class ConfirmPurchasePageViewed implements Event {
     @Expose
     private Common common;
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
     @SerializedName("user")
     @Expose
     private User user;
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    @SerializedName("client")
+    @Expose
+    private Client client;
     /**
      * 
      * (Required)
@@ -101,15 +121,17 @@ public class ConfirmPurchasePageViewed implements Event {
      * @param common
      * @param orderId
 
+     * @param client
      * @param offerId
      * @param kinAmount
 
      * @param user
      */
-    public ConfirmPurchasePageViewed(Common common, User user, Double kinAmount, String offerId, String orderId) {
+    public ConfirmPurchasePageViewed(Common common, User user, Client client, Double kinAmount, String offerId, String orderId) {
         super();
         this.common = common;
         this.user = user;
+        this.client = client;
         this.kinAmount = kinAmount;
         this.offerId = offerId;
         this.orderId = orderId;
@@ -170,7 +192,7 @@ public class ConfirmPurchasePageViewed implements Event {
     }
 
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
@@ -179,12 +201,30 @@ public class ConfirmPurchasePageViewed implements Event {
     }
 
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
     public void setUser(User user) {
         this.user = user;
+    }
+
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    public Client getClient() {
+        return client;
+    }
+
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     /**

@@ -21,10 +21,21 @@ public class SpendOrderCompleted implements Event {
     public static final String EVENT_TYPE = "business";
 
     // Augmented by script
+    public static SpendOrderCompleted create(String offerId, String orderId) {
+        return new SpendOrderCompleted(
+            (Common) EventsStore.common(),
+            (User) EventsStore.user(),
+            (Client) EventsStore.client(),
+            offerId,
+            orderId);
+    }
+
+    // Augmented by script
     public static void fire(String offerId, String orderId) {
         final SpendOrderCompleted event = new SpendOrderCompleted(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
+            (Client) EventsStore.client(),
             offerId,
             orderId);
 
@@ -56,13 +67,21 @@ public class SpendOrderCompleted implements Event {
     @Expose
     private Common common;
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
     @SerializedName("user")
     @Expose
     private User user;
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    @SerializedName("client")
+    @Expose
+    private Client client;
     /**
      * 
      * (Required)
@@ -92,14 +111,16 @@ public class SpendOrderCompleted implements Event {
      * @param common
      * @param orderId
 
+     * @param client
      * @param offerId
 
      * @param user
      */
-    public SpendOrderCompleted(Common common, User user, String offerId, String orderId) {
+    public SpendOrderCompleted(Common common, User user, Client client, String offerId, String orderId) {
         super();
         this.common = common;
         this.user = user;
+        this.client = client;
         this.offerId = offerId;
         this.orderId = orderId;
     }
@@ -159,7 +180,7 @@ public class SpendOrderCompleted implements Event {
     }
 
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
@@ -168,12 +189,30 @@ public class SpendOrderCompleted implements Event {
     }
 
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
     public void setUser(User user) {
         this.user = user;
+    }
+
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    public Client getClient() {
+        return client;
+    }
+
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     /**
