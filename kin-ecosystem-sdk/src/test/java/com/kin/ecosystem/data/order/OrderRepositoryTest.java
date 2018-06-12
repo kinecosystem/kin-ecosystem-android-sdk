@@ -1,6 +1,9 @@
 package com.kin.ecosystem.data.order;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -20,6 +23,7 @@ import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.model.BlockchainData;
+import com.kin.ecosystem.network.model.Error;
 import com.kin.ecosystem.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OpenOrder;
@@ -28,7 +32,10 @@ import com.kin.ecosystem.network.model.Order.Status;
 import com.kin.ecosystem.network.model.OrderList;
 import com.kin.ecosystem.network.model.OrderSpendResult.TypeEnum;
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -38,6 +45,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
@@ -277,7 +285,8 @@ public class OrderRepositoryTest {
         ArgumentCaptor<Callback<Order>> getOrderCapture = ArgumentCaptor.forClass(Callback.class);
 
         Order confirmedOrder = new Order().orderId(orderID).offerId(offerID).status(Status.COMPLETED);
-        confirmedOrder.setResult(new JWTBodyPaymentConfirmationResult().jwt("A JWT CONFIRMATION").type(TypeEnum.PAYMENT_CONFIRMATION));
+        confirmedOrder.setResult(
+            new JWTBodyPaymentConfirmationResult().jwt("A JWT CONFIRMATION").type(TypeEnum.PAYMENT_CONFIRMATION));
         ObservableData<Offer> pendingOffer = ObservableData.create(offer);
 
         when(remote.createExternalOrderSync(anyString())).thenReturn(openOrder);
@@ -314,6 +323,54 @@ public class OrderRepositoryTest {
         ShadowLooper.runUiThreadTasks();
 
         verify(offerRepository).setPendingOfferByID(offerID);
+    }
+
+    @Test
+    public void purchase_Conflict_GetOrderConfirmation() throws Exception {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+
+        Order confirmedOrder = new Order().orderId(orderID).offerId(offerID).status(Status.COMPLETED);
+        confirmedOrder.setResult(
+            new JWTBodyPaymentConfirmationResult().jwt("A JWT CONFIRMATION").type(TypeEnum.PAYMENT_CONFIRMATION));
+        ObservableData<Offer> pendingOffer = ObservableData.create(offer);
+
+        // Create the Conflict error response
+        Error error = Mockito.mock(Error.class);
+        when(error.getCode()).thenReturn(4091);
+
+        Map<String, List<String>> responseHeaders = new HashMap<>();
+        responseHeaders.put("location", Arrays.asList("v/some/OrderID12"));
+
+        ApiException apiException = Mockito.mock(ApiException.class);
+        when(apiException.getCode()).thenReturn(409);
+        when(apiException.getResponseBody()).thenReturn(error);
+        when(apiException.getResponseHeaders()).thenReturn(responseHeaders);
+
+        when(remote.createExternalOrderSync(anyString())).thenThrow(apiException);
+        when(remote.getOrderSync(anyString())).thenReturn(confirmedOrder);
+        when(offerRepository.getPendingOffer()).thenReturn(pendingOffer);
+
+        // Check not error, and got jwt confirmation
+        orderRepository.purchase("A GENERATED NATIVE OFFER JWT", new Callback<OrderConfirmation>() {
+            @Override
+            public void onResponse(OrderConfirmation orderConfirmation) {
+                countDownLatch.countDown();
+                assertEquals("A JWT CONFIRMATION", orderConfirmation.getJwtConfirmation());
+                assertNull(orderRepository.getOpenOrder().getValue());
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
+            }
+        });
+
+        Thread.sleep(500);
+        ShadowLooper.runUiThreadTasks();
+        verify(blockchainSource, never()).addPaymentObservable(any(Observer.class));
+
+        countDownLatch.await(1000, TimeUnit.MICROSECONDS);
+        ShadowLooper.runUiThreadTasks();
     }
 
     @Test
