@@ -30,13 +30,11 @@ public class AuthRepository implements AuthDataSource {
         this.remoteData = remote;
     }
 
-    public static void init(@NonNull SignInData signInData, @NonNull AuthDataSource.Local localData,
-        @NonNull AuthDataSource.Remote remoteData) {
+    public static void init(@NonNull AuthDataSource.Local localData, @NonNull AuthDataSource.Remote remoteData) {
         if (instance == null) {
             synchronized (AuthRepository.class) {
                 if (instance == null) {
                     instance = new AuthRepository(localData, remoteData);
-                    instance.setSignInData(signInData);
                 }
             }
         }
@@ -58,6 +56,11 @@ public class AuthRepository implements AuthDataSource {
     public ObservableData<String> getAppID() {
         loadCachedAppIDIfNeeded();
         return appId;
+    }
+
+    @Override
+    public String getDeviceID() {
+        return localData.getDeviceID();
     }
 
     private void loadCachedAppIDIfNeeded() {

@@ -100,32 +100,27 @@ As can be seen in the sample app, there are just few step required to integrate 
        }
     
        ```
-1. Create SignInData object and set userID, appID, apiKey etc.
+1. Create WhitelistData object and set userID, appID, apiKey or just pass a registration JWT String on `Kin.start`.
 
     1. Option 1 - Should be use only for first time rapid integration and internal testing.
     
           ```java
-                signInData = new SignInData()
-                     .signInType(SignInTypeEnum.WHITELIST)
-                     .appId("appID")
-                     .deviceId("deviceUUID")
-                     .userId("userID"")
-                     .apiKey("apiKey");
+               whitelistData = new WhitelistData("userID", "appID", "apiKey");           
          ```
-    1. Option 2 - recommended integration using JWT token signed by digital service server side.     
-        
+    1. Option 2 - recommended integration using JWT token signed by digital service server side.
           ```java
-                signInData = new SignInData()
-                      .signInType(SignInTypeEnum.JWT)
-                      .jwt("jwt")
-                      .deviceId("deviceUUID")
+               try {
+                   Kin.start(getApplicationContext(), jwt);
+               } catch (InitializeException e) {
+                   //
+               }
           ```
          JWT spec can be found at [ecosystem-api repository](https://github.com/kinfoundation/ecosystem-api)
    
 1. Initiate the SDK when the application starts calling Kin. The first start will begin the blocakchain wallet and account creation process.
       ```java
                try {
-                   Kin.start(getApplicationContext(), signInData);
+                   Kin.start(getApplicationContext(), whitelistData);
                } catch (InitializeException e) {
                    //
                }
@@ -139,12 +134,15 @@ As can be seen in the sample app, there are just few step required to integrate 
                   //
             }
       ```
+      
+## [Balance](docs/BALANCE.md)
+The balance API lets you get the last known balance (cached balance), blockchain confirmed balance and observe on balance updates.[(see more)](docs/BALANCE.md) 
 
-## [Create Native Spend Offer](NATIVE_SPEND.md)
-A native spend is a mechanism allowing your users to buy virtual goods you define, using Kin on Kin Ecosystem API's. [(see more)](NATIVE_SPEND.md) 
+## [Create Native Spend Offer](docs/NATIVE_SPEND.md)
+A native spend is a mechanism allowing your users to buy virtual goods you define, using Kin on Kin Ecosystem API's. [(see more)](docs/NATIVE_SPEND.md) 
 
-## [Create Native EARN Offer](NATIVE_EARN.md)
-A native earn is a mechanism allowing your users to earn Kin as a reward for native tasks you define, such as setting a profile picture or adding info. [(see more)](NATIVE_EARN.md) 
+## [Create Native EARN Offer](docs/NATIVE_EARN.md)
+A native earn is a mechanism allowing your users to earn Kin as a reward for native tasks you define, such as setting a profile picture or adding info. [(see more)](docs/NATIVE_EARN.md) 
    
 ## License
 The kin-ecosystem-android-sdk library is licensed under [MIT license](LICENSE.md).

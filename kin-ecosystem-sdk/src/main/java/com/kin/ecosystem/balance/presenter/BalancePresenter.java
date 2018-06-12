@@ -5,36 +5,38 @@ import com.kin.ecosystem.balance.view.IBalanceView;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.IBasePresenter;
 import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.data.blockchain.IBlockchainSource;
+import com.kin.ecosystem.data.blockchain.BlockchainSource;
+import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.util.StringUtil;
 
 public class BalancePresenter extends BasePresenter<IBalanceView> implements IBasePresenter<IBalanceView> {
 
-    private Observer<Integer> balanceObserver;
-    private final IBlockchainSource blockchainSource;
+    private Observer<Balance> balanceObserver;
+    private final BlockchainSource blockchainSource;
 
     private static final String BALANCE_ZERO_TEXT = "0.00";
 
-    public BalancePresenter(@NonNull final IBlockchainSource blockchainSource) {
+    public BalancePresenter(@NonNull final BlockchainSource blockchainSource) {
         this.blockchainSource = blockchainSource;
         createBalanceObserver();
     }
 
     private void createBalanceObserver() {
-        balanceObserver = new Observer<Integer>() {
+        balanceObserver = new Observer<Balance>() {
             @Override
-            public void onChanged(Integer balance) {
+            public void onChanged(Balance balance) {
                 updateBalance(balance);
             }
         };
     }
 
-    private void updateBalance(Integer balance) {
+    private void updateBalance(Balance balance) {
+        int balanceValue = balance.getAmount().intValue();
         String balanceString;
-        if (balance == 0) {
+        if (balanceValue == 0) {
             balanceString = BALANCE_ZERO_TEXT;
         } else {
-            balanceString = StringUtil.getAmountFormatted(balance);
+            balanceString = StringUtil.getAmountFormatted(balanceValue);
         }
         if (view != null) {
             view.updateBalance(balanceString);

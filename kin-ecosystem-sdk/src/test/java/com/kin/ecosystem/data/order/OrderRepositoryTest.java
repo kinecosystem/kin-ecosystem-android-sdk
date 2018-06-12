@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.data.blockchain.IBlockchainSource;
+import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.data.offer.OfferDataSource;
@@ -59,7 +59,7 @@ public class OrderRepositoryTest {
     private static String orderID = "2";
 
     @Mock
-    private IBlockchainSource blockchainSource;
+    private BlockchainSource blockchainSource;
 
     @Mock
     private OfferDataSource offerRepository;
@@ -97,8 +97,6 @@ public class OrderRepositoryTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         resetInstance();
-        resetPendingOrdersCount();
-        resetPaymentObserverCount();
 
         when(offer.getId()).thenReturn(offerID);
 
@@ -116,18 +114,6 @@ public class OrderRepositoryTest {
 
         when(payment.getOrderID()).thenReturn(orderID);
         when(payment.isSucceed()).thenReturn(true);
-    }
-
-    private void resetPendingOrdersCount() throws Exception {
-        Field pendingOrdersCount = OrderRepository.class.getDeclaredField("pendingOrdersCount");
-        pendingOrdersCount.setAccessible(true);
-        pendingOrdersCount.set(pendingOrdersCount, new AtomicInteger(0));
-    }
-
-    private void resetPaymentObserverCount() throws Exception {
-        Field paymentObserverCount = OrderRepository.class.getDeclaredField("paymentObserverCount");
-        paymentObserverCount.setAccessible(true);
-        paymentObserverCount.set(paymentObserverCount, new AtomicInteger(0));
     }
 
     private void resetInstance() throws Exception {

@@ -18,6 +18,7 @@ import com.ecosystem.kin.app.model.SignInRepo;
 import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.exception.TaskFailedException;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private Callback<OrderConfirmation> nativeSpendOrderConfirmationCallback;
     private Callback<OrderConfirmation> nativeEarnOrderConfirmationCallback;
     private Observer<NativeSpendOffer> nativeSpendOfferClickedObserver;
+    private Observer<Balance> balanceObserver;
 
     private String publicAddress;
 
@@ -54,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
         balanceView = findViewById(R.id.get_balance);
         nativeSpendButton = findViewById(R.id.native_spend_button);
         nativeEarnButton = findViewById(R.id.native_earn_button);
-
         showPublicAddressButton = findViewById(R.id.show_public_address);
         publicAddressTextArea = findViewById(R.id.public_text_area);
         showPublicAddressButton.setOnClickListener(new OnClickListener() {
@@ -99,6 +100,45 @@ public class MainActivity extends AppCompatActivity {
 
         addNativeSpendOffer(nativeSpendOffer);
         addNativeOfferClickedObserver();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        addBalanceObserver();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        removeBalanceObserver();
+    }
+
+    private void addBalanceObserver() {
+        if (balanceObserver == null) {
+            balanceObserver = new Observer<Balance>() {
+                @Override
+                public void onChanged(Balance value) {
+                    showToast("Balance - " + value.getAmount().intValue());
+                }
+            };
+
+            try {
+                Kin.addBalanceObserver(balanceObserver);
+            } catch (TaskFailedException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    private void removeBalanceObserver() {
+        try {
+            Kin.removeBalanceObserver(balanceObserver);
+            balanceObserver = null;
+        } catch (TaskFailedException e) {
+            e.printStackTrace();
+        }
     }
 
     // Use this method to remove the nativeSpendOffer you added
@@ -174,23 +214,36 @@ public class MainActivity extends AppCompatActivity {
 
     private void getBalance() {
         try {
-            Kin.getBalance(new Callback<Integer>() {
+            //Get Cached Balance
+            Balance cachedBalance = Kin.getCachedBalance();
+            setBalanceWithAmount(cachedBalance);
+
+            Kin.getBalance(new Callback<Balance>() {
                 @Override
-                public void onResponse(Integer balance) {
+                public void onResponse(Balance balance) {
                     enableView(balanceView, true);
-                    balanceView.setText(getString(R.string.get_balance_d, balance));
+                    setBalanceWithAmount(balance);
                 }
 
                 @Override
                 public void onFailure(Throwable t) {
                     enableView(balanceView, true);
-                    balanceView.setText(R.string.failed_to_get_balance);
+                    setBalanceFailed();
                 }
             });
         } catch (TaskFailedException e) {
-            balanceView.setText(R.string.failed_to_get_balance);
+            setBalanceFailed();
             e.printStackTrace();
         }
+    }
+
+    private void setBalanceFailed() {
+        balanceView.setText(R.string.failed_to_get_balance);
+    }
+
+    private void setBalanceWithAmount(Balance balance) {
+        int balanceValue = balance.getAmount().intValue();
+        balanceView.setText(getString(R.string.get_balance_d, balanceValue));
     }
 
     private void openKinMarketplace() {

@@ -4,6 +4,8 @@ import static com.kin.ecosystem.BuildConfig.DEBUG;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
@@ -44,7 +46,9 @@ public class EcosystemWebView extends WebView {
 
         nativeApi = new EcosystemNativeApi();
         addJavascriptInterface(nativeApi, JS_INTERFACE_OBJECT_NAME);
-        setWebContentsDebuggingEnabled(DEBUG);
+        if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
+            setWebContentsDebuggingEnabled(DEBUG);
+        }
     }
 
     public void load() {

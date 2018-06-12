@@ -7,7 +7,7 @@ import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.CallbackAdapter;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.data.blockchain.IBlockchainSource;
+import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.data.offer.OfferDataSource;
@@ -34,17 +34,19 @@ public class OrderRepository implements OrderDataSource {
     private final OrderDataSource.Remote remoteData;
 
     private final OfferDataSource offerRepository;
-    private final IBlockchainSource blockchainSource;
+    private final BlockchainSource blockchainSource;
 
     private OrderList cachedOrderList;
     private ObservableData<OpenOrder> cachedOpenOrder = ObservableData.create();
     private ObservableData<Order> completedOrder = ObservableData.create();
     private Observer<Payment> paymentObserver;
 
-    private static volatile AtomicInteger pendingOrdersCount = new AtomicInteger(0);
-    private static volatile AtomicInteger paymentObserverCount = new AtomicInteger(0);
+    private volatile AtomicInteger pendingOrdersCount = new AtomicInteger(0);
 
-    private OrderRepository(@NonNull final IBlockchainSource blockchainSource,
+    private final Object paymentObserversLock = new Object();
+    private int paymentObserverCount;
+
+    private OrderRepository(@NonNull final BlockchainSource blockchainSource,
         @NonNull final OfferDataSource offerRepository, @NonNull final OrderDataSource.Remote remoteData,
         @NonNull final OrderDataSource.Local localData) {
         this.remoteData = remoteData;
@@ -53,7 +55,7 @@ public class OrderRepository implements OrderDataSource {
         this.blockchainSource = blockchainSource;
     }
 
-    public static void init(@NonNull final IBlockchainSource blockchainSource,
+    public static void init(@NonNull final BlockchainSource blockchainSource,
         @NonNull final OfferDataSource offerRepository, @NonNull final OrderDataSource.Remote remoteData,
         @NonNull final OrderDataSource.Local localData) {
         if (instance == null) {
@@ -139,25 +141,28 @@ public class OrderRepository implements OrderDataSource {
     }
 
     private void listenForCompletedPayment() {
-        if (paymentObserverCount.getAndIncrement() == 0) {
-            paymentObserver = new Observer<Payment>() {
-                @Override
-                public void onChanged(Payment payment) {
-                    decrementPaymentObserverCount();
-                    getOrder(payment.getOrderID());
-                }
-            };
-            blockchainSource.addPaymentObservable(paymentObserver);
-            Log.d(TAG, "listenForCompletedPayment: addPaymentObservable");
+        synchronized (paymentObserversLock) {
+            if (paymentObserverCount == 0){
+                paymentObserver = new Observer<Payment>() {
+                    @Override
+                    public void onChanged(Payment payment) {
+                        decrementPaymentObserverCount();
+                        getOrder(payment.getOrderID());
+                    }
+                };
+                blockchainSource.addPaymentObservable(paymentObserver);
+                Log.d(TAG, "listenForCompletedPayment: addPaymentObservable");
+            }
+            paymentObserverCount++;
         }
     }
 
     private void decrementPaymentObserverCount() {
-        if (paymentObserverCount.get() > 0 &&
-            paymentObserverCount.decrementAndGet() == 0 &&
-            paymentObserver != null) {
-
-            blockchainSource.removePaymentObserver(paymentObserver);
+        synchronized (paymentObserversLock) {
+            paymentObserverCount--;
+            if(paymentObserverCount == 0 && paymentObserver != null) {
+                blockchainSource.removePaymentObserver(paymentObserver);
+            }
         }
     }
 

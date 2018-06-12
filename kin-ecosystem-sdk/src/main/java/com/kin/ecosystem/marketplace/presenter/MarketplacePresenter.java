@@ -9,10 +9,8 @@ import com.kin.ecosystem.Callback;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
-import com.kin.ecosystem.data.blockchain.IBlockchainSource;
 import com.kin.ecosystem.data.offer.OfferDataSource;
 import com.kin.ecosystem.data.order.OrderDataSource;
-import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.marketplace.view.IMarketplaceView;
 import com.kin.ecosystem.network.model.Offer;
@@ -32,7 +30,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
     private final OfferDataSource offerRepository;
     private final OrderDataSource orderRepository;
-    private final IBlockchainSource blockchainSource;
+    private final BlockchainSource blockchainSource;
 
     private List<Offer> spendList = new ArrayList<>();
     private List<Offer> earnList = new ArrayList<>();
@@ -42,7 +40,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
     private final Gson gson;
 
     public MarketplacePresenter(@NonNull final OfferDataSource offerRepository,
-        @NonNull final OrderDataSource orderRepository, @Nullable final IBlockchainSource blockchainSource) {
+        @NonNull final OrderDataSource orderRepository, @Nullable final BlockchainSource blockchainSource) {
         this.spendList = new ArrayList<>();
         this.earnList = new ArrayList<>();
         this.offerRepository = offerRepository;
@@ -272,7 +270,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
                 nativeSpendOfferClicked(offer);
                 return;
             }
-            int balance = blockchainSource.getBalance();
+            int balance = blockchainSource.getBalance().getAmount().intValue();
             final BigDecimal amount = new BigDecimal(offer.getAmount());
 
             if (balance < amount.intValue()) {
@@ -319,8 +317,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
     private ISpendDialogPresenter createSpendDialogPresenter(@NonNull final OfferInfo offerInfo,
         @NonNull final Offer offer) {
-        return new SpendDialogPresenter(offerInfo, offer, BlockchainSource.getInstance(),
-            OrderRepository.getInstance());
+        return new SpendDialogPresenter(offerInfo, offer, blockchainSource, orderRepository);
     }
 
     private OfferInfo deserializeOfferInfo(final String content) {
