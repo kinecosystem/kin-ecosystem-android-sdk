@@ -41,8 +41,10 @@ public class OrderRepository implements OrderDataSource {
     private ObservableData<Order> completedOrder = ObservableData.create();
     private Observer<Payment> paymentObserver;
 
-    private static volatile AtomicInteger pendingOrdersCount = new AtomicInteger(0);
-    private static volatile AtomicInteger paymentObserverCount = new AtomicInteger(0);
+    private volatile AtomicInteger pendingOrdersCount = new AtomicInteger(0);
+
+    private final Object paymentObserversLock = new Object();
+    private int paymentObserverCount;
 
     private OrderRepository(@NonNull final BlockchainSource blockchainSource,
         @NonNull final OfferDataSource offerRepository, @NonNull final OrderDataSource.Remote remoteData,
@@ -139,25 +141,28 @@ public class OrderRepository implements OrderDataSource {
     }
 
     private void listenForCompletedPayment() {
-        if (paymentObserverCount.getAndIncrement() == 0) {
-            paymentObserver = new Observer<Payment>() {
-                @Override
-                public void onChanged(Payment payment) {
-                    decrementPaymentObserverCount();
-                    getOrder(payment.getOrderID());
-                }
-            };
-            blockchainSource.addPaymentObservable(paymentObserver);
-            Log.d(TAG, "listenForCompletedPayment: addPaymentObservable");
+        synchronized (paymentObserversLock) {
+            if (paymentObserverCount == 0){
+                paymentObserver = new Observer<Payment>() {
+                    @Override
+                    public void onChanged(Payment payment) {
+                        decrementPaymentObserverCount();
+                        getOrder(payment.getOrderID());
+                    }
+                };
+                blockchainSource.addPaymentObservable(paymentObserver);
+                Log.d(TAG, "listenForCompletedPayment: addPaymentObservable");
+            }
+            paymentObserverCount++;
         }
     }
 
     private void decrementPaymentObserverCount() {
-        if (paymentObserverCount.get() > 0 &&
-            paymentObserverCount.decrementAndGet() == 0 &&
-            paymentObserver != null) {
-
-            blockchainSource.removePaymentObserver(paymentObserver);
+        synchronized (paymentObserversLock) {
+            paymentObserverCount--;
+            if(paymentObserverCount == 0 && paymentObserver != null) {
+                blockchainSource.removePaymentObserver(paymentObserver);
+            }
         }
     }
 

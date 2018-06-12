@@ -89,8 +89,6 @@ public class OrderRepositoryTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         resetInstance();
-        resetPendingOrdersCount();
-        resetPaymentObserverCount();
 
         when(offer.getId()).thenReturn(offerID);
 
@@ -108,18 +106,6 @@ public class OrderRepositoryTest {
 
         when(payment.getOrderID()).thenReturn(orderID);
         when(payment.isSucceed()).thenReturn(true);
-    }
-
-    private void resetPendingOrdersCount() throws Exception {
-        Field pendingOrdersCount = OrderRepository.class.getDeclaredField("pendingOrdersCount");
-        pendingOrdersCount.setAccessible(true);
-        pendingOrdersCount.set(pendingOrdersCount, new AtomicInteger(0));
-    }
-
-    private void resetPaymentObserverCount() throws Exception {
-        Field paymentObserverCount = OrderRepository.class.getDeclaredField("paymentObserverCount");
-        paymentObserverCount.setAccessible(true);
-        paymentObserverCount.set(paymentObserverCount, new AtomicInteger(0));
     }
 
     private void resetInstance() throws Exception {
