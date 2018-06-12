@@ -98,8 +98,6 @@ public class BlockchainSourceImplTest {
         when(kinAccount.getPublicAddress()).thenReturn(PUBLIC_ADDRESS);
 
         resetInstance();
-        resetPaymentObserverCount();
-        resetBalanceObserverCount();
 
         // Account Creation
         verify(kinClient).addAccount();
@@ -126,19 +124,6 @@ public class BlockchainSourceImplTest {
         BlockchainSourceImpl.init(kinClient, local);
         blockchainSource = BlockchainSourceImpl.getInstance();
     }
-
-    private void resetPaymentObserverCount() throws Exception {
-        Field paymentObserversCount = BlockchainSourceImpl.class.getDeclaredField("paymentObserversCount");
-        paymentObserversCount.setAccessible(true);
-        paymentObserversCount.set(paymentObserversCount, new AtomicInteger(0));
-    }
-
-    private void resetBalanceObserverCount() throws Exception {
-        Field balanceObserversCount = BlockchainSourceImpl.class.getDeclaredField("balanceObserversCount");
-        balanceObserversCount.setAccessible(true);
-        balanceObserversCount.set(balanceObserversCount, new AtomicInteger(0));
-    }
-
 
     @Test
     public void init_once_and_one_account() throws Exception {

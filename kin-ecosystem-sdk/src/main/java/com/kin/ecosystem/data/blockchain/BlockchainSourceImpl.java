@@ -14,7 +14,6 @@ import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.exception.InitializeException;
 import com.kin.ecosystem.util.ExecutorsUtil.MainThreadExecutor;
 import java.math.BigDecimal;
-import java.util.concurrent.atomic.AtomicInteger;
 import kin.core.EventListener;
 import kin.core.KinAccount;
 import kin.core.KinClient;
@@ -40,8 +39,10 @@ public class BlockchainSourceImpl implements BlockchainSource {
      * the blockchain, it could failed or succeed.
      */
     private ObservableData<Payment> completedPayment = ObservableData.create();
-    private static volatile AtomicInteger paymentObserversCount = new AtomicInteger(0);
-    private static volatile AtomicInteger balanceObserversCount = new AtomicInteger(0);
+    private final Object paymentObserversLock = new Object();
+    private final Object balanceObserversLock = new Object();
+    private int paymentObserversCount;
+    private int balanceObserversCount;
 
     private ListenerRegistration paymentRegistration;
     private ListenerRegistration balanceRegistration;
@@ -219,9 +220,16 @@ public class BlockchainSourceImpl implements BlockchainSource {
     @Override
     public void addBalanceObserverAndStartListen(@NonNull Observer<Balance> observer) {
         addBalanceObserver(observer);
-        Log.d(TAG, "addBalanceObserverAndStartListen: " + balanceObserversCount.get());
-        if (balanceObserversCount.getAndIncrement() == 0) {
-            startBalanceListener();
+        Log.d(TAG, "addBalanceObserverAndStartListen: " + balanceObserversCount);
+        incrementBalanceCount();
+    }
+
+    private void incrementBalanceCount() {
+        synchronized (balanceObserversLock) {
+            if (balanceObserversCount == 0) {
+                startBalanceListener();
+            }
+            balanceObserversCount++;
         }
     }
 
@@ -249,12 +257,14 @@ public class BlockchainSourceImpl implements BlockchainSource {
     }
 
     private void decrementBalanceCount() {
-        if (balanceObserversCount.get() > 0 &&
-            balanceObserversCount.decrementAndGet() == 0) {
-            removeRegistration(balanceRegistration);
-            Log.d(TAG, "decrementBalanceCount: removeRegistration");
+        synchronized (balanceObserversLock) {
+            balanceObserversCount--;
+            if (balanceObserversCount == 0) {
+                removeRegistration(balanceRegistration);
+                Log.d(TAG, "decrementBalanceCount: removeRegistration");
+            }
         }
-        Log.d(TAG, "decrementBalanceCount: " + balanceObserversCount.get());
+        Log.d(TAG, "decrementBalanceCount: " + balanceObserversCount);
     }
 
 
@@ -269,8 +279,15 @@ public class BlockchainSourceImpl implements BlockchainSource {
     @Override
     public void addPaymentObservable(Observer<Payment> observer) {
         completedPayment.addObserver(observer);
-        if (paymentObserversCount.getAndIncrement() == 0) {
-            startPaymentListener();
+        incrementPaymentCount();
+    }
+
+    private void incrementPaymentCount() {
+        synchronized (paymentObserversLock) {
+            if (paymentObserversCount == 0) {
+                startPaymentListener();
+            }
+            paymentObserversCount++;
         }
     }
 
@@ -286,7 +303,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
                         Log.d(TAG, "completedPayment order id: " + orderID);
                     }
                     // UpdateBalance if there is no balance sse open connection.
-                    if (balanceObserversCount.get() == 0) {
+                    if (balanceObserversCount == 0) {
                         getBalance(new CallbackAdapter<Balance>() {
                         });
                     }
@@ -301,9 +318,11 @@ public class BlockchainSourceImpl implements BlockchainSource {
     }
 
     private void decrementPaymentCount() {
-        if (paymentObserversCount.get() > 0 &&
-            paymentObserversCount.decrementAndGet() == 0) {
-            removeRegistration(paymentRegistration);
+        synchronized (paymentObserversLock) {
+            paymentObserversCount--;
+            if (paymentObserversCount == 0) {
+                removeRegistration(paymentRegistration);
+            }
         }
     }
 
