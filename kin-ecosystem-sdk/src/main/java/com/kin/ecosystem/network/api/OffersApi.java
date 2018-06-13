@@ -5,7 +5,7 @@ import com.kin.ecosystem.network.ApiCallback;
 import com.kin.ecosystem.network.ApiClient;
 import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.ApiResponse;
-import com.kin.ecosystem.network.Configuration;
+import com.kin.ecosystem.Configuration;
 import com.kin.ecosystem.network.Pair;
 import com.kin.ecosystem.network.ProgressRequestBody;
 import com.kin.ecosystem.network.ProgressResponseBody;

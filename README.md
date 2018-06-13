@@ -134,6 +134,12 @@ As can be seen in the sample app, there are just few step required to integrate 
                   //
             }
       ```
+## Setup Environment
+By default, Kin Ecosystem provides two working environments:
+1. PRODUCTION - Production ecosystem servers and the main private blockchain network.
+2. PLAYGROUND - A staging and testing environment running on test ecosystem servers and a private blockchain test network.<br>
+
+> Default environment is PLAYGROUND. If you wish to run on a different environment (e.g, before deploying your app), you should call `Kin.setEnvironment(KinEnvironment)` before calling `Kin.start(...)`.
       
 ## [Balance](docs/BALANCE.md)
 The balance API lets you get the last known balance (cached balance), blockchain confirmed balance and observe on balance updates.[(see more)](docs/BALANCE.md) 

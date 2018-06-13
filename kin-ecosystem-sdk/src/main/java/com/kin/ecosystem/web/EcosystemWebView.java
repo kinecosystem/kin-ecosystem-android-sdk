@@ -11,10 +11,11 @@ import android.os.Looper;
 import android.util.AttributeSet;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import com.kin.ecosystem.Configuration;
 
 public class EcosystemWebView extends WebView {
 
-    private static final String HTML_URL = "http://htmlpoll.kinecosystem.com.s3-website-us-east-1.amazonaws.com/";
+    private static final String HTML_URL = Configuration.getEnvironment().getEcosystemWebFront();
     private static final String JS_INTERFACE_OBJECT_NAME = "KinNative";
 
     private final Handler mainThreadHandler;

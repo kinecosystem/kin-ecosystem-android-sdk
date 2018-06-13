@@ -11,10 +11,13 @@
  */
 
 
-package com.kin.ecosystem.network;
+package com.kin.ecosystem;
+
+import com.kin.ecosystem.network.ApiClient;
 
 public class Configuration {
-    private static ApiClient defaultApiClient = new ApiClient();
+    private static KinEnvironment environment = KinEnvironment.PLAYGROUND;
+	private static ApiClient defaultApiClient = new ApiClient();
 
     /**
      * Get the default API client, which would be used when creating API
@@ -26,13 +29,13 @@ public class Configuration {
         return defaultApiClient;
     }
 
-    /**
-     * Set the default API client, which would be used when creating API
-     * instances without providing an API client.
-     *
-     * @param apiClient API client
-     */
-    public static void setDefaultApiClient(ApiClient apiClient) {
-        defaultApiClient = apiClient;
-    }
+	public static KinEnvironment getEnvironment() {
+		return environment;
+	}
+
+	public static void setEnvironment(KinEnvironment environment) {
+		Configuration.environment = environment;
+	}
+
+	private Configuration() {}
 }
