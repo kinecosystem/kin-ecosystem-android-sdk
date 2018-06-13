@@ -171,16 +171,18 @@ public class BlockchainSourceImplTest {
         blockchainSource.sendTransaction(toAddress, amount, orderID);
         verify(transactionRequest).run(resultCallbackArgumentCaptor.capture());
 
+        final Exception exception = new Exception("failed");
+
         blockchainSource.addPaymentObservable(new Observer<Payment>() {
             @Override
             public void onChanged(Payment value) {
                 assertFalse(value.isSucceed());
                 assertEquals(orderID, value.getOrderID());
-                assertEquals("failed", value.getResultMessage());
+                assertEquals(exception, value.getError());
             }
         });
 
-        resultCallbackArgumentCaptor.getValue().onError(new Exception("failed"));
+        resultCallbackArgumentCaptor.getValue().onError(exception);
     }
 
     @Test

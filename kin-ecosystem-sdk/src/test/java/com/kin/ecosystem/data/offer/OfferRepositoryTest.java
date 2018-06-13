@@ -8,10 +8,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.exception.DataNotAvailableException;
+import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
+import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OfferList;
 import com.kin.ecosystem.network.model.Paging;
@@ -65,8 +68,8 @@ public class OfferRepositoryTest {
 
     @Test
     public void getOffers_Succeed_SavedToCachedList() {
-        Callback<OfferList> offerListCallback = mock(Callback.class);
-        ArgumentCaptor<Callback<OfferList>> getOfferCapture = ArgumentCaptor.forClass(Callback.class);
+        KinCallback<OfferList> offerListCallback = mock(KinCallback.class);
+        ArgumentCaptor<Callback<OfferList, ApiException>> getOfferCapture = ArgumentCaptor.forClass(Callback.class);
 
         OfferList offerList = getOfferList();
 
@@ -80,21 +83,21 @@ public class OfferRepositoryTest {
 
     @Test
     public void getOffers_Failed() {
-        Callback<OfferList> offerListCallback = mock(Callback.class);
-        ArgumentCaptor<Callback<OfferList>> getOfferCapture = ArgumentCaptor.forClass(Callback.class);
+        KinCallback<OfferList> offerListCallback = mock(KinCallback.class);
+        ArgumentCaptor<Callback<OfferList, ApiException>> getOfferCapture = ArgumentCaptor.forClass(Callback.class);
 
         offerRepository.getOffers(offerListCallback);
         verify(remote).getOffers(getOfferCapture.capture());
 
-        getOfferCapture.getValue().onFailure(any(Throwable.class));
+        getOfferCapture.getValue().onFailure(getApiException());
         assertEquals(0, offerRepository.getCachedOfferList().getOffers().size());
-        verify(offerListCallback).onFailure(any(DataNotAvailableException.class));
+        verify(offerListCallback).onFailure(any(KinEcosystemException.class));
     }
 
     @Test
     public void setPendingOfferByID_OfferInTheList_PendingOfferUpdated() {
-        Callback<OfferList> offerListCallback = mock(Callback.class);
-        ArgumentCaptor<Callback<OfferList>> getOfferCapture = ArgumentCaptor.forClass(Callback.class);
+        KinCallback<OfferList> offerListCallback = mock(KinCallback.class);
+        ArgumentCaptor<Callback<OfferList, ApiException>> getOfferCapture = ArgumentCaptor.forClass(Callback.class);
 
         // Update cachedOfferList to work with
         OfferList offerList = getOfferList();
@@ -162,5 +165,11 @@ public class OfferRepositoryTest {
         offerList.addAtIndex(0, offer);
         offerList.setPaging(new Paging().next("1").previous("0").cursors(new PagingCursors().after("1").before("0")));
         return offerList;
+    }
+
+    private ApiException getApiException() {
+        Exception exception = new IllegalArgumentException();
+        ApiException apiException = new ApiException(500,exception);
+        return apiException;
     }
 }
