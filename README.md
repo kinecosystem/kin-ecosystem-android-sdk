@@ -111,17 +111,17 @@ As can be seen in the sample app, there are just few step required to integrate 
           ```java
                try {
                    Kin.start(getApplicationContext(), jwt);
-               } catch (InitializeException e) {
+               } catch (ClientException | BlockchainException e) {
                    //
                }
           ```
          JWT spec can be found at [ecosystem-api repository](https://github.com/kinfoundation/ecosystem-api)
    
-1. Initiate the SDK when the application starts calling Kin. The first start will begin the blocakchain wallet and account creation process.
+1. Initiate the SDK when the application starts calling Kin. The first start will begin the blockchain wallet and account creation process.
       ```java
                try {
                    Kin.start(getApplicationContext(), whitelistData);
-               } catch (InitializeException e) {
+               } catch (ClientException | BlockchainException e) {
                    //
                }
       ```
@@ -130,7 +130,7 @@ As can be seen in the sample app, there are just few step required to integrate 
            try {
                Kin.launchMarketplace(MainActivity.this);
                 System.out.println("Public address : " + Kin.getPublicAddress());
-                } catch (TaskFailedException e) {
+                } catch (ClientException e) {
                   //
             }
       ```

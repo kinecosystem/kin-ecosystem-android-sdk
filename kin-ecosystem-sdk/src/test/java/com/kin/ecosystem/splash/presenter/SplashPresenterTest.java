@@ -5,7 +5,7 @@ import static junit.framework.Assert.assertNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.splash.view.ISplashView;
 import org.junit.After;

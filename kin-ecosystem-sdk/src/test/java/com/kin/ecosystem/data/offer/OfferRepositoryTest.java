@@ -8,7 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;

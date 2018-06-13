@@ -5,12 +5,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.offer.OfferDataSource;
 import com.kin.ecosystem.data.order.OrderDataSource;
+import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.marketplace.view.IMarketplaceView;
 import com.kin.ecosystem.network.model.Offer;
@@ -157,14 +159,14 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
     @Override
     public void getOffers() {
-        this.offerRepository.getOffers(new Callback<OfferList>() {
+        this.offerRepository.getOffers(new KinCallback<OfferList>() {
             @Override
             public void onResponse(OfferList offerList) {
                 syncOffers(offerList);
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(KinEcosystemException error) {
                 //TODO show error msg
             }
         });

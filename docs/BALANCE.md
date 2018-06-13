@@ -4,19 +4,24 @@ In case of no account was created you will get `Balance.getAmount() == 0`.
 
 1. Get last known balance / cached balance
 ```java
-    Balance cachedBalance = Kin.getCachedBalance();
+    try {
+        Balance cachedBalance = Kin.getCachedBalance();
+    } catch (ClientException e) {
+        e.printStackTrace();
+    }
 ```
 
-2. Get confirmed balance from the blockchain network using async call
+2. Get confirmed balance from the blockchain network using async call.
+See [BlockchainException](../kin-ecosystem-sdk/src/main/java/com/kin/ecosystem/exception/BlockchainException.java) and [ServiceException](../kin-ecosystem-sdk/src/main/java/com/kin/ecosystem/exception/ServiceException.java) for possible errors.
 ```java
-    Kin.getBalance(new Callback<Balance>() {
+    Kin.getBalance(new KinCallback<Balance>() {
                     @Override
                     public void onResponse(Balance balance) {
                         // Got the balance from the network
                     }
     
                     @Override
-                    public void onFailure(Throwable t) {
+                    public void onFailure(KinEcosystemException error) {
                         // Got an error from the blockchain network
                     }
                 });

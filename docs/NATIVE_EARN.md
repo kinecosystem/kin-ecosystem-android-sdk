@@ -41,9 +41,10 @@ On real use case digital service need to have an open account with sufficient fu
 ### Example from sample app
 In the sample app the spend JWT is created and signed by the Android client side for presentation purpose only- do not use this approach on real production app.
 JWT need to be signed by server side where private key is secure.
+See [BlockchainException](../kin-ecosystem-sdk/src/main/java/com/kin/ecosystem/exception/BlockchainException.java) and [ServiceException](../kin-ecosystem-sdk/src/main/java/com/kin/ecosystem/exception/ServiceException.java) for possible errors.
 ```java
     try {
-        Kin.requestPayment(offerJwt, new Callback<OrderConfirmation>() {
+        Kin.requestPayment(offerJwt, new KinCallback<OrderConfirmation>() {
             @Override
             public void onResponse(OrderConfirmation orderConfirmation) {
                 // OrderConfirmation will be called once Ecosystem payment transaction to user completed successfully.
@@ -52,8 +53,8 @@ JWT need to be signed by server side where private key is secure.
             }
 
             @Override
-            public void onFailure(Throwable t) {
-                System.out.println("Failed - " + t.getMessage());
+            public void onFailure(KinEcosystemException error) {
+                System.out.println("Failed - " + error.getMessage());
             }
         });
     } catch (TaskFailedException e) {

@@ -22,24 +22,21 @@ public class Payment {
     private boolean isSucceed;
 
     /**
-     * Result message:
-     *      success - Payment with {@code transactionID}: succeeded
-     *      failed - An error message from the network.
+     * Error from kin-core:
      */
-    private String resultMessage;
+    private Exception error;
 
     public Payment(String orderID, String transactionID) {
         this.orderID = orderID;
         this.transactionID = transactionID;
         this.isSucceed = true;
-        this.resultMessage = String.format("Payment with transaction id: %s succeeded", transactionID);
     }
 
-    public Payment(String orderID, boolean isSucceed, String resultMessage) {
+    public Payment(String orderID, boolean isSucceed, Exception error) {
         this.orderID = orderID;
         this.transactionID = null;
         this.isSucceed = isSucceed;
-        this.resultMessage = resultMessage;
+        this.error = error;
     }
 
     public String getOrderID() {
@@ -54,7 +51,7 @@ public class Payment {
         return isSucceed;
     }
 
-    public String getResultMessage() {
-        return resultMessage;
+    public Exception getError() {
+        return error;
     }
 }

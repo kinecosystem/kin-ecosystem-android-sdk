@@ -637,7 +637,7 @@ public class ApiClient {
     /**
      * Download file from the given response.
      *
-     * @param response An instance of the Response object
+     * @param response An instance of the KinCallback object
      * @return Downloaded file
      * @throws ApiException If fail to read file content from response and write to disk
      */
@@ -656,7 +656,7 @@ public class ApiClient {
     /**
      * Prepare file for download
      *
-     * @param response An instance of the Response object
+     * @param response An instance of the KinCallback object
      * @return Prepared file for the download
      * @throws IOException If fail to prepare file for download
      */
@@ -776,7 +776,7 @@ public class ApiClient {
      * Handle the given response, return the deserialized object when the response is successful.
      *
      * @param <T> Type
-     * @param response Response
+     * @param response KinCallback
      * @param returnType Return type
      * @return Type
      * @throws ApiException If the response has a unsuccessful status code or fail to deserialize the response body
