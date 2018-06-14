@@ -15,12 +15,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.ecosystem.kin.app.model.SignInRepo;
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.OrderConfirmation;
-import com.kin.ecosystem.exception.TaskFailedException;
+import com.kin.ecosystem.exception.ClientException;
+import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import java.util.Random;
 
@@ -34,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private Button showPublicAddressButton;
     private TextView publicAddressTextArea;
 
-    private Callback<OrderConfirmation> nativeSpendOrderConfirmationCallback;
-    private Callback<OrderConfirmation> nativeEarnOrderConfirmationCallback;
+    private KinCallback<OrderConfirmation> nativeSpendOrderConfirmationCallback;
+    private KinCallback<OrderConfirmation> nativeEarnOrderConfirmationCallback;
     private Observer<NativeSpendOffer> nativeSpendOfferClickedObserver;
     private Observer<Balance> balanceObserver;
 
@@ -125,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 Kin.addBalanceObserver(balanceObserver);
-            } catch (TaskFailedException e) {
+            } catch (ClientException e) {
                 e.printStackTrace();
             }
         }
@@ -136,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             Kin.removeBalanceObserver(balanceObserver);
             balanceObserver = null;
-        } catch (TaskFailedException e) {
+        } catch (ClientException e) {
             e.printStackTrace();
         }
     }
@@ -147,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
             if (Kin.removeNativeOffer(nativeSpendOffer)) {
                 showToast("Native offer removed");
             }
-        } catch (TaskFailedException e) {
+        } catch (ClientException e) {
             e.printStackTrace();
         }
     }
@@ -155,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
     private void addNativeOfferClickedObserver() {
         try {
             Kin.addNativeOfferClickedObserver(getNativeOfferClickedObserver());
-        } catch (TaskFailedException e) {
+        } catch (ClientException e) {
             showToast("Could not add native offer callback");
         }
     }
@@ -178,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
             if (Kin.addNativeOffer(nativeSpendOffer)) {
                 showToast("Native offer added");
             }
-        } catch (TaskFailedException e) {
+        } catch (ClientException e) {
             e.printStackTrace();
             showToast("Could not add native offer");
         }
@@ -191,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
             publicAddressTextArea.getBackground().setColorFilter(blueColor, Mode.SRC_ATOP);
             showPublicAddressButton.setText(R.string.copy_public_address);
             publicAddressTextArea.setText(publicAddress);
-        } catch (TaskFailedException e) {
+        } catch (ClientException e) {
             e.printStackTrace();
         }
 
@@ -215,10 +217,14 @@ public class MainActivity extends AppCompatActivity {
     private void getBalance() {
         try {
             //Get Cached Balance
-            Balance cachedBalance = Kin.getCachedBalance();
-            setBalanceWithAmount(cachedBalance);
+            try {
+                Balance cachedBalance = Kin.getCachedBalance();
+                setBalanceWithAmount(cachedBalance);
+            } catch (ClientException e) {
+                e.printStackTrace();
+            }
 
-            Kin.getBalance(new Callback<Balance>() {
+            Kin.getBalance(new KinCallback<Balance>() {
                 @Override
                 public void onResponse(Balance balance) {
                     enableView(balanceView, true);
@@ -226,12 +232,12 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
+                public void onFailure(KinEcosystemException exception) {
                     enableView(balanceView, true);
                     setBalanceFailed();
                 }
             });
-        } catch (TaskFailedException e) {
+        } catch (ClientException e) {
             setBalanceFailed();
             e.printStackTrace();
         }
@@ -249,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
     private void openKinMarketplace() {
         try {
             Kin.launchMarketplace(MainActivity.this);
-        } catch (TaskFailedException e) {
+        } catch (ClientException e) {
             e.printStackTrace();
         }
     }
@@ -260,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "createNativeSpendOffer: " + offerJwt);
         try {
             Kin.purchase(offerJwt, getNativeSpendOrderConfirmationCallback());
-        } catch (TaskFailedException e) {
+        } catch (ClientException e) {
             e.printStackTrace();
         }
     }
@@ -270,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
         String offerJwt = JwtUtil.generateEarnOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID);
         try {
             Kin.requestPayment(offerJwt, getNativeEarnOrderConfirmationCallback());
-        } catch (TaskFailedException e) {
+        } catch (ClientException e) {
             e.printStackTrace();
         }
     }
@@ -281,26 +287,26 @@ public class MainActivity extends AppCompatActivity {
     private void getOrderConfirmation(@NonNull final String offerID) {
         if (!TextUtils.isEmpty(offerID)) {
             try {
-                Kin.getOrderConfirmation(offerID, new Callback<OrderConfirmation>() {
+                Kin.getOrderConfirmation(offerID, new KinCallback<OrderConfirmation>() {
                     @Override
                     public void onResponse(OrderConfirmation orderConfirmation) {
                         showToast("Offer: " + offerID + " Status is: " + orderConfirmation.getStatus());
                     }
 
                     @Override
-                    public void onFailure(Throwable t) {
+                    public void onFailure(KinEcosystemException exception) {
                         showToast("Failed to get OfferId: " + offerID + " status");
                     }
                 });
-            } catch (TaskFailedException e) {
+            } catch (ClientException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private Callback<OrderConfirmation> getNativeSpendOrderConfirmationCallback() {
+    private KinCallback<OrderConfirmation> getNativeSpendOrderConfirmationCallback() {
         if (nativeSpendOrderConfirmationCallback == null) {
-            nativeSpendOrderConfirmationCallback = new Callback<OrderConfirmation>() {
+            nativeSpendOrderConfirmationCallback = new KinCallback<OrderConfirmation>() {
                 @Override
                 public void onResponse(OrderConfirmation orderConfirmation) {
                     getBalance();
@@ -310,8 +316,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
-                    showToast("Failed - " + t.getMessage());
+                public void onFailure(KinEcosystemException exception) {
+                    showToast("Failed - " + exception.getMessage());
                     enableView(nativeSpendButton, true);
                 }
             };
@@ -319,9 +325,9 @@ public class MainActivity extends AppCompatActivity {
         return nativeSpendOrderConfirmationCallback;
     }
 
-    private Callback<OrderConfirmation> getNativeEarnOrderConfirmationCallback() {
+    private KinCallback<OrderConfirmation> getNativeEarnOrderConfirmationCallback() {
         if (nativeEarnOrderConfirmationCallback == null) {
-            nativeEarnOrderConfirmationCallback = new Callback<OrderConfirmation>() {
+            nativeEarnOrderConfirmationCallback = new KinCallback<OrderConfirmation>() {
                 @Override
                 public void onResponse(OrderConfirmation orderConfirmation) {
                     getBalance();
@@ -331,8 +337,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
-                    showToast("Failed - " + t.getMessage());
+                public void onFailure(KinEcosystemException exception) {
+                    showToast("Failed - " + exception.getMessage());
                     enableView(nativeEarnButton, true);
                 }
             };
@@ -358,7 +364,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             Kin.removeNativeOffer(nativeSpendOffer);
             Kin.removeNativeOfferClickedObserver(nativeSpendOfferClickedObserver);
-        } catch (TaskFailedException e) {
+        } catch (ClientException e) {
             Log.d(TAG, "onDestroy: Failed to remove native offer clicked observer");
         }
     }

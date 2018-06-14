@@ -1,5 +1,7 @@
 package com.kin.ecosystem.poll.view;
 
+import static com.kin.ecosystem.exception.ClientException.INTERNAL_INCONSISTENCY;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,14 +12,15 @@ import android.widget.Toast;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseToolbarActivity;
 import com.kin.ecosystem.data.order.OrderRepository;
-import com.kin.ecosystem.exception.TaskFailedException;
+import com.kin.ecosystem.exception.ClientException;
 import com.kin.ecosystem.poll.presenter.IPollWebViewPresenter;
 import com.kin.ecosystem.poll.presenter.PollWebViewPresenter;
+import com.kin.ecosystem.util.ErrorUtil;
 import com.kin.ecosystem.web.EcosystemWebView;
 
 public class PollWebViewActivity extends BaseToolbarActivity implements IPollWebView {
 
-    public static Intent createIntent(final Context context, @NonNull PollBundle bundle) throws TaskFailedException {
+    public static Intent createIntent(final Context context, @NonNull PollBundle bundle) throws ClientException {
         final Intent intent = new Intent(context, PollWebViewActivity.class);
         intent.putExtras(bundle.build());
         return intent;
@@ -188,9 +191,9 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
             return bundle.getString(EXTRA_TITLE_KEY);
         }
 
-        public Bundle build() throws TaskFailedException {
+        public Bundle build() throws ClientException {
             if (bundle.size() < FIELD_COUNT) {
-                throw new TaskFailedException("You must specified all the fields.");
+                throw ErrorUtil.getClientException(INTERNAL_INCONSISTENCY, new IllegalArgumentException("You must specified all the fields."));
             }
             return bundle;
         }

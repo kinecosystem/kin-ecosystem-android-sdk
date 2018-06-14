@@ -1,7 +1,8 @@
 package com.kin.ecosystem.data.blockchain;
 
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.Payment;
@@ -31,7 +32,7 @@ public interface BlockchainSource {
      * Get balance from network
      * @param callback
      */
-    void getBalance(@NonNull final Callback<Balance> callback);
+    void getBalance(@NonNull final KinCallback<Balance> callback);
 
     /**
      * Add balance observer in order to start receive balance updates

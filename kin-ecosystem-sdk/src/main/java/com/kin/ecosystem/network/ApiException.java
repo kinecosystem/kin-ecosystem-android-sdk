@@ -65,6 +65,11 @@ public class ApiException extends Exception {
         this.code = code;
     }
 
+    public ApiException(int code, Throwable throwable) {
+        super(throwable);
+        this.code = code;
+    }
+
     public ApiException(int code, String message, Map<String, List<String>> responseHeaders, Error responseBody) {
         this(code, message);
         this.responseHeaders = responseHeaders;
@@ -92,9 +97,13 @@ public class ApiException extends Exception {
     /**
      * Get the HTTP response body.
      *
-     * @return Response body in the form of string
+     * @return KinCallback body in the form of string
      */
     public Error getResponseBody() {
         return responseBody;
+    }
+
+    public void setResponseBody(Error responseBody) {
+        this.responseBody = responseBody;
     }
 }

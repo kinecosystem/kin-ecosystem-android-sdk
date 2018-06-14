@@ -5,7 +5,9 @@ import static junit.framework.Assert.assertNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.Kin;
+import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.splash.view.ISplashView;
 import org.junit.After;
@@ -29,7 +31,7 @@ public class SplashPresenterTest {
     private ISplashView splashView;
 
     @Captor
-    private ArgumentCaptor<Callback<Void>> activateCapture;
+    private ArgumentCaptor<KinCallback<Void>> activateCapture;
 
     private SplashPresenter splashPresenter;
 

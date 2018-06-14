@@ -1,11 +1,10 @@
 package com.kin.ecosystem.data.offer;
 
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.network.ApiCallback;
 import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.api.OffersApi;
-import com.kin.ecosystem.network.model.OfferInfo;
 import com.kin.ecosystem.network.model.OfferList;
 import com.kin.ecosystem.util.ExecutorsUtil;
 import java.util.List;
@@ -35,7 +34,7 @@ public class OfferRemoteData implements OfferDataSource.Remote {
     }
 
     @Override
-    public void getOffers(@NonNull final Callback<OfferList> callback) {
+    public void getOffers(@NonNull final Callback<OfferList, ApiException> callback) {
         try {
             offersApi.getOffersAsync("", 25, "", "", new ApiCallback<OfferList>() {
                 @Override

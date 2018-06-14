@@ -7,7 +7,8 @@ import com.ecosystem.kin.app.model.SignInRepo;
 import com.kin.ecosystem.Environment;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.data.model.WhitelistData;
-import com.kin.ecosystem.exception.InitializeException;
+import com.kin.ecosystem.exception.BlockchainException;
+import com.kin.ecosystem.exception.ClientException;
 import io.fabric.sdk.android.Fabric;
 
 
@@ -32,7 +33,7 @@ public class App extends Application {
 
             try {
                 Kin.start(getApplicationContext(), jwt);
-            } catch (InitializeException e) {
+            } catch (ClientException | BlockchainException e) {
                 e.printStackTrace();
             }
         } else {
@@ -40,7 +41,7 @@ public class App extends Application {
             WhitelistData whitelistData = SignInRepo.getWhitelistSignInData(this, getAppId(), getApiKey());
             try {
                 Kin.start(getApplicationContext(), whitelistData);
-            } catch (InitializeException e) {
+            } catch (ClientException | BlockchainException e) {
                 e.printStackTrace();
             }
         }

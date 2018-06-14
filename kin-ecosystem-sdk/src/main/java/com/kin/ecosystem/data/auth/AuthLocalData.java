@@ -1,14 +1,18 @@
 package com.kin.ecosystem.data.auth;
 
+import static com.kin.ecosystem.exception.ClientException.INTERNAL_INCONSISTENCY;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.data.Callback;
+import com.kin.ecosystem.exception.ClientException;
 import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.network.model.SignInData.SignInTypeEnum;
+import com.kin.ecosystem.util.ErrorUtil;
 import com.kin.ecosystem.util.ExecutorsUtil;
 
 public class AuthLocalData implements AuthDataSource.Local {
@@ -90,7 +94,7 @@ public class AuthLocalData implements AuthDataSource.Local {
     }
 
     @Override
-    public void getAppId(@NonNull final Callback<String> callback) {
+    public void getAppId(@NonNull final Callback<String,Void> callback) {
         final Runnable command = new Runnable() {
             @Override
             public void run() {
@@ -101,7 +105,7 @@ public class AuthLocalData implements AuthDataSource.Local {
                         if (appID != null) {
                             callback.onResponse(appID);
                         } else {
-                            callback.onFailure(new DataNotAvailableException());
+                            callback.onFailure(null);
                         }
                     }
                 });

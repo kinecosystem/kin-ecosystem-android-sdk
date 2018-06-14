@@ -3,13 +3,14 @@ package com.kin.ecosystem.history.presenter;
 
 import android.support.annotation.NonNull;
 import com.google.gson.Gson;
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.IBottomDialogPresenter;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.model.Coupon;
 import com.kin.ecosystem.data.model.Coupon.CouponInfo;
 import com.kin.ecosystem.data.order.OrderDataSource;
+import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.history.view.ICouponDialog;
 import com.kin.ecosystem.history.view.IOrderHistoryView;
 import com.kin.ecosystem.network.model.CouponCodeResult;
@@ -47,14 +48,14 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
         OrderList cachedOrderListObj = orderRepository.getAllCachedOrderHistory();
         List<Order> cachedList = removePendingOrders(cachedOrderListObj);
         setOrderHistoryList(cachedList);
-        orderRepository.getAllOrderHistory(new Callback<OrderList>() {
+        orderRepository.getAllOrderHistory(new KinCallback<OrderList>() {
             @Override
             public void onResponse(OrderList orderHistoryList) {
                 syncNewOrders(orderHistoryList);
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(KinEcosystemException exception) {
 
             }
         });
