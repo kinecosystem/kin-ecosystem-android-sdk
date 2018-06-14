@@ -88,7 +88,7 @@ class CreateExternalOrderCall extends Thread {
 								@Override
 								public void run() {
 									((ExternalSpendOrderCallbacks) externalOrderCallbacks)
-										.onTransactionFailed(openOrder, ErrorUtil.getBlockchainException(payment.getError()));
+										.onTransactionFailed(openOrder, ErrorUtil.getBlockchainException(payment.getException()));
 								}
 							});
 						}

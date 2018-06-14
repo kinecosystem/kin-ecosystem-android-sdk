@@ -15,7 +15,6 @@ import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.Payment;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.util.concurrent.atomic.AtomicInteger;
 import kin.core.BlockchainEvents;
 import kin.core.EventListener;
 import kin.core.KinAccount;
@@ -178,7 +177,7 @@ public class BlockchainSourceImplTest {
             public void onChanged(Payment value) {
                 assertFalse(value.isSucceed());
                 assertEquals(orderID, value.getOrderID());
-                assertEquals(exception, value.getError());
+                assertEquals(exception, value.getException());
             }
         });
 

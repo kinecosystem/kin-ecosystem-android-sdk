@@ -22,9 +22,9 @@ public class Payment {
     private boolean isSucceed;
 
     /**
-     * Error from kin-core:
+     * Exception from kin-core:
      */
-    private Exception error;
+    private Exception exception;
 
     public Payment(String orderID, String transactionID) {
         this.orderID = orderID;
@@ -36,7 +36,7 @@ public class Payment {
         this.orderID = orderID;
         this.transactionID = null;
         this.isSucceed = isSucceed;
-        this.error = error;
+        this.exception = error;
     }
 
     public String getOrderID() {
@@ -51,7 +51,7 @@ public class Payment {
         return isSucceed;
     }
 
-    public Exception getError() {
-        return error;
+    public Exception getException() {
+        return exception;
     }
 }
