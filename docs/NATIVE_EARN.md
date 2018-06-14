@@ -53,11 +53,11 @@ See [BlockchainException](../kin-ecosystem-sdk/src/main/java/com/kin/ecosystem/e
             }
 
             @Override
-            public void onFailure(KinEcosystemException error) {
-                System.out.println("Failed - " + error.getMessage());
+            public void onFailure(KinEcosystemException exception) {
+                System.out.println("Failed - " + exception.getMessage());
             }
         });
-    } catch (TaskFailedException e) {
-        e.printStackTrace();
+    } catch (ClientException exception) {
+        exception.printStackTrace();
     }
 ```

@@ -169,13 +169,13 @@ class CreateExternalOrderCall extends Thread {
 
 		void onOrderConfirmed(String confirmationJwt);
 
-		void onOrderFailed(KinEcosystemException error);
+		void onOrderFailed(KinEcosystemException exception);
 	}
 
 	interface ExternalSpendOrderCallbacks extends ExternalOrderCallbacks {
 
 		void onTransactionSent(OpenOrder openOrder);
 
-		void onTransactionFailed(OpenOrder openOrder, KinEcosystemException error);
+		void onTransactionFailed(OpenOrder openOrder, KinEcosystemException exception);
 	}
 }

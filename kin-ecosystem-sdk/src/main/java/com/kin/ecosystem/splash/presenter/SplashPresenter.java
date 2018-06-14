@@ -40,7 +40,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
             }
 
             @Override
-            public void onFailure(KinEcosystemException error) {
+            public void onFailure(KinEcosystemException exception) {
                 showToast("Oops something went wrong...");
                 stopLoading(true);
             }

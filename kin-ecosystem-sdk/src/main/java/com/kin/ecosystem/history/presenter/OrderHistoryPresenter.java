@@ -55,7 +55,7 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
             }
 
             @Override
-            public void onFailure(KinEcosystemException error) {
+            public void onFailure(KinEcosystemException exception) {
 
             }
         });

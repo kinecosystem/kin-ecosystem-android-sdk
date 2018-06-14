@@ -53,11 +53,11 @@ See [BlockchainException](../kin-ecosystem-sdk/src/main/java/com/kin/ecosystem/e
                 }
 
                 @Override
-                public void onFailure(KinEcosystemException error) {
+                public void onFailure(KinEcosystemException exception) {
                     System.out.println("Failed - " + error.getMessage());
                 }
             });
-        } catch (TaskFailedException e) {
+        } catch (ClientException e) {
             e.printStackTrace();
         }
 ```
@@ -129,17 +129,21 @@ the user closed the app and you want to get the order status or jwtConfirmation<
 just follow the example below.
 See [ServiceException](../kin-ecosystem-sdk/src/main/java/com/kin/ecosystem/exception/ServiceException.java) for possible errors.
 ```java
-    Kin.getOrderConfirmation("your_offer_id", new KinCallback<OrderConfirmation>() {
-            @Override
-            public void onResponse(OrderConfirmation orderConfirmation) {
-                if(orderConfirmation.getStatus() == Status.COMPLETED ){
-                   String jwtConfirmation = orderConfirmation.getJwtConfirmation()
+    try {
+        Kin.getOrderConfirmation("your_offer_id", new KinCallback<OrderConfirmation>() {
+                @Override
+                public void onResponse(OrderConfirmation orderConfirmation) {
+                    if(orderConfirmation.getStatus() == Status.COMPLETED ){
+                       String jwtConfirmation = orderConfirmation.getJwtConfirmation()
+                    }
                 }
-            }
-
-            @Override
-            public void onFailure(KinEcosystemException error) {
-                ...
-            }
+    
+                @Override
+                public void onFailure(KinEcosystemException exception) {
+                    ...
+                }
         });
+    } catch (ClientException exception) {
+	    ...
+    }
 ```

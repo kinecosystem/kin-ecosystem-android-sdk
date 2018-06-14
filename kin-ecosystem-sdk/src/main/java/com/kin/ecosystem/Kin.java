@@ -39,7 +39,8 @@ import kin.core.KinClient;
 
 public class Kin {
 
-    private static Kin instance;
+	private static final String KIN_ECOSYSTEM_STORE_PREFIX_KEY = "kinecosystem_store";
+	private static Kin instance;
 
     private final ExecutorsUtil executorsUtil;
 
@@ -118,7 +119,7 @@ public class Kin {
     }
 
     private static void initBlockchain(Context context) throws BlockchainException {
-        KinClient kinClient = new KinClient(context, Network.NETWORK_PRIVATE_TEST.getProvider());
+        KinClient kinClient = new KinClient(context, Network.NETWORK_PRIVATE_TEST.getProvider(), KIN_ECOSYSTEM_STORE_PREFIX_KEY);
         BlockchainSourceImpl.init(kinClient, BlockchainSourceLocal.getInstance(context));
     }
 

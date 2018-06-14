@@ -21,7 +21,7 @@ See [BlockchainException](../kin-ecosystem-sdk/src/main/java/com/kin/ecosystem/e
                     }
     
                     @Override
-                    public void onFailure(KinEcosystemException error) {
+                    public void onFailure(KinEcosystemException exception) {
                         // Got an error from the blockchain network
                     }
                 });

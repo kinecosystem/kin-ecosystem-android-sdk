@@ -61,9 +61,9 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
             }
 
             @Override
-            public void onFailure(KinEcosystemException error) {
+            public void onFailure(KinEcosystemException exception) {
                 if (view != null) {
-                    showToast(error.getMessage());
+                    showToast(exception.getMessage());
                 }
                 closeView();
             }
@@ -118,7 +118,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
                 }
 
                 @Override
-                public void onFailure(KinEcosystemException error) {
+                public void onFailure(KinEcosystemException exception) {
                     showToast("Order submission failed");
                 }
             });

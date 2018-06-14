@@ -304,7 +304,7 @@ public class OrderRepositoryTest {
             }
 
             @Override
-            public void onFailure(KinEcosystemException error) {
+            public void onFailure(KinEcosystemException exception) {
 
             }
         });
@@ -361,7 +361,7 @@ public class OrderRepositoryTest {
             }
 
             @Override
-            public void onFailure(KinEcosystemException error) {
+            public void onFailure(KinEcosystemException exception) {
 
             }
         });
@@ -387,9 +387,9 @@ public class OrderRepositoryTest {
             }
 
             @Override
-            public void onFailure(KinEcosystemException error) {
+            public void onFailure(KinEcosystemException exception) {
                 countDownLatch.countDown();
-                assertNotNull(error);
+                assertNotNull(exception);
                 assertNull(orderRepository.getOpenOrder().getValue());
             }
         });
@@ -418,9 +418,9 @@ public class OrderRepositoryTest {
             }
 
             @Override
-            public void onFailure(KinEcosystemException error) {
+            public void onFailure(KinEcosystemException exception) {
                 countDownLatch.countDown();
-                assertNotNull(error);
+                assertNotNull(exception);
                 verify(offerRepository).setPendingOfferByID(null);
                 assertNull(orderRepository.getOpenOrder().getValue());
             }
@@ -454,7 +454,7 @@ public class OrderRepositoryTest {
             }
 
             @Override
-            public void onFailure(KinEcosystemException error) {
+            public void onFailure(KinEcosystemException exception) {
 
             }
         });
@@ -474,9 +474,9 @@ public class OrderRepositoryTest {
             }
 
             @Override
-            public void onFailure(KinEcosystemException error) {
+            public void onFailure(KinEcosystemException exception) {
                 countDownLatch.countDown();
-                assertTrue(error.getCause() instanceof DataNotAvailableException);
+                assertTrue(exception.getCause() instanceof DataNotAvailableException);
             }
         });
         verify(local).isFirstSpendOrder(isFirstSpendCallback.capture());

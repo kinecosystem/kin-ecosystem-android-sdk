@@ -11,7 +11,7 @@ public abstract class KinCallbackAdapter<T> implements KinCallback<T> {
     }
 
     @Override
-    public void onFailure(KinEcosystemException error) {
+    public void onFailure(KinEcosystemException exception) {
 
     }
 }

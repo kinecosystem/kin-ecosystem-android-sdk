@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(KinEcosystemException error) {
+                public void onFailure(KinEcosystemException exception) {
                     enableView(balanceView, true);
                     setBalanceFailed();
                 }
@@ -294,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(KinEcosystemException error) {
+                    public void onFailure(KinEcosystemException exception) {
                         showToast("Failed to get OfferId: " + offerID + " status");
                     }
                 });
@@ -316,8 +316,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(KinEcosystemException error) {
-                    showToast("Failed - " + error.getMessage());
+                public void onFailure(KinEcosystemException exception) {
+                    showToast("Failed - " + exception.getMessage());
                     enableView(nativeSpendButton, true);
                 }
             };
@@ -337,8 +337,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(KinEcosystemException error) {
-                    showToast("Failed - " + error.getMessage());
+                public void onFailure(KinEcosystemException exception) {
+                    showToast("Failed - " + exception.getMessage());
                     enableView(nativeEarnButton, true);
                 }
             };

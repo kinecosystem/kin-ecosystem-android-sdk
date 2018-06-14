@@ -41,7 +41,7 @@ class GetOrderPollingCall extends Thread {
                     callback.onResponse(order);
                 }
             } else {
-                callback.onFailure(ErrorUtil.getTimeoutException());
+                callback.onFailure(ErrorUtil.createOrderTimeoutException());
             }
         } catch (final InterruptedException e) {
             callback.onFailure(toApiException(e));

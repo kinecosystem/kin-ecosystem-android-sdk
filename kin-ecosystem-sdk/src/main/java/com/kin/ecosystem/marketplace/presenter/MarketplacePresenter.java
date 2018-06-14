@@ -166,7 +166,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
             }
 
             @Override
-            public void onFailure(KinEcosystemException error) {
+            public void onFailure(KinEcosystemException exception) {
                 //TODO show error msg
             }
         });

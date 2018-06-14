@@ -272,16 +272,16 @@ public class OrderRepository implements OrderDataSource {
 			}
 
 			@Override
-			public void onTransactionFailed(OpenOrder openOrder, final KinEcosystemException error) {
+			public void onTransactionFailed(OpenOrder openOrder, final KinEcosystemException exception) {
 				cancelOrder(openOrder.getOfferId(), openOrder.getId(), new KinCallback<Void>() {
 					@Override
 					public void onResponse(Void response) {
-						handleOnFailure(error);
+						handleOnFailure(exception);
 					}
 
 					@Override
 					public void onFailure(KinEcosystemException e) {
-						handleOnFailure(error);
+						handleOnFailure(exception);
 					}
 
 				});
@@ -296,14 +296,14 @@ public class OrderRepository implements OrderDataSource {
 			}
 
 			@Override
-			public void onOrderFailed(KinEcosystemException error) {
+			public void onOrderFailed(KinEcosystemException exception) {
 				decrementCount();
-				handleOnFailure(error);
+				handleOnFailure(exception);
 			}
 
-			private void handleOnFailure(KinEcosystemException error) {
+			private void handleOnFailure(KinEcosystemException exception) {
 				if (callback != null) {
-					callback.onFailure(error);
+					callback.onFailure(exception);
 				}
 			}
 
@@ -323,8 +323,8 @@ public class OrderRepository implements OrderDataSource {
 					}
 
 					@Override
-					public void onFailure(KinEcosystemException error) {
-						handleOnFailure(error);
+					public void onFailure(KinEcosystemException exception) {
+						handleOnFailure(exception);
 					}
 				});
 			}
@@ -337,14 +337,14 @@ public class OrderRepository implements OrderDataSource {
 			}
 
 			@Override
-			public void onOrderFailed(KinEcosystemException error) {
+			public void onOrderFailed(KinEcosystemException exception) {
 				decrementCount();
-				handleOnFailure(error);
+				handleOnFailure(exception);
 			}
 
-			private void handleOnFailure(KinEcosystemException error) {
+			private void handleOnFailure(KinEcosystemException exception) {
 				if (callback != null) {
-					callback.onFailure(error);
+					callback.onFailure(exception);
 				}
 			}
 		}).start();

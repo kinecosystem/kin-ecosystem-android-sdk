@@ -57,7 +57,7 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
             }
 
             @Override
-            public void onFailure(KinEcosystemException error) {
+            public void onFailure(KinEcosystemException exception) {
                 showToast("Oops something went wrong...");
             }
         });
@@ -116,7 +116,7 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
                 }
 
                 @Override
-                public void onFailure(KinEcosystemException error) {
+                public void onFailure(KinEcosystemException exception) {
 
                 }
             });
@@ -151,9 +151,9 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
             }
 
             @Override
-            public void onFailure(KinEcosystemException error) {
+            public void onFailure(KinEcosystemException exception) {
                 //TODO handle failure
-                Log.i(TAG, "onFailure: " + error.getMessage());
+                Log.i(TAG, "onFailure: " + exception.getMessage());
             }
         });
     }
