@@ -11,6 +11,8 @@ public interface KinEnvironment {
 	String getEcosystemServerUrl();
 
 	String getEcosystemWebFront();
+
+	String getBiUrl();
 }
 
 

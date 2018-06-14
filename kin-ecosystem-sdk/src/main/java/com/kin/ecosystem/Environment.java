@@ -60,6 +60,7 @@ public class Environment implements KinEnvironment {
 		return ecosystemWebFront;
 	}
 
+	@Override
 	public String getBiUrl() {
 		return biUrl;
 	}
