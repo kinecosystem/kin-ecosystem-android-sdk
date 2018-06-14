@@ -16,7 +16,7 @@ package com.kin.ecosystem;
 import com.kin.ecosystem.network.ApiClient;
 
 public class Configuration {
-    private static KinEnvironment environment = Environment.getPlayground();
+    private static KinEnvironment environment;
 
     private static final Object apiClientLock = new Object();
 	private static ApiClient defaultApiClient;
