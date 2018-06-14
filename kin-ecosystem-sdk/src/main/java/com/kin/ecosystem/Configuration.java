@@ -17,7 +17,9 @@ import com.kin.ecosystem.network.ApiClient;
 
 public class Configuration {
     private static KinEnvironment environment = KinEnvironment.PLAYGROUND;
-	private static ApiClient defaultApiClient = new ApiClient();
+
+    private static final Object apiClientLock = new Object();
+	private static ApiClient defaultApiClient;
 
     /**
      * Get the default API client, which would be used when creating API
@@ -26,6 +28,11 @@ public class Configuration {
      * @return Default API client
      */
     public static ApiClient getDefaultApiClient() {
+    	if(defaultApiClient == null) {
+    		synchronized (apiClientLock) {
+    			defaultApiClient = new ApiClient();
+			}
+		}
         return defaultApiClient;
     }
 
