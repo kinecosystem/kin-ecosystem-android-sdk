@@ -4,8 +4,8 @@ import android.app.Application;
 import android.support.annotation.NonNull;
 import com.crashlytics.android.Crashlytics;
 import com.ecosystem.kin.app.model.SignInRepo;
+import com.kin.ecosystem.Environment;
 import com.kin.ecosystem.Kin;
-import com.kin.ecosystem.KinEnvironment;
 import com.kin.ecosystem.data.model.WhitelistData;
 import com.kin.ecosystem.exception.InitializeException;
 import io.fabric.sdk.android.Fabric;
@@ -20,7 +20,7 @@ public class App extends Application {
 
         Fabric.with(this, new Crashlytics());
 
-        Kin.setEnvironment(KinEnvironment.PLAYGROUND);
+        Kin.setEnvironment(Environment.getPlayground());
 
         if (BuildConfig.IS_JWT_REGISTRATION) {
             /**

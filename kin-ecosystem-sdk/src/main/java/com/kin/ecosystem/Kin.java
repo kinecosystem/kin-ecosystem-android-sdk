@@ -66,9 +66,9 @@ public class Kin {
 
 	/**
 	 * Configure the environment you want to use.
-	 * Default environment is {@link KinEnvironment#PLAYGROUND}
+	 * Default environment is {@link Environment#PLAYGROUND}
 	 *
-	 * @param environment {@link KinEnvironment#PRODUCTION} or {@link KinEnvironment#PLAYGROUND}
+	 * @param environment {@link Environment#PRODUCTION} or {@link Environment#PLAYGROUND}
 	 */
 	public static void setEnvironment(@NonNull KinEnvironment environment) {
 		if (isInstanceNull()) {
