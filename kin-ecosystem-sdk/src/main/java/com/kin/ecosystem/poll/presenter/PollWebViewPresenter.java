@@ -1,10 +1,12 @@
 package com.kin.ecosystem.poll.presenter;
 
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.order.OrderDataSource;
+import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.poll.view.IPollWebView;
@@ -52,16 +54,16 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
     }
 
     private void createOrder() {
-        orderRepository.createOrder(offerID, new Callback<OpenOrder>() {
+        orderRepository.createOrder(offerID, new KinCallback<OpenOrder>() {
             @Override
             public void onResponse(OpenOrder response) {
                 // we are listening to open orders.
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(KinEcosystemException exception) {
                 if (view != null) {
-                    showToast(t.getMessage());
+                    showToast(exception.getMessage());
                 }
                 closeView();
             }
@@ -109,14 +111,14 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
     public void onPageResult(String result) {
         if (openOrder != null) {
             isOrderSubmitted = true;
-            orderRepository.submitOrder(offerID, result, openOrder.getId(), new Callback<Order>() {
+            orderRepository.submitOrder(offerID, result, openOrder.getId(), new KinCallback<Order>() {
                 @Override
                 public void onResponse(Order response) {
 
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
+                public void onFailure(KinEcosystemException exception) {
                     showToast("Order submission failed");
                 }
             });

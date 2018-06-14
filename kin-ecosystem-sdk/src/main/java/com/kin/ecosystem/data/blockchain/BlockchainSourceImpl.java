@@ -5,13 +5,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.Log;
-import com.kin.ecosystem.Callback;
-import com.kin.ecosystem.CallbackAdapter;
+import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.data.Callback;
+import com.kin.ecosystem.data.KinCallbackAdapter;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.Payment;
-import com.kin.ecosystem.exception.InitializeException;
+import com.kin.ecosystem.exception.BlockchainException;
+import com.kin.ecosystem.util.ErrorUtil;
 import com.kin.ecosystem.util.ExecutorsUtil.MainThreadExecutor;
 import java.math.BigDecimal;
 import kin.core.EventListener;
@@ -60,7 +62,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
     private static final int MEMO_SPLIT_LENGTH = 3;
 
     private BlockchainSourceImpl(@NonNull final KinClient kinClient, @NonNull BlockchainSource.Local local)
-        throws InitializeException {
+        throws BlockchainException {
         this.local = local;
         this.kinClient = kinClient;
         createKinAccountIfNeeded();
@@ -68,7 +70,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
     }
 
     public static void init(@NonNull final KinClient kinClient, @NonNull BlockchainSource.Local local)
-        throws InitializeException {
+        throws BlockchainException {
         if (instance == null) {
             synchronized (BlockchainSourceImpl.class) {
                 if (instance == null) {
@@ -82,14 +84,14 @@ public class BlockchainSourceImpl implements BlockchainSource {
         return instance;
     }
 
-    private void createKinAccountIfNeeded() throws InitializeException {
+    private void createKinAccountIfNeeded() throws BlockchainException {
         account = kinClient.getAccount(0);
         if (account == null) {
             try {
                 account = kinClient.addAccount();
                 startAccountCreationListener();
             } catch (CreateAccountException e) {
-                throw new InitializeException(e.getMessage());
+                throw ErrorUtil.getBlockchainException(e);
             }
         }
     }
@@ -140,7 +142,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
                 @Override
                 public void onError(Exception e) {
-                    completedPayment.setValue(new Payment(orderID, false, e.getMessage()));
+                    completedPayment.setValue(new Payment(orderID, false, e));
                     Log.d(TAG, "sendTransaction onError: " + e.getMessage());
                 }
             });
@@ -155,7 +157,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
     private void initBalance() {
         balance.postValue(getBalance());
-        getBalance(new CallbackAdapter<Balance>() {
+        getBalance(new KinCallbackAdapter<Balance>() {
         });
     }
 
@@ -167,7 +169,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
     }
 
     @Override
-    public void getBalance(@NonNull final Callback<Balance> callback) {
+    public void getBalance(@NonNull final KinCallback<Balance> callback) {
         account.getBalance().run(new ResultCallback<kin.core.Balance>() {
             @Override
             public void onResult(final kin.core.Balance balanceObj) {
@@ -186,11 +188,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
                 mainThread.execute(new Runnable() {
                     @Override
                     public void run() {
-                        if (e instanceof AccountNotFoundException) {
-                            callback.onResponse(balance.getValue());
-                        } else {
-                            callback.onFailure(e);
-                        }
+                        callback.onFailure(ErrorUtil.getBlockchainException(e));
                     }
                 });
                 Log.d(TAG, "getBalance onError: " + e.getMessage());
@@ -304,7 +302,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
                     }
                     // UpdateBalance if there is no balance sse open connection.
                     if (balanceObserversCount == 0) {
-                        getBalance(new CallbackAdapter<Balance>() {
+                        getBalance(new KinCallbackAdapter<Balance>() {
                         });
                     }
                 }

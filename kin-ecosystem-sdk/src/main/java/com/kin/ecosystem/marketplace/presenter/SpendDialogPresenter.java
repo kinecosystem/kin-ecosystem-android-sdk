@@ -2,10 +2,12 @@ package com.kin.ecosystem.marketplace.presenter;
 
 import android.os.Handler;
 import android.util.Log;
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.base.BaseDialogPresenter;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.order.OrderDataSource;
+import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.marketplace.view.ISpendDialog;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OfferInfo;
@@ -48,14 +50,14 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
     }
 
     private void createOrder() {
-        orderRepository.createOrder(offer.getId(), new Callback<OpenOrder>() {
+        orderRepository.createOrder(offer.getId(), new KinCallback<OpenOrder>() {
             @Override
             public void onResponse(OpenOrder response) {
                 openOrder = response;
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(KinEcosystemException exception) {
                 showToast("Oops something went wrong...");
             }
         });
@@ -102,7 +104,7 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
     @Override
     public void dialogDismissed() {
         if (isOrderSubmitted) {
-            orderRepository.isFirstSpendOrder(new Callback<Boolean>() {
+            orderRepository.isFirstSpendOrder(new KinCallback<Boolean>() {
                 @Override
                 public void onResponse(Boolean response) {
                     Log.d(TAG, "isFirstSpendOrder: " + response);
@@ -114,7 +116,7 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
+                public void onFailure(KinEcosystemException exception) {
 
                 }
             });
@@ -142,16 +144,16 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
 
     private void submitOrder(String offerID, String orderID) {
         isOrderSubmitted = true;
-        orderRepository.submitOrder(offerID, null, orderID, new Callback<Order>() {
+        orderRepository.submitOrder(offerID, null, orderID, new KinCallback<Order>() {
             @Override
             public void onResponse(Order response) {
                 Log.i(TAG, "onResponse: " + response);
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(KinEcosystemException exception) {
                 //TODO handle failure
-                Log.i(TAG, "onFailure: " + t.getMessage());
+                Log.i(TAG, "onFailure: " + exception.getMessage());
             }
         });
     }

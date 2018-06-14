@@ -15,7 +15,6 @@ import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.Payment;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.util.concurrent.atomic.AtomicInteger;
 import kin.core.BlockchainEvents;
 import kin.core.EventListener;
 import kin.core.KinAccount;
@@ -171,16 +170,18 @@ public class BlockchainSourceImplTest {
         blockchainSource.sendTransaction(toAddress, amount, orderID);
         verify(transactionRequest).run(resultCallbackArgumentCaptor.capture());
 
+        final Exception exception = new Exception("failed");
+
         blockchainSource.addPaymentObservable(new Observer<Payment>() {
             @Override
             public void onChanged(Payment value) {
                 assertFalse(value.isSucceed());
                 assertEquals(orderID, value.getOrderID());
-                assertEquals("failed", value.getResultMessage());
+                assertEquals(exception, value.getException());
             }
         });
 
-        resultCallbackArgumentCaptor.getValue().onError(new Exception("failed"));
+        resultCallbackArgumentCaptor.getValue().onError(exception);
     }
 
     @Test

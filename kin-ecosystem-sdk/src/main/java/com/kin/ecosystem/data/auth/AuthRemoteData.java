@@ -2,9 +2,8 @@ package com.kin.ecosystem.data.auth;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.network.ApiCallback;
-import com.kin.ecosystem.network.ApiClient;
 import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.api.AuthApi;
 import com.kin.ecosystem.network.model.AuthToken;
@@ -58,7 +57,7 @@ public class AuthRemoteData implements AuthDataSource.Remote {
     }
 
     @Override
-    public void activateAccount(@NonNull final Callback<AuthToken> callback) {
+    public void activateAccount(@NonNull final Callback<AuthToken, ApiException> callback) {
         try {
             authApi.activateAcountAsync("", new ApiCallback<AuthToken>() {
                 @Override
