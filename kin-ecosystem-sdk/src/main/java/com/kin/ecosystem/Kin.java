@@ -59,31 +59,19 @@ public class Kin {
         return instance;
     }
 
-	/**
-	 * Configure the environment you want to use.
-	 * Default environment is {@link Environment#PLAYGROUND}
-	 *
-	 * @param environment {@link Environment#PRODUCTION} or {@link Environment#PLAYGROUND}
-	 */
-	public static void setEnvironment(@NonNull KinEnvironment environment) {
-		if (isInstanceNull()) {
-			Configuration.setEnvironment(environment);
-		}
-	}
-
-    public static void start(@NonNull Context appContext, @NonNull WhitelistData whitelistData)
+    public static void start(@NonNull Context appContext, @NonNull WhitelistData whitelistData, @NonNull KinEnvironment environment)
         throws ClientException, BlockchainException {
         if (isInstanceNull()) {
             SignInData signInData = getWhiteListSignInData(whitelistData);
-            init(appContext, signInData);
+            init(appContext, signInData, environment);
         }
     }
 
-    public static void start(@NonNull Context appContext, @NonNull String jwt)
+    public static void start(@NonNull Context appContext, @NonNull String jwt, @NonNull KinEnvironment environment)
         throws ClientException, BlockchainException {
         if (isInstanceNull()) {
             SignInData signInData = getJwtSignInData(jwt);
-            init(appContext, signInData);
+            init(appContext, signInData, environment);
         }
     }
 
@@ -105,10 +93,11 @@ public class Kin {
         return signInData;
     }
 
-    private static void init(@NonNull Context appContext, @NonNull SignInData signInData) throws ClientException, BlockchainException {
+    private static void init(@NonNull Context appContext, @NonNull SignInData signInData, @NonNull KinEnvironment environment) throws ClientException, BlockchainException {
         instance = getInstance();
         appContext = appContext.getApplicationContext(); // use application context to avoid leaks.
         DeviceUtils.init(appContext);
+		Configuration.setEnvironment(environment);
         initBlockchain(appContext);
         registerAccount(appContext, signInData);
         initOfferRepository();
