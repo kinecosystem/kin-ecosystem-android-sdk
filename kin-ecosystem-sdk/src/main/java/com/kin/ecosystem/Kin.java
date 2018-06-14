@@ -14,7 +14,6 @@ import com.kin.ecosystem.data.auth.AuthRemoteData;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.data.blockchain.BlockchainSourceLocal;
-import com.kin.ecosystem.data.blockchain.Network;
 import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.model.WhitelistData;
@@ -35,6 +34,7 @@ import com.kin.ecosystem.util.ErrorUtil;
 import com.kin.ecosystem.util.ExecutorsUtil;
 import java.util.UUID;
 import kin.core.KinClient;
+import kin.core.ServiceProvider;
 
 
 public class Kin {
@@ -59,19 +59,19 @@ public class Kin {
         return instance;
     }
 
-    public static void start(@NonNull Context appContext, @NonNull WhitelistData whitelistData)
+    public static void start(@NonNull Context appContext, @NonNull WhitelistData whitelistData, @NonNull KinEnvironment environment)
         throws ClientException, BlockchainException {
         if (isInstanceNull()) {
             SignInData signInData = getWhiteListSignInData(whitelistData);
-            init(appContext, signInData);
+            init(appContext, signInData, environment);
         }
     }
 
-    public static void start(@NonNull Context appContext, @NonNull String jwt)
+    public static void start(@NonNull Context appContext, @NonNull String jwt, @NonNull KinEnvironment environment)
         throws ClientException, BlockchainException {
         if (isInstanceNull()) {
             SignInData signInData = getJwtSignInData(jwt);
-            init(appContext, signInData);
+            init(appContext, signInData, environment);
         }
     }
 
@@ -93,17 +93,17 @@ public class Kin {
         return signInData;
     }
 
-    private static void init(@NonNull Context appContext, @NonNull SignInData signInData) throws ClientException, BlockchainException {
+    private static void init(@NonNull Context appContext, @NonNull SignInData signInData, @NonNull KinEnvironment environment) throws ClientException, BlockchainException {
         instance = getInstance();
         appContext = appContext.getApplicationContext(); // use application context to avoid leaks.
         DeviceUtils.init(appContext);
+		Configuration.setEnvironment(environment);
         initBlockchain(appContext);
         registerAccount(appContext, signInData);
         initOfferRepository();
         initOrderRepository(appContext);
         setAppID();
     }
-
 
     private static void setAppID() {
         ObservableData<String> observableData = AuthRepository.getInstance().getAppID();
@@ -118,21 +118,25 @@ public class Kin {
         BlockchainSourceImpl.getInstance().setAppID(appID);
     }
 
-    private static void initBlockchain(Context context) throws BlockchainException {
-        KinClient kinClient = new KinClient(context, Network.NETWORK_PRIVATE_TEST.getProvider(), KIN_ECOSYSTEM_STORE_PREFIX_KEY);
-        BlockchainSourceImpl.init(kinClient, BlockchainSourceLocal.getInstance(context));
-    }
+	private static void initBlockchain(Context context) throws BlockchainException {
+		final String networkUrl = Configuration.getEnvironment().getBlockchainNetworkUrl();
+		final String networkId = Configuration.getEnvironment().getBlockchainPassphrase();
+		KinClient kinClient = new KinClient(context, new ServiceProvider(networkUrl, networkId) {
+			@Override
+			protected String getIssuerAccountId() {
+				return Configuration.getEnvironment().getIssuer();
+			}
+		}, KIN_ECOSYSTEM_STORE_PREFIX_KEY);
+		BlockchainSourceImpl.init(kinClient, BlockchainSourceLocal.getInstance(context));
+	}
 
     private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
         throws ClientException {
-        String publicAddress;
         AuthRepository.init(AuthLocalData.getInstance(context, instance.executorsUtil),
             AuthRemoteData.getInstance(instance.executorsUtil));
-        if (AuthRepository.getInstance().getDeviceID() == null) {
-            signInData.setDeviceId(UUID.randomUUID().toString());
-        }
-        publicAddress = getPublicAddress();
-        signInData.setWalletAddress(publicAddress);
+        String deviceID = AuthRepository.getInstance().getDeviceID();
+		signInData.setDeviceId(deviceID != null ? deviceID : UUID.randomUUID().toString());
+        signInData.setWalletAddress(getPublicAddress());
         AuthRepository.getInstance().setSignInData(signInData);
     }
 

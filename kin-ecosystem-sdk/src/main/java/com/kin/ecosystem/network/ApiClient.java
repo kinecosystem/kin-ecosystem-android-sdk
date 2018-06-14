@@ -7,6 +7,7 @@ package com.kin.ecosystem.network;
 import static com.kin.ecosystem.BuildConfig.DEBUG;
 
 import com.google.gson.reflect.TypeToken;
+import com.kin.ecosystem.Configuration;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.network.auth.Authentication;
 import com.kin.ecosystem.network.model.AuthToken;
@@ -63,7 +64,7 @@ import okio.Okio;
 
 public class ApiClient {
 
-    private String basePath = "http://api.kinmarketplace.com/v1";
+    private String basePath = Configuration.getEnvironment().getEcosystemServerUrl();
 //    private String basePath = "http://10.0.2.2:3000/v1";
 
     private boolean debugging = false;

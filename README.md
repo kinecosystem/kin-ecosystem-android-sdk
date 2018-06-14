@@ -77,7 +77,13 @@ Add the lines below to your local `credential.properties` file of the sample app
 ```
 The sample app Gradle build loads `credential.properties` setting and uses it to create the 'SignInData' object used for the registration.
 
+## Environment
+Kin Ecosystem provides two working environments:
+1. PRODUCTION - Production ecosystem servers and the main private blockchain network.
+2. PLAYGROUND - A staging and testing environment running on test ecosystem servers and a private blockchain test network.<br>
+You must specify an Environment on `Kin.start(...)` as you will see in the following section.
 
+> Note that in order to change between environments you will need to clear the application cache.
 
 ## Integrating 5 minutes SDK within digital service
 As can be seen in the sample app, there are just few step required to integrate the SDK.
@@ -110,7 +116,8 @@ As can be seen in the sample app, there are just few step required to integrate 
     1. Option 2 - recommended integration using JWT token signed by digital service server side.
           ```java
                try {
-                   Kin.start(getApplicationContext(), jwt);
+	               // As an exmaple we are using PRODUCTION environment
+                   Kin.start(getApplicationContext(), jwt, Environment.getProduction());
                } catch (ClientException | BlockchainException e) {
                    //
                }
@@ -120,7 +127,8 @@ As can be seen in the sample app, there are just few step required to integrate 
 1. Initiate the SDK when the application starts calling Kin. The first start will begin the blockchain wallet and account creation process.
       ```java
                try {
-                   Kin.start(getApplicationContext(), whitelistData);
+	              // As an exmaple we are using PLAYGROUND environment
+                  Kin.start(getApplicationContext(), whitelistData, Environment.getPlayground());
                } catch (ClientException | BlockchainException e) {
                    //
                }

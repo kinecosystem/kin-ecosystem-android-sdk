@@ -11,10 +11,15 @@
  */
 
 
-package com.kin.ecosystem.network;
+package com.kin.ecosystem;
+
+import com.kin.ecosystem.network.ApiClient;
 
 public class Configuration {
-    private static ApiClient defaultApiClient = new ApiClient();
+    private static KinEnvironment environment;
+
+    private static final Object apiClientLock = new Object();
+	private static ApiClient defaultApiClient;
 
     /**
      * Get the default API client, which would be used when creating API
@@ -23,16 +28,21 @@ public class Configuration {
      * @return Default API client
      */
     public static ApiClient getDefaultApiClient() {
+    	if(defaultApiClient == null) {
+    		synchronized (apiClientLock) {
+    			defaultApiClient = new ApiClient();
+			}
+		}
         return defaultApiClient;
     }
 
-    /**
-     * Set the default API client, which would be used when creating API
-     * instances without providing an API client.
-     *
-     * @param apiClient API client
-     */
-    public static void setDefaultApiClient(ApiClient apiClient) {
-        defaultApiClient = apiClient;
-    }
+	public static KinEnvironment getEnvironment() {
+		return environment;
+	}
+
+	public static void setEnvironment(KinEnvironment environment) {
+		Configuration.environment = environment;
+	}
+
+	private Configuration() {}
 }
