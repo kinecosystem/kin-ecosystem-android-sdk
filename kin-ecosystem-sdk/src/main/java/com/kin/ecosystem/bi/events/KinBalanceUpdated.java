@@ -21,10 +21,20 @@ public class KinBalanceUpdated implements Event {
     public static final String EVENT_TYPE = "business";
 
     // Augmented by script
+    public static KinBalanceUpdated create(Double previousBalance) {
+        return new KinBalanceUpdated(
+            (Common) EventsStore.common(),
+            (User) EventsStore.user(),
+            (Client) EventsStore.client(),
+            previousBalance);
+    }
+
+    // Augmented by script
     public static void fire(Double previousBalance) {
         final KinBalanceUpdated event = new KinBalanceUpdated(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
+            (Client) EventsStore.client(),
             previousBalance);
 
         EventLoggerImpl.Send(event);
@@ -55,13 +65,21 @@ public class KinBalanceUpdated implements Event {
     @Expose
     private Common common;
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
     @SerializedName("user")
     @Expose
     private User user;
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    @SerializedName("client")
+    @Expose
+    private Client client;
     /**
      * 
      * (Required)
@@ -82,14 +100,16 @@ public class KinBalanceUpdated implements Event {
      * 
      * @param common
 
+     * @param client
 
      * @param user
      * @param previousBalance
      */
-    public KinBalanceUpdated(Common common, User user, Double previousBalance) {
+    public KinBalanceUpdated(Common common, User user, Client client, Double previousBalance) {
         super();
         this.common = common;
         this.user = user;
+        this.client = client;
         this.previousBalance = previousBalance;
     }
 
@@ -148,7 +168,7 @@ public class KinBalanceUpdated implements Event {
     }
 
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
@@ -157,12 +177,30 @@ public class KinBalanceUpdated implements Event {
     }
 
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
     public void setUser(User user) {
         this.user = user;
+    }
+
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    public Client getClient() {
+        return client;
+    }
+
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     /**

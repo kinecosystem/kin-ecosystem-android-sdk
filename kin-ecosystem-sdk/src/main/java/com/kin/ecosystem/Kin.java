@@ -13,10 +13,11 @@ import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.bi.EventsStore;
+import com.kin.ecosystem.bi.EventsStore.ClientModifier;
 import com.kin.ecosystem.bi.EventsStore.CommonModifier;
 import com.kin.ecosystem.bi.EventsStore.DynamicValue;
 import com.kin.ecosystem.bi.EventsStore.UserModifier;
-import com.kin.ecosystem.bi.events.Common.Platform;
+import com.kin.ecosystem.bi.events.ClientProxy;
 import com.kin.ecosystem.bi.events.CommonProxy;
 import com.kin.ecosystem.bi.events.KinSdkInitiated;
 import com.kin.ecosystem.bi.events.UserProxy;
@@ -114,78 +115,84 @@ public class Kin {
     }
 
     private static void setUpEventsCommonData(@NonNull Context context) {
-        TelephonyManager telephonyManager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         final String carrierName = telephonyManager != null ? telephonyManager.getNetworkOperatorName() : "Unknown";
         final CommonModifier commonModifier = new CommonModifier() {
             @Override
             public void modify(CommonProxy commonProxy) {
-                commonProxy.setTimestamp(new DynamicValue<Double>() {
+                commonProxy.setTimestamp(new DynamicValue<Long>() {
                     @Override
-                    public Double get() {
-                        return new Double(System.currentTimeMillis());
+                    public Long get() {
+                        return System.currentTimeMillis();
                     }
                 });
+
+                commonProxy.setUserId(new DynamicValue<String>() {
+                    @Override
+                    public String get() {
+                        final String userID = AuthRepository.getInstance().getUserID();
+                        return userID != null ? userID : "Unknown";
+                    }
+                });
+
+//                commonProxy.setEventId(UUID.randomUUID()); // being updated on send
+                commonProxy.setVersion(BuildConfig.VERSION_NAME);
+            }
+        };
+
+        final ClientModifier clientModifier = new ClientModifier() {
+            @Override
+            public void modify(ClientProxy commonProxy) {
                 commonProxy.setDeviceId(new DynamicValue<String>() {
                     @Override
                     public String get() {
                         return AuthRepository.getInstance().getDeviceID();
                     }
                 });
-                commonProxy.setUserId(new DynamicValue<String>() {
-                    @Override
-                    public String get() {
-                        final String userID = AuthRepository.getInstance().getUserID();
-                        return  userID != null ? userID : "Unknown";
-                    }
-                });
-
-                commonProxy.setPlatform(Platform.ANDROID);
-                commonProxy.setEventId(""); // being updated on send
                 commonProxy.setCarrier(carrierName);
                 commonProxy.setOs(VERSION.RELEASE);
                 commonProxy.setDeviceManufacturer(Build.MANUFACTURER);
                 commonProxy.setDeviceModel(Build.MODEL);
                 commonProxy.setLanguage(Locale.getDefault().getDisplayLanguage());
-                commonProxy.setVersion(BuildConfig.VERSION_NAME);
             }
         };
 
         final UserModifier userModifier = new UserModifier() {
-            @Override
-            public void modify(UserProxy userProxy) {
-                userProxy.setBalance(new DynamicValue<Double>() {
                     @Override
-                    public Double get() {
-                        return new Double(BlockchainSourceImpl.getInstance().getBalance());
-                    }
-                });
+                    public void modify(UserProxy userProxy) {
+                        userProxy.setBalance(new DynamicValue<Double>() {
+                            @Override
+                            public Double get() {
+                                return (double) BlockchainSourceImpl.getInstance().getBalance();
+                            }
+                        });
 
-                userProxy.setDigitalServiceId(new DynamicValue<String>() {
-                    @Override
-                    public String get() {
-                        return AuthRepository.getInstance().getAppID().getValue();
-                    }
-                });
-                userProxy.setDigitalServiceUserId(new DynamicValue<String>() {
-                    @Override
-                    public String get() {
-                        final String userID = AuthRepository.getInstance().getUserID();
-                        return  userID != null ? userID : "Unknown";
-                    }
-                });
-                userProxy.setEntryPointParam("");
-                userProxy.setEarnCount(0);
-                userProxy.setEarnCount(0);
-                userProxy.setEarnCount(0);
-                userProxy.setSpendCount(0);
-                userProxy.setTotalKinEarned(0.0);
-                userProxy.setTotalKinSpent(0.0);
-                userProxy.setTransactionCount(0);
+                        userProxy.setDigitalServiceId(new DynamicValue<String>() {
+                            @Override
+                            public String get() {
+                                return AuthRepository.getInstance().getAppID().getValue();
+                            }
+                        });
+                        userProxy.setDigitalServiceUserId(new DynamicValue<String>() {
+                            @Override
+                            public String get() {
+                                final String userID = AuthRepository.getInstance().getUserID();
+                                return userID != null ? userID : "Unknown";
+                            }
+                        });
+                        userProxy.setEntryPointParam("");
+                        userProxy.setEarnCount(0);
+                        userProxy.setEarnCount(0);
+                        userProxy.setEarnCount(0);
+                        userProxy.setSpendCount(0);
+                        userProxy.setTotalKinEarned(0.0);
+                        userProxy.setTotalKinSpent(0.0);
+                        userProxy.setTransactionCount(0);
 
-            }
-        };
+                    }
+                };
 
-        EventsStore.init(userModifier, commonModifier);
+        EventsStore.init(userModifier, commonModifier, clientModifier);
     }
 
 
@@ -206,7 +213,7 @@ public class Kin {
         BlockchainSourceImpl.init(context, BlockchainSourceLocal.getInstance(context));
     }
 
-    private static void  registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
+    private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
         throws InitializeException {
         String publicAddress;
         try {
@@ -246,8 +253,8 @@ public class Kin {
 
     /**
      * Launch Kin Marketplace if the user is activated, otherwise it will launch Welcome to Kin page.
+     *
      * @param activity the activity user can go back to.
-     * @throws TaskFailedException
      */
     public static void launchMarketplace(@NonNull final Activity activity) throws TaskFailedException {
         checkInstanceNotNull();
@@ -271,7 +278,6 @@ public class Kin {
 
     /**
      * @return The account public address
-     * @throws TaskFailedException
      */
     public static String getPublicAddress() throws TaskFailedException {
         checkInstanceNotNull();
@@ -280,8 +286,8 @@ public class Kin {
 
     /**
      * Get the cached balance, can be different from the current balance on the network.
+     *
      * @return balance amount
-     * @throws TaskFailedException
      */
     public static Integer getCachedBalance() throws TaskFailedException {
         checkInstanceNotNull();
@@ -290,8 +296,8 @@ public class Kin {
 
     /**
      * Get the current account balance from the network.
+     *
      * @param callback balance amount
-     * @throws TaskFailedException
      */
     public static void getBalance(@NonNull final Callback<Integer> callback) throws TaskFailedException {
         checkInstanceNotNull();

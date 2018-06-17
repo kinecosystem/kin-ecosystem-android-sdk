@@ -46,7 +46,12 @@ class EventsApi {
 
         Map<String, String> localVarHeaderParams = new HashMap<String, String>();
 
-        localVarHeaderParams.put("X-REQUEST-ID", event.getCommon().getEventId());
+        localVarHeaderParams.put("X-REQUEST-ID", event.getCommon().getEventId().toString());
+        final UUID eventUUID = getUniqueID();
+        final String eventId = apiClient.parameterToString(eventUUID);
+        localVarHeaderParams.put("X-REQUEST-ID", eventId);
+
+        event.getCommon().setEventId(eventUUID);
 
         Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
@@ -60,6 +65,11 @@ class EventsApi {
         return apiClient
             .buildCall(localVarPath, POST, localVarQueryParams, localVarCollectionQueryParams, localVarPostBody,
                 localVarHeaderParams, localVarFormParams, null, null);
+    }
+
+
+    private UUID getUniqueID() {
+        return UUID.randomUUID();
     }
 
     @SuppressWarnings("rawtypes")

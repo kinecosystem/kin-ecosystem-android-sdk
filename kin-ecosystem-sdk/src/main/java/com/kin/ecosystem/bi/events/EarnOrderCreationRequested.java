@@ -21,10 +21,23 @@ public class EarnOrderCreationRequested implements Event {
     public static final String EVENT_TYPE = "business";
 
     // Augmented by script
+    public static EarnOrderCreationRequested create(EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId, String orderId) {
+        return new EarnOrderCreationRequested(
+            (Common) EventsStore.common(),
+            (User) EventsStore.user(),
+            (Client) EventsStore.client(),
+            offerType,
+            kinAmount,
+            offerId,
+            orderId);
+    }
+
+    // Augmented by script
     public static void fire(EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId, String orderId) {
         final EarnOrderCreationRequested event = new EarnOrderCreationRequested(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
+            (Client) EventsStore.client(),
             offerType,
             kinAmount,
             offerId,
@@ -58,13 +71,21 @@ public class EarnOrderCreationRequested implements Event {
     @Expose
     private Common common;
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
     @SerializedName("user")
     @Expose
     private User user;
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    @SerializedName("client")
+    @Expose
+    private Client client;
     /**
      * 
      * (Required)
@@ -111,15 +132,17 @@ public class EarnOrderCreationRequested implements Event {
      * @param common
      * @param orderId
 
+     * @param client
      * @param offerId
      * @param kinAmount
 
      * @param user
      */
-    public EarnOrderCreationRequested(Common common, User user, EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId, String orderId) {
+    public EarnOrderCreationRequested(Common common, User user, Client client, EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId, String orderId) {
         super();
         this.common = common;
         this.user = user;
+        this.client = client;
         this.offerType = offerType;
         this.kinAmount = kinAmount;
         this.offerId = offerId;
@@ -181,7 +204,7 @@ public class EarnOrderCreationRequested implements Event {
     }
 
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
@@ -190,12 +213,30 @@ public class EarnOrderCreationRequested implements Event {
     }
 
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
     public void setUser(User user) {
         this.user = user;
+    }
+
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    public Client getClient() {
+        return client;
+    }
+
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     /**

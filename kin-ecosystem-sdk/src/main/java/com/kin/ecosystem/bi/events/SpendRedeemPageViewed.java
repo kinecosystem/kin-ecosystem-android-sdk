@@ -21,10 +21,23 @@ public class SpendRedeemPageViewed implements Event {
     public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
+    public static SpendRedeemPageViewed create(SpendRedeemPageViewed.RedeemTrigger redeemTrigger, Double kinAmount, String offerId, String orderId) {
+        return new SpendRedeemPageViewed(
+            (Common) EventsStore.common(),
+            (User) EventsStore.user(),
+            (Client) EventsStore.client(),
+            redeemTrigger,
+            kinAmount,
+            offerId,
+            orderId);
+    }
+
+    // Augmented by script
     public static void fire(SpendRedeemPageViewed.RedeemTrigger redeemTrigger, Double kinAmount, String offerId, String orderId) {
         final SpendRedeemPageViewed event = new SpendRedeemPageViewed(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
+            (Client) EventsStore.client(),
             redeemTrigger,
             kinAmount,
             offerId,
@@ -58,13 +71,21 @@ public class SpendRedeemPageViewed implements Event {
     @Expose
     private Common common;
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
     @SerializedName("user")
     @Expose
     private User user;
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    @SerializedName("client")
+    @Expose
+    private Client client;
     /**
      * 
      * (Required)
@@ -111,15 +132,17 @@ public class SpendRedeemPageViewed implements Event {
      * @param orderId
      * @param redeemTrigger
 
+     * @param client
      * @param offerId
      * @param kinAmount
 
      * @param user
      */
-    public SpendRedeemPageViewed(Common common, User user, SpendRedeemPageViewed.RedeemTrigger redeemTrigger, Double kinAmount, String offerId, String orderId) {
+    public SpendRedeemPageViewed(Common common, User user, Client client, SpendRedeemPageViewed.RedeemTrigger redeemTrigger, Double kinAmount, String offerId, String orderId) {
         super();
         this.common = common;
         this.user = user;
+        this.client = client;
         this.redeemTrigger = redeemTrigger;
         this.kinAmount = kinAmount;
         this.offerId = offerId;
@@ -181,7 +204,7 @@ public class SpendRedeemPageViewed implements Event {
     }
 
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
@@ -190,12 +213,30 @@ public class SpendRedeemPageViewed implements Event {
     }
 
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
     public void setUser(User user) {
         this.user = user;
+    }
+
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    public Client getClient() {
+        return client;
+    }
+
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     /**

@@ -18,13 +18,22 @@ import com.google.gson.annotations.SerializedName;
  */
 public class KinSdkInitiated implements Event {
     public static final String EVENT_NAME = "kin_sdk_initiated";
-    public static final String EVENT_TYPE = "business";
+    public static final String EVENT_TYPE = "log";
+
+    // Augmented by script
+    public static KinSdkInitiated create() {
+        return new KinSdkInitiated(
+            (Common) EventsStore.common(),
+            (User) EventsStore.user(),
+            (Client) EventsStore.client());
+    }
 
     // Augmented by script
     public static void fire() {
         final KinSdkInitiated event = new KinSdkInitiated(
             (Common) EventsStore.common(),
-            (User) EventsStore.user());
+            (User) EventsStore.user(),
+            (Client) EventsStore.client());
 
         EventLoggerImpl.Send(event);
     }
@@ -54,13 +63,21 @@ public class KinSdkInitiated implements Event {
     @Expose
     private Common common;
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
     @SerializedName("user")
     @Expose
     private User user;
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    @SerializedName("client")
+    @Expose
+    private Client client;
 
     /**
      * No args constructor for use in serialization
@@ -73,13 +90,15 @@ public class KinSdkInitiated implements Event {
      * 
      * @param common
 
+     * @param client
 
      * @param user
      */
-    public KinSdkInitiated(Common common, User user) {
+    public KinSdkInitiated(Common common, User user, Client client) {
         super();
         this.common = common;
         this.user = user;
+        this.client = client;
     }
 
     /**
@@ -137,7 +156,7 @@ public class KinSdkInitiated implements Event {
     }
 
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
@@ -146,12 +165,30 @@ public class KinSdkInitiated implements Event {
     }
 
     /**
-     * common properties for all events
+     * common user properties
      * (Required)
      * 
      */
     public void setUser(User user) {
         this.user = user;
+    }
+
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    public Client getClient() {
+        return client;
+    }
+
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    public void setClient(Client client) {
+        this.client = client;
     }
 
 }
