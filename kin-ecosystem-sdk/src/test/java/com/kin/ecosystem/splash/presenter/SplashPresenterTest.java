@@ -2,28 +2,26 @@ package com.kin.ecosystem.splash.presenter;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.Kin;
+import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.splash.view.ISplashView;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 
+@RunWith(JUnit4.class)
 public class SplashPresenterTest {
 
     @Mock
@@ -33,7 +31,7 @@ public class SplashPresenterTest {
     private ISplashView splashView;
 
     @Captor
-    private ArgumentCaptor<Callback<Void>> activateCapture;
+    private ArgumentCaptor<KinCallback<Void>> activateCapture;
 
     private SplashPresenter splashPresenter;
 

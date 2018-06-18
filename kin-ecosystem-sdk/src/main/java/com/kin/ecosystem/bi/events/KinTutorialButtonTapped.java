@@ -2,14 +2,14 @@
 package com.kin.ecosystem.bi.events;
 
 // Augmented by script
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.bi.Event;
 import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.bi.EventsStore;
-
 import java.util.HashMap;
 import java.util.Map;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 
 /**
@@ -313,14 +313,16 @@ public class KinTutorialButtonTapped implements Event {
 
     public enum OfferType {
 
-        @SerializedName("Video")
-        VIDEO("Video"),
-        @SerializedName("Poll")
-        POLL("Poll"),
-        @SerializedName("code purchase")
-        CODE_PURCHASE("code purchase"),
-        @SerializedName("Tutorial")
-        TUTORIAL("Tutorial");
+        @SerializedName("poll")
+        POLL("poll"),
+        @SerializedName("coupon")
+        COUPON("coupon"),
+        @SerializedName("quiz")
+        QUIZ("quiz"),
+        @SerializedName("tutorial")
+        TUTORIAL("tutorial"),
+        @SerializedName("external")
+        EXTERNAL("external");
         private final String value;
         private final static Map<String, KinTutorialButtonTapped.OfferType> CONSTANTS = new HashMap<String, KinTutorialButtonTapped.OfferType>();
 

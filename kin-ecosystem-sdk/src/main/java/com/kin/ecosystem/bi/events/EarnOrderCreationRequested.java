@@ -2,14 +2,14 @@
 package com.kin.ecosystem.bi.events;
 
 // Augmented by script
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.bi.Event;
 import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.bi.EventsStore;
-
 import java.util.HashMap;
 import java.util.Map;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 
 /**
@@ -21,27 +21,25 @@ public class EarnOrderCreationRequested implements Event {
     public static final String EVENT_TYPE = "business";
 
     // Augmented by script
-    public static EarnOrderCreationRequested create(EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId, String orderId) {
+    public static EarnOrderCreationRequested create(EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId) {
         return new EarnOrderCreationRequested(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             (Client) EventsStore.client(),
             offerType,
             kinAmount,
-            offerId,
-            orderId);
+            offerId);
     }
 
     // Augmented by script
-    public static void fire(EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId, String orderId) {
+    public static void fire(EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId) {
         final EarnOrderCreationRequested event = new EarnOrderCreationRequested(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             (Client) EventsStore.client(),
             offerType,
             kinAmount,
-            offerId,
-            orderId);
+            offerId);
 
         EventLoggerImpl.Send(event);
     }
@@ -110,14 +108,6 @@ public class EarnOrderCreationRequested implements Event {
     @SerializedName("offer_id")
     @Expose
     private String offerId;
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    @SerializedName("order_id")
-    @Expose
-    private String orderId;
 
     /**
      * No args constructor for use in serialization
@@ -130,7 +120,6 @@ public class EarnOrderCreationRequested implements Event {
      * 
      * @param offerType
      * @param common
-     * @param orderId
 
      * @param client
      * @param offerId
@@ -138,7 +127,7 @@ public class EarnOrderCreationRequested implements Event {
 
      * @param user
      */
-    public EarnOrderCreationRequested(Common common, User user, Client client, EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId, String orderId) {
+    public EarnOrderCreationRequested(Common common, User user, Client client, EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId) {
         super();
         this.common = common;
         this.user = user;
@@ -146,7 +135,6 @@ public class EarnOrderCreationRequested implements Event {
         this.offerType = offerType;
         this.kinAmount = kinAmount;
         this.offerId = offerId;
-        this.orderId = orderId;
     }
 
     /**
@@ -293,34 +281,18 @@ public class EarnOrderCreationRequested implements Event {
         this.offerId = offerId;
     }
 
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public String getOrderId() {
-        return orderId;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
-
     public enum OfferType {
 
-        @SerializedName("Video")
-        VIDEO("Video"),
-        @SerializedName("Poll")
-        POLL("Poll"),
-        @SerializedName("code purchase")
-        CODE_PURCHASE("code purchase"),
-        @SerializedName("Tutorial")
-        TUTORIAL("Tutorial");
+        @SerializedName("poll")
+        POLL("poll"),
+        @SerializedName("coupon")
+        COUPON("coupon"),
+        @SerializedName("quiz")
+        QUIZ("quiz"),
+        @SerializedName("tutorial")
+        TUTORIAL("tutorial"),
+        @SerializedName("external")
+        EXTERNAL("external");
         private final String value;
         private final static Map<String, EarnOrderCreationRequested.OfferType> CONSTANTS = new HashMap<String, EarnOrderCreationRequested.OfferType>();
 

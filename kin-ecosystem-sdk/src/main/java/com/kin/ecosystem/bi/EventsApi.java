@@ -18,78 +18,72 @@ import okhttp3.Call;
 
 class EventsApi {
 
-    private static final String basePath = "https://kin-bi.appspot.com";
-    private ApiClient apiClient;
+	private static final String basePath = "https://kin-bi.appspot.com";
+	private ApiClient apiClient;
 
-    /*
-     * Constructor for EventsApi
-     */
-    EventsApi() {
-        apiClient = new ApiClient();
-        apiClient.setBasePath(basePath);
-    }
+	/*
+	 * Constructor for EventsApi
+	 */
+	EventsApi() {
+		apiClient = new ApiClient(basePath);
+	}
 
-    /**
-     * Build call for sendEvent
-     *
-     * @return Call to execute
-     * @throws ApiException If fail to serialize the request body object
-     */
-    public Call sendEventCall(Event event) throws ApiException {
-        Object localVarPostBody = event;
+	/**
+	 * Build call for sendEvent
+	 *
+	 * @return Call to execute
+	 * @throws ApiException If fail to serialize the request body object
+	 */
+	public Call sendEventCall(Event event) throws ApiException {
+		Object localVarPostBody = event;
 
-        // create path and map variables
-        String localVarPath = "/eco_";
+		// create path and map variables
+		String localVarPath = "/eco_";
 
-        List<Pair> localVarQueryParams = new ArrayList<Pair>();
-        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+		List<Pair> localVarQueryParams = new ArrayList<Pair>();
+		List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
 
-        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+		Map<String, String> localVarHeaderParams = new HashMap<String, String>();
 
-        localVarHeaderParams.put("X-REQUEST-ID", event.getCommon().getEventId().toString());
-        final UUID eventUUID = getUniqueID();
-        final String eventId = apiClient.parameterToString(eventUUID);
-        localVarHeaderParams.put("X-REQUEST-ID", eventId);
-
-        event.getCommon().setEventId(eventUUID);
-
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-        String[] applicationJson = {APPLICATION_JSON_KEY};
-        final String localVarAccept = apiClient.selectHeaderAccept(applicationJson);
-        localVarHeaderParams.put("Accept", localVarAccept);
-
-        final String localVarContentType = apiClient.selectHeaderContentType(applicationJson);
-        localVarHeaderParams.put("Content-Type", localVarContentType);
-
-        return apiClient
-            .buildCall(localVarPath, POST, localVarQueryParams, localVarCollectionQueryParams, localVarPostBody,
-                localVarHeaderParams, localVarFormParams, null, null);
-    }
+		final String eventUUID = event.getCommon().getEventId().toString();
+		localVarHeaderParams.put("X-REQUEST-ID", eventUUID);
+		final String eventId = apiClient.parameterToString(eventUUID);
+		localVarHeaderParams.put("X-REQUEST-ID", eventId);
 
 
-    private UUID getUniqueID() {
-        return UUID.randomUUID();
-    }
+		Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    @SuppressWarnings("rawtypes")
-    private Call sendEventValidateBeforeCall(Event event) throws ApiException {
-        Call call = sendEventCall(event);
-        return call;
-    }
+		String[] applicationJson = {APPLICATION_JSON_KEY};
+		final String localVarAccept = apiClient.selectHeaderAccept(applicationJson);
+		localVarHeaderParams.put("Accept", localVarAccept);
 
-    /**
-     * Send event to BI
-     *
-     * @param callback The callback to be executed when the API call finishes
-     * @return The request call
-     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-     */
-    public Call sendEventAsync(Event event, final ApiCallback<String> callback)
-        throws ApiException {
-        Call call = sendEventValidateBeforeCall(event);
-        Type localVarReturnType = new TypeToken<String>() {}.getType();
-        apiClient.executeAsync(call, localVarReturnType, callback);
-        return call;
-    }
+		final String localVarContentType = apiClient.selectHeaderContentType(applicationJson);
+		localVarHeaderParams.put("Content-Type", localVarContentType);
+
+		return apiClient
+			.buildCall(localVarPath, POST, localVarQueryParams, localVarCollectionQueryParams, localVarPostBody,
+				localVarHeaderParams, localVarFormParams, null, null);
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Call sendEventValidateBeforeCall(Event event) throws ApiException {
+		Call call = sendEventCall(event);
+		return call;
+	}
+
+	/**
+	 * Send event to BI
+	 *
+	 * @param callback The callback to be executed when the API call finishes
+	 * @return The request call
+	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+	 */
+	public Call sendEventAsync(Event event, final ApiCallback<String> callback)
+		throws ApiException {
+		Call call = sendEventValidateBeforeCall(event);
+		Type localVarReturnType = new TypeToken<String>() {
+		}.getType();
+		apiClient.executeAsync(call, localVarReturnType, callback);
+		return call;
+	}
 }

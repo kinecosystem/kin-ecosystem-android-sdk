@@ -1,11 +1,9 @@
 
 package com.kin.ecosystem.bi.events;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import java.util.UUID;
 
 
 /**

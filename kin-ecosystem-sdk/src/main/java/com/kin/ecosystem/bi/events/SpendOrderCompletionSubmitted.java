@@ -2,14 +2,12 @@
 package com.kin.ecosystem.bi.events;
 
 // Augmented by script
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.bi.Event;
 import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.bi.EventsStore;
-
-import java.util.HashMap;
-import java.util.Map;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 
 /**

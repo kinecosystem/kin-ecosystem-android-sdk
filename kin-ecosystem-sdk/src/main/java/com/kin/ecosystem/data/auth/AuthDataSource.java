@@ -1,55 +1,57 @@
 package com.kin.ecosystem.data.auth;
 
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.ObservableData;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.network.model.SignInData;
+import kin.ecosystem.core.network.ApiException;
 
 public interface AuthDataSource {
 
-    void setSignInData(@NonNull final SignInData signInData);
+	void setSignInData(@NonNull final SignInData signInData);
 
-    ObservableData<String> getAppID();
+	ObservableData<String> getAppID();
 
-    String getDeviceID();
+	String getDeviceID();
 
-    String getUserID();
+	String getUserID();
 
-    void setAuthToken(@NonNull final AuthToken authToken);
+	void setAuthToken(@NonNull final AuthToken authToken);
 
-    AuthToken getAuthTokenSync();
+	AuthToken getAuthTokenSync();
 
-    boolean isActivated();
+	boolean isActivated();
 
-    void activateAccount(@NonNull final Callback<Void> callback);
+	void activateAccount(@NonNull final KinCallback<Void> callback);
 
-    interface Local {
+	interface Local {
 
-        void setSignInData(@NonNull final SignInData signInData);
+		void setSignInData(@NonNull final SignInData signInData);
 
-        void setAuthToken(@NonNull final AuthToken authToken);
+		void setAuthToken(@NonNull final AuthToken authToken);
 
-        void getAppId(@NonNull final Callback<String> callback);
+		void getAppId(@NonNull final Callback<String, Void> callback);
 
-        String getDeviceID();
+		String getDeviceID();
 
-        String getUserID();
+		String getUserID();
 
-        AuthToken getAuthTokenSync();
+		AuthToken getAuthTokenSync();
 
-        boolean isActivated();
+		boolean isActivated();
 
-        void activateAccount();
+		void activateAccount();
 
-    }
+	}
 
-    interface Remote {
+	interface Remote {
 
-        void setSignInData(@NonNull final SignInData signInData);
+		void setSignInData(@NonNull final SignInData signInData);
 
-        AuthToken getAuthTokenSync();
+		AuthToken getAuthTokenSync();
 
-        void activateAccount(@NonNull final Callback<AuthToken> callback);
-    }
+		void activateAccount(@NonNull final Callback<AuthToken, ApiException> callback);
+	}
 }

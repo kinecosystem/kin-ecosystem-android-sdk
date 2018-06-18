@@ -2,14 +2,12 @@
 package com.kin.ecosystem.bi.events;
 
 // Augmented by script
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.bi.Event;
 import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.bi.EventsStore;
-
-import java.util.HashMap;
-import java.util.Map;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 
 /**
@@ -21,25 +19,23 @@ public class EarnOrderCreationFailed implements Event {
     public static final String EVENT_TYPE = "log";
 
     // Augmented by script
-    public static EarnOrderCreationFailed create(String errorReason, String offerId, String orderId) {
+    public static EarnOrderCreationFailed create(String errorReason, String offerId) {
         return new EarnOrderCreationFailed(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             (Client) EventsStore.client(),
             errorReason,
-            offerId,
-            orderId);
+            offerId);
     }
 
     // Augmented by script
-    public static void fire(String errorReason, String offerId, String orderId) {
+    public static void fire(String errorReason, String offerId) {
         final EarnOrderCreationFailed event = new EarnOrderCreationFailed(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             (Client) EventsStore.client(),
             errorReason,
-            offerId,
-            orderId);
+            offerId);
 
         EventLoggerImpl.Send(event);
     }
@@ -100,14 +96,6 @@ public class EarnOrderCreationFailed implements Event {
     @SerializedName("offer_id")
     @Expose
     private String offerId;
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    @SerializedName("order_id")
-    @Expose
-    private String orderId;
 
     /**
      * No args constructor for use in serialization
@@ -119,7 +107,6 @@ public class EarnOrderCreationFailed implements Event {
     /**
      * 
      * @param common
-     * @param orderId
      * @param errorReason
 
      * @param client
@@ -127,14 +114,13 @@ public class EarnOrderCreationFailed implements Event {
 
      * @param user
      */
-    public EarnOrderCreationFailed(Common common, User user, Client client, String errorReason, String offerId, String orderId) {
+    public EarnOrderCreationFailed(Common common, User user, Client client, String errorReason, String offerId) {
         super();
         this.common = common;
         this.user = user;
         this.client = client;
         this.errorReason = errorReason;
         this.offerId = offerId;
-        this.orderId = orderId;
     }
 
     /**
@@ -261,24 +247,6 @@ public class EarnOrderCreationFailed implements Event {
      */
     public void setOfferId(String offerId) {
         this.offerId = offerId;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public String getOrderId() {
-        return orderId;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
     }
 
 }

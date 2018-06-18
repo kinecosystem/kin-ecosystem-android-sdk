@@ -77,7 +77,13 @@ Add the lines below to your local `credential.properties` file of the sample app
 ```
 The sample app Gradle build loads `credential.properties` setting and uses it to create the 'SignInData' object used for the registration.
 
+## Environment
+Kin Ecosystem provides two working environments:
+1. PRODUCTION - Production ecosystem servers and the main private blockchain network.
+2. PLAYGROUND - A staging and testing environment running on test ecosystem servers and a private blockchain test network.<br>
+You must specify an Environment on `Kin.start(...)` as you will see in the following section.
 
+> Note that in order to change between environments you will need to clear the application cache.
 
 ## Integrating 5 minutes SDK within digital service
 As can be seen in the sample app, there are just few step required to integrate the SDK.
@@ -95,7 +101,7 @@ As can be seen in the sample app, there are just few step required to integrate 
       ```gradle
        dependencies {
            ...
-           implementation 'com.github.kinfoundation:kin-ecosystem-android-sdk:0.0.6
+           implementation 'com.github.kinfoundation:kin-ecosystem-android-sdk:0.0.7
 
        }
     
@@ -110,18 +116,20 @@ As can be seen in the sample app, there are just few step required to integrate 
     1. Option 2 - recommended integration using JWT token signed by digital service server side.
           ```java
                try {
-                   Kin.start(getApplicationContext(), jwt);
-               } catch (InitializeException e) {
+	               // As an exmaple we are using PRODUCTION environment
+                   Kin.start(getApplicationContext(), jwt, Environment.getProduction());
+               } catch (ClientException | BlockchainException e) {
                    //
                }
           ```
          JWT spec can be found at [ecosystem-api repository](https://github.com/kinfoundation/ecosystem-api)
    
-1. Initiate the SDK when the application starts calling Kin. The first start will begin the blocakchain wallet and account creation process.
+1. Initiate the SDK when the application starts calling Kin. The first start will begin the blockchain wallet and account creation process.
       ```java
                try {
-                   Kin.start(getApplicationContext(), whitelistData);
-               } catch (InitializeException e) {
+	              // As an exmaple we are using PLAYGROUND environment
+                  Kin.start(getApplicationContext(), whitelistData, Environment.getPlayground());
+               } catch (ClientException | BlockchainException e) {
                    //
                }
       ```
@@ -130,16 +138,19 @@ As can be seen in the sample app, there are just few step required to integrate 
            try {
                Kin.launchMarketplace(MainActivity.this);
                 System.out.println("Public address : " + Kin.getPublicAddress());
-                } catch (TaskFailedException e) {
+                } catch (ClientException e) {
                   //
             }
       ```
+      
+## [Balance](docs/BALANCE.md)
+The balance API lets you get the last known balance (cached balance), blockchain confirmed balance and observe on balance updates.[(see more)](docs/BALANCE.md) 
 
-## [Create Native Spend Offer](NATIVE_SPEND.md)
-A native spend is a mechanism allowing your users to buy virtual goods you define, using Kin on Kin Ecosystem API's. [(see more)](NATIVE_SPEND.md) 
+## [Create Native Spend Offer](docs/NATIVE_SPEND.md)
+A native spend is a mechanism allowing your users to buy virtual goods you define, using Kin on Kin Ecosystem API's. [(see more)](docs/NATIVE_SPEND.md) 
 
-## [Create Native EARN Offer](NATIVE_EARN.md)
-A native earn is a mechanism allowing your users to earn Kin as a reward for native tasks you define, such as setting a profile picture or adding info. [(see more)](NATIVE_EARN.md) 
+## [Create Native EARN Offer](docs/NATIVE_EARN.md)
+A native earn is a mechanism allowing your users to earn Kin as a reward for native tasks you define, such as setting a profile picture or adding info. [(see more)](docs/NATIVE_EARN.md) 
    
 ## License
 The kin-ecosystem-android-sdk library is licensed under [MIT license](LICENSE.md).

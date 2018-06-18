@@ -4,9 +4,12 @@ import android.app.Application;
 import android.support.annotation.NonNull;
 import com.crashlytics.android.Crashlytics;
 import com.ecosystem.kin.app.model.SignInRepo;
+import com.kin.ecosystem.Environment;
 import com.kin.ecosystem.Kin;
+import com.kin.ecosystem.KinEnvironment;
 import com.kin.ecosystem.data.model.WhitelistData;
-import com.kin.ecosystem.exception.InitializeException;
+import com.kin.ecosystem.exception.BlockchainException;
+import com.kin.ecosystem.exception.ClientException;
 import io.fabric.sdk.android.Fabric;
 
 
@@ -19,6 +22,8 @@ public class App extends Application {
 
         Fabric.with(this, new Crashlytics());
 
+		KinEnvironment environment = Environment.getPlayground();
+
         if (BuildConfig.IS_JWT_REGISTRATION) {
             /**
             * SignInData should be created with registration JWT {see https://jwt.io/} created securely by server side
@@ -28,16 +33,16 @@ public class App extends Application {
             String jwt = SignInRepo.getJWT(this);
 
             try {
-                Kin.start(getApplicationContext(), jwt);
-            } catch (InitializeException e) {
+                Kin.start(getApplicationContext(), jwt, environment);
+            } catch (ClientException | BlockchainException e) {
                 e.printStackTrace();
             }
         } else {
             /** Use {@link WhitelistData} for small scale testing */
             WhitelistData whitelistData = SignInRepo.getWhitelistSignInData(this, getAppId(), getApiKey());
             try {
-                Kin.start(getApplicationContext(), whitelistData);
-            } catch (InitializeException e) {
+                Kin.start(getApplicationContext(), whitelistData, environment);
+            } catch (ClientException | BlockchainException e) {
                 e.printStackTrace();
             }
         }

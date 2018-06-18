@@ -1,7 +1,5 @@
 package com.kin.ecosystem.bi.events;
 
-
-
 public interface UserInterface extends UserReadonly {
     void setDigitalServiceUserId(String digitalServiceUserId);
 

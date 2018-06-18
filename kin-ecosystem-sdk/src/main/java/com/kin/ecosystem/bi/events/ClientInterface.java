@@ -1,7 +1,5 @@
 package com.kin.ecosystem.bi.events;
 
-
-
 public interface ClientInterface extends ClientReadonly {
     void setOs(String os);
 

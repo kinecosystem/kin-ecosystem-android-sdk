@@ -1,7 +1,7 @@
 package com.kin.ecosystem.bi.events;
 
-import java.util.UUID;
 import com.kin.ecosystem.bi.EventsStore;
+import java.util.UUID;
 
 public class CommonProxy implements CommonInterface {
     public Common snapshot() {

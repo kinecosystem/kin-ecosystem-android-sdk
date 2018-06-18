@@ -63,7 +63,7 @@ public class EventLoggerImpl implements EventLogger {
         instance.send(event);
     }
 
-    private String getUniqueID() {
-        return UUID.randomUUID().toString();
+    private UUID getUniqueID() {
+        return UUID.randomUUID();
     }
 }

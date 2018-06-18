@@ -2,27 +2,25 @@
 package com.kin.ecosystem.bi.events;
 
 // Augmented by script
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.bi.Event;
 import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.bi.EventsStore;
 
-import java.util.HashMap;
-import java.util.Map;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 
 /**
- * Server submits earn transaction to blockchain
+ * Client cancels spend order
  * 
  */
-public class EarnTransactionBroadcastToBlockchainSubmitted implements Event {
-    public static final String EVENT_NAME = "earn_transaction_broadcast_to_blockchain_submitted";
+public class SpendOrderCancelled implements Event {
+    public static final String EVENT_NAME = "spend_order_cancelled";
     public static final String EVENT_TYPE = "log";
 
     // Augmented by script
-    public static EarnTransactionBroadcastToBlockchainSubmitted create(String offerId, String orderId) {
-        return new EarnTransactionBroadcastToBlockchainSubmitted(
+    public static SpendOrderCancelled create(String offerId, String orderId) {
+        return new SpendOrderCancelled(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             (Client) EventsStore.client(),
@@ -32,7 +30,7 @@ public class EarnTransactionBroadcastToBlockchainSubmitted implements Event {
 
     // Augmented by script
     public static void fire(String offerId, String orderId) {
-        final EarnTransactionBroadcastToBlockchainSubmitted event = new EarnTransactionBroadcastToBlockchainSubmitted(
+        final SpendOrderCancelled event = new SpendOrderCancelled(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             (Client) EventsStore.client(),
@@ -103,7 +101,7 @@ public class EarnTransactionBroadcastToBlockchainSubmitted implements Event {
      * No args constructor for use in serialization
      * 
      */
-    public EarnTransactionBroadcastToBlockchainSubmitted() {
+    public SpendOrderCancelled() {
     }
 
     /**
@@ -116,7 +114,7 @@ public class EarnTransactionBroadcastToBlockchainSubmitted implements Event {
 
      * @param user
      */
-    public EarnTransactionBroadcastToBlockchainSubmitted(Common common, User user, Client client, String offerId, String orderId) {
+    public SpendOrderCancelled(Common common, User user, Client client, String offerId, String orderId) {
         super();
         this.common = common;
         this.user = user;

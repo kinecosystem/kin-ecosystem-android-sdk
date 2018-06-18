@@ -14,7 +14,7 @@ import com.kin.ecosystem.base.BaseToolbarActivity;
 import com.kin.ecosystem.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderRepository;
-import com.kin.ecosystem.exception.TaskFailedException;
+import com.kin.ecosystem.exception.ClientException;
 import com.kin.ecosystem.history.view.OrderHistoryActivity;
 import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter;
 import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
@@ -121,6 +121,11 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
 
     @Override
     public void onBackPressed() {
+        marketplacePresenter.backButtonPressed();
+    }
+
+    @Override
+    public void navigateBack() {
         super.onBackPressed();
         overridePendingTransition(0, R.anim.kinecosystem_slide_out_right);
     }
@@ -145,7 +150,7 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     public void showOfferActivity(PollBundle pollBundle) {
         try {
             navigateToActivity(PollWebViewActivity.createIntent(this, pollBundle));
-        } catch (TaskFailedException e) {
+        } catch (ClientException e) {
             marketplacePresenter.showOfferActivityFailed();
         }
     }

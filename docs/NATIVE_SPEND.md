@@ -38,9 +38,10 @@ In order to create a native spend offer in your app
 ### Example from sample app
 In the sample app the spend JWT is created and signed by the Android client side for presentation purpose only- do not use this approach on real production app.
 JWT need to be signed by server side where private key is secure.
-```java    
+See [BlockchainException](../kin-ecosystem-sdk/src/main/java/com/kin/ecosystem/exception/BlockchainException.java) and [ServiceException](../kin-ecosystem-sdk/src/main/java/com/kin/ecosystem/exception/ServiceException.java) for possible errors.
+```java
         try {
-            Kin.purchase(offerJwt, new Callback<OrderConfirmation>() {
+            Kin.purchase(offerJwt, new KinCallback<OrderConfirmation>() {
                 @Override
                 public void onResponse(OrderConfirmation orderConfirmation) {
                     // OrderConfirmation will be called once Ecosystem recieved the payment transaction from user.
@@ -52,11 +53,11 @@ JWT need to be signed by server side where private key is secure.
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
-                    System.out.println("Failed - " + t.getMessage());
+                public void onFailure(KinEcosystemException exception) {
+                    System.out.println("Failed - " + error.getMessage());
                 }
             });
-        } catch (TaskFailedException e) {
+        } catch (ClientException e) {
             e.printStackTrace();
         }
 ```
@@ -87,7 +88,7 @@ JWT need to be signed by server side where private key is secure.
 ```
 You can remove the observer also by `Kin.removeNativeOfferClickedObserver(nativeSpendOfferClickedObserver)`
 
-2. Create a [NativeSpendOffer](/kin-ecosystem-sdk/src/main/java/com/kin/ecosystem/marketplace/model/NativeSpendOffer.java) object:
+2. Create a [NativeSpendOffer](/com/kin/ecosystem/marketplace/model/NativeSpendOffer.java) object:
 ```java
     NativeSpendOffer nativeOffer =
         new NativeSpendOffer("The offerID") // OfferId should be uniqe
@@ -104,7 +105,7 @@ You can remove the observer also by `Kin.removeNativeOfferClickedObserver(native
         } else {
             // Native offer already in Kin Marketplace
         }
-    } catch (TaskFailedException e) {
+    } catch (ClientException error) {
         ...
     }
 ```
@@ -117,27 +118,32 @@ You can remove the observer also by `Kin.removeNativeOfferClickedObserver(native
         } else {
             // Native offer isn't in Kin Marketplace
         }
-    } catch (TaskFailedException e) {
-        e.printStackTrace();
+    } catch (ClientException e) {
+        ...
     }
 ```
 
 # Get Order Confirmation
 if you wish to get the order status of a certain offer, which already completed or<br>
 the user closed the app and you want to get the order status or jwtConfirmation<br>
-just follow the example below:
+just follow the example below.
+See [ServiceException](../kin-ecosystem-sdk/src/main/java/com/kin/ecosystem/exception/ServiceException.java) for possible errors.
 ```java
-    Kin.getOrderConfirmation("your_offer_id", new Callback<OrderConfirmation>() {
-            @Override
-            public void onResponse(OrderConfirmation orderConfirmation) {
-                if(orderConfirmation.getStatus() == Status.COMPLETED ){
-                   String jwtConfirmation = orderConfirmation.getJwtConfirmation()
+    try {
+        Kin.getOrderConfirmation("your_offer_id", new KinCallback<OrderConfirmation>() {
+                @Override
+                public void onResponse(OrderConfirmation orderConfirmation) {
+                    if(orderConfirmation.getStatus() == Status.COMPLETED ){
+                       String jwtConfirmation = orderConfirmation.getJwtConfirmation()
+                    }
                 }
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-
-            }
+    
+                @Override
+                public void onFailure(KinEcosystemException exception) {
+                    ...
+                }
         });
+    } catch (ClientException exception) {
+	    ...
+    }
 ```

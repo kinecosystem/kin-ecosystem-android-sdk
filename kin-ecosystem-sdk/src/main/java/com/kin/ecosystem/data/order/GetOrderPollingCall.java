@@ -1,10 +1,13 @@
 package com.kin.ecosystem.data.order;
 
+import static com.kin.ecosystem.exception.ClientException.INTERNAL_INCONSISTENCY;
+
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.Order.Status;
-import java.util.concurrent.TimeoutException;
+import com.kin.ecosystem.util.ErrorUtil;
+import kin.ecosystem.core.network.ApiException;
 
 class GetOrderPollingCall extends Thread {
 
@@ -13,10 +16,10 @@ class GetOrderPollingCall extends Thread {
 
     private final OrderDataSource.Remote remote;
     private final String orderID;
-    private final Callback<Order> callback;
+    private final Callback<Order, ApiException> callback;
 
     GetOrderPollingCall(@NonNull final OrderDataSource.Remote remote, final String orderID,
-        @NonNull final Callback<Order> callback) {
+        @NonNull final Callback<Order, ApiException> callback) {
         this.remote = remote;
         this.orderID = orderID;
         this.callback = callback;
@@ -38,10 +41,14 @@ class GetOrderPollingCall extends Thread {
                     callback.onResponse(order);
                 }
             } else {
-                callback.onFailure(new TimeoutException());
+                callback.onFailure(ErrorUtil.createOrderTimeoutException());
             }
         } catch (final InterruptedException e) {
-            callback.onFailure(e);
+            callback.onFailure(toApiException(e));
         }
+    }
+
+    private ApiException toApiException(InterruptedException e) {
+        return new ApiException(INTERNAL_INCONSISTENCY, e);
     }
 }

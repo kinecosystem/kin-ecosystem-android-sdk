@@ -2,38 +2,40 @@
 package com.kin.ecosystem.bi.events;
 
 // Augmented by script
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.bi.Event;
 import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.bi.EventsStore;
-
 import java.util.HashMap;
 import java.util.Map;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 
 /**
- * Users exists the marketplace
+ * Generic earn page loaded
  * 
  */
-public class CloseButtonOnMarketplacePageTapped implements Event {
-    public static final String EVENT_NAME = "close_button_on_marketplace_page_tapped";
-    public static final String EVENT_TYPE = "analytics";
+public class EarnPageLoaded implements Event {
+    public static final String EVENT_NAME = "earn_page_loaded";
+    public static final String EVENT_TYPE = "log";
 
     // Augmented by script
-    public static CloseButtonOnMarketplacePageTapped create() {
-        return new CloseButtonOnMarketplacePageTapped(
+    public static EarnPageLoaded create(EarnPageLoaded.OfferType offerType) {
+        return new EarnPageLoaded(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
-            (Client) EventsStore.client());
+            (Client) EventsStore.client(),
+            offerType);
     }
 
     // Augmented by script
-    public static void fire() {
-        final CloseButtonOnMarketplacePageTapped event = new CloseButtonOnMarketplacePageTapped(
+    public static void fire(EarnPageLoaded.OfferType offerType) {
+        final EarnPageLoaded event = new EarnPageLoaded(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
-            (Client) EventsStore.client());
+            (Client) EventsStore.client(),
+            offerType);
 
         EventLoggerImpl.Send(event);
     }
@@ -78,27 +80,37 @@ public class CloseButtonOnMarketplacePageTapped implements Event {
     @SerializedName("client")
     @Expose
     private Client client;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("offer_type")
+    @Expose
+    private EarnPageLoaded.OfferType offerType;
 
     /**
      * No args constructor for use in serialization
      * 
      */
-    public CloseButtonOnMarketplacePageTapped() {
+    public EarnPageLoaded() {
     }
 
     /**
      * 
+     * @param offerType
      * @param common
 
      * @param client
 
      * @param user
      */
-    public CloseButtonOnMarketplacePageTapped(Common common, User user, Client client) {
+    public EarnPageLoaded(Common common, User user, Client client, EarnPageLoaded.OfferType offerType) {
         super();
         this.common = common;
         this.user = user;
         this.client = client;
+        this.offerType = offerType;
     }
 
     /**
@@ -189,6 +201,69 @@ public class CloseButtonOnMarketplacePageTapped implements Event {
      */
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public EarnPageLoaded.OfferType getOfferType() {
+        return offerType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setOfferType(EarnPageLoaded.OfferType offerType) {
+        this.offerType = offerType;
+    }
+
+    public enum OfferType {
+
+        @SerializedName("poll")
+        POLL("poll"),
+        @SerializedName("coupon")
+        COUPON("coupon"),
+        @SerializedName("quiz")
+        QUIZ("quiz"),
+        @SerializedName("tutorial")
+        TUTORIAL("tutorial"),
+        @SerializedName("external")
+        EXTERNAL("external");
+        private final String value;
+        private final static Map<String, EarnPageLoaded.OfferType> CONSTANTS = new HashMap<String, EarnPageLoaded.OfferType>();
+
+        static {
+            for (EarnPageLoaded.OfferType c: values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        private OfferType(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+
+        public String value() {
+            return this.value;
+        }
+
+        public static EarnPageLoaded.OfferType fromValue(String value) {
+            EarnPageLoaded.OfferType constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            } else {
+                return constant;
+            }
+        }
+
     }
 
 }

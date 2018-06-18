@@ -1,6 +1,9 @@
 package com.kin.ecosystem.data.order;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -9,7 +12,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
@@ -17,8 +21,10 @@ import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.data.offer.OfferDataSource;
 import com.kin.ecosystem.exception.DataNotAvailableException;
-import com.kin.ecosystem.exception.TaskFailedException;
+
 import kin.ecosystem.core.network.ApiException;
+
+import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.network.model.BlockchainData;
 import com.kin.ecosystem.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.network.model.Offer;
@@ -28,16 +34,20 @@ import com.kin.ecosystem.network.model.Order.Status;
 import com.kin.ecosystem.network.model.OrderList;
 import com.kin.ecosystem.network.model.OrderSpendResult.TypeEnum;
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import kin.ecosystem.core.network.model.Error;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
@@ -63,7 +73,7 @@ public class OrderRepositoryTest {
     private OrderDataSource.Local local;
 
     @Mock
-    private Callback<OpenOrder> openOrderCallback;
+    private KinCallback<OpenOrder> openOrderCallback;
 
     @Mock
     private OpenOrder openOrder;
@@ -81,7 +91,7 @@ public class OrderRepositoryTest {
     private BlockchainData blockchainData;
 
     @Captor
-    private ArgumentCaptor<Callback<OpenOrder>> createOrderCapture;
+    private ArgumentCaptor<Callback<OpenOrder, ApiException>> createOrderCapture;
 
     private OrderRepository orderRepository;
 
@@ -89,8 +99,6 @@ public class OrderRepositoryTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         resetInstance();
-        resetPendingOrdersCount();
-        resetPaymentObserverCount();
 
         when(offer.getId()).thenReturn(offerID);
 
@@ -110,18 +118,6 @@ public class OrderRepositoryTest {
         when(payment.isSucceed()).thenReturn(true);
     }
 
-    private void resetPendingOrdersCount() throws Exception {
-        Field pendingOrdersCount = OrderRepository.class.getDeclaredField("pendingOrdersCount");
-        pendingOrdersCount.setAccessible(true);
-        pendingOrdersCount.set(pendingOrdersCount, new AtomicInteger(0));
-    }
-
-    private void resetPaymentObserverCount() throws Exception {
-        Field paymentObserverCount = OrderRepository.class.getDeclaredField("paymentObserverCount");
-        paymentObserverCount.setAccessible(true);
-        paymentObserverCount.set(paymentObserverCount, new AtomicInteger(0));
-    }
-
     private void resetInstance() throws Exception {
         Field instance = OrderRepository.class.getDeclaredField("instance");
         instance.setAccessible(true);
@@ -137,8 +133,8 @@ public class OrderRepositoryTest {
 
     @Test
     public void getAllOrderHistory_Succeed() {
-        Callback<OrderList> orderHistoryCallback = (Callback<OrderList>) mock(Callback.class);
-        ArgumentCaptor<Callback<OrderList>> orderHistoryCaptor = ArgumentCaptor.forClass(Callback.class);
+        KinCallback<OrderList> orderHistoryCallback =  mock(KinCallback.class);
+        ArgumentCaptor<Callback<OrderList, ApiException>> orderHistoryCaptor = ArgumentCaptor.forClass(Callback.class);
         orderRepository.getAllOrderHistory(orderHistoryCallback);
         verify(remote).getAllOrderHistory(orderHistoryCaptor.capture());
 
@@ -157,7 +153,7 @@ public class OrderRepositoryTest {
         createOrderCapture.getValue().onResponse(openOrder);
         assertEquals(openOrder, orderRepository.getOpenOrder().getValue());
         verify(openOrderCallback).onResponse(openOrder);
-        verify(openOrderCallback, never()).onFailure(any(Throwable.class));
+        verify(openOrderCallback, never()).onFailure(any(KinEcosystemException.class));
     }
 
     @Test
@@ -165,20 +161,20 @@ public class OrderRepositoryTest {
         orderRepository.createOrder(offerID, openOrderCallback);
         verify(remote).createOrder(anyString(), createOrderCapture.capture());
 
-        TaskFailedException exception = new TaskFailedException("Some error");
-        createOrderCapture.getValue().onFailure(exception);
+        createOrderCapture.getValue().onFailure(getApiException());
+
         assertNull(orderRepository.getOpenOrder().getValue());
-        verify(openOrderCallback).onFailure(exception);
+        verify(openOrderCallback).onFailure(any(KinEcosystemException.class));
         verify(openOrderCallback, never()).onResponse(any(OpenOrder.class));
     }
 
 
     @Test
     public void submitOrder_Succeed() throws Exception {
-        Callback<Order> orderCallback = (Callback<Order>) mock(Callback.class);
-        ArgumentCaptor<Callback<Order>> submitOrderCapture = ArgumentCaptor.forClass(Callback.class);
+        KinCallback<Order> orderCallback = mock(KinCallback.class);
+        ArgumentCaptor<Callback<Order, ApiException>> submitOrderCapture = ArgumentCaptor.forClass(Callback.class);
         ArgumentCaptor<Observer<Payment>> paymentCapture = ArgumentCaptor.forClass(Observer.class);
-        ArgumentCaptor<Callback<Order>> getOrderCapture = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Order, ApiException>> getOrderCapture = ArgumentCaptor.forClass(Callback.class);
 
         // Create Order
         orderRepository.createOrder(order.getOfferId(), openOrderCallback);
@@ -214,8 +210,8 @@ public class OrderRepositoryTest {
 
     @Test
     public void submitOrder_Failed() throws Exception {
-        Callback<Order> orderCallback = (Callback<Order>) mock(Callback.class);
-        ArgumentCaptor<Callback<Order>> submitOrderCapture = ArgumentCaptor.forClass(Callback.class);
+        KinCallback<Order> orderCallback = mock(KinCallback.class);
+        ArgumentCaptor<Callback<Order, ApiException>> submitOrderCapture = ArgumentCaptor.forClass(Callback.class);
 
         // Create Order
         orderRepository.createOrder(order.getOfferId(), openOrderCallback);
@@ -231,8 +227,9 @@ public class OrderRepositoryTest {
         ObservableData<Offer> pendingOffer = ObservableData.create(offer);
         when(offerRepository.getPendingOffer()).thenReturn(pendingOffer);
 
-        submitOrderCapture.getValue().onFailure(new Throwable());
-        verify(orderCallback).onFailure(any(Throwable.class));
+
+        submitOrderCapture.getValue().onFailure(getApiException());
+        verify(orderCallback).onFailure(any(KinEcosystemException.class));
         verify(orderCallback, never()).onResponse(any(Order.class));
         assertNull(orderRepository.getOpenOrder().getValue());
         verify(offerRepository).setPendingOfferByID(null);
@@ -240,8 +237,8 @@ public class OrderRepositoryTest {
 
     @Test
     public void cancelOrder_Succeed() throws Exception {
-        Callback<Void> cancelOrderCallback = (Callback<Void>) mock(Callback.class);
-        ArgumentCaptor<Callback<Void>> cancelOrderCapture = ArgumentCaptor.forClass(Callback.class);
+        KinCallback<Void> cancelOrderCallback = mock(KinCallback.class);
+        ArgumentCaptor<Callback<Void, ApiException>> cancelOrderCapture = ArgumentCaptor.forClass(Callback.class);
 
         // Create Order
         orderRepository.createOrder(order.getOfferId(), openOrderCallback);
@@ -263,8 +260,8 @@ public class OrderRepositoryTest {
 
     @Test
     public void cancelOrder_Failed() throws Exception {
-        Callback<Void> cancelOrderCallback = (Callback<Void>) mock(Callback.class);
-        ArgumentCaptor<Callback<Void>> cancelOrderCapture = ArgumentCaptor.forClass(Callback.class);
+        KinCallback<Void> cancelOrderCallback = mock(KinCallback.class);
+        ArgumentCaptor<Callback<Void, ApiException>> cancelOrderCapture = ArgumentCaptor.forClass(Callback.class);
 
         // Create Order
         orderRepository.createOrder(order.getOfferId(), openOrderCallback);
@@ -279,8 +276,8 @@ public class OrderRepositoryTest {
         orderRepository.cancelOrder(offerID, orderID, cancelOrderCallback);
         verify(remote).cancelOrder(anyString(), cancelOrderCapture.capture());
 
-        cancelOrderCapture.getValue().onFailure(any(Throwable.class));
-        verify(cancelOrderCallback).onFailure(any(Throwable.class));
+        cancelOrderCapture.getValue().onFailure(getApiException());
+        verify(cancelOrderCallback).onFailure(any(KinEcosystemException.class));
         verify(cancelOrderCallback, never()).onResponse(null);
     }
 
@@ -288,17 +285,18 @@ public class OrderRepositoryTest {
     public void purchase_Succeed() throws Exception {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         ArgumentCaptor<Observer<Payment>> paymentCapture = ArgumentCaptor.forClass(Observer.class);
-        ArgumentCaptor<Callback<Order>> getOrderCapture = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Order, ApiException>> getOrderCapture = ArgumentCaptor.forClass(Callback.class);
 
         Order confirmedOrder = new Order().orderId(orderID).offerId(offerID).status(Status.COMPLETED);
-        confirmedOrder.setResult(new JWTBodyPaymentConfirmationResult().jwt("A JWT CONFIRMATION").type(TypeEnum.PAYMENT_CONFIRMATION));
+        confirmedOrder.setResult(
+            new JWTBodyPaymentConfirmationResult().jwt("A JWT CONFIRMATION").type(TypeEnum.PAYMENT_CONFIRMATION));
         ObservableData<Offer> pendingOffer = ObservableData.create(offer);
 
         when(remote.createExternalOrderSync(anyString())).thenReturn(openOrder);
         when(remote.getOrderSync(anyString())).thenReturn(confirmedOrder);
         when(offerRepository.getPendingOffer()).thenReturn(pendingOffer);
 
-        orderRepository.purchase("A GENERATED NATIVE OFFER JWT", new Callback<OrderConfirmation>() {
+        orderRepository.purchase("A GENERATED NATIVE OFFER JWT", new KinCallback<OrderConfirmation>() {
             @Override
             public void onResponse(OrderConfirmation orderConfirmation) {
                 countDownLatch.countDown();
@@ -308,7 +306,7 @@ public class OrderRepositoryTest {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(KinEcosystemException exception) {
 
             }
         });
@@ -320,8 +318,8 @@ public class OrderRepositoryTest {
             observer.onChanged(payment);
         }
         verify(remote).getOrder(anyString(), getOrderCapture.capture());
-        List<Callback<Order>> getOrderCallbackList = getOrderCapture.getAllValues();
-        for (Callback<Order> callback : getOrderCallbackList) {
+        List<Callback<Order, ApiException>> getOrderCallbackList = getOrderCapture.getAllValues();
+        for (Callback<Order, ApiException> callback : getOrderCallbackList) {
             callback.onResponse(confirmedOrder);
         }
         countDownLatch.await(1000, TimeUnit.MICROSECONDS);
@@ -331,21 +329,69 @@ public class OrderRepositoryTest {
     }
 
     @Test
+    public void purchase_Conflict_GetOrderConfirmation() throws Exception {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+
+        Order confirmedOrder = new Order().orderId(orderID).offerId(offerID).status(Status.COMPLETED);
+        confirmedOrder.setResult(
+            new JWTBodyPaymentConfirmationResult().jwt("A JWT CONFIRMATION").type(TypeEnum.PAYMENT_CONFIRMATION));
+        ObservableData<Offer> pendingOffer = ObservableData.create(offer);
+
+        // Create the Conflict error response
+        Error error = Mockito.mock(Error.class);
+        when(error.getCode()).thenReturn(4091);
+
+        Map<String, List<String>> responseHeaders = new HashMap<>();
+        responseHeaders.put("location", Arrays.asList("v/some/OrderID12"));
+
+        ApiException apiException = Mockito.mock(ApiException.class);
+        when(apiException.getCode()).thenReturn(409);
+        when(apiException.getResponseBody()).thenReturn(error);
+        when(apiException.getResponseHeaders()).thenReturn(responseHeaders);
+
+        when(remote.createExternalOrderSync(anyString())).thenThrow(apiException);
+        when(remote.getOrderSync(anyString())).thenReturn(confirmedOrder);
+        when(offerRepository.getPendingOffer()).thenReturn(pendingOffer);
+
+        // Check not error, and got jwt confirmation
+        orderRepository.purchase("A GENERATED NATIVE OFFER JWT", new KinCallback<OrderConfirmation>() {
+            @Override
+            public void onResponse(OrderConfirmation orderConfirmation) {
+                countDownLatch.countDown();
+                assertEquals("A JWT CONFIRMATION", orderConfirmation.getJwtConfirmation());
+                assertNull(orderRepository.getOpenOrder().getValue());
+            }
+
+            @Override
+            public void onFailure(KinEcosystemException exception) {
+
+            }
+        });
+
+        Thread.sleep(500);
+        ShadowLooper.runUiThreadTasks();
+        verify(blockchainSource, never()).addPaymentObservable(any(Observer.class));
+
+        countDownLatch.await(1000, TimeUnit.MICROSECONDS);
+        ShadowLooper.runUiThreadTasks();
+    }
+
+    @Test
     public void purchase_Failed_Cant_Create_Order() throws Exception {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
 
-        when(remote.createExternalOrderSync(anyString())).thenThrow(new ApiException());
+        when(remote.createExternalOrderSync(anyString())).thenThrow(getApiException());
 
-        orderRepository.purchase("generatedOfferJWT", new Callback<OrderConfirmation>() {
+        orderRepository.purchase("generatedOfferJWT", new KinCallback<OrderConfirmation>() {
             @Override
             public void onResponse(OrderConfirmation confirmationJwt) {
 
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(KinEcosystemException exception) {
                 countDownLatch.countDown();
-                assertNotNull(t);
+                assertNotNull(exception);
                 assertNull(orderRepository.getOpenOrder().getValue());
             }
         });
@@ -360,23 +406,23 @@ public class OrderRepositoryTest {
     public void purchase_Failed_Payment_Failed() throws Exception {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         ArgumentCaptor<Observer<Payment>> paymentCapture = ArgumentCaptor.forClass(Observer.class);
-        ArgumentCaptor<Callback<Void>> cancelOrderCallback = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Callback<Void, ApiException>> cancelOrderCallback = ArgumentCaptor.forClass(Callback.class);
 
         ObservableData<Offer> pendingOffer = ObservableData.create(offer);
         when(offerRepository.getPendingOffer()).thenReturn(pendingOffer);
         when(remote.createExternalOrderSync(anyString())).thenReturn(openOrder);
         when(payment.isSucceed()).thenReturn(false);
 
-        orderRepository.purchase("generatedOfferJWT", new Callback<OrderConfirmation>() {
+        orderRepository.purchase("generatedOfferJWT", new KinCallback<OrderConfirmation>() {
             @Override
             public void onResponse(OrderConfirmation response) {
 
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(KinEcosystemException exception) {
                 countDownLatch.countDown();
-                assertNotNull(t);
+                assertNotNull(exception);
                 verify(offerRepository).setPendingOfferByID(null);
                 assertNull(orderRepository.getOpenOrder().getValue());
             }
@@ -401,8 +447,8 @@ public class OrderRepositoryTest {
     @Test
     public void isFirstSpendOrder_True() throws InterruptedException {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        ArgumentCaptor<Callback<Boolean>> isFirstSpendCallback = ArgumentCaptor.forClass(Callback.class);
-        orderRepository.isFirstSpendOrder(new Callback<Boolean>() {
+        ArgumentCaptor<Callback<Boolean,Void>> isFirstSpendCallback = ArgumentCaptor.forClass(Callback.class);
+        orderRepository.isFirstSpendOrder(new KinCallback<Boolean>() {
             @Override
             public void onResponse(Boolean response) {
                 countDownLatch.countDown();
@@ -410,7 +456,7 @@ public class OrderRepositoryTest {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(KinEcosystemException exception) {
 
             }
         });
@@ -422,21 +468,21 @@ public class OrderRepositoryTest {
     @Test
     public void isFirstSpendOrder_False() throws InterruptedException {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        ArgumentCaptor<Callback<Boolean>> isFirstSpendCallback = ArgumentCaptor.forClass(Callback.class);
-        orderRepository.isFirstSpendOrder(new Callback<Boolean>() {
+        ArgumentCaptor<Callback<Boolean, Void>> isFirstSpendCallback = ArgumentCaptor.forClass(Callback.class);
+        orderRepository.isFirstSpendOrder(new KinCallback<Boolean>() {
             @Override
             public void onResponse(Boolean response) {
 
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(KinEcosystemException exception) {
                 countDownLatch.countDown();
-                assertTrue(t instanceof DataNotAvailableException);
+                assertTrue(exception.getCause() instanceof DataNotAvailableException);
             }
         });
         verify(local).isFirstSpendOrder(isFirstSpendCallback.capture());
-        isFirstSpendCallback.getValue().onFailure(new Throwable());
+        isFirstSpendCallback.getValue().onFailure(null);
         countDownLatch.await(500, TimeUnit.MICROSECONDS);
     }
 
@@ -447,5 +493,11 @@ public class OrderRepositoryTest {
 
         orderRepository.setIsFirstSpendOrder(true);
         verify(local).setIsFirstSpendOrder(true);
+    }
+
+    private ApiException getApiException() {
+        Exception exception = new IllegalArgumentException();
+        ApiException apiException = new ApiException(500,exception);
+        return apiException;
     }
 }

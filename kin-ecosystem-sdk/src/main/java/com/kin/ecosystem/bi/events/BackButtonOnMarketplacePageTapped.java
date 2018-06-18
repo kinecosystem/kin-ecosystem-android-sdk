@@ -2,42 +2,36 @@
 package com.kin.ecosystem.bi.events;
 
 // Augmented by script
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.bi.Event;
 import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.bi.EventsStore;
 
-import java.util.HashMap;
-import java.util.Map;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 
 /**
- * Client cancels spend order
+ * Users exists the marketplace
  * 
  */
-public class SpendOrderCreationCancelled implements Event {
-    public static final String EVENT_NAME = "spend_order_creation_cancelled";
-    public static final String EVENT_TYPE = "log";
+public class BackButtonOnMarketplacePageTapped implements Event {
+    public static final String EVENT_NAME = "back_button_on_marketplace_page_tapped";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
-    public static SpendOrderCreationCancelled create(String offerId, String orderId) {
-        return new SpendOrderCreationCancelled(
+    public static BackButtonOnMarketplacePageTapped create() {
+        return new BackButtonOnMarketplacePageTapped(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
-            (Client) EventsStore.client(),
-            offerId,
-            orderId);
+            (Client) EventsStore.client());
     }
 
     // Augmented by script
-    public static void fire(String offerId, String orderId) {
-        final SpendOrderCreationCancelled event = new SpendOrderCreationCancelled(
+    public static void fire() {
+        final BackButtonOnMarketplacePageTapped event = new BackButtonOnMarketplacePageTapped(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
-            (Client) EventsStore.client(),
-            offerId,
-            orderId);
+            (Client) EventsStore.client());
 
         EventLoggerImpl.Send(event);
     }
@@ -82,47 +76,27 @@ public class SpendOrderCreationCancelled implements Event {
     @SerializedName("client")
     @Expose
     private Client client;
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    @SerializedName("offer_id")
-    @Expose
-    private String offerId;
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    @SerializedName("order_id")
-    @Expose
-    private String orderId;
 
     /**
      * No args constructor for use in serialization
      * 
      */
-    public SpendOrderCreationCancelled() {
+    public BackButtonOnMarketplacePageTapped() {
     }
 
     /**
      * 
      * @param common
-     * @param orderId
 
      * @param client
-     * @param offerId
 
      * @param user
      */
-    public SpendOrderCreationCancelled(Common common, User user, Client client, String offerId, String orderId) {
+    public BackButtonOnMarketplacePageTapped(Common common, User user, Client client) {
         super();
         this.common = common;
         this.user = user;
         this.client = client;
-        this.offerId = offerId;
-        this.orderId = orderId;
     }
 
     /**
@@ -213,42 +187,6 @@ public class SpendOrderCreationCancelled implements Event {
      */
     public void setClient(Client client) {
         this.client = client;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public String getOfferId() {
-        return offerId;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setOfferId(String offerId) {
-        this.offerId = offerId;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public String getOrderId() {
-        return orderId;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
     }
 
 }

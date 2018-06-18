@@ -62,7 +62,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     api project(':kin-ecosystem-sdk')
-    //implementation 'com.github.kinfoundation:kin-ecosystem-android-sdk:0.0.6'
+    //implementation 'com.github.kinfoundation:kin-ecosystem-android-sdk:0.0.7'
     implementation 'io.jsonwebtoken:jjwt:0.9.0'
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'

@@ -34,4 +34,6 @@ public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
     void setEarnEmptyView();
 
     void setSpendEmptyView();
+
+    void navigateBack();
 }

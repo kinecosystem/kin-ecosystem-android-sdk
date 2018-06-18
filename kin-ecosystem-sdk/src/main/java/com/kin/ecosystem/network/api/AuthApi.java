@@ -13,8 +13,11 @@
 
 package com.kin.ecosystem.network.api;
 
+import static kin.ecosystem.core.network.ApiClient.POST;
+
 import com.google.gson.reflect.TypeToken;
-import com.kin.ecosystem.network.Configuration;
+
+import com.kin.ecosystem.Configuration;
 import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.network.model.SignInData;
 import java.io.IOException;
@@ -40,7 +43,7 @@ public class AuthApi {
     private ApiClient apiClient;
 
     public AuthApi() {
-        this(Configuration.getApiClient());
+        this(Configuration.getDefaultApiClient());
     }
 
     public AuthApi(ApiClient apiClient) {
@@ -110,7 +113,7 @@ public class AuthApi {
 
         String[] localVarAuthNames = new String[]{};
         return apiClient
-            .buildCall(localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody,
+            .buildCall(localVarPath, POST, localVarQueryParams, localVarCollectionQueryParams, localVarPostBody,
                 localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 
@@ -251,7 +254,7 @@ public class AuthApi {
 
         String[] localVarAuthNames = new String[]{};
         return apiClient
-            .buildCall(localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody,
+            .buildCall(localVarPath, POST, localVarQueryParams, localVarCollectionQueryParams, localVarPostBody,
                 localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 

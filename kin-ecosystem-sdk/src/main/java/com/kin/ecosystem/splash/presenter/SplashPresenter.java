@@ -1,11 +1,14 @@
 package com.kin.ecosystem.splash.presenter;
 
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.bi.events.BackButtonOnWelcomeScreenPageTapped;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.bi.events.WelcomeScreenButtonTapped;
 import com.kin.ecosystem.bi.events.WelcomeScreenPageViewed;
 import com.kin.ecosystem.data.auth.AuthDataSource;
+import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.splash.view.ISplashView;
 
 public class SplashPresenter extends BasePresenter<ISplashView> implements ISplashPresenter {
@@ -34,7 +37,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
     }
 
     private void activateAccount() {
-        authRepository.activateAccount(new Callback<Void>() {
+        authRepository.activateAccount(new KinCallback<Void>() {
             @Override
             public void onResponse(Void response) {
                 confirmedSucceed = true;
@@ -42,7 +45,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(KinEcosystemException exception) {
                 showToast("Oops something went wrong...");
                 stopLoading(true);
             }
@@ -71,6 +74,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 
     @Override
     public void backButtonPressed() {
+        BackButtonOnWelcomeScreenPageTapped.fire();
         if (view != null) {
             view.navigateBack();
         }

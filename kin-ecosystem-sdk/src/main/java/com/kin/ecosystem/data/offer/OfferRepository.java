@@ -2,19 +2,16 @@ package com.kin.ecosystem.data.offer;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.exception.DataNotAvailableException;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.marketplace.model.NativeOffer;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.network.model.Offer;
-import com.kin.ecosystem.network.model.Offer.ContentTypeEnum;
 import com.kin.ecosystem.network.model.OfferList;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import com.kin.ecosystem.util.ErrorUtil;
+import kin.ecosystem.core.network.ApiException;
 
 public class OfferRepository implements OfferDataSource {
 
@@ -52,8 +49,8 @@ public class OfferRepository implements OfferDataSource {
     }
 
     @Override
-    public void getOffers(@Nullable final Callback<OfferList> callback) {
-        remoteData.getOffers(new Callback<OfferList>() {
+    public void getOffers(@Nullable final KinCallback<OfferList> callback) {
+        remoteData.getOffers(new Callback<OfferList, ApiException>() {
             @Override
             public void onResponse(OfferList response) {
                 cachedOfferList = response;
@@ -63,11 +60,12 @@ public class OfferRepository implements OfferDataSource {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(ApiException e) {
                 if (callback != null) {
-                    callback.onFailure(new DataNotAvailableException());
+                    callback.onFailure(ErrorUtil.fromApiException(e));
                 }
             }
+
         });
     }
 
