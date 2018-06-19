@@ -7,7 +7,6 @@ ext {
     picassoVersion = '2.5.2'
     okhttp3Version = '3.9.1'
     gsonVersion = '2.8.2'
-    supportVersion = '26.1.0'
     baseRecyclerAdapterVersion = '18191dd'
 
     //Packages
@@ -17,7 +16,6 @@ ext {
     picassoPackage = 'com.squareup.picasso'
     okhttp3Packace = 'com.squareup.okhttp3'
     gsonPackage = 'com.google.code.gson'
-    supportPackage = 'com.android.support'
     baseRecyclerAdapterPackage = 'com.github.OrenZak'
 
     //Testing Version
