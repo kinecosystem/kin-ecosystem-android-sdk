@@ -14,7 +14,7 @@ public class Environment implements KinEnvironment {
 		"https://stellar.kinplayground.com",
 		"ecosystem playground",
 		"GDVIWJ2NYBCPHMGTIBO5BBZCP5QCYC4YT4VINTV5PZOSE7BAJCH5JI64",
-		"http://api.kinplayground.com/v1",
+		"https://api.kinplayground.com/v1",
 		"https://s3.amazonaws.com/assets.kinplayground.com/web-offers/cards-based/index.html",
 		"");
 
