@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.OrderHistoryItemTapped;
 import com.kin.ecosystem.bi.events.OrderHistoryPageViewed;
 import com.kin.ecosystem.bi.events.SpendRedeemPageViewed.RedeemTrigger;
@@ -25,6 +26,7 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 
 	private static final int NOT_FOUND = -1;
 	private final OrderDataSource orderRepository;
+	private final EventLogger eventLogger;
 
 	private List<Order> orderHistoryList = new ArrayList<>();
 	private Observer<Order> completedOrderObserver;
@@ -32,8 +34,9 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 
 	private boolean isFirstSpendOrder;
 
-	public OrderHistoryPresenter(@NonNull final OrderDataSource orderRepository, boolean isFirstSpendOrder) {
+	public OrderHistoryPresenter(@NonNull final OrderDataSource orderRepository, @NonNull final EventLogger eventLogger,boolean isFirstSpendOrder) {
 		this.orderRepository = orderRepository;
+		this.eventLogger = eventLogger;
 		this.isFirstSpendOrder = isFirstSpendOrder;
 		this.gson = new Gson();
 	}
@@ -41,7 +44,7 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 	@Override
 	public void onAttach(IOrderHistoryView view) {
 		super.onAttach(view);
-		OrderHistoryPageViewed.fire();
+		eventLogger.send(OrderHistoryPageViewed.create());
 		getOrderHistoryList();
 		listenToCompletedOrders();
 	}
@@ -146,7 +149,7 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 	public void onItemCLicked(int position) {
 		Order order = orderHistoryList.get(position);
 		if (order != null) {
-			OrderHistoryItemTapped.fire(order.getOfferId(), order.getOrderId());
+			eventLogger.send(OrderHistoryItemTapped.create(order.getOfferId(), order.getOrderId()));
 			showCouponDialog(RedeemTrigger.USER_INIT, order);
 		}
 	}
@@ -160,7 +163,7 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 
 	private ICouponDialogPresenter createCouponDialogPresenter(Coupon coupon, Order order,
 		RedeemTrigger redeemTrigger) {
-		return new CouponDialogPresenter(coupon, order, redeemTrigger);
+		return new CouponDialogPresenter(coupon, order, redeemTrigger, eventLogger);
 	}
 
 	private Coupon deserializeCoupon(Order order) {

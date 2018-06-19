@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.util.Log;
 import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.BaseDialogPresenter;
+import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.CloseButtonOnOfferPageTapped;
 import com.kin.ecosystem.bi.events.ConfirmPurchaseButtonTapped;
 import com.kin.ecosystem.bi.events.ConfirmPurchasePageViewed;
@@ -32,6 +33,7 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
 
     private final OrderDataSource orderRepository;
     private final BlockchainSource blockchainSource;
+    private final EventLogger eventLogger;
 
     private final Handler handler = new Handler();
 
@@ -46,35 +48,36 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
     private static final int CLOSE_DELAY = 2000;
 
     public SpendDialogPresenter(OfferInfo offerInfo, Offer offer, BlockchainSource blockchainSource,
-        OrderDataSource orderRepository) {
+        OrderDataSource orderRepository, EventLogger eventLogger) {
         this.offerInfo = offerInfo;
         this.offer = offer;
         this.orderRepository = orderRepository;
         this.blockchainSource = blockchainSource;
+        this.eventLogger = eventLogger;
         this.amount = new BigDecimal(offer.getAmount());
     }
 
     @Override
     public void onAttach(final ISpendDialog view) {
         super.onAttach(view);
+		eventLogger.send(ConfirmPurchasePageViewed.create(amount.doubleValue(), offer.getId(), getOrderID()));
         createOrder();
         loadInfo();
-		ConfirmPurchasePageViewed.fire(amount.doubleValue(), offer.getId(), getOrderID());
     }
 
     private void createOrder() {
-		SpendOrderCreationRequested.fire(offer.getId());
+		eventLogger.send(SpendOrderCreationRequested.create(offer.getId()));
         orderRepository.createOrder(offer.getId(), new KinCallback<OpenOrder>() {
             @Override
             public void onResponse(OpenOrder response) {
                 openOrder = response;
-				SpendOrderCreationReceived.fire(offer.getId(), response != null ? response.getId() : null);
+				eventLogger.send(SpendOrderCreationReceived.create(offer.getId(), response != null ? response.getId() : null));
             }
 
             @Override
             public void onFailure(KinEcosystemException exception) {
                 showToast("Oops something went wrong...");
-				SpendOrderCreationFailed.fire(exception.getCause().getMessage(), offer.getId(), null);
+				eventLogger.send(SpendOrderCreationFailed.create(exception.getCause().getMessage(), offer.getId()));
             }
         });
     }
@@ -95,13 +98,13 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
 
     @Override
     public void closeClicked() {
-        CloseButtonOnOfferPageTapped.fire(offer.getId(), getOrderID());
+        eventLogger.send(CloseButtonOnOfferPageTapped.create(offer.getId(), getOrderID()));
         closeDialog();
     }
 
 	@Override
     public void bottomButtonClicked() {
-		ConfirmPurchaseButtonTapped.fire(amount.doubleValue(), offer.getId(), getOrderID());
+		eventLogger.send(ConfirmPurchaseButtonTapped.create(amount.doubleValue(), offer.getId(), getOrderID()));
         if (view != null) {
 
             if (openOrder != null) {
@@ -115,7 +118,7 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
 
             Confirmation confirmation = offerInfo.getConfirmation();
             view.showThankYouLayout(confirmation.getTitle(), confirmation.getDescription());
-			SpendThankyouPageViewed.fire(amount.doubleValue(), offer.getId(), getOrderID());
+			eventLogger.send(SpendThankyouPageViewed.create(amount.doubleValue(), offer.getId(), getOrderID()));
 			closeDialogWithDelay(CLOSE_DELAY);
         }
     }
@@ -144,7 +147,7 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
         	if(openOrder != null) {
         		final String offerId = offer.getId();
         		final String orderId = openOrder.getId();
-				SpendOrderCancelled.fire(offerId, orderId);
+				eventLogger.send(SpendOrderCancelled.create(offerId, orderId));
 				orderRepository.cancelOrder(offerId, orderId, null);
 			}
 		}
@@ -166,13 +169,13 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
     }
 
     private void sendTransaction(String addressee, BigDecimal amount, String orderID) {
-		SpendTransactionBroadcastToBlockchainSubmitted.fire(offer.getId(), orderID);
-		blockchainSource.sendTransaction(addressee, amount, orderID);
+		eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offer.getId(), orderID));
+		blockchainSource.sendTransaction(addressee, amount, orderID, offer.getId());
     }
 
     private void submitOrder(String offerID, String orderID) {
         isOrderSubmitted = true;
-		SpendOrderCompletionSubmitted.fire(offerID, orderID);
+		eventLogger.send(SpendOrderCompletionSubmitted.create(offerID, orderID));
 		orderRepository.submitOrder(offerID, null, orderID, new KinCallback<Order>() {
             @Override
             public void onResponse(Order response) {

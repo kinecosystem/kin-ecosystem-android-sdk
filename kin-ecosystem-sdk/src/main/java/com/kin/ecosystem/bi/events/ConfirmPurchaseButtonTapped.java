@@ -6,7 +6,6 @@ package com.kin.ecosystem.bi.events;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.bi.Event;
-import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.bi.EventsStore;
 
 
@@ -27,19 +26,6 @@ public class ConfirmPurchaseButtonTapped implements Event {
             kinAmount,
             offerId,
             orderId);
-    }
-
-    // Augmented by script
-    public static void fire(Double kinAmount, String offerId, String orderId) {
-        final ConfirmPurchaseButtonTapped event = new ConfirmPurchaseButtonTapped(
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            (Client) EventsStore.client(),
-            kinAmount,
-            offerId,
-            orderId);
-
-        EventLoggerImpl.Send(event);
     }
 
     /**

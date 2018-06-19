@@ -2,7 +2,9 @@ package com.kin.ecosystem.poll.presenter;
 
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.KinCallback;
-import com.kin.ecosystem.bi.events.EarnCompletedPageViewed;
+import com.kin.ecosystem.base.BasePresenter;
+import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.EarnOrderCancelled;
 import com.kin.ecosystem.bi.events.EarnOrderCompleted;
 import com.kin.ecosystem.bi.events.EarnOrderCompleted.OfferType;
@@ -12,9 +14,6 @@ import com.kin.ecosystem.bi.events.EarnOrderCreationReceived;
 import com.kin.ecosystem.bi.events.EarnOrderCreationRequested;
 import com.kin.ecosystem.bi.events.EarnOrderFailed;
 import com.kin.ecosystem.bi.events.EarnPageLoaded;
-import com.kin.ecosystem.data.Callback;
-import com.kin.ecosystem.base.BasePresenter;
-import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.order.OrderDataSource;
 import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.network.model.OpenOrder;
@@ -25,6 +24,7 @@ import com.kin.ecosystem.poll.view.IPollWebView;
 public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements IPollWebViewPresenter {
 
 	private final OrderDataSource orderRepository;
+	private final EventLogger eventLogger;
 
 	private final String pollJsonString;
 	private final String offerID;
@@ -38,13 +38,14 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 
 	public PollWebViewPresenter(@NonNull final String pollJsonString, @NonNull final String offerID,
 		@NonNull final String contentType, final int amount,
-		String title, @NonNull final OrderDataSource orderRepository) {
+		String title, @NonNull final OrderDataSource orderRepository, @NonNull EventLogger eventLogger) {
 		this.pollJsonString = pollJsonString;
 		this.offerID = offerID;
 		this.contentType = contentType;
 		this.amount = amount;
 		this.title = title;
 		this.orderRepository = orderRepository;
+		this.eventLogger = eventLogger;
 	}
 
 	@Override
@@ -69,17 +70,17 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 	}
 
 	private void createOrder() {
-		EarnOrderCreationRequested.create(EarnOrderCreationRequested.OfferType.valueOf(contentType), (double) amount, offerID);
+		EarnOrderCreationRequested.create(EarnOrderCreationRequested.OfferType.fromValue(contentType), (double) amount, offerID);
 		orderRepository.createOrder(offerID, new KinCallback<OpenOrder>() {
 			@Override
 			public void onResponse(OpenOrder response) {
-				EarnOrderCreationReceived.create(offerID, response != null ? response.getId() : null);
+				eventLogger.send(EarnOrderCreationReceived.create(offerID, response != null ? response.getId() : null));
 				// we are listening to open orders.
 			}
 
 			@Override
 			public void onFailure(KinEcosystemException exception) {
-				EarnOrderCreationFailed.fire(exception.getCause().getMessage(), offerID);
+				eventLogger.send(EarnOrderCreationFailed.create(exception.getCause().getMessage(), offerID));
 				if (view != null) {
 					showToast(exception.getMessage());
 				}
@@ -102,7 +103,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 
 	@Override
 	public void onPageLoaded() {
-		EarnPageLoaded.fire(EarnPageLoaded.OfferType.valueOf(contentType));
+		eventLogger.send(EarnPageLoaded.create(EarnPageLoaded.OfferType.fromValue(contentType)));
 		if (view != null) {
 			view.renderJson(pollJsonString);
 		}
@@ -123,7 +124,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 		if (openOrder != null && !isOrderSubmitted) {
 			String orderID = openOrder.getId();
 			orderRepository.cancelOrder(offerID, orderID, null);
-			EarnOrderCancelled.fire(offerID, orderID);
+			eventLogger.send(EarnOrderCancelled.create(offerID, orderID));
 		}
 		closeView();
 	}
@@ -134,7 +135,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 		if (openOrder != null) {
 			isOrderSubmitted = true;
 			final String orderId = openOrder.getId();
-			EarnOrderCompletionSubmitted.fire(offerID, orderId);
+			eventLogger.send(EarnOrderCompletionSubmitted.create(offerID, orderId));
 			orderRepository.submitOrder(offerID, result, orderId, new KinCallback<Order>() {
 				@Override
 				public void onResponse(Order response) {
@@ -157,7 +158,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 		} catch (IllegalArgumentException e) {
 			offerType = null;
 		}
-		EarnOrderCompleted.fire(offerType, (double) amount, offerID, openOrder != null ? openOrder.getId() : null);
+		eventLogger.send(EarnOrderCompleted.create(offerType, (double) amount, offerID, openOrder != null ? openOrder.getId() : null));
 	}
 
 	@Override

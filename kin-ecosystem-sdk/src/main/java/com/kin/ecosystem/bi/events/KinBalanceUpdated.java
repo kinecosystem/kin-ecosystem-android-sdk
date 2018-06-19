@@ -6,7 +6,6 @@ package com.kin.ecosystem.bi.events;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.bi.Event;
-import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.bi.EventsStore;
 
 
@@ -25,17 +24,6 @@ public class KinBalanceUpdated implements Event {
             (User) EventsStore.user(),
             (Client) EventsStore.client(),
             previousBalance);
-    }
-
-    // Augmented by script
-    public static void fire(Double previousBalance) {
-        final KinBalanceUpdated event = new KinBalanceUpdated(
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            (Client) EventsStore.client(),
-            previousBalance);
-
-        EventLoggerImpl.Send(event);
     }
 
     /**

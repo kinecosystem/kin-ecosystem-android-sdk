@@ -6,7 +6,6 @@ package com.kin.ecosystem.bi.events;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.bi.Event;
-import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.bi.EventsStore;
 
 
@@ -24,16 +23,6 @@ public class BackButtonOnWelcomeScreenPageTapped implements Event {
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             (Client) EventsStore.client());
-    }
-
-    // Augmented by script
-    public static void fire() {
-        final BackButtonOnWelcomeScreenPageTapped event = new BackButtonOnWelcomeScreenPageTapped(
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            (Client) EventsStore.client());
-
-        EventLoggerImpl.Send(event);
     }
 
     /**

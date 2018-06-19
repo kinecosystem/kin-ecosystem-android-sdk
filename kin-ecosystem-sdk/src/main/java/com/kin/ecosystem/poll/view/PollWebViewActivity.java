@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseToolbarActivity;
+import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.exception.ClientException;
 import com.kin.ecosystem.poll.presenter.IPollWebViewPresenter;
@@ -65,7 +66,8 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
 				pollBundle.getContentType(),
 				pollBundle.getAmount(),
 				pollBundle.getTitle(),
-				OrderRepository.getInstance()));
+				OrderRepository.getInstance(),
+				EventLoggerImpl.getInstance()));
 	}
 
 	@Override

@@ -123,7 +123,7 @@ public class Kin {
 		initOrderRepository(appContext);
 		setAppID();
 		setUpEventsCommonData(appContext);
-		KinSdkInitiated.fire();
+		instance.eventLogger.send(KinSdkInitiated.create());
 	}
 
 	private static void setUpEventsCommonData(@NonNull Context context) {
@@ -235,12 +235,12 @@ public class Kin {
 				return Configuration.getEnvironment().getIssuer();
 			}
 		}, KIN_ECOSYSTEM_STORE_PREFIX_KEY);
-		BlockchainSourceImpl.init(kinClient, BlockchainSourceLocal.getInstance(context));
+		BlockchainSourceImpl.init(instance.eventLogger, kinClient, BlockchainSourceLocal.getInstance(context));
 	}
 
 	private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
 		throws ClientException {
-		AuthRepository.init(AuthLocalData.getInstance(context, instance.executorsUtil),
+		AuthRepository.init(instance.eventLogger, AuthLocalData.getInstance(context, instance.executorsUtil),
 			AuthRemoteData.getInstance(instance.executorsUtil));
 		String deviceID = AuthRepository.getInstance().getDeviceID();
 		signInData.setDeviceId(deviceID != null ? deviceID : UUID.randomUUID().toString());
@@ -254,7 +254,9 @@ public class Kin {
 	}
 
 	private static void initOrderRepository(@NonNull final Context context) {
-		OrderRepository.init(BlockchainSourceImpl.getInstance(), OfferRepository.getInstance(),
+		OrderRepository.init(BlockchainSourceImpl.getInstance(),
+			OfferRepository.getInstance(),
+			instance.eventLogger,
 			OrderRemoteData.getInstance(instance.executorsUtil),
 			OrderLocalData.getInstance(context, instance.executorsUtil));
 	}
@@ -278,7 +280,7 @@ public class Kin {
 	 */
 	public static void launchMarketplace(@NonNull final Activity activity) throws ClientException {
 		checkInstanceNotNull();
-		EntrypointButtonTapped.fire();
+		instance.eventLogger.send(EntrypointButtonTapped.create());
 		boolean isActivated = AuthRepository.getInstance().isActivated();
 		if (isActivated) {
 			navigateToMarketplace(activity);
@@ -298,8 +300,8 @@ public class Kin {
 	}
 
 	/**
-	 * @return The account public address <<<<<<< HEAD =======
-	 * @throws ClientException >>>>>>> f2529173c0db013f5141f313c2a24fae0473db59
+	 * @return The account public address
+	 * @throws ClientException
 	 */
 	public static String getPublicAddress() throws ClientException {
 		checkInstanceNotNull();
@@ -309,8 +311,8 @@ public class Kin {
 	/**
 	 * Get the cached balance, can be different from the current balance on the network.
 	 *
-	 * @return balance amount <<<<<<< HEAD =======
-	 * @throws ClientException >>>>>>> f2529173c0db013f5141f313c2a24fae0473db59
+	 * @return balance amount
+	 * @throws ClientException
 	 */
 	public static Balance getCachedBalance() throws ClientException {
 		checkInstanceNotNull();
@@ -320,8 +322,8 @@ public class Kin {
 	/**
 	 * Get the current account balance from the network.
 	 *
-	 * @param callback balance amount <<<<<<< HEAD =======
-	 * @throws ClientException >>>>>>> f2529173c0db013f5141f313c2a24fae0473db59
+	 * @param callback balance amount
+	 * @throws ClientException
 	 */
 	public static void getBalance(@NonNull final KinCallback<Balance> callback) throws ClientException {
 		checkInstanceNotNull();

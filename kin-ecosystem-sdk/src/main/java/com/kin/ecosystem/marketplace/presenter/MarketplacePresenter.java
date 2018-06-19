@@ -8,6 +8,7 @@ import com.google.gson.JsonSyntaxException;
 import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.BackButtonOnMarketplacePageTapped;
 import com.kin.ecosystem.bi.events.BalanceTapped;
 import com.kin.ecosystem.bi.events.EarnOfferTapped;
@@ -38,6 +39,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private final OfferDataSource offerRepository;
 	private final OrderDataSource orderRepository;
 	private final BlockchainSource blockchainSource;
+	private final EventLogger eventLogger;
 
 	private List<Offer> spendList = new ArrayList<>();
 	private List<Offer> earnList = new ArrayList<>();
@@ -47,22 +49,24 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private final Gson gson;
 
 	public MarketplacePresenter(@NonNull final OfferDataSource offerRepository,
-		@NonNull final OrderDataSource orderRepository, @Nullable final BlockchainSource blockchainSource) {
+		@NonNull final OrderDataSource orderRepository, @Nullable final BlockchainSource blockchainSource, @NonNull
+		EventLogger eventLogger) {
 		this.spendList = new ArrayList<>();
 		this.earnList = new ArrayList<>();
 		this.offerRepository = offerRepository;
 		this.orderRepository = orderRepository;
 		this.blockchainSource = blockchainSource;
+		this.eventLogger = eventLogger;
 		this.gson = new Gson();
 	}
 
 	@Override
 	public void onAttach(IMarketplaceView view) {
 		super.onAttach(view);
-		MarketplacePageViewed.fire();
 		getCachedOffers();
 		listenToPendingOffers();
 		listenToCompletedOrders();
+		eventLogger.send(MarketplacePageViewed.create());
 	}
 
 	private void getCachedOffers() {
@@ -286,7 +290,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			final BigDecimal amount = new BigDecimal(offer.getAmount());
 
 			if (balance < amount.intValue()) {
-				NotEnoughKinPageViewed.fire();
+				eventLogger.send(NotEnoughKinPageViewed.create());
 				showToast("You don't have enough Kin");
 				return;
 			}
@@ -308,12 +312,12 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			offerType = null;
 		}
 		double amount = (double) offer.getAmount();
-		EarnOfferTapped.fire(offerType, amount, offer.getId());
+		eventLogger.send(EarnOfferTapped.create(offerType, amount, offer.getId()));
 	}
 
 	private void sendSpendOfferTapped(Offer offer) {
 		double amount = (double) offer.getAmount();
-		SpendOfferTapped.fire(amount, offer.getId(), null);
+		eventLogger.send(SpendOfferTapped.create(amount, offer.getId(), null));
 	}
 
 	private void nativeSpendOfferClicked(Offer offer) {
@@ -328,7 +332,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	@Override
 	public void balanceItemClicked() {
-		BalanceTapped.fire();
+		eventLogger.send(BalanceTapped.create());
 		if (view != null) {
 			view.navigateToOrderHistory();
 		}
@@ -341,7 +345,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	@Override
 	public void backButtonPressed() {
-		BackButtonOnMarketplacePageTapped.fire();
+		eventLogger.send(BackButtonOnMarketplacePageTapped.create());
 		if (view != null) {
 			view.navigateBack();
 		}
@@ -355,7 +359,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private ISpendDialogPresenter createSpendDialogPresenter(@NonNull final OfferInfo offerInfo,
 		@NonNull final Offer offer) {
-		return new SpendDialogPresenter(offerInfo, offer, blockchainSource, orderRepository);
+		return new SpendDialogPresenter(offerInfo, offer, blockchainSource, orderRepository, eventLogger);
 	}
 
 	private OfferInfo deserializeOfferInfo(final String content) {

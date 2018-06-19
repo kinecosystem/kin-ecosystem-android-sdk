@@ -58,11 +58,6 @@ public class EventLoggerImpl implements EventLogger {
         }
     }
 
-    // TODO: should be removed and pass an instance to who ever uses this
-    public static void Send(Event event) {
-        instance.send(event);
-    }
-
     private UUID getUniqueID() {
         return UUID.randomUUID();
     }

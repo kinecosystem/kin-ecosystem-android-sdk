@@ -6,7 +6,6 @@ package com.kin.ecosystem.bi.events;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.bi.Event;
-import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.bi.EventsStore;
 
 
@@ -27,19 +26,6 @@ public class SpendOrderFailed implements Event {
             errorReason,
             offerId,
             orderId);
-    }
-
-    // Augmented by script
-    public static void fire(String errorReason, String offerId, String orderId) {
-        final SpendOrderFailed event = new SpendOrderFailed(
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            (Client) EventsStore.client(),
-            errorReason,
-            offerId,
-            orderId);
-
-        EventLoggerImpl.Send(event);
     }
 
     /**

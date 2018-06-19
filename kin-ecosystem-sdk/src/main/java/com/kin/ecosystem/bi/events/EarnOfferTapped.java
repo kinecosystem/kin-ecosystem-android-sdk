@@ -6,7 +6,6 @@ package com.kin.ecosystem.bi.events;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.bi.Event;
-import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.bi.EventsStore;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +20,7 @@ public class EarnOfferTapped implements Event {
     public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
-    public static EarnOfferTapped create(EarnOfferTapped.OfferType offerType, Double kinAmount, String offerId) {
+    public static EarnOfferTapped create(OfferType offerType, Double kinAmount, String offerId) {
         return new EarnOfferTapped(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
@@ -29,19 +28,6 @@ public class EarnOfferTapped implements Event {
             offerType,
             kinAmount,
             offerId);
-    }
-
-    // Augmented by script
-    public static void fire(EarnOfferTapped.OfferType offerType, Double kinAmount, String offerId) {
-        final EarnOfferTapped event = new EarnOfferTapped(
-            (Common) EventsStore.common(),
-            (User) EventsStore.user(),
-            (Client) EventsStore.client(),
-            offerType,
-            kinAmount,
-            offerId);
-
-        EventLoggerImpl.Send(event);
     }
 
     /**
@@ -91,7 +77,7 @@ public class EarnOfferTapped implements Event {
      */
     @SerializedName("offer_type")
     @Expose
-    private EarnOfferTapped.OfferType offerType;
+    private OfferType offerType;
     /**
      * 
      * (Required)
@@ -127,7 +113,7 @@ public class EarnOfferTapped implements Event {
 
      * @param user
      */
-    public EarnOfferTapped(Common common, User user, Client client, EarnOfferTapped.OfferType offerType, Double kinAmount, String offerId) {
+    public EarnOfferTapped(Common common, User user, Client client, OfferType offerType, Double kinAmount, String offerId) {
         super();
         this.common = common;
         this.user = user;
@@ -232,7 +218,7 @@ public class EarnOfferTapped implements Event {
      * (Required)
      * 
      */
-    public EarnOfferTapped.OfferType getOfferType() {
+    public OfferType getOfferType() {
         return offerType;
     }
 
@@ -241,7 +227,7 @@ public class EarnOfferTapped implements Event {
      * (Required)
      * 
      */
-    public void setOfferType(EarnOfferTapped.OfferType offerType) {
+    public void setOfferType(OfferType offerType) {
         this.offerType = offerType;
     }
 
@@ -294,10 +280,10 @@ public class EarnOfferTapped implements Event {
         @SerializedName("external")
         EXTERNAL("external");
         private final String value;
-        private final static Map<String, EarnOfferTapped.OfferType> CONSTANTS = new HashMap<String, EarnOfferTapped.OfferType>();
+        private final static Map<String, OfferType> CONSTANTS = new HashMap<String, OfferType>();
 
         static {
-            for (EarnOfferTapped.OfferType c: values()) {
+            for (OfferType c: values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
@@ -315,8 +301,8 @@ public class EarnOfferTapped implements Event {
             return this.value;
         }
 
-        public static EarnOfferTapped.OfferType fromValue(String value) {
-            EarnOfferTapped.OfferType constant = CONSTANTS.get(value);
+        public static OfferType fromValue(String value) {
+            OfferType constant = CONSTANTS.get(value);
             if (constant == null) {
                 throw new IllegalArgumentException(value);
             } else {

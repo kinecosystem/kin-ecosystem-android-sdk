@@ -8,6 +8,7 @@ import android.util.Log;
 import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.KinBalanceUpdated;
 import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainFailed;
 import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainSucceeded;
@@ -35,6 +36,8 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private static volatile BlockchainSourceImpl instance;
 	private final BlockchainSource.Local local;
+
+	private final EventLogger eventLogger;
 
 	private final KinClient kinClient;
 	private KinAccount account;
@@ -64,20 +67,21 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	private static final int ORDER_ID_INDEX = 2;
 	private static final int MEMO_SPLIT_LENGTH = 3;
 
-	private BlockchainSourceImpl(@NonNull final KinClient kinClient, @NonNull BlockchainSource.Local local)
+	private BlockchainSourceImpl(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient, @NonNull BlockchainSource.Local local)
 		throws BlockchainException {
-		this.local = local;
+		this.eventLogger = eventLogger;
 		this.kinClient = kinClient;
+		this.local = local;
 		createKinAccountIfNeeded();
 		initBalance();
 	}
 
-	public static void init(@NonNull final KinClient kinClient, @NonNull BlockchainSource.Local local)
+	public static void init(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient, @NonNull BlockchainSource.Local local)
 		throws BlockchainException {
 		if (instance == null) {
 			synchronized (BlockchainSourceImpl.class) {
 				if (instance == null) {
-					instance = new BlockchainSourceImpl(kinClient, local);
+					instance = new BlockchainSourceImpl(eventLogger, kinClient, local);
 				}
 			}
 		}
@@ -115,13 +119,13 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		account.activate().run(new ResultCallback<Void>() {
 			@Override
 			public void onResult(Void result) {
-				StellarKinTrustlineSetupSucceeded.fire();
+				eventLogger.send(StellarKinTrustlineSetupSucceeded.create());
 				Log.d(TAG, "createTrustLine onResult");
 			}
 
 			@Override
 			public void onError(Exception e) {
-				StellarKinTrustlineSetupFailed.fire(e.getMessage());
+				eventLogger.send(StellarKinTrustlineSetupFailed.create(e.getMessage()));
 				Log.d(TAG, "createTrustLine onError");
 			}
 		});
@@ -142,13 +146,13 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			new ResultCallback<TransactionId>() {
 				@Override
 				public void onResult(TransactionId result) {
-					SpendTransactionBroadcastToBlockchainSucceeded.fire(result.id(), offerID, orderID);
+					eventLogger.send(SpendTransactionBroadcastToBlockchainSucceeded.create(result.id(), offerID, orderID));
 					Log.d(TAG, "sendTransaction onResult: " + result.id());
 				}
 
 				@Override
 				public void onError(Exception e) {
-					SpendTransactionBroadcastToBlockchainFailed.fire(e.getMessage(), offerID, orderID);
+					eventLogger.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
 					completedPayment.setValue(new Payment(orderID, false, e));
 					Log.d(TAG, "sendTransaction onError: " + e.getMessage());
 				}

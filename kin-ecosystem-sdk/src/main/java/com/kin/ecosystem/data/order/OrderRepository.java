@@ -8,6 +8,7 @@ import android.util.Log;
 import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.EarnOrderPaymentConfirmed;
 import com.kin.ecosystem.bi.events.SpendOrderCompleted;
 import com.kin.ecosystem.bi.events.SpendOrderFailed;
@@ -44,6 +45,7 @@ public class OrderRepository implements OrderDataSource {
 
 	private final OfferDataSource offerRepository;
 	private final BlockchainSource blockchainSource;
+	private final EventLogger eventLogger;
 
 	private OrderList cachedOrderList;
 	private ObservableData<OpenOrder> cachedOpenOrder = ObservableData.create();
@@ -56,21 +58,26 @@ public class OrderRepository implements OrderDataSource {
 	private int paymentObserverCount;
 
 	private OrderRepository(@NonNull final BlockchainSource blockchainSource,
-		@NonNull final OfferDataSource offerRepository, @NonNull final OrderDataSource.Remote remoteData,
+		@NonNull final OfferDataSource offerRepository,
+		@NonNull final EventLogger eventLogger,
+		@NonNull final OrderDataSource.Remote remoteData,
 		@NonNull final OrderDataSource.Local localData) {
 		this.remoteData = remoteData;
 		this.localData = localData;
 		this.offerRepository = offerRepository;
 		this.blockchainSource = blockchainSource;
+		this.eventLogger = eventLogger;
 	}
 
 	public static void init(@NonNull final BlockchainSource blockchainSource,
-		@NonNull final OfferDataSource offerRepository, @NonNull final OrderDataSource.Remote remoteData,
+		@NonNull final OfferDataSource offerRepository,
+		@NonNull final EventLogger eventLogger,
+		@NonNull final OrderDataSource.Remote remoteData,
 		@NonNull final OrderDataSource.Local localData) {
 		if (instance == null) {
 			synchronized (OrderRepository.class) {
 				if (instance == null) {
-					instance = new OrderRepository(blockchainSource, offerRepository, remoteData, localData);
+					instance = new OrderRepository(blockchainSource, offerRepository, eventLogger, remoteData, localData);
 				}
 			}
 		}
@@ -169,7 +176,7 @@ public class OrderRepository implements OrderDataSource {
 
 	private void sendEarnPaymentConfirmed(Payment payment) {
 		if (payment.isSucceed() && payment.getAmount() != null && payment.isEarn()) {
-			EarnOrderPaymentConfirmed.fire(payment.getTransactionID(), null, payment.getOrderID());
+			eventLogger.send(EarnOrderPaymentConfirmed.create(payment.getTransactionID(), null, payment.getOrderID()));
 		}
 	}
 
@@ -216,13 +223,13 @@ public class OrderRepository implements OrderDataSource {
 	private void sendSpendOrderCompleted(Order order) {
 		if (order.getOfferType() == OfferType.SPEND) {
 			if (order.getStatus() == Status.COMPLETED) {
-				SpendOrderCompleted.fire(order.getOfferId(), order.getOrderId());
+				eventLogger.send(SpendOrderCompleted.create(order.getOfferId(), order.getOrderId()));
 			} else {
 				String reason = "Timed out";
 				if (order.getError() != null) {
 					reason = order.getError().getMessage();
 				}
-				SpendOrderFailed.fire(reason, order.getOfferId(), order.getOrderId());
+				eventLogger.send(SpendOrderFailed.create(reason, order.getOfferId(), order.getOrderId()));
 			}
 		}
 	}

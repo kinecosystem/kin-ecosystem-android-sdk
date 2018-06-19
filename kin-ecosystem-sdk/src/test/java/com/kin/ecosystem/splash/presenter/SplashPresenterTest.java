@@ -2,12 +2,20 @@ package com.kin.ecosystem.splash.presenter;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.kin.ecosystem.BaseTestClass;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.bi.Event;
+import com.kin.ecosystem.bi.EventLogger;
+import com.kin.ecosystem.bi.events.BackButtonOnWelcomeScreenPageTapped;
+import com.kin.ecosystem.bi.events.WelcomeScreenButtonTapped;
+import com.kin.ecosystem.bi.events.WelcomeScreenPageViewed;
 import com.kin.ecosystem.data.Callback;
+import com.kin.ecosystem.data.auth.AuthDataSource;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.splash.view.ISplashView;
 import org.junit.After;
@@ -22,10 +30,13 @@ import org.mockito.MockitoAnnotations;
 
 
 @RunWith(JUnit4.class)
-public class SplashPresenterTest {
+public class SplashPresenterTest extends BaseTestClass{
 
     @Mock
-    private AuthRepository authRepository;
+    private AuthDataSource authRepository;
+
+    @Mock
+	private EventLogger eventLogger;
 
     @Mock
     private ISplashView splashView;
@@ -37,10 +48,12 @@ public class SplashPresenterTest {
 
     @Before
     public void setUp() throws Exception {
+        super.setUp();
         MockitoAnnotations.initMocks(this);
-        splashPresenter = new SplashPresenter(authRepository);
+        splashPresenter = new SplashPresenter(authRepository, eventLogger);
         splashPresenter.onAttach(splashView);
         assertNotNull(splashPresenter.getView());
+        verify(eventLogger).send(any(WelcomeScreenPageViewed.class));
     }
 
     @After
@@ -52,6 +65,7 @@ public class SplashPresenterTest {
     @Test
     public void getStartedClicked_AnimationEndedNavigateMP() throws Exception {
         splashPresenter.getStartedClicked();
+        verify(eventLogger).send(any(WelcomeScreenButtonTapped.class));
         verify(authRepository).activateAccount(activateCapture.capture());
 
         activateCapture.getValue().onResponse(null);
@@ -92,6 +106,7 @@ public class SplashPresenterTest {
     @Test
     public void backButtonPressed_NavigateBack() throws Exception {
         splashPresenter.backButtonPressed();
+        verify(eventLogger).send(any(BackButtonOnWelcomeScreenPageTapped.class));
         verify(splashView, times(1)).navigateBack();
     }
 }
