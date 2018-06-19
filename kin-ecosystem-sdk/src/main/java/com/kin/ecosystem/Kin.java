@@ -119,98 +119,15 @@ public class Kin {
 		Configuration.setEnvironment(environment);
 		initBlockchain(appContext);
 		registerAccount(appContext, signInData);
+		initEventCommonData(appContext);
 		initOfferRepository();
 		initOrderRepository(appContext);
 		setAppID();
-		setUpEventsCommonData(appContext);
 		instance.eventLogger.send(KinSdkInitiated.create());
 	}
 
-	private static void setUpEventsCommonData(@NonNull Context context) {
-		TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-		final String carrierName = telephonyManager != null ? telephonyManager.getNetworkOperatorName() : "null";
-		final CommonModifier commonModifier = new CommonModifier() {
-			@Override
-			public void modify(CommonProxy commonProxy) {
-				commonProxy.setTimestamp(new DynamicValue<Long>() {
-					@Override
-					public Long get() {
-						return System.currentTimeMillis();
-					}
-				});
-
-				commonProxy.setUserId(new DynamicValue<String>() {
-					@Override
-					public String get() {
-						final String userID = AuthRepository.getInstance().getUserID();
-						return userID != null ? userID : "null";
-					}
-				});
-
-                commonProxy.setEventId(new DynamicValue<UUID>() {
-					@Override
-					public UUID get() {
-						return UUID.randomUUID();
-					}
-				});
-
-				commonProxy.setVersion(BuildConfig.VERSION_NAME);
-			}
-		};
-
-		final ClientModifier clientModifier = new ClientModifier() {
-			@Override
-			public void modify(ClientProxy commonProxy) {
-				commonProxy.setDeviceId(new DynamicValue<String>() {
-					@Override
-					public String get() {
-						return AuthRepository.getInstance().getDeviceID();
-					}
-				});
-				commonProxy.setCarrier(carrierName);
-				commonProxy.setOs(VERSION.RELEASE);
-				commonProxy.setDeviceManufacturer(Build.MANUFACTURER);
-				commonProxy.setDeviceModel(Build.MODEL);
-				commonProxy.setLanguage(Locale.getDefault().getDisplayLanguage());
-			}
-		};
-
-		final UserModifier userModifier = new UserModifier() {
-			@Override
-			public void modify(UserProxy userProxy) {
-				userProxy.setBalance(new DynamicValue<Double>() {
-					@Override
-					public Double get() {
-						return BlockchainSourceImpl.getInstance().getBalance().getAmount().doubleValue();
-					}
-				});
-
-				userProxy.setDigitalServiceId(new DynamicValue<String>() {
-					@Override
-					public String get() {
-						return AuthRepository.getInstance().getAppID().getValue();
-					}
-				});
-				userProxy.setDigitalServiceUserId(new DynamicValue<String>() {
-					@Override
-					public String get() {
-						final String userID = AuthRepository.getInstance().getUserID();
-						return userID != null ? userID : "null";
-					}
-				});
-				userProxy.setEntryPointParam("");
-				userProxy.setEarnCount(0);
-				userProxy.setEarnCount(0);
-				userProxy.setEarnCount(0);
-				userProxy.setSpendCount(0);
-				userProxy.setTotalKinEarned(0.0);
-				userProxy.setTotalKinSpent(0.0);
-				userProxy.setTransactionCount(0);
-
-			}
-		};
-
-		EventsStore.init(userModifier, commonModifier, clientModifier);
+	private static void initEventCommonData(@NonNull Context context) {
+		EventCommonDataUtil.setBaseData(context);
 	}
 
 	private static void setAppID() {
