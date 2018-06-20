@@ -47,11 +47,10 @@ public class Kin {
 	private static Kin instance;
 
 	private final ExecutorsUtil executorsUtil;
-	private final EventLogger eventLogger;
+	private EventLogger eventLogger;
 
 	private Kin() {
 		executorsUtil = new ExecutorsUtil();
-		eventLogger = EventLoggerImpl.getInstance();
 	}
 
 	private static Kin getInstance() {
@@ -105,6 +104,7 @@ public class Kin {
 		appContext = appContext.getApplicationContext(); // use application context to avoid leaks.
 		DeviceUtils.init(appContext);
 		Configuration.setEnvironment(environment);
+		initEventLogger();
 		initBlockchain(appContext);
 		registerAccount(appContext, signInData);
 		initEventCommonData(appContext);
@@ -112,6 +112,10 @@ public class Kin {
 		initOrderRepository(appContext);
 		setAppID();
 		instance.eventLogger.send(KinSdkInitiated.create());
+	}
+
+	private static void initEventLogger() {
+		instance.eventLogger = EventLoggerImpl.getInstance();
 	}
 
 	private static void initEventCommonData(@NonNull Context context) {

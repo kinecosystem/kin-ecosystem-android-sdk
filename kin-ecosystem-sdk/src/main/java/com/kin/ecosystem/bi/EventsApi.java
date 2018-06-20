@@ -4,6 +4,7 @@ import static kin.ecosystem.core.network.ApiClient.APPLICATION_JSON_KEY;
 import static kin.ecosystem.core.network.ApiClient.POST;
 
 import com.google.gson.reflect.TypeToken;
+import com.kin.ecosystem.Configuration;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,14 +19,13 @@ import okhttp3.Call;
 
 class EventsApi {
 
-	private static final String basePath = "https://kin-bi.appspot.com";
 	private ApiClient apiClient;
 
 	/*
 	 * Constructor for EventsApi
 	 */
 	EventsApi() {
-		apiClient = new ApiClient(basePath);
+		apiClient = new ApiClient(Configuration.getEnvironment().getBiUrl());
 	}
 
 	/**
