@@ -97,7 +97,7 @@
         android:layout_marginEnd="@dimen/kinecosystem_margin_large"
         android:layout_gravity="bottom"
         android:background="@drawable/button_bg_blue_rounded"
-        android:text="@string/kinecosystem_kin_marketplace"
+        android:text="@string/kin_marketplace_title"
         android:textAllCaps="false"
         android:textColor="@color/kinecosystem_white"
         android:textSize="16sp"
