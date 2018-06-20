@@ -12,8 +12,6 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "${KIN_ECOSYSTEM_SDK_VERSION_NAME}"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles 'proguard-rules.pro'
     }
 }
 
