@@ -23,11 +23,15 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
     public SplashPresenter(@NonNull final AuthDataSource authRepository, @NonNull EventLogger eventLogger) {
         this.authRepository = authRepository;
         this.eventLogger = eventLogger;
-        this.eventLogger.send(WelcomeScreenPageViewed.create());
-
     }
 
-    @Override
+	@Override
+	public void onAttach(ISplashView view) {
+		super.onAttach(view);
+		this.eventLogger.send(WelcomeScreenPageViewed.create());
+	}
+
+	@Override
     public void getStartedClicked() {
     	eventLogger.send(WelcomeScreenButtonTapped.create());
         animateLoading();
