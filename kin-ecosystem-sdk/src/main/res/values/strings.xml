@@ -1,6 +1,6 @@
 <resources>
     <!--Activity Name-->
-    <string name="kinecosystem_kin_marketplace">Kin Marketplace</string>
+    <string name="kinecosystem_kin_marketplace">Kin Marketplace (Beta)</string>
     <string name="kinecosystem_transaction_history">Transaction History</string>
 
     <!--Button-->

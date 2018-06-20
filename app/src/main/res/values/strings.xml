@@ -10,4 +10,5 @@
     <string name="native_spend_buy_a_sticker">Native Spend - Buy A Sticker</string>
     <string name="copy_public_address">Copy Public Address</string>
     <string name="native_earn">Native Earn</string>
+    <string name="kin_marketplace_title">Kin Marketplace</string>
 </resources>
