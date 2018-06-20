@@ -6,7 +6,7 @@ public class Environment implements KinEnvironment {
 		"https://horizon-kik.kininfrastructure.com",
 		"private testnet",
 		"GBQ3DQOA7NF52FVV7ES3CR3ZMHUEY4LTHDAQKDTO6S546JCLFPEQGCPK",
-		"http://api.kinmarketplace.com/v1",
+		"https://api.kinmarketplace.com/v1",
 		"http://htmlpoll.kinecosystem.com.s3-website-us-east-1.amazonaws.com/",
 		"");
 

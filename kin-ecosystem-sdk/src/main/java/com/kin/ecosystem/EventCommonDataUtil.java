@@ -21,7 +21,7 @@ class EventCommonDataUtil {
 
 	static void setBaseData(Context context) {
 		TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-		final String carrierName = telephonyManager != null ? telephonyManager.getNetworkOperatorName() : "null";
+		final String carrierName = telephonyManager != null ? telephonyManager.getSimOperatorName() : "null";
 		final CommonModifier commonModifier = new CommonModifier() {
 			@Override
 			public void modify(CommonProxy commonProxy) {
@@ -64,7 +64,12 @@ class EventCommonDataUtil {
 				commonProxy.setOs(VERSION.RELEASE);
 				commonProxy.setDeviceManufacturer(Build.MANUFACTURER);
 				commonProxy.setDeviceModel(Build.MODEL);
-				commonProxy.setLanguage(Locale.getDefault().getDisplayLanguage());
+				commonProxy.setLanguage(new DynamicValue<String>() {
+					@Override
+					public String get() {
+						return Locale.getDefault().getDisplayLanguage();
+					}
+				});
 			}
 		};
 

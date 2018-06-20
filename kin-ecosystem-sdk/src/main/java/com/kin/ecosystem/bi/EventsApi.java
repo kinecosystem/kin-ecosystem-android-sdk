@@ -45,9 +45,7 @@ class EventsApi {
 
 		Map<String, String> localVarHeaderParams = new HashMap<String, String>();
 
-		final String eventUUID = event.getCommon().getEventId().toString();
-		localVarHeaderParams.put("X-REQUEST-ID", eventUUID);
-		final String eventId = apiClient.parameterToString(eventUUID);
+		final String eventId = apiClient.parameterToString(event.getCommon().getEventId());
 		localVarHeaderParams.put("X-REQUEST-ID", eventId);
 
 

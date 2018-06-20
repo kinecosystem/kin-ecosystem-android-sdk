@@ -2,7 +2,6 @@ package com.kin.ecosystem.bi;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import kin.ecosystem.core.network.ApiCallback;
 import kin.ecosystem.core.network.ApiException;
 
@@ -31,7 +30,6 @@ public class EventLoggerImpl implements EventLogger {
     @Override
     public void send(Event event) {
         try {
-            event.getCommon().setEventId(getUniqueID());
             eventsApi.sendEventAsync(event, new ApiCallback<String>() {
                 @Override
                 public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
@@ -56,9 +54,5 @@ public class EventLoggerImpl implements EventLogger {
         } catch (ApiException e) {
             e.printStackTrace();
         }
-    }
-
-    private UUID getUniqueID() {
-        return UUID.randomUUID();
     }
 }
