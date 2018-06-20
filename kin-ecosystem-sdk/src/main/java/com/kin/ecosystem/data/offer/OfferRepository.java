@@ -3,16 +3,15 @@ package com.kin.ecosystem.data.offer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.KinCallback;
-import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.exception.DataNotAvailableException;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.marketplace.model.NativeOffer;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
-import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OfferList;
 import com.kin.ecosystem.util.ErrorUtil;
+import kin.ecosystem.core.network.ApiException;
 
 public class OfferRepository implements OfferDataSource {
 

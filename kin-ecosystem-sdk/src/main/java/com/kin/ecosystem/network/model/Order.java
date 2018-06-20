@@ -13,7 +13,7 @@
 
 package com.kin.ecosystem.network.model;
 
-import static com.kin.ecosystem.util.StringUtil.toIndentedString;
+import static kin.ecosystem.core.util.StringUtil.toIndentedString;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
@@ -22,6 +22,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.kin.ecosystem.network.model.Offer.OfferType;
 import java.io.IOException;
+import kin.ecosystem.core.network.model.Error;
 
 /**
  * a submitted order. it can be pending/completed/failed

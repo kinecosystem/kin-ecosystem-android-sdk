@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply from: 'dependencies.gradle'
+apply from: '../dependencies.gradle'
 //publish to jitpack
 apply plugin: 'maven'
 group = 'com.github.kinfoundation'
@@ -12,26 +12,18 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "${KIN_ECOSYSTEM_SDK_VERSION_NAME}"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles 'proguard-rules.pro'
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
     }
 }
 
 dependencies {
+
+    implementation project(':kin-ecosystem-core')
+
     implementation devDependencies.kinCore
     implementation devDependencies.appCompat_v7
     implementation devDependencies.recyclerView_v7
     implementation devDependencies.constraintLayout
     implementation devDependencies.picasso
-    implementation devDependencies.gson
-    implementation devDependencies.okhttp3
-    implementation devDependencies.loginInterceptor3
     implementation devDependencies.baseRecyclerAdapter
 
     testImplementation testingDependencies.junit

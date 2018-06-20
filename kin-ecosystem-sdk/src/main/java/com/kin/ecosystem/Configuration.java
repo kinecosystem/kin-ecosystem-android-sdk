@@ -13,9 +13,21 @@
 
 package com.kin.ecosystem;
 
-import com.kin.ecosystem.network.ApiClient;
+import com.kin.ecosystem.data.auth.AuthRepository;
+import com.kin.ecosystem.network.model.AuthToken;
+import java.io.IOException;
+import kin.ecosystem.core.network.ApiClient;
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class Configuration {
+
+	private static final String BEARER = "Bearer ";
+	private static final String AUTHORIZATION = "Authorization";
+
+	private static final String USERS_PATH = "/v1/users";
+
     private static KinEnvironment environment;
 
     private static final Object apiClientLock = new Object();
@@ -30,7 +42,28 @@ public class Configuration {
     public static ApiClient getDefaultApiClient() {
     	if(defaultApiClient == null) {
     		synchronized (apiClientLock) {
-    			defaultApiClient = new ApiClient();
+    			defaultApiClient = new ApiClient(environment.getEcosystemServerUrl());
+    			defaultApiClient.addInterceptor(new Interceptor() {
+					@Override
+					public Response intercept(Chain chain) throws IOException {
+						Request originalRequest = chain.request();
+
+						final String path = originalRequest.url().encodedPath();
+						AuthToken authToken = null;
+						if (!path.equals(USERS_PATH)) {
+							authToken = AuthRepository.getInstance().getAuthTokenSync();
+						}
+
+						if (authToken != null) {
+							Request authorisedRequest = originalRequest.newBuilder()
+								.header(AUTHORIZATION, BEARER + authToken.getToken())
+								.build();
+							return chain.proceed(authorisedRequest);
+						} else {
+							return chain.proceed(originalRequest);
+						}
+					}
+				});
 			}
 		}
         return defaultApiClient;

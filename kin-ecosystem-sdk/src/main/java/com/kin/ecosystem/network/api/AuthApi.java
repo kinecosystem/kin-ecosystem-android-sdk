@@ -13,31 +13,33 @@
 
 package com.kin.ecosystem.network.api;
 
+import static kin.ecosystem.core.network.ApiClient.POST;
+
 import com.google.gson.reflect.TypeToken;
-import com.kin.ecosystem.network.ApiCallback;
-import com.kin.ecosystem.network.ApiClient;
-import com.kin.ecosystem.network.ApiException;
-import com.kin.ecosystem.network.ApiResponse;
+
 import com.kin.ecosystem.Configuration;
-import com.kin.ecosystem.network.Pair;
-import com.kin.ecosystem.network.ProgressRequestBody;
-import com.kin.ecosystem.network.ProgressResponseBody;
 import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.network.model.SignInData;
-
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import kin.ecosystem.core.network.ApiCallback;
+import kin.ecosystem.core.network.ApiClient;
+import kin.ecosystem.core.network.ApiException;
+import kin.ecosystem.core.network.ApiResponse;
+import kin.ecosystem.core.network.Pair;
+import kin.ecosystem.core.network.ProgressRequestBody;
+import kin.ecosystem.core.network.ProgressResponseBody;
 import okhttp3.Call;
 import okhttp3.Interceptor;
 import okhttp3.Response;
 
 
 public class AuthApi {
+
     private ApiClient apiClient;
 
     public AuthApi() {
@@ -60,13 +62,14 @@ public class AuthApi {
     /**
      * Build call for activateAcount
      *
-     * @param X_REQUEST_ID            A unique id for the request. A retransmitted request will have the same id  (required)
-     * @param progressListener        Progress listener
+     * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
+     * @param progressListener Progress listener
      * @param progressRequestListener Progress request listener
      * @return Call to execute
      * @throws ApiException If fail to serialize the request body object
      */
-    public Call activateAcountCall(String X_REQUEST_ID, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+    public Call activateAcountCall(String X_REQUEST_ID, final ProgressResponseBody.ProgressListener progressListener,
+        final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
         Object localVarPostBody = null;
 
         // create path and map variables
@@ -76,16 +79,19 @@ public class AuthApi {
         List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
 
         Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        if (X_REQUEST_ID != null)
+        if (X_REQUEST_ID != null) {
             localVarHeaderParams.put("X-REQUEST-ID", apiClient.parameterToString(X_REQUEST_ID));
+        }
 
         Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
         final String[] localVarAccepts = {
-                "application/json", "application/json"
+            "application/json", "application/json"
         };
         final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) localVarHeaderParams.put("Accept", localVarAccept);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
 
         final String[] localVarContentTypes = {
 
@@ -99,25 +105,27 @@ public class AuthApi {
                 public Response intercept(Chain chain) throws IOException {
                     Response originalResponse = chain.proceed(chain.request());
                     return originalResponse.newBuilder()
-                            .body(new ProgressResponseBody(originalResponse.body(), progressListener))
-                            .build();
+                        .body(new ProgressResponseBody(originalResponse.body(), progressListener))
+                        .build();
                 }
             });
         }
 
         String[] localVarAuthNames = new String[]{};
-        return apiClient.buildCall(localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient
+            .buildCall(localVarPath, POST, localVarQueryParams, localVarCollectionQueryParams, localVarPostBody,
+                localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 
     @SuppressWarnings("rawtypes")
-    private Call activateAcountValidateBeforeCall(String X_REQUEST_ID, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
-
+    private Call activateAcountValidateBeforeCall(String X_REQUEST_ID,
+        final ProgressResponseBody.ProgressListener progressListener,
+        final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
 
         // verify the required parameter 'X_REQUEST_ID' is set
         if (X_REQUEST_ID == null) {
             throw new ApiException("Missing the required parameter 'X_REQUEST_ID' when calling activateAcount(Async)");
         }
-
 
         Call call = activateAcountCall(X_REQUEST_ID, progressListener, progressRequestListener);
         return call;
@@ -158,7 +166,7 @@ public class AuthApi {
      * Activate account by accepting TOS
      *
      * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
-     * @param callback     The callback to be executed when the API call finishes
+     * @param callback The callback to be executed when the API call finishes
      * @return The request call
      * @throws ApiException If fail to process the API call, e.g. serializing the request body object
      */
@@ -193,14 +201,16 @@ public class AuthApi {
     /**
      * Build call for signIn
      *
-     * @param signindata              (required)
-     * @param X_REQUEST_ID            A unique id for the request. A retransmitted request will have the same id  (required)
-     * @param progressListener        Progress listener
+     * @param signindata (required)
+     * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
+     * @param progressListener Progress listener
      * @param progressRequestListener Progress request listener
      * @return Call to execute
      * @throws ApiException If fail to serialize the request body object
      */
-    public Call signInCall(SignInData signindata, String X_REQUEST_ID, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+    public Call signInCall(SignInData signindata, String X_REQUEST_ID,
+        final ProgressResponseBody.ProgressListener progressListener,
+        final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
         Object localVarPostBody = signindata;
 
         // create path and map variables
@@ -210,19 +220,22 @@ public class AuthApi {
         List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
 
         Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        if (X_REQUEST_ID != null)
+        if (X_REQUEST_ID != null) {
             localVarHeaderParams.put("X-REQUEST-ID", apiClient.parameterToString(X_REQUEST_ID));
+        }
 
         Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
         final String[] localVarAccepts = {
-                "application/json", "application/json"
+            "application/json", "application/json"
         };
         final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-        if (localVarAccept != null) localVarHeaderParams.put("Accept", localVarAccept);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
 
         final String[] localVarContentTypes = {
-                "application/json"
+            "application/json"
         };
         final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
         localVarHeaderParams.put("Content-Type", localVarContentType);
@@ -233,19 +246,22 @@ public class AuthApi {
                 public Response intercept(Interceptor.Chain chain) throws IOException {
                     Response originalResponse = chain.proceed(chain.request());
                     return originalResponse.newBuilder()
-                            .body(new ProgressResponseBody(originalResponse.body(), progressListener))
-                            .build();
+                        .body(new ProgressResponseBody(originalResponse.body(), progressListener))
+                        .build();
                 }
             });
         }
 
         String[] localVarAuthNames = new String[]{};
-        return apiClient.buildCall(localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient
+            .buildCall(localVarPath, POST, localVarQueryParams, localVarCollectionQueryParams, localVarPostBody,
+                localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 
     @SuppressWarnings("rawtypes")
-    private Call signInValidateBeforeCall(SignInData signindata, String X_REQUEST_ID, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
-
+    private Call signInValidateBeforeCall(SignInData signindata, String X_REQUEST_ID,
+        final ProgressResponseBody.ProgressListener progressListener,
+        final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
 
         // verify the required parameter 'signindata' is set
         if (signindata == null) {
@@ -257,7 +273,6 @@ public class AuthApi {
             throw new ApiException("Missing the required parameter 'X_REQUEST_ID' when calling signIn(Async)");
         }
 
-
         Call call = signInCall(signindata, X_REQUEST_ID, progressListener, progressRequestListener);
         return call;
 
@@ -268,7 +283,7 @@ public class AuthApi {
      * Sign in/ Log in
      * Sign a user into kin marketplace
      *
-     * @param signindata   (required)
+     * @param signindata (required)
      * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
      * @return AuthToken
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
@@ -282,7 +297,7 @@ public class AuthApi {
      * Sign in/ Log in
      * Sign a user into kin marketplace
      *
-     * @param signindata   (required)
+     * @param signindata (required)
      * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
      * @return ApiResponse&lt;AuthToken&gt;
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
@@ -298,13 +313,14 @@ public class AuthApi {
      * Sign in/ Log in (asynchronously)
      * Sign a user into kin marketplace
      *
-     * @param signindata   (required)
+     * @param signindata (required)
      * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
-     * @param callback     The callback to be executed when the API call finishes
+     * @param callback The callback to be executed when the API call finishes
      * @return The request call
      * @throws ApiException If fail to process the API call, e.g. serializing the request body object
      */
-    public Call signInAsync(SignInData signindata, String X_REQUEST_ID, final ApiCallback<AuthToken> callback) throws ApiException {
+    public Call signInAsync(SignInData signindata, String X_REQUEST_ID, final ApiCallback<AuthToken> callback)
+        throws ApiException {
 
         ProgressResponseBody.ProgressListener progressListener = null;
         ProgressRequestBody.ProgressRequestListener progressRequestListener = null;

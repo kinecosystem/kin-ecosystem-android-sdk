@@ -9,18 +9,19 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.kin.ecosystem.KinCallback;
-import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.exception.DataNotAvailableException;
+import com.kin.ecosystem.bi.EventLogger;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
-import com.kin.ecosystem.network.ApiException;
+
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OfferList;
 import com.kin.ecosystem.network.model.Paging;
 import com.kin.ecosystem.network.model.PagingCursors;
 import java.lang.reflect.Field;
 import java.util.List;
+import kin.ecosystem.core.network.ApiException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

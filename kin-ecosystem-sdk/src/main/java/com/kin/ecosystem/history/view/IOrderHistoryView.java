@@ -3,6 +3,7 @@ package com.kin.ecosystem.history.view;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.base.IBaseView;
 import com.kin.ecosystem.base.IBottomDialogPresenter;
+import com.kin.ecosystem.history.presenter.ICouponDialogPresenter;
 import com.kin.ecosystem.history.presenter.OrderHistoryPresenter;
 import com.kin.ecosystem.network.model.Order;
 
@@ -16,5 +17,5 @@ public interface IOrderHistoryView extends IBaseView<OrderHistoryPresenter>{
 
     void onItemUpdated(int index);
 
-    void showCouponDialog(@NonNull final IBottomDialogPresenter<ICouponDialog> presenter);
+    void showCouponDialog(@NonNull final ICouponDialogPresenter presenter);
 }

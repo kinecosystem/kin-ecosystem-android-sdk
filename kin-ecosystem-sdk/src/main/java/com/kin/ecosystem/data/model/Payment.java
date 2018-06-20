@@ -1,5 +1,8 @@
 package com.kin.ecosystem.data.model;
 
+import android.support.annotation.Nullable;
+import java.math.BigDecimal;
+
 /**
  * Payment object, after sending a blockchain transaction as payment to an order.
  * Determine if the payment succeeded and for which orderID it connected.
@@ -14,7 +17,12 @@ public class Payment {
     /**
      * The transaction id on the blockchain, could be null if the transaction failed.
      */
-    private String transactionID;
+    private @Nullable String transactionID;
+
+    /**
+     * The payment amount was sent / received, could be null id transaction failed.
+     */
+    private @Nullable BigDecimal amount;
 
     /**
      * Determine if the transaction succeeded or not.
@@ -26,15 +34,17 @@ public class Payment {
      */
     private Exception exception;
 
-    public Payment(String orderID, String transactionID) {
+    public Payment(String orderID, @Nullable String transactionID, @Nullable BigDecimal amount) {
         this.orderID = orderID;
         this.transactionID = transactionID;
+        this.amount = amount;
         this.isSucceed = true;
     }
 
     public Payment(String orderID, boolean isSucceed, Exception error) {
         this.orderID = orderID;
         this.transactionID = null;
+        this.amount = null;
         this.isSucceed = isSucceed;
         this.exception = error;
     }
@@ -43,8 +53,14 @@ public class Payment {
         return orderID;
     }
 
+    @Nullable
     public String getTransactionID() {
         return transactionID;
+    }
+
+    @Nullable
+    public BigDecimal getAmount() {
+        return amount;
     }
 
     public boolean isSucceed() {
@@ -54,4 +70,8 @@ public class Payment {
     public Exception getException() {
         return exception;
     }
+
+	public boolean isEarn() {
+		return amount != null && amount.compareTo(BigDecimal.ZERO) == 1;
+	}
 }
