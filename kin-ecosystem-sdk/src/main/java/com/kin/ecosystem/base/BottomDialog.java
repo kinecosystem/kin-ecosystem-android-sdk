@@ -123,7 +123,7 @@ public abstract class BottomDialog<T extends IBottomDialogPresenter> extends Dia
     }
 
     public void setupImage(String image) {
-        Picasso.with(getContext())
+        Picasso.get()
             .load(image)
             .placeholder(R.drawable.kinecosystem_placeholder)
             .fit()
