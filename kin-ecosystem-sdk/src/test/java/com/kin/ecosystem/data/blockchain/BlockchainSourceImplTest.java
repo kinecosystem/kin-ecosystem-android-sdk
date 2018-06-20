@@ -3,6 +3,7 @@ package com.kin.ecosystem.data.blockchain;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -10,11 +11,18 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.kin.ecosystem.BaseTestClass;
 import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.bi.EventLogger;
+import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainFailed;
+import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainSucceeded;
+import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupSucceeded;
 import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.Payment;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import kin.core.BlockchainEvents;
 import kin.core.EventListener;
 import kin.core.KinAccount;
@@ -37,204 +45,236 @@ import org.robolectric.annotation.Config;
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner.class)
-public class BlockchainSourceImplTest {
+public class BlockchainSourceImplTest extends BaseTestClass {
 
-    private static final String PUBLIC_ADDRESS = "public_address";
-    private static final String APP_ID = "appID";
-    private static final String ORDER_ID = "orderID";
-    private static final String MEMO_EXAMPLE = "1-" + APP_ID + "-" + ORDER_ID;
-
-
-    @Mock
-    private KinClient kinClient;
-
-    @Mock
-    private BlockchainSource.Local local;
-
-    @Mock
-    private KinAccount kinAccount;
-
-    @Mock
-    private BlockchainEvents blockchainEvents;
+	private static final String PUBLIC_ADDRESS = "public_address";
+	private static final String APP_ID = "appID";
+	private static final String ORDER_ID = "orderID";
+	private static final String MEMO_EXAMPLE = "1-" + APP_ID + "-" + ORDER_ID;
 
 
-    @Captor
-    private ArgumentCaptor<EventListener<Void>> accountCreationCaptor;
+	@Mock
+	private EventLogger eventLogger;
 
-    @Mock
-    private ListenerRegistration accountRegistration;
+	@Mock
+	private KinClient kinClient;
 
+	@Mock
+	private BlockchainSource.Local local;
 
-    @Mock
-    private Request<Void> activateAccountReq;
+	@Mock
+	private KinAccount kinAccount;
 
-    @Captor
-    private ArgumentCaptor<ResultCallback<Void>> accountActivateCaptor;
-
-
-    @Mock
-    private Request<kin.core.Balance> getBalanceReq;
-
-    @Captor
-    private ArgumentCaptor<ResultCallback<kin.core.Balance>> getBalanceCaptor;
-
-    @Mock
-    private kin.core.Balance balanceObj;
+	@Mock
+	private BlockchainEvents blockchainEvents;
 
 
-    private BlockchainSourceImpl blockchainSource;
-    private Balance balance;
+	@Captor
+	private ArgumentCaptor<EventListener<Void>> accountCreationCaptor;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        when(kinClient.addAccount()).thenReturn(kinAccount);
-        when(kinAccount.blockchainEvents()).thenReturn(blockchainEvents);
-        when(kinAccount.getBalance()).thenReturn(getBalanceReq);
-        when(kinAccount.activate()).thenReturn(activateAccountReq);
-        when(blockchainEvents.addAccountCreationListener(any(EventListener.class))).thenReturn(accountRegistration);
-        when(balanceObj.value()).thenReturn(new BigDecimal(20));
-        when(kinAccount.getPublicAddress()).thenReturn(PUBLIC_ADDRESS);
-
-        resetInstance();
-
-        // Account Creation
-        verify(kinClient).addAccount();
-        verify(blockchainEvents).addAccountCreationListener(accountCreationCaptor.capture());
-        accountCreationCaptor.getValue().onEvent(null);
-
-        verify(activateAccountReq).run(accountActivateCaptor.capture());
-        accountActivateCaptor.getValue().onResult(null);
-
-        // init Balance
-        verify(getBalanceReq).run(getBalanceCaptor.capture());
-        getBalanceCaptor.getValue().onResult(balanceObj);
-        verify(local).setBalance(balanceObj.value().intValue());
-
-        when(kinClient.getAccount(0)).thenReturn(kinAccount);
-        balance = new Balance();
-    }
+	@Mock
+	private ListenerRegistration accountRegistration;
 
 
-    private void resetInstance() throws Exception {
-        Field instance = BlockchainSourceImpl.class.getDeclaredField("instance");
-        instance.setAccessible(true);
-        instance.set(null, null);
-        BlockchainSourceImpl.init(kinClient, local);
-        blockchainSource = BlockchainSourceImpl.getInstance();
-    }
+	@Mock
+	private Request<Void> activateAccountReq;
 
-    @Test
-    public void init_once_and_one_account() throws Exception {
-        BlockchainSourceImpl.init(kinClient, local);
-        BlockchainSourceImpl.init(kinClient, local);
-        assertEquals(blockchainSource, BlockchainSourceImpl.getInstance());
-        verify(kinClient).addAccount();
-    }
+	@Captor
+	private ArgumentCaptor<ResultCallback<Void>> accountActivateCaptor;
 
-    @Test
-    public void set_app_id_memo_generated_correctly() {
-        blockchainSource.setAppID(APP_ID);
-        assertEquals(MEMO_EXAMPLE, blockchainSource.generateMemo(ORDER_ID));
-    }
 
-    @Test
-    public void get_public_address() {
-        assertEquals(PUBLIC_ADDRESS, blockchainSource.getPublicAddress());
-    }
+	@Mock
+	private Request<kin.core.Balance> getBalanceReq;
 
-    @Test
-    public void extract_order_id() {
-        // without app id set
-        assertNull(blockchainSource.extractOrderId("123"));
-        assertNull(blockchainSource.extractOrderId(MEMO_EXAMPLE));
+	@Captor
+	private ArgumentCaptor<ResultCallback<kin.core.Balance>> getBalanceCaptor;
 
-        // with app id
-        blockchainSource.setAppID(APP_ID);
-        assertEquals(ORDER_ID, blockchainSource.extractOrderId(MEMO_EXAMPLE));
-    }
+	@Mock
+	private kin.core.Balance balanceObj;
 
-    @Test
-    public void send_transaction_failed() {
-        String toAddress = "some_pub_address";
-        BigDecimal amount = new BigDecimal(10);
-        final String orderID = "someID";
 
-        Request<TransactionId> transactionRequest = mock(Request.class);
-        ArgumentCaptor<ResultCallback<TransactionId>> resultCallbackArgumentCaptor =
-            forClass(ResultCallback.class);
-        when(kinAccount.sendTransaction(any(String.class), any(BigDecimal.class), any(String.class)))
-            .thenReturn(transactionRequest);
+	private BlockchainSourceImpl blockchainSource;
+	private Balance balance;
 
-        blockchainSource.setAppID(APP_ID);
-        blockchainSource.sendTransaction(toAddress, amount, orderID);
-        verify(transactionRequest).run(resultCallbackArgumentCaptor.capture());
+	@Before
+	public void setUp() throws Exception {
+		super.setUp();
+		MockitoAnnotations.initMocks(this);
+		when(kinClient.addAccount()).thenReturn(kinAccount);
+		when(kinAccount.blockchainEvents()).thenReturn(blockchainEvents);
+		when(kinAccount.getBalance()).thenReturn(getBalanceReq);
+		when(kinAccount.activate()).thenReturn(activateAccountReq);
+		when(blockchainEvents.addAccountCreationListener(any(EventListener.class))).thenReturn(accountRegistration);
+		when(balanceObj.value()).thenReturn(new BigDecimal(20));
+		when(kinAccount.getPublicAddress()).thenReturn(PUBLIC_ADDRESS);
 
-        final Exception exception = new Exception("failed");
+		resetInstance();
 
-        blockchainSource.addPaymentObservable(new Observer<Payment>() {
-            @Override
-            public void onChanged(Payment value) {
-                assertFalse(value.isSucceed());
-                assertEquals(orderID, value.getOrderID());
-                assertEquals(exception, value.getException());
-            }
-        });
+		// Account Creation
+		verify(kinClient).addAccount();
 
-        resultCallbackArgumentCaptor.getValue().onError(exception);
-    }
+		verify(blockchainEvents).addAccountCreationListener(accountCreationCaptor.capture());
+		accountCreationCaptor.getValue().onEvent(null);
+		verify(activateAccountReq).run(accountActivateCaptor.capture());
+		accountActivateCaptor.getValue().onResult(null);
 
-    @Test
-    public void add_balance_observer_get_onChanged() {
-        kin.core.Balance innerBalance = mock(kin.core.Balance.class);
-        blockchainSource.addBalanceObserver(new Observer<Balance>() {
-            @Override
-            public void onChanged(Balance value) {
-                balance = value;
-            }
-        });
-        assertEquals(new BigDecimal(20), balance.getAmount());
+		verify(eventLogger).send(any(StellarKinTrustlineSetupSucceeded.class));
 
-        InOrder inOrder = Mockito.inOrder(local);
-        BigDecimal value = new BigDecimal(25);
-        when(innerBalance.value()).thenReturn(value);
-        blockchainSource.setBalance(innerBalance);
-        assertEquals(value, balance.getAmount());
+		// init Balance
+		verify(getBalanceReq).run(getBalanceCaptor.capture());
+		getBalanceCaptor.getValue().onResult(balanceObj);
+		verify(local).setBalance(balanceObj.value().intValue());
 
-        value = new BigDecimal(50);
-        when(innerBalance.value()).thenReturn(value);
-        blockchainSource.setBalance(innerBalance);
-        assertEquals(value, balance.getAmount());
+		when(kinClient.getAccount(0)).thenReturn(kinAccount);
+		balance = new Balance();
+	}
 
-        value = new BigDecimal(50);
-        when(innerBalance.value()).thenReturn(value);
-        blockchainSource.setBalance(innerBalance);
-        assertEquals(value, balance.getAmount());
 
-        inOrder.verify(local).setBalance(25);
-        inOrder.verify(local).setBalance(50);
-        inOrder.verify(local, never()).setBalance(any(Integer.class));
-    }
+	private void resetInstance() throws Exception {
+		Field instance = BlockchainSourceImpl.class.getDeclaredField("instance");
+		instance.setAccessible(true);
+		instance.set(null, null);
+		BlockchainSourceImpl.init(eventLogger, kinClient, local);
+		blockchainSource = BlockchainSourceImpl.getInstance();
+	}
 
-    @Test
-    public void add_balance_observer_and_start_listen() throws Exception {
-        ArgumentCaptor<EventListener<kin.core.Balance>> balanceEventListener = forClass(EventListener.class);
+	@Test
+	public void init_once_and_one_account() throws Exception {
+		BlockchainSourceImpl.init(eventLogger, kinClient, local);
+		BlockchainSourceImpl.init(eventLogger, kinClient, local);
+		assertEquals(blockchainSource, BlockchainSourceImpl.getInstance());
+		verify(kinClient).addAccount();
+	}
 
-        blockchainSource.addBalanceObserverAndStartListen(new Observer<Balance>() {
-            @Override
-            public void onChanged(Balance value) {
-                balance = value;
-            }
-        });
+	@Test
+	public void set_app_id_memo_generated_correctly() {
+		blockchainSource.setAppID(APP_ID);
+		assertEquals(MEMO_EXAMPLE, blockchainSource.generateMemo(ORDER_ID));
+	}
 
-        verify(blockchainEvents).addBalanceListener(balanceEventListener.capture());
-        BigDecimal value = new BigDecimal(123);
+	@Test
+	public void get_public_address() {
+		assertEquals(PUBLIC_ADDRESS, blockchainSource.getPublicAddress());
+	}
 
-        when(balanceObj.value()).thenReturn(value);
-        balanceEventListener.getValue().onEvent(balanceObj);
+	@Test
+	public void extract_order_id() {
+		// without app id set
+		assertNull(blockchainSource.extractOrderId("123"));
+		assertNull(blockchainSource.extractOrderId(MEMO_EXAMPLE));
 
-        assertEquals(value, balance.getAmount());
-        verify(local).setBalance(value.intValue());
+		// with app id
+		blockchainSource.setAppID(APP_ID);
+		assertEquals(ORDER_ID, blockchainSource.extractOrderId(MEMO_EXAMPLE));
+	}
 
-    }
+	@Test
+	public void send_transaction_succeeded() throws InterruptedException {
+		String toAddress = "some_pub_address";
+		final BigDecimal amount = new BigDecimal(10);
+		final String orderID = "someID";
+		final String transactionID = "transactionID";
+
+		Request<TransactionId> transactionRequest = mock(Request.class);
+		ArgumentCaptor<ResultCallback<TransactionId>> resultCallbackArgumentCaptor =
+			forClass(ResultCallback.class);
+		when(kinAccount.sendTransaction(any(String.class), any(BigDecimal.class), any(String.class)))
+			.thenReturn(transactionRequest);
+
+		blockchainSource.setAppID(APP_ID);
+		blockchainSource.sendTransaction(toAddress, amount, orderID, "offerID");
+		verify(transactionRequest).run(resultCallbackArgumentCaptor.capture());
+		resultCallbackArgumentCaptor.getValue().onResult(new TransactionId() {
+			@Override
+			public String id() {
+				return transactionID;
+			}
+		});
+		verify(eventLogger).send(any(SpendTransactionBroadcastToBlockchainSucceeded.class));
+	}
+
+	@Test
+	public void send_transaction_failed() {
+		String toAddress = "some_pub_address";
+		BigDecimal amount = new BigDecimal(10);
+		final String orderID = "someID";
+
+		Request<TransactionId> transactionRequest = mock(Request.class);
+		ArgumentCaptor<ResultCallback<TransactionId>> resultCallbackArgumentCaptor =
+			forClass(ResultCallback.class);
+		when(kinAccount.sendTransaction(any(String.class), any(BigDecimal.class), any(String.class)))
+			.thenReturn(transactionRequest);
+
+		blockchainSource.setAppID(APP_ID);
+		blockchainSource.sendTransaction(toAddress, amount, orderID, "offerID");
+		verify(transactionRequest).run(resultCallbackArgumentCaptor.capture());
+
+		final Exception exception = new Exception("failed");
+
+		blockchainSource.addPaymentObservable(new Observer<Payment>() {
+			@Override
+			public void onChanged(Payment value) {
+				assertFalse(value.isSucceed());
+				assertEquals(orderID, value.getOrderID());
+				assertEquals(exception, value.getException());
+			}
+		});
+
+		resultCallbackArgumentCaptor.getValue().onError(exception);
+		verify(eventLogger).send(any(SpendTransactionBroadcastToBlockchainFailed.class));
+	}
+
+	@Test
+	public void add_balance_observer_get_onChanged() {
+		kin.core.Balance innerBalance = mock(kin.core.Balance.class);
+		blockchainSource.addBalanceObserver(new Observer<Balance>() {
+			@Override
+			public void onChanged(Balance value) {
+				balance = value;
+			}
+		});
+		assertEquals(new BigDecimal(20), balance.getAmount());
+
+		InOrder inOrder = Mockito.inOrder(local);
+		BigDecimal value = new BigDecimal(25);
+		when(innerBalance.value()).thenReturn(value);
+		blockchainSource.setBalance(innerBalance);
+		assertEquals(value, balance.getAmount());
+
+		value = new BigDecimal(50);
+		when(innerBalance.value()).thenReturn(value);
+		blockchainSource.setBalance(innerBalance);
+		assertEquals(value, balance.getAmount());
+
+		value = new BigDecimal(50);
+		when(innerBalance.value()).thenReturn(value);
+		blockchainSource.setBalance(innerBalance);
+		assertEquals(value, balance.getAmount());
+
+		inOrder.verify(local).setBalance(25);
+		inOrder.verify(local).setBalance(50);
+		inOrder.verify(local, never()).setBalance(any(Integer.class));
+	}
+
+	@Test
+	public void add_balance_observer_and_start_listen() throws Exception {
+		ArgumentCaptor<EventListener<kin.core.Balance>> balanceEventListener = forClass(EventListener.class);
+
+		blockchainSource.addBalanceObserverAndStartListen(new Observer<Balance>() {
+			@Override
+			public void onChanged(Balance value) {
+				balance = value;
+			}
+		});
+
+		verify(blockchainEvents).addBalanceListener(balanceEventListener.capture());
+		BigDecimal value = new BigDecimal(123);
+
+		when(balanceObj.value()).thenReturn(value);
+		balanceEventListener.getValue().onEvent(balanceObj);
+
+		assertEquals(value, balance.getAmount());
+		verify(local).setBalance(value.intValue());
+
+	}
 }

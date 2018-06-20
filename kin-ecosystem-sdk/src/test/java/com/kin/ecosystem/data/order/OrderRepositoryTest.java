@@ -12,7 +12,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.kin.ecosystem.BaseTestClass;
 import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.bi.EventLogger;
+import com.kin.ecosystem.bi.events.EarnOrderPaymentConfirmed;
+import com.kin.ecosystem.bi.events.SpendOrderCompleted;
+import com.kin.ecosystem.bi.events.SpendOrderFailed;
 import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
@@ -21,10 +26,13 @@ import com.kin.ecosystem.data.model.OrderConfirmation;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.data.offer.OfferDataSource;
 import com.kin.ecosystem.exception.DataNotAvailableException;
+
+import com.kin.ecosystem.network.model.Offer.OfferType;
+import java.math.BigDecimal;
+import kin.ecosystem.core.network.ApiException;
+
 import com.kin.ecosystem.exception.KinEcosystemException;
-import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.model.BlockchainData;
-import com.kin.ecosystem.network.model.Error;
 import com.kin.ecosystem.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OpenOrder;
@@ -39,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import kin.ecosystem.core.network.model.Error;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,7 +62,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner.class)
-public class OrderRepositoryTest {
+public class OrderRepositoryTest extends BaseTestClass{
 
     private static String offerID = "1";
     private static String orderID = "2";
@@ -63,6 +72,9 @@ public class OrderRepositoryTest {
 
     @Mock
     private OfferDataSource offerRepository;
+
+    @Mock
+    private EventLogger eventLogger;
 
     @Mock
     private OrderDataSource.Remote remote;
@@ -95,6 +107,7 @@ public class OrderRepositoryTest {
 
     @Before
     public void setUp() throws Exception {
+        super.setUp();
         MockitoAnnotations.initMocks(this);
         resetInstance();
 
@@ -114,13 +127,14 @@ public class OrderRepositoryTest {
 
         when(payment.getOrderID()).thenReturn(orderID);
         when(payment.isSucceed()).thenReturn(true);
+        when(payment.getTransactionID()).thenReturn("transactionID");
     }
 
     private void resetInstance() throws Exception {
         Field instance = OrderRepository.class.getDeclaredField("instance");
         instance.setAccessible(true);
         instance.set(null, null);
-        OrderRepository.init(blockchainSource, offerRepository, remote, local);
+        OrderRepository.init(blockchainSource, offerRepository, eventLogger, remote, local);
         orderRepository = OrderRepository.getInstance();
     }
 
@@ -168,7 +182,7 @@ public class OrderRepositoryTest {
 
 
     @Test
-    public void submitOrder_Succeed() throws Exception {
+    public void submitOrder_Succeed_EarnOrder() throws Exception {
         KinCallback<Order> orderCallback = mock(KinCallback.class);
         ArgumentCaptor<Callback<Order, ApiException>> submitOrderCapture = ArgumentCaptor.forClass(Callback.class);
         ArgumentCaptor<Observer<Payment>> paymentCapture = ArgumentCaptor.forClass(Observer.class);
@@ -186,7 +200,11 @@ public class OrderRepositoryTest {
         verify(offerRepository, times(1)).setPendingOfferByID(order.getOfferId());
         verify(blockchainSource).addPaymentObservable(paymentCapture.capture());
 
+        when(payment.getAmount()).thenReturn(new BigDecimal(20));
+        when(payment.isEarn()).thenReturn(true);
         paymentCapture.getValue().onChanged(payment);
+
+        verify(eventLogger).send(any(EarnOrderPaymentConfirmed.class));
         verify(remote).getOrder(anyString(), getOrderCapture.capture());
 
         orderRepository.addCompletedOrderObserver(new Observer<Order>() {
@@ -202,9 +220,110 @@ public class OrderRepositoryTest {
         assertNull(orderRepository.getOpenOrder().getValue());
         verify(offerRepository).setPendingOfferByID(null);
 
+        verify(eventLogger, never()).send(any(SpendOrderCompleted.class));
+        verify(eventLogger, never()).send(any(SpendOrderFailed.class));
+
         submitOrderCapture.getValue().onResponse(order);
         verify(orderCallback).onResponse(order);
     }
+
+    @Test
+    public void submitOrder_Succeed_SpendOrder_StautsCompleted() throws Exception {
+        KinCallback<Order> orderCallback = mock(KinCallback.class);
+        ArgumentCaptor<Callback<Order, ApiException>> submitOrderCapture = ArgumentCaptor.forClass(Callback.class);
+        ArgumentCaptor<Observer<Payment>> paymentCapture = ArgumentCaptor.forClass(Observer.class);
+        ArgumentCaptor<Callback<Order, ApiException>> getOrderCapture = ArgumentCaptor.forClass(Callback.class);
+
+        when(order.getOfferType()).thenReturn(OfferType.SPEND);
+        when(order.getStatus()).thenReturn(Status.COMPLETED);
+
+        // Create Order
+        orderRepository.createOrder(order.getOfferId(), openOrderCallback);
+        verify(remote).createOrder(anyString(), createOrderCapture.capture());
+        createOrderCapture.getValue().onResponse(openOrder);
+        assertEquals(openOrder, orderRepository.getOpenOrder().getValue());
+
+        // Submit Order
+        orderRepository.submitOrder(order.getOfferId(), "", order.getOrderId(), orderCallback);
+        verify(remote).submitOrder(anyString(), anyString(), submitOrderCapture.capture());
+        verify(offerRepository, times(1)).setPendingOfferByID(order.getOfferId());
+        verify(blockchainSource).addPaymentObservable(paymentCapture.capture());
+
+        when(payment.getAmount()).thenReturn(new BigDecimal(-20));
+        when(payment.isEarn()).thenReturn(false);
+        paymentCapture.getValue().onChanged(payment);
+
+        verify(eventLogger, never()).send(any(EarnOrderPaymentConfirmed.class));
+        verify(remote).getOrder(anyString(), getOrderCapture.capture());
+
+        orderRepository.addCompletedOrderObserver(new Observer<Order>() {
+            @Override
+            public void onChanged(Order value) {
+                assertEquals(order, value);
+            }
+        });
+
+        ObservableData<Offer> pendingOffer = ObservableData.create(offer);
+        when(offerRepository.getPendingOffer()).thenReturn(pendingOffer);
+        getOrderCapture.getValue().onResponse(order);
+        assertNull(orderRepository.getOpenOrder().getValue());
+        verify(offerRepository).setPendingOfferByID(null);
+
+        verify(eventLogger).send(any(SpendOrderCompleted.class));
+
+
+        submitOrderCapture.getValue().onResponse(order);
+        verify(orderCallback).onResponse(order);
+    }
+
+	@Test
+	public void submitOrder_Succeed_SpendOrder_StatusFailed() throws Exception {
+		KinCallback<Order> orderCallback = mock(KinCallback.class);
+		ArgumentCaptor<Callback<Order, ApiException>> submitOrderCapture = ArgumentCaptor.forClass(Callback.class);
+		ArgumentCaptor<Observer<Payment>> paymentCapture = ArgumentCaptor.forClass(Observer.class);
+		ArgumentCaptor<Callback<Order, ApiException>> getOrderCapture = ArgumentCaptor.forClass(Callback.class);
+
+		when(order.getOfferType()).thenReturn(OfferType.SPEND);
+		when(order.getStatus()).thenReturn(Status.FAILED);
+
+		// Create Order
+		orderRepository.createOrder(order.getOfferId(), openOrderCallback);
+		verify(remote).createOrder(anyString(), createOrderCapture.capture());
+		createOrderCapture.getValue().onResponse(openOrder);
+		assertEquals(openOrder, orderRepository.getOpenOrder().getValue());
+
+		// Submit Order
+		orderRepository.submitOrder(order.getOfferId(), "", order.getOrderId(), orderCallback);
+		verify(remote).submitOrder(anyString(), anyString(), submitOrderCapture.capture());
+		verify(offerRepository, times(1)).setPendingOfferByID(order.getOfferId());
+		verify(blockchainSource).addPaymentObservable(paymentCapture.capture());
+
+		when(payment.getAmount()).thenReturn(new BigDecimal(-20));
+		when(payment.isEarn()).thenReturn(false);
+		paymentCapture.getValue().onChanged(payment);
+
+		verify(eventLogger, never()).send(any(EarnOrderPaymentConfirmed.class));
+		verify(remote).getOrder(anyString(), getOrderCapture.capture());
+
+		orderRepository.addCompletedOrderObserver(new Observer<Order>() {
+			@Override
+			public void onChanged(Order value) {
+				assertEquals(order, value);
+			}
+		});
+
+		ObservableData<Offer> pendingOffer = ObservableData.create(offer);
+		when(offerRepository.getPendingOffer()).thenReturn(pendingOffer);
+		getOrderCapture.getValue().onResponse(order);
+		assertNull(orderRepository.getOpenOrder().getValue());
+		verify(offerRepository).setPendingOfferByID(null);
+
+		verify(eventLogger).send(any(SpendOrderFailed.class));
+
+
+		submitOrderCapture.getValue().onResponse(order);
+		verify(orderCallback).onResponse(order);
+	}
 
     @Test
     public void submitOrder_Failed() throws Exception {

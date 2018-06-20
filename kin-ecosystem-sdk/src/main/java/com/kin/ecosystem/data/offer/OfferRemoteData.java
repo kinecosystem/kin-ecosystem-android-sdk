@@ -1,12 +1,12 @@
 package com.kin.ecosystem.data.offer;
 
 import android.support.annotation.NonNull;
+import kin.ecosystem.core.network.ApiCallback;
+import kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.data.Callback;
-import com.kin.ecosystem.network.ApiCallback;
-import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.api.OffersApi;
 import com.kin.ecosystem.network.model.OfferList;
-import com.kin.ecosystem.util.ExecutorsUtil;
+import kin.ecosystem.core.util.ExecutorsUtil;
 import java.util.List;
 import java.util.Map;
 

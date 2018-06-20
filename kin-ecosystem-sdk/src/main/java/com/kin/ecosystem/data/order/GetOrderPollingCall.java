@@ -4,10 +4,10 @@ import static com.kin.ecosystem.exception.ClientException.INTERNAL_INCONSISTENCY
 
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.data.Callback;
-import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.Order.Status;
 import com.kin.ecosystem.util.ErrorUtil;
+import kin.ecosystem.core.network.ApiException;
 
 class GetOrderPollingCall extends Thread {
 

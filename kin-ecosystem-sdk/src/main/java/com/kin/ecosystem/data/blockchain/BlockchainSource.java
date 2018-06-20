@@ -21,7 +21,7 @@ public interface BlockchainSource {
      * @param amount the amount to send
      * @param orderID the orderID to be included in the memo of the transaction
      */
-    void sendTransaction(@NonNull String publicAddress, @NonNull BigDecimal amount, @NonNull String orderID);
+    void sendTransaction(@NonNull String publicAddress, @NonNull BigDecimal amount, @NonNull String orderID, @NonNull String offerID);
 
     /**
      * @return the cached balance.

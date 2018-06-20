@@ -8,6 +8,10 @@ import android.util.Log;
 import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.bi.EventLogger;
+import com.kin.ecosystem.bi.events.EarnOrderPaymentConfirmed;
+import com.kin.ecosystem.bi.events.SpendOrderCompleted;
+import com.kin.ecosystem.bi.events.SpendOrderFailed;
 import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.model.OrderConfirmation;
@@ -17,15 +21,18 @@ import com.kin.ecosystem.data.order.CreateExternalOrderCall.ExternalOrderCallbac
 import com.kin.ecosystem.data.order.CreateExternalOrderCall.ExternalSpendOrderCallbacks;
 import com.kin.ecosystem.exception.DataNotAvailableException;
 import com.kin.ecosystem.exception.KinEcosystemException;
-import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.network.model.Offer;
+import com.kin.ecosystem.network.model.Offer.OfferType;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
+import com.kin.ecosystem.network.model.Order.Status;
 import com.kin.ecosystem.network.model.OrderList;
 import com.kin.ecosystem.util.ErrorUtil;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import kin.ecosystem.core.network.ApiException;
 
 public class OrderRepository implements OrderDataSource {
 
@@ -38,6 +45,7 @@ public class OrderRepository implements OrderDataSource {
 
 	private final OfferDataSource offerRepository;
 	private final BlockchainSource blockchainSource;
+	private final EventLogger eventLogger;
 
 	private OrderList cachedOrderList;
 	private ObservableData<OpenOrder> cachedOpenOrder = ObservableData.create();
@@ -50,21 +58,26 @@ public class OrderRepository implements OrderDataSource {
 	private int paymentObserverCount;
 
 	private OrderRepository(@NonNull final BlockchainSource blockchainSource,
-		@NonNull final OfferDataSource offerRepository, @NonNull final OrderDataSource.Remote remoteData,
+		@NonNull final OfferDataSource offerRepository,
+		@NonNull final EventLogger eventLogger,
+		@NonNull final OrderDataSource.Remote remoteData,
 		@NonNull final OrderDataSource.Local localData) {
 		this.remoteData = remoteData;
 		this.localData = localData;
 		this.offerRepository = offerRepository;
 		this.blockchainSource = blockchainSource;
+		this.eventLogger = eventLogger;
 	}
 
 	public static void init(@NonNull final BlockchainSource blockchainSource,
-		@NonNull final OfferDataSource offerRepository, @NonNull final OrderDataSource.Remote remoteData,
+		@NonNull final OfferDataSource offerRepository,
+		@NonNull final EventLogger eventLogger,
+		@NonNull final OrderDataSource.Remote remoteData,
 		@NonNull final OrderDataSource.Local localData) {
 		if (instance == null) {
 			synchronized (OrderRepository.class) {
 				if (instance == null) {
-					instance = new OrderRepository(blockchainSource, offerRepository, remoteData, localData);
+					instance = new OrderRepository(blockchainSource, offerRepository, eventLogger, remoteData, localData);
 				}
 			}
 		}
@@ -149,6 +162,7 @@ public class OrderRepository implements OrderDataSource {
 				paymentObserver = new Observer<Payment>() {
 					@Override
 					public void onChanged(Payment payment) {
+						sendEarnPaymentConfirmed(payment);
 						decrementPaymentObserverCount();
 						getOrder(payment.getOrderID());
 					}
@@ -157,6 +171,12 @@ public class OrderRepository implements OrderDataSource {
 				Log.d(TAG, "listenForCompletedPayment: addPaymentObservable");
 			}
 			paymentObserverCount++;
+		}
+	}
+
+	private void sendEarnPaymentConfirmed(Payment payment) {
+		if (payment.isSucceed() && payment.getAmount() != null && payment.isEarn()) {
+			eventLogger.send(EarnOrderPaymentConfirmed.create(payment.getTransactionID(), null, payment.getOrderID()));
 		}
 	}
 
@@ -193,9 +213,24 @@ public class OrderRepository implements OrderDataSource {
 	private void setCompletedOrder(@NonNull Order order) {
 		Log.i(TAG, "setCompletedOrder: " + order);
 		completedOrder.postValue(order);
+		sendSpendOrderCompleted(order);
 		if (!hasMorePendingOffers()) {
 			removeCachedOpenOrderByID(order.getOrderId());
 			removePendingOfferByID(order.getOfferId());
+		}
+	}
+
+	private void sendSpendOrderCompleted(Order order) {
+		if (order.getOfferType() == OfferType.SPEND) {
+			if (order.getStatus() == Status.COMPLETED) {
+				eventLogger.send(SpendOrderCompleted.create(order.getOfferId(), order.getOrderId()));
+			} else {
+				String reason = "Timed out";
+				if (order.getError() != null) {
+					reason = order.getError().getMessage();
+				}
+				eventLogger.send(SpendOrderFailed.create(reason, order.getOfferId(), order.getOrderId()));
+			}
 		}
 	}
 

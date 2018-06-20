@@ -6,17 +6,17 @@ public class Environment implements KinEnvironment {
 		"https://horizon-kik.kininfrastructure.com",
 		"private testnet",
 		"GBQ3DQOA7NF52FVV7ES3CR3ZMHUEY4LTHDAQKDTO6S546JCLFPEQGCPK",
-		"http://api.kinmarketplace.com/v1",
+		"https://api.kinmarketplace.com/v1",
 		"http://htmlpoll.kinecosystem.com.s3-website-us-east-1.amazonaws.com/",
-		"");
+		"https://kin-bi.appspot.com");
 
 	private static final Environment PLAYGROUND = new Environment(
 		"https://stellar.kinplayground.com",
 		"ecosystem playground",
 		"GDVIWJ2NYBCPHMGTIBO5BBZCP5QCYC4YT4VINTV5PZOSE7BAJCH5JI64",
-		"http://api.kinplayground.com/v1",
+		"https://api.kinplayground.com/v1",
 		"https://s3.amazonaws.com/assets.kinplayground.com/web-offers/cards-based/index.html",
-		"");
+		"https://kin-bi.appspot.com");
 
 	private final String blockchainNetworkUrl;
 	private final String blockchainPassphrase;

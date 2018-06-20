@@ -11,7 +11,6 @@ package com.kin.ecosystem.network.model;/*
  */
 
 
-
 import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
@@ -20,135 +19,144 @@ import java.util.Objects;
  */
 public class AuthToken {
 
-    @SerializedName("token")
-    private String token = null;
-    @SerializedName("activated")
-    private Boolean activated = false;
-    @SerializedName("expiration_date")
-    private String expirationDate = null;
-    @SerializedName("app_id")
-    private String appID = null;
+	@SerializedName("token")
+	private String token = null;
+	@SerializedName("activated")
+	private Boolean activated = false;
+	@SerializedName("expiration_date")
+	private String expirationDate = null;
+	@SerializedName("app_id")
+	private String appID = null;
+	@SerializedName("user_id")
+	private String userID = null;
 
-    public AuthToken() {
-    }
+	public AuthToken() {
+	}
 
-    public AuthToken(String token, Boolean activated, String expirationDate, String appID) {
-        this.token = token;
-        this.activated = activated;
-        this.expirationDate = expirationDate;
-        this.appID = appID;
-    }
+	public AuthToken(String token, Boolean activated, String expirationDate, String appID, String userID) {
+		this.token = token;
+		this.activated = activated;
+		this.expirationDate = expirationDate;
+		this.appID = appID;
+		this.userID = userID;
+	}
 
-    public AuthToken token(String token) {
-        this.token = token;
-        return this;
-    }
-
-
-    /**
-     * Get token
-     *
-     * @return token
-     **/
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public AuthToken activated(Boolean activated) {
-        this.activated = activated;
-        return this;
-    }
+	public AuthToken token(String token) {
+		this.token = token;
+		return this;
+	}
 
 
-    /**
-     * Get activated
-     *
-     * @return activated
-     **/
-    public Boolean isActivated() {
-        return activated;
-    }
+	/**
+	 * Get token
+	 *
+	 * @return token
+	 **/
+	public String getToken() {
+		return token;
+	}
 
-    public void setActivated(Boolean activated) {
-        this.activated = activated;
-    }
+	public void setToken(String token) {
+		this.token = token;
+	}
 
-    public AuthToken expirationDate(String expirationDate) {
-        this.expirationDate = expirationDate;
-        return this;
-    }
+	public AuthToken activated(Boolean activated) {
+		this.activated = activated;
+		return this;
+	}
 
 
-    /**
-     * Get expirationDate
-     *
-     * @return expirationDate
-     **/
-    public String getExpirationDate() {
-        return expirationDate;
-    }
+	/**
+	 * Get activated
+	 *
+	 * @return activated
+	 **/
+	public Boolean isActivated() {
+		return activated;
+	}
 
-    public void setExpirationDate(String expirationDate) {
-        this.expirationDate = expirationDate;
-    }
+	public void setActivated(Boolean activated) {
+		this.activated = activated;
+	}
 
-    public String getAppID() {
-        return appID;
-    }
+	public AuthToken expirationDate(String expirationDate) {
+		this.expirationDate = expirationDate;
+		return this;
+	}
 
-    public AuthToken appID(String appID) {
-        this.appID = appID;
-        return this;
-    }
 
-    @Override
-    public boolean equals(java.lang.Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        AuthToken authToken = (AuthToken) o;
-        return this.token.equals(authToken.token) &&
-            this.activated.equals(authToken.activated) &&
-            this.appID.equals(authToken.appID) &&
-            this.expirationDate.equals(authToken.expirationDate);
-    }
+	/**
+	 * Get expirationDate
+	 *
+	 * @return expirationDate
+	 **/
+	public String getExpirationDate() {
+		return expirationDate;
+	}
 
-    @Override
-    public int hashCode() {
-        return token.hashCode() + activated.hashCode() +
-            expirationDate.hashCode() + appID.hashCode();
-    }
+	public void setExpirationDate(String expirationDate) {
+		this.expirationDate = expirationDate;
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class AuthToken {\n");
+	public String getAppID() {
+		return appID;
+	}
 
-        sb.append("    token: ").append(toIndentedString(token)).append("\n");
-        sb.append("    activated: ").append(toIndentedString(activated)).append("\n");
-        sb.append("    appID: ").append(toIndentedString(appID)).append("\n");
-        sb.append("    expirationDate: ").append(toIndentedString(expirationDate)).append("\n");
-        sb.append("}");
-        return sb.toString();
-    }
+	public AuthToken appID(String appID) {
+		this.appID = appID;
+		return this;
+	}
 
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(java.lang.Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
+	public String getUserID() {
+		return userID;
+	}
+
+	@Override
+	public boolean equals(java.lang.Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		AuthToken authToken = (AuthToken) o;
+		return this.token.equals(authToken.token) &&
+			this.activated.equals(authToken.activated) &&
+			this.appID.equals(authToken.appID) &&
+			this.userID.equals(authToken.userID) &&
+			this.expirationDate.equals(authToken.expirationDate);
+	}
+
+	@Override
+	public int hashCode() {
+		return token.hashCode() + activated.hashCode() +
+			expirationDate.hashCode() + appID.hashCode() + userID.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("class AuthToken {\n");
+
+		sb.append("    token: ").append(toIndentedString(token)).append("\n");
+		sb.append("    activated: ").append(toIndentedString(activated)).append("\n");
+		sb.append("    appID: ").append(toIndentedString(appID)).append("\n");
+		sb.append("    userID: ").append(toIndentedString(userID)).append("\n");
+		sb.append("    expirationDate: ").append(toIndentedString(expirationDate)).append("\n");
+		sb.append("}");
+		return sb.toString();
+	}
+
+	/**
+	 * Convert the given object to string with each line indented by 4 spaces
+	 * (except the first line).
+	 */
+	private String toIndentedString(java.lang.Object o) {
+		if (o == null) {
+			return "null";
+		}
+		return o.toString().replace("\n", "\n    ");
+	}
 
 
 }

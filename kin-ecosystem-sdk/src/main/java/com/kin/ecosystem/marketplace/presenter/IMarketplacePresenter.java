@@ -13,4 +13,6 @@ public interface IMarketplacePresenter extends IBasePresenter<IMarketplaceView> 
     void balanceItemClicked();
 
     void showOfferActivityFailed();
+
+    void backButtonPressed();
 }

@@ -1,0 +1,22 @@
+apply plugin: 'com.android.library'
+apply from: '../dependencies.gradle'
+
+android {
+    compileSdkVersion 26
+
+
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 26
+        versionCode 1
+        versionName "${KIN_ECOSYSTEM_CORE_VERSION_NAME}"
+    }
+}
+
+dependencies {
+    implementation devDependencies.supportAnnotations
+    implementation devDependencies.gson
+    implementation devDependencies.okhttp3
+    implementation devDependencies.loginInterceptor3
+}

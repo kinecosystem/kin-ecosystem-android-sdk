@@ -11,6 +11,7 @@ import com.chad.library.adapter.base.BaseRecyclerAdapter;
 import com.chad.library.adapter.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseToolbarActivity;
+import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderRepository;
@@ -63,7 +64,7 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         attachPresenter(new MarketplacePresenter(OfferRepository.getInstance(), OrderRepository.getInstance(),
-            BlockchainSourceImpl.getInstance()));
+            BlockchainSourceImpl.getInstance(), EventLoggerImpl.getInstance()));
     }
 
     @Override
@@ -121,6 +122,11 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
 
     @Override
     public void onBackPressed() {
+        marketplacePresenter.backButtonPressed();
+    }
+
+    @Override
+    public void navigateBack() {
         super.onBackPressed();
         overridePendingTransition(0, R.anim.kinecosystem_slide_out_right);
     }

@@ -1,20 +1,20 @@
 package com.kin.ecosystem.data.order;
 
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.exception.KinEcosystemException;
-import com.kin.ecosystem.network.ApiException;
 import com.kin.ecosystem.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.util.ErrorUtil;
-import com.kin.ecosystem.util.ExecutorsUtil.MainThreadExecutor;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import kin.ecosystem.core.network.ApiException;
+import kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
 
 class CreateExternalOrderCall extends Thread {
 
@@ -65,7 +65,7 @@ class CreateExternalOrderCall extends Thread {
 		if (externalOrderCallbacks instanceof ExternalSpendOrderCallbacks) {
 			// Send transaction to the network.
 			blockchainSource.sendTransaction(openOrder.getBlockchainData().getRecipientAddress(),
-				new BigDecimal(openOrder.getAmount()), openOrder.getId());
+				new BigDecimal(openOrder.getAmount()), openOrder.getId(), openOrder.getOfferId());
 
 			runOnMainThread(new Runnable() {
 				@Override
@@ -88,7 +88,8 @@ class CreateExternalOrderCall extends Thread {
 								@Override
 								public void run() {
 									((ExternalSpendOrderCallbacks) externalOrderCallbacks)
-										.onTransactionFailed(openOrder, ErrorUtil.getBlockchainException(payment.getException()));
+										.onTransactionFailed(openOrder,
+											ErrorUtil.getBlockchainException(payment.getException()));
 								}
 							});
 						}

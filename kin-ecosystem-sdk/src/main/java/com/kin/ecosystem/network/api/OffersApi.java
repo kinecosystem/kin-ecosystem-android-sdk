@@ -1,14 +1,17 @@
 package com.kin.ecosystem.network.api;
 
+import static kin.ecosystem.core.network.ApiClient.GET;
+
 import com.google.gson.reflect.TypeToken;
-import com.kin.ecosystem.network.ApiCallback;
-import com.kin.ecosystem.network.ApiClient;
-import com.kin.ecosystem.network.ApiException;
-import com.kin.ecosystem.network.ApiResponse;
+
+import kin.ecosystem.core.network.ApiCallback;
+import kin.ecosystem.core.network.ApiClient;
+import kin.ecosystem.core.network.ApiException;
+import kin.ecosystem.core.network.ApiResponse;
+import kin.ecosystem.core.network.Pair;
+import kin.ecosystem.core.network.ProgressRequestBody;
+import kin.ecosystem.core.network.ProgressResponseBody;
 import com.kin.ecosystem.Configuration;
-import com.kin.ecosystem.network.Pair;
-import com.kin.ecosystem.network.ProgressRequestBody;
-import com.kin.ecosystem.network.ProgressResponseBody;
 import com.kin.ecosystem.network.model.OfferList;
 
 import java.io.IOException;
@@ -101,7 +104,7 @@ public class OffersApi {
         }
 
         String[] localVarAuthNames = new String[]{};
-        return apiClient.buildCall(localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(localVarPath, GET, localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
     }
 
     @SuppressWarnings("rawtypes")

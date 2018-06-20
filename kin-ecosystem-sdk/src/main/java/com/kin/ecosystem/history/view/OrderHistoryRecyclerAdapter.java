@@ -1,7 +1,7 @@
 package com.kin.ecosystem.history.view;
 
-import static com.kin.ecosystem.util.DateUtil.getDateFormatted;
-import static com.kin.ecosystem.util.StringUtil.getAmountFormatted;
+import static kin.ecosystem.core.util.DateUtil.getDateFormatted;
+import static kin.ecosystem.core.util.StringUtil.getAmountFormatted;
 
 import android.content.Context;
 import android.content.res.Resources;
