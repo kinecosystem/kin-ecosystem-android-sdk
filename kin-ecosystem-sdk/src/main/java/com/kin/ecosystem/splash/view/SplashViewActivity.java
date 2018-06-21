@@ -1,8 +1,12 @@
 package com.kin.ecosystem.splash.view;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,6 +36,15 @@ public class SplashViewActivity extends AppCompatActivity implements ISplashView
     private static final float ONE_FLOAT = 1f;
     private Animation fadeIn = new AlphaAnimation(ZERO_FLOAT, ONE_FLOAT);
     private Animation fadeOutLoading = new AlphaAnimation(ONE_FLOAT, ZERO_FLOAT);
+    public static final String ACTION_CLOSE_SPLASHSCREEN = "com.kin.ecosystem.splash.view.ACTION_CLOSE_SPLASHSCREEN";
+    private BroadcastReceiver closeSplashBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (ACTION_CLOSE_SPLASHSCREEN.equals(intent.getAction())) {
+                finish();
+            }
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,6 +53,20 @@ public class SplashViewActivity extends AppCompatActivity implements ISplashView
         attachPresenter(new SplashPresenter(AuthRepository.getInstance(), EventLoggerImpl.getInstance()));
         initViews();
         initAnimations();
+    }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        LocalBroadcastManager.getInstance(this).registerReceiver(closeSplashBroadcastReceiver, new IntentFilter(ACTION_CLOSE_SPLASHSCREEN));
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(closeSplashBroadcastReceiver);
     }
 
     private void initAnimations() {

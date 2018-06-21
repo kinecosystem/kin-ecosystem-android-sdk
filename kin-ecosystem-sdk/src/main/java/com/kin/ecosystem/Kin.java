@@ -1,12 +1,12 @@
 package com.kin.ecosystem;
 
-import static com.kin.ecosystem.exception.ClientException.SDK_NOT_STARTED;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
+
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
@@ -34,11 +34,15 @@ import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.network.model.SignInData.SignInTypeEnum;
 import com.kin.ecosystem.splash.view.SplashViewActivity;
 import com.kin.ecosystem.util.ErrorUtil;
+
 import java.util.UUID;
+
 import kin.core.KinClient;
 import kin.core.ServiceProvider;
 import kin.ecosystem.core.util.DeviceUtils;
 import kin.ecosystem.core.util.ExecutorsUtil;
+
+import static com.kin.ecosystem.exception.ClientException.SDK_NOT_STARTED;
 
 
 public class Kin {
@@ -196,6 +200,16 @@ public class Kin {
 		} else {
 			navigateToSplash(activity);
 		}
+	}
+
+	/**
+	 * Closes the Kin Marketplace if it's open
+	 *
+	 * @param context
+	 */
+	public static void closeMarketplace(@NonNull final Context context) {
+		LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(SplashViewActivity.ACTION_CLOSE_SPLASHSCREEN));
+		LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(MarketplaceActivity.ACTION_CLOSE_MARKETPLACE));
 	}
 
 	private static void navigateToSplash(@NonNull final Activity activity) {

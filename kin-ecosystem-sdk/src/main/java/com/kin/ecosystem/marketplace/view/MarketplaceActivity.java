@@ -1,12 +1,17 @@
 package com.kin.ecosystem.marketplace.view;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Toast;
+
 import com.chad.library.adapter.base.BaseRecyclerAdapter;
 import com.chad.library.adapter.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.R;
@@ -24,6 +29,7 @@ import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.Offer.OfferType;
 import com.kin.ecosystem.poll.view.PollWebViewActivity;
 import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
+
 import java.util.List;
 
 
@@ -34,6 +40,16 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     private SpendRecyclerAdapter spendRecyclerAdapter;
     private EarnRecyclerAdapter earnRecyclerAdapter;
     private OffersEmptyView offersEmptyView;
+
+    public static final String ACTION_CLOSE_MARKETPLACE = "com.kin.ecosystem.marketplace.view.MarketplaceActivity.ACTION_CLOSE_MARKETPLACE";
+    private BroadcastReceiver closeMarketplaceBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (ACTION_CLOSE_MARKETPLACE.equals(intent.getAction())) {
+                finish();
+            }
+        }
+    };
 
     @Override
     protected int getLayoutRes() {
@@ -71,6 +87,14 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     protected void onStart() {
         super.onStart();
         marketplacePresenter.getOffers();
+        LocalBroadcastManager.getInstance(this).registerReceiver(closeMarketplaceBroadcastReceiver, new IntentFilter(ACTION_CLOSE_MARKETPLACE));
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(closeMarketplaceBroadcastReceiver);
     }
 
     @Override
