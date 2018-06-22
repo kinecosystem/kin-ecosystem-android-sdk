@@ -101,6 +101,10 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				throw ErrorUtil.getBlockchainException(e);
 			}
 		}
+        try {
+            createTrustLine();
+        } catch (Exception e) {
+        }
 	}
 
 	private void startAccountCreationListener() {
