@@ -92,16 +92,17 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	private void createKinAccountIfNeeded() throws BlockchainException {
-		account = kinClient.getAccount(0);
-		if (account == null) {
-			try {
-				account = kinClient.addAccount();
-				startAccountCreationListener();
-			} catch (CreateAccountException e) {
-				throw ErrorUtil.getBlockchainException(e);
-			}
-		}
-	}
+        account = kinClient.getAccount(0);
+        try {
+            if (account == null) {
+                KinAccount newAccount = kinClient.addAccount();
+                account = newAccount;
+            }
+            startAccountCreationListener();
+        } catch (CreateAccountException e) {
+            throw ErrorUtil.getBlockchainException(e);
+        }
+    }
 
 	private void startAccountCreationListener() {
 		Log.d(TAG, "startAccountCreationListener");
