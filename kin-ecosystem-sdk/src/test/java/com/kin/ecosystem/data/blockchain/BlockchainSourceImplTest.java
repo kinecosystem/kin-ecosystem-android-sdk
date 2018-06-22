@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -40,6 +41,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
@@ -107,6 +109,8 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 		when(blockchainEvents.addAccountCreationListener(any(EventListener.class))).thenReturn(accountRegistration);
 		when(balanceObj.value()).thenReturn(new BigDecimal(20));
 		when(kinAccount.getPublicAddress()).thenReturn(PUBLIC_ADDRESS);
+		doNothing().when(kinAccount).activateSync();
+
 
 		resetInstance();
 
@@ -115,10 +119,11 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 
 		verify(blockchainEvents).addAccountCreationListener(accountCreationCaptor.capture());
 		accountCreationCaptor.getValue().onEvent(null);
-		verify(activateAccountReq).run(accountActivateCaptor.capture());
-		accountActivateCaptor.getValue().onResult(null);
 
+		Thread.sleep(250);
+		verify(kinAccount).activateSync();
 		verify(eventLogger).send(any(StellarKinTrustlineSetupSucceeded.class));
+
 
 		// init Balance
 		verify(getBalanceReq).run(getBalanceCaptor.capture());
@@ -127,6 +132,9 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 
 		when(kinClient.getAccount(0)).thenReturn(kinAccount);
 		balance = new Balance();
+
+
+
 	}
 
 
@@ -180,6 +188,7 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 			forClass(ResultCallback.class);
 		when(kinAccount.sendTransaction(any(String.class), any(BigDecimal.class), any(String.class)))
 			.thenReturn(transactionRequest);
+		when(local.hasTrustLine()).thenReturn(true);
 
 		blockchainSource.setAppID(APP_ID);
 		blockchainSource.sendTransaction(toAddress, amount, orderID, "offerID");
@@ -204,6 +213,7 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 			forClass(ResultCallback.class);
 		when(kinAccount.sendTransaction(any(String.class), any(BigDecimal.class), any(String.class)))
 			.thenReturn(transactionRequest);
+		when(local.hasTrustLine()).thenReturn(true);
 
 		blockchainSource.setAppID(APP_ID);
 		blockchainSource.sendTransaction(toAddress, amount, orderID, "offerID");
