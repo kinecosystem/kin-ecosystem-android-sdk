@@ -2,6 +2,7 @@ package com.kin.ecosystem.data.blockchain;
 
 import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,6 +16,7 @@ import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainSucceede
 import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupFailed;
 import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupSucceeded;
 import com.kin.ecosystem.data.KinCallbackAdapter;
+import com.kin.ecosystem.data.blockchain.CreateTrustLineCall.TrustlineCallback;
 import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.exception.BlockchainException;
@@ -28,6 +30,7 @@ import kin.core.PaymentInfo;
 import kin.core.ResultCallback;
 import kin.core.TransactionId;
 import kin.core.exception.CreateAccountException;
+import kin.core.exception.OperationFailedException;
 import kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
 
 public class BlockchainSourceImpl implements BlockchainSource {
@@ -100,6 +103,8 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			} catch (CreateAccountException e) {
 				throw ErrorUtil.getBlockchainException(e);
 			}
+		} else {
+			createTrustLineIfNeeded(null);
 		}
 	}
 
@@ -109,26 +114,42 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			.addAccountCreationListener(new EventListener<Void>() {
 				@Override
 				public void onEvent(Void data) {
-					createTrustLine();
+					createTrustLine(null);
 					removeRegistration(accountCreationRegistration);
 				}
 			});
 	}
 
-	private void createTrustLine() {
-		account.activate().run(new ResultCallback<Void>() {
+	private void createTrustLineIfNeeded(@Nullable final TrustlineCallback callback) {
+		if(!local.hasTrustLine()) {
+			createTrustLine(callback);
+		} else {
+			if(callback != null) {
+				callback.onSuccess();
+			}
+		}
+	}
+
+	private void createTrustLine(@Nullable final TrustlineCallback callback) {
+		new CreateTrustLineCall(account, new TrustlineCallback() {
 			@Override
-			public void onResult(Void result) {
+			public void onSuccess() {
+				if (callback != null) {
+					callback.onSuccess();
+				}
+				local.setHasTrustline(true);
 				eventLogger.send(StellarKinTrustlineSetupSucceeded.create());
-				Log.d(TAG, "createTrustLine onResult");
+
 			}
 
 			@Override
-			public void onError(Exception e) {
+			public void onFailure(OperationFailedException e) {
+				if (callback != null) {
+					callback.onFailure(e);
+				}
 				eventLogger.send(StellarKinTrustlineSetupFailed.create(e.getMessage()));
-				Log.d(TAG, "createTrustLine onError");
 			}
-		});
+		}).start();
 	}
 
 	@Override
@@ -140,23 +161,37 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
-	public void sendTransaction(@NonNull String publicAddress, @NonNull BigDecimal amount,
+	public void sendTransaction(@NonNull final String publicAddress, @NonNull final BigDecimal amount,
 		@NonNull final String orderID, @NonNull final String offerID) {
-		account.sendTransaction(publicAddress, amount, generateMemo(orderID)).run(
-			new ResultCallback<TransactionId>() {
-				@Override
-				public void onResult(TransactionId result) {
-					eventLogger.send(SpendTransactionBroadcastToBlockchainSucceeded.create(result.id(), offerID, orderID));
-					Log.d(TAG, "sendTransaction onResult: " + result.id());
-				}
+		createTrustLineIfNeeded(new TrustlineCallback() {
+			@Override
+			public void onSuccess() {
+				account.sendTransaction(publicAddress, amount, generateMemo(orderID)).run(
+					new ResultCallback<TransactionId>() {
+						@Override
+						public void onResult(TransactionId result) {
+							eventLogger.send(SpendTransactionBroadcastToBlockchainSucceeded.create(result.id(), offerID, orderID));
+							Log.d(TAG, "sendTransaction onResult: " + result.id());
+						}
 
-				@Override
-				public void onError(Exception e) {
-					eventLogger.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
-					completedPayment.setValue(new Payment(orderID, false, e));
-					Log.d(TAG, "sendTransaction onError: " + e.getMessage());
-				}
-			});
+						@Override
+						public void onError(Exception e) {
+							eventLogger.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
+							completedPayment.setValue(new Payment(orderID, false, e));
+							Log.d(TAG, "sendTransaction onError: " + e.getMessage());
+						}
+					});
+			}
+
+			@Override
+			public void onFailure(OperationFailedException e) {
+				final String errorMessage = "Trustline failed - " + e.getMessage();
+				eventLogger.send(SpendTransactionBroadcastToBlockchainFailed.create(errorMessage, offerID, orderID));
+				completedPayment.setValue(new Payment(orderID, false, e));
+				Log.d(TAG, "sendTransaction onError: " + e.getMessage());
+			}
+		});
+
 	}
 
 	@SuppressLint("DefaultLocale")
@@ -288,6 +323,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	@Override
 	public void addPaymentObservable(Observer<Payment> observer) {
+		createTrustLineIfNeeded(null);
 		completedPayment.addObserver(observer);
 		incrementPaymentCount();
 	}
