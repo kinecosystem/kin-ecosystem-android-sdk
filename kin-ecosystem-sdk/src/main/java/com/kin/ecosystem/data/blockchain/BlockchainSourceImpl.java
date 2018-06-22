@@ -142,6 +142,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	public void sendTransaction(@NonNull String publicAddress, @NonNull BigDecimal amount,
 		@NonNull final String orderID, @NonNull final String offerID) {
+        createTrustLine();
 		account.sendTransaction(publicAddress, amount, generateMemo(orderID)).run(
 			new ResultCallback<TransactionId>() {
 				@Override
@@ -288,6 +289,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	@Override
 	public void addPaymentObservable(Observer<Payment> observer) {
+        createTrustLine()
 		completedPayment.addObserver(observer);
 		incrementPaymentCount();
 	}
