@@ -3,9 +3,9 @@ package com.kin.ecosystem;
 public class Environment implements KinEnvironment {
 
 	private static final Environment PRODUCTION = new Environment(
-		"https://horizon-kik.kininfrastructure.com",
-		"private testnet",
-		"GBQ3DQOA7NF52FVV7ES3CR3ZMHUEY4LTHDAQKDTO6S546JCLFPEQGCPK",
+		"https://horizon-kin-ecosystem.kininfrastructure.com/",
+		"Public Global Kin Ecosystem Network ; June 2018",
+		"GDF42M3IPERQCBLWFEZKQRK77JQ65SCKTU3CW36HZVCX7XX5A5QXZIVK",
 		"https://api.kinmarketplace.com/v1",
 		"http://htmlpoll.kinecosystem.com.s3-website-us-east-1.amazonaws.com/",
 		"https://kin-bi.appspot.com");
