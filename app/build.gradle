@@ -41,7 +41,9 @@ android {
         buildConfigField "String", "SAMPLE_APP_ID", credentialProperties.getProperty("APP_ID")
         buildConfigField "String", "SAMPLE_API_KEY", credentialProperties.getProperty("API_KEY")
         buildConfigField "String", "RS512_PRIVATE_KEY", credentialProperties.getProperty("RS512_PRIVATE_KEY")
+        buildConfigField "String", "RS512_PRIVATE_KEY_ID", credentialProperties.getProperty("RS512_PRIVATE_KEY_ID")
         buildConfigField "boolean", "IS_JWT_REGISTRATION", credentialProperties.getProperty("IS_JWT_REGISTRATION")
+
         manifestPlaceholders = [crashlytics_api_key: credentialProperties.getProperty("CRASHLYTICS_API_KEY")]
     }
 
@@ -85,7 +87,8 @@ def loadCredential() {
     ant.propertyfile(file: "credential.properties") {
         entry(key: "APP_ID", default: System.getenv('APP_ID') ?: default_app_id)
         entry(key: "API_KEY", default: System.getenv('API_KEY') ?: default_api_key)
-        entry(key: "RS512_PRIVATE_KEY", default: System.getenv('RS512_PRIVATE_KEY') ?: '"No JWT private key, please add credential.properties"')
+        entry(key: "RS512_PRIVATE_KEY", default: System.getenv('RS512_PRIVATE_KEY') ?: '"No JWT RS512_PRIVATE_KEY, please add credential.properties"')
+        entry(key: "RS512_PRIVATE_KEY_ID", default: System.getenv('RS512_PRIVATE_KEY_ID') ?: '"No JWT RS512_PRIVATE_KEY_ID, please add to credential.properties"')
         entry(key: "IS_JWT_REGISTRATION", default: System.getenv('IS_JWT_REGISTRATION') ?:  "false")
         entry(key: "CRASHLYTICS_API_KEY", default: System.getenv('CRASHLYTICS_API_KEY')  ?: crashlytics_demo_api_key)
     }
