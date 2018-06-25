@@ -12,6 +12,7 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "${KIN_ECOSYSTEM_SDK_VERSION_NAME}"
+        consumerProguardFiles 'proguard-rules.pro'
     }
 }
 
