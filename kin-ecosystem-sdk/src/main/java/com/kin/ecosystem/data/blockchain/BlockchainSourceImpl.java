@@ -306,7 +306,10 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private void decrementBalanceCount() {
 		synchronized (balanceObserversLock) {
-			balanceObserversCount--;
+			if(balanceObserversCount > 0) {
+				balanceObserversCount--;
+			}
+
 			if (balanceObserversCount == 0) {
 				removeRegistration(balanceRegistration);
 				Log.d(TAG, "decrementBalanceCount: removeRegistration");
@@ -374,7 +377,10 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private void decrementPaymentCount() {
 		synchronized (paymentObserversLock) {
-			paymentObserversCount--;
+			if(paymentObserversCount > 0) {
+				paymentObserversCount--;
+			}
+
 			if (paymentObserversCount == 0) {
 				removeRegistration(paymentRegistration);
 			}

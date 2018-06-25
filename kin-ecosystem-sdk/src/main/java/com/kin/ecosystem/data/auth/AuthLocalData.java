@@ -131,8 +131,8 @@ public class AuthLocalData implements AuthDataSource.Local {
 	public AuthToken getAuthTokenSync() {
 		String token = signInSharedPreferences.getString(TOKEN_KEY, null);
 		String appID = signInSharedPreferences.getString(APP_ID_KEY, null);
-		String userID = signInSharedPreferences.getString(USER_ID_KEY, null);
-		String ecosystemUserID = signInSharedPreferences.getString(ECOSYSTEM_USER_ID_KEY, null);
+		String userID = getUserID();
+		String ecosystemUserID = getEcosystemUserID();
 		boolean isActivated = signInSharedPreferences.getBoolean(IS_ACTIVATED_KEY, false);
 		String expirationDate = signInSharedPreferences.getString(TOKEN_EXPIRATION_DATE_KEY, null);
 		if (token != null && expirationDate != null) {

@@ -182,7 +182,10 @@ public class OrderRepository implements OrderDataSource {
 
 	private void decrementPaymentObserverCount() {
 		synchronized (paymentObserversLock) {
-			paymentObserverCount--;
+			if(paymentObserverCount > 0) {
+				paymentObserverCount--;
+			}
+
 			if (paymentObserverCount == 0 && paymentObserver != null) {
 				blockchainSource.removePaymentObserver(paymentObserver);
 			}

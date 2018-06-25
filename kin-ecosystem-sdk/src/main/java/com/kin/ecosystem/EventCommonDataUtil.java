@@ -21,7 +21,7 @@ class EventCommonDataUtil {
 
 	static void setBaseData(Context context) {
 		TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-		final String carrierName = telephonyManager != null ? checkNullString(telephonyManager.getSimOperatorName()) : "null";
+		final String carrierName = telephonyManager != null ? safeguardNullString(telephonyManager.getSimOperatorName()) : "null";
 		final CommonModifier commonModifier = new CommonModifier() {
 			@Override
 			public void modify(CommonProxy commonProxy) {
@@ -36,7 +36,7 @@ class EventCommonDataUtil {
 					@Override
 					public String get() {
 						final String ecosystemUserID = AuthRepository.getInstance().getEcosystemUserID();
-						return checkNullString(ecosystemUserID);
+						return safeguardNullString(ecosystemUserID);
 					}
 				});
 
@@ -87,14 +87,14 @@ class EventCommonDataUtil {
 					@Override
 					public String get() {
 						final String digitalServiceId = AuthRepository.getInstance().getAppID().getValue();
-						return checkNullString(digitalServiceId);
+						return safeguardNullString(digitalServiceId);
 					}
 				});
 				userProxy.setDigitalServiceUserId(new DynamicValue<String>() {
 					@Override
 					public String get() {
 						final String userID = AuthRepository.getInstance().getUserID();
-						return checkNullString(userID);
+						return safeguardNullString(userID);
 					}
 				});
 				userProxy.setEntryPointParam("");
@@ -115,7 +115,7 @@ class EventCommonDataUtil {
 		EventsStore.update(clientModifier);
 	}
 
-	private static String checkNullString(final String text) {
+	private static String safeguardNullString(final String text) {
 		return text != null ? text : "null";
 	}
 }
