@@ -308,11 +308,11 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		EarnOfferTapped.OfferType offerType;
 		try {
 			offerType = EarnOfferTapped.OfferType.fromValue(offer.getContentType().getValue());
-		} catch (IllegalArgumentException e) {
-			offerType = null;
+			double amount = (double) offer.getAmount();
+			eventLogger.send(EarnOfferTapped.create(offerType, amount, offer.getId()));
+		} catch (IllegalArgumentException | NullPointerException ex) {
+			//TODO: add general error event
 		}
-		double amount = (double) offer.getAmount();
-		eventLogger.send(EarnOfferTapped.create(offerType, amount, offer.getId()));
 	}
 
 	private void sendSpendOfferTapped(Offer offer) {

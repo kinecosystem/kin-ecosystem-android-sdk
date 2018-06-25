@@ -108,10 +108,10 @@ public class Kin {
 		initBlockchain(appContext);
 		registerAccount(appContext, signInData);
 		initEventCommonData(appContext);
+		instance.eventLogger.send(KinSdkInitiated.create());
 		initOfferRepository();
 		initOrderRepository(appContext);
 		setAppID();
-		instance.eventLogger.send(KinSdkInitiated.create());
 	}
 
 	private static void initEventLogger() {

@@ -1,6 +1,5 @@
 package com.kin.ecosystem.data.blockchain;
 
-import android.support.annotation.VisibleForTesting;
 import kin.core.KinAccount;
 import kin.core.exception.OperationFailedException;
 
