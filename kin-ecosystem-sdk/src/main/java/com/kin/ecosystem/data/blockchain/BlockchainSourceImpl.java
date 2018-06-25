@@ -285,8 +285,9 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			.addBalanceListener(new EventListener<kin.core.Balance>() {
 				@Override
 				public void onEvent(kin.core.Balance data) {
-					eventLogger.send(KinBalanceUpdated.create(balance.getValue().getAmount().doubleValue()));
+					final double prevBalance = balance.getValue().getAmount().doubleValue();
 					setBalance(data);
+					eventLogger.send(KinBalanceUpdated.create(prevBalance));
 				}
 			});
 	}
@@ -353,10 +354,11 @@ public class BlockchainSourceImpl implements BlockchainSource {
 					}
 					// UpdateBalance if there is no balance sse open connection.
 					if (balanceObserversCount == 0) {
+						final double prevBalance = balance.getValue().getAmount().doubleValue();
 						getBalance(new KinCallbackAdapter<Balance>() {
 							@Override
 							public void onResponse(Balance response) {
-								eventLogger.send(KinBalanceUpdated.create(balance.getValue().getAmount().doubleValue()));
+								eventLogger.send(KinBalanceUpdated.create(prevBalance));
 							}
 						});
 					}
