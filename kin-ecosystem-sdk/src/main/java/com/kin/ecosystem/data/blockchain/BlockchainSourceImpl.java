@@ -15,6 +15,7 @@ import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainFailed;
 import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainSucceeded;
 import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupFailed;
 import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupSucceeded;
+import com.kin.ecosystem.bi.events.WalletCreationSucceeded;
 import com.kin.ecosystem.data.KinCallbackAdapter;
 import com.kin.ecosystem.data.blockchain.CreateTrustLineCall.TrustlineCallback;
 import com.kin.ecosystem.data.model.Balance;
@@ -139,6 +140,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				}
 				local.setHasTrustline(true);
 				eventLogger.send(StellarKinTrustlineSetupSucceeded.create());
+				eventLogger.send(WalletCreationSucceeded.create());
 
 			}
 
@@ -283,8 +285,9 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			.addBalanceListener(new EventListener<kin.core.Balance>() {
 				@Override
 				public void onEvent(kin.core.Balance data) {
-					KinBalanceUpdated.create(balance.getValue().getAmount().doubleValue());
+					final double prevBalance = balance.getValue().getAmount().doubleValue();
 					setBalance(data);
+					eventLogger.send(KinBalanceUpdated.create(prevBalance));
 				}
 			});
 	}
@@ -303,7 +306,10 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private void decrementBalanceCount() {
 		synchronized (balanceObserversLock) {
-			balanceObserversCount--;
+			if(balanceObserversCount > 0) {
+				balanceObserversCount--;
+			}
+
 			if (balanceObserversCount == 0) {
 				removeRegistration(balanceRegistration);
 				Log.d(TAG, "decrementBalanceCount: removeRegistration");
@@ -351,7 +357,12 @@ public class BlockchainSourceImpl implements BlockchainSource {
 					}
 					// UpdateBalance if there is no balance sse open connection.
 					if (balanceObserversCount == 0) {
+						final double prevBalance = balance.getValue().getAmount().doubleValue();
 						getBalance(new KinCallbackAdapter<Balance>() {
+							@Override
+							public void onResponse(Balance response) {
+								eventLogger.send(KinBalanceUpdated.create(prevBalance));
+							}
 						});
 					}
 				}
@@ -366,7 +377,10 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private void decrementPaymentCount() {
 		synchronized (paymentObserversLock) {
-			paymentObserversCount--;
+			if(paymentObserversCount > 0) {
+				paymentObserversCount--;
+			}
+
 			if (paymentObserversCount == 0) {
 				removeRegistration(paymentRegistration);
 			}

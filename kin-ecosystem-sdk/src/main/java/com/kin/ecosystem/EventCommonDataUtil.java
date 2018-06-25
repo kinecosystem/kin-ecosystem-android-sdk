@@ -21,7 +21,7 @@ class EventCommonDataUtil {
 
 	static void setBaseData(Context context) {
 		TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-		final String carrierName = telephonyManager != null ? telephonyManager.getSimOperatorName() : "null";
+		final String carrierName = telephonyManager != null ? safeguardNullString(telephonyManager.getSimOperatorName()) : "null";
 		final CommonModifier commonModifier = new CommonModifier() {
 			@Override
 			public void modify(CommonProxy commonProxy) {
@@ -35,8 +35,8 @@ class EventCommonDataUtil {
 				commonProxy.setUserId(new DynamicValue<String>() {
 					@Override
 					public String get() {
-						final String userID = AuthRepository.getInstance().getUserID();
-						return userID != null ? userID : "null";
+						final String ecosystemUserID = AuthRepository.getInstance().getEcosystemUserID();
+						return safeguardNullString(ecosystemUserID);
 					}
 				});
 
@@ -86,14 +86,15 @@ class EventCommonDataUtil {
 				userProxy.setDigitalServiceId(new DynamicValue<String>() {
 					@Override
 					public String get() {
-						return AuthRepository.getInstance().getAppID().getValue();
+						final String digitalServiceId = AuthRepository.getInstance().getAppID().getValue();
+						return safeguardNullString(digitalServiceId);
 					}
 				});
 				userProxy.setDigitalServiceUserId(new DynamicValue<String>() {
 					@Override
 					public String get() {
 						final String userID = AuthRepository.getInstance().getUserID();
-						return userID != null ? userID : "null";
+						return safeguardNullString(userID);
 					}
 				});
 				userProxy.setEntryPointParam("");
@@ -112,5 +113,9 @@ class EventCommonDataUtil {
 		EventsStore.update(userModifier);
 		EventsStore.update(commonModifier);
 		EventsStore.update(clientModifier);
+	}
+
+	private static String safeguardNullString(final String text) {
+		return text != null ? text : "null";
 	}
 }

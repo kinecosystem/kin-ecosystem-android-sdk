@@ -5,6 +5,7 @@ import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
+import com.kin.ecosystem.bi.events.CloseButtonOnOfferPageTapped;
 import com.kin.ecosystem.bi.events.EarnOrderCancelled;
 import com.kin.ecosystem.bi.events.EarnOrderCompleted;
 import com.kin.ecosystem.bi.events.EarnOrderCompleted.OfferType;
@@ -70,7 +71,12 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 	}
 
 	private void createOrder() {
-		EarnOrderCreationRequested.create(EarnOrderCreationRequested.OfferType.fromValue(contentType), (double) amount, offerID);
+		try {
+			eventLogger.send(EarnOrderCreationRequested
+				.create(EarnOrderCreationRequested.OfferType.fromValue(contentType), (double) amount, offerID));
+		} catch (IllegalArgumentException ex) {
+			//TODO: add general error event
+		}
 		orderRepository.createOrder(offerID, new KinCallback<OpenOrder>() {
 			@Override
 			public void onResponse(OpenOrder response) {
@@ -103,7 +109,12 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 
 	@Override
 	public void onPageLoaded() {
-		eventLogger.send(EarnPageLoaded.create(EarnPageLoaded.OfferType.fromValue(contentType)));
+		try {
+			eventLogger.send(EarnPageLoaded.create(EarnPageLoaded.OfferType.fromValue(contentType)));
+
+		} catch (IllegalArgumentException ex) {
+			//TODO: add general error event
+		}
 		if (view != null) {
 			view.renderJson(pollJsonString);
 		}
@@ -112,6 +123,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 
 	@Override
 	public void closeClicked() {
+		eventLogger.send(CloseButtonOnOfferPageTapped.create(offerID, getOrderId()));
 		cancelOrderAndClose();
 	}
 
@@ -152,13 +164,16 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 	}
 
 	private void sendEarnOrderCompleted() {
-		OfferType offerType;
 		try {
-			offerType = OfferType.fromValue(contentType);
+			eventLogger.send(
+				EarnOrderCompleted.create(OfferType.fromValue(contentType), (double) amount, offerID, getOrderId()));
 		} catch (IllegalArgumentException e) {
-			offerType = null;
+			//TODO: add general error event
 		}
-		eventLogger.send(EarnOrderCompleted.create(offerType, (double) amount, offerID, openOrder != null ? openOrder.getId() : null));
+	}
+
+	private String getOrderId() {
+		return openOrder != null ? openOrder.getId() : "null";
 	}
 
 	@Override
