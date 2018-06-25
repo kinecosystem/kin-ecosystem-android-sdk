@@ -13,6 +13,8 @@
 
 package com.kin.ecosystem;
 
+import android.os.Build;
+import android.os.Build.VERSION;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.network.model.AuthToken;
 import java.io.IOException;
@@ -23,27 +25,33 @@ import okhttp3.Response;
 
 public class Configuration {
 
+	private static final String SDK_VERSION_HEADER = "X-SDK-VERSION";
+	private static final String DEVICE_MODEL_HEADER = "X-DEVICE-MODEL";
+	private static final String DEVICE_MANUFACTURER_HEADER = "X-DEVICE-MANUFACTURER";
+	private static final String OS_HEADER = "X-OS";
+
 	private static final String BEARER = "Bearer ";
 	private static final String AUTHORIZATION = "Authorization";
 
 	private static final String USERS_PATH = "/v1/users";
 
-    private static KinEnvironment environment;
+	private static KinEnvironment environment;
 
-    private static final Object apiClientLock = new Object();
+	private static final Object apiClientLock = new Object();
 	private static ApiClient defaultApiClient;
 
-    /**
-     * Get the default API client, which would be used when creating API
-     * instances without providing an API client.
-     *
-     * @return Default API client
-     */
-    public static ApiClient getDefaultApiClient() {
-    	if(defaultApiClient == null) {
-    		synchronized (apiClientLock) {
-    			defaultApiClient = new ApiClient(environment.getEcosystemServerUrl());
-    			defaultApiClient.addInterceptor(new Interceptor() {
+
+	/**
+	 * Get the default API client, which would be used when creating API
+	 * instances without providing an API client.
+	 *
+	 * @return Default API client
+	 */
+	public static ApiClient getDefaultApiClient() {
+		if (defaultApiClient == null) {
+			synchronized (apiClientLock) {
+				defaultApiClient = new ApiClient(environment.getEcosystemServerUrl());
+				defaultApiClient.addInterceptor(new Interceptor() {
 					@Override
 					public Response intercept(Chain chain) throws IOException {
 						Request originalRequest = chain.request();
@@ -66,8 +74,17 @@ public class Configuration {
 				});
 			}
 		}
-        return defaultApiClient;
-    }
+
+		addHeaders(defaultApiClient);
+		return defaultApiClient;
+	}
+
+	private static void addHeaders(ApiClient apiClient) {
+		apiClient.addDefaultHeader(OS_HEADER, "android " + VERSION.RELEASE);
+		apiClient.addDefaultHeader(SDK_VERSION_HEADER, BuildConfig.VERSION_NAME);
+		apiClient.addDefaultHeader(DEVICE_MODEL_HEADER, Build.MODEL);
+		apiClient.addDefaultHeader(DEVICE_MANUFACTURER_HEADER, Build.MANUFACTURER);
+	}
 
 	public static KinEnvironment getEnvironment() {
 		return environment;
@@ -77,5 +94,6 @@ public class Configuration {
 		Configuration.environment = environment;
 	}
 
-	private Configuration() {}
+	private Configuration() {
+	}
 }
