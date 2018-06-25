@@ -188,6 +188,7 @@ public class OrderRepository implements OrderDataSource {
 
 			if (paymentObserverCount == 0 && paymentObserver != null) {
 				blockchainSource.removePaymentObserver(paymentObserver);
+				paymentObserver = null;
 			}
 		}
 	}
