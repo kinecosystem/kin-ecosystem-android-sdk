@@ -5,6 +5,7 @@ import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
+import com.kin.ecosystem.bi.events.CloseButtonOnOfferPageTapped;
 import com.kin.ecosystem.bi.events.EarnOrderCancelled;
 import com.kin.ecosystem.bi.events.EarnOrderCompleted;
 import com.kin.ecosystem.bi.events.EarnOrderCompleted.OfferType;
@@ -70,7 +71,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 	}
 
 	private void createOrder() {
-		EarnOrderCreationRequested.create(EarnOrderCreationRequested.OfferType.fromValue(contentType), (double) amount, offerID);
+		eventLogger.send(EarnOrderCreationRequested.create(EarnOrderCreationRequested.OfferType.fromValue(contentType), (double) amount, offerID));
 		orderRepository.createOrder(offerID, new KinCallback<OpenOrder>() {
 			@Override
 			public void onResponse(OpenOrder response) {
@@ -112,6 +113,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 
 	@Override
 	public void closeClicked() {
+		eventLogger.send(CloseButtonOnOfferPageTapped.create(offerID, getOrderId()));
 		cancelOrderAndClose();
 	}
 
@@ -158,7 +160,11 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 		} catch (IllegalArgumentException e) {
 			offerType = null;
 		}
-		eventLogger.send(EarnOrderCompleted.create(offerType, (double) amount, offerID, openOrder != null ? openOrder.getId() : null));
+		eventLogger.send(EarnOrderCompleted.create(offerType, (double) amount, offerID, getOrderId()));
+	}
+
+	private String getOrderId() {
+		return openOrder != null ? openOrder.getId() : "null";
 	}
 
 	@Override

@@ -19,6 +19,7 @@ public class AuthLocalData implements AuthDataSource.Local {
 
 	private static final String JWT_KEY = "jwt";
 	private static final String USER_ID_KEY = "user_id";
+	private static final String ECOSYSTEM_USER_ID_KEY = "ecosystem_user_id";
 	private static final String APP_ID_KEY = "app_id";
 	private static final String DEVICE_ID_KEY = "device_id";
 	private static final String PUBLIC_ADDRESS_KEY = "public_address";
@@ -81,6 +82,7 @@ public class AuthLocalData implements AuthDataSource.Local {
 				editor.putString(TOKEN_KEY, authToken.getToken());
 				editor.putString(APP_ID_KEY, authToken.getAppID());
 				editor.putString(USER_ID_KEY, authToken.getUserID());
+				editor.putString(ECOSYSTEM_USER_ID_KEY, authToken.getEcosystemUserID());
 				editor.putBoolean(IS_ACTIVATED_KEY, authToken.isActivated());
 				editor.putString(TOKEN_EXPIRATION_DATE_KEY, authToken.getExpirationDate());
 				editor.commit();
@@ -121,14 +123,20 @@ public class AuthLocalData implements AuthDataSource.Local {
 	}
 
 	@Override
+	public String getEcosystemUserID() {
+		return signInSharedPreferences.getString(ECOSYSTEM_USER_ID_KEY, null);
+	}
+
+	@Override
 	public AuthToken getAuthTokenSync() {
 		String token = signInSharedPreferences.getString(TOKEN_KEY, null);
 		String appID = signInSharedPreferences.getString(APP_ID_KEY, null);
 		String userID = signInSharedPreferences.getString(USER_ID_KEY, null);
+		String ecosystemUserID = signInSharedPreferences.getString(ECOSYSTEM_USER_ID_KEY, null);
 		boolean isActivated = signInSharedPreferences.getBoolean(IS_ACTIVATED_KEY, false);
 		String expirationDate = signInSharedPreferences.getString(TOKEN_EXPIRATION_DATE_KEY, null);
 		if (token != null && expirationDate != null) {
-			return new AuthToken(token, isActivated, expirationDate, appID, userID);
+			return new AuthToken(token, isActivated, expirationDate, appID, userID, ecosystemUserID);
 		} else {
 			return null;
 		}

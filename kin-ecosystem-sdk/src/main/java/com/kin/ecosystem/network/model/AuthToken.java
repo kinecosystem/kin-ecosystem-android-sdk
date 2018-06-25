@@ -29,16 +29,20 @@ public class AuthToken {
 	private String appID = null;
 	@SerializedName("user_id")
 	private String userID = null;
+	@SerializedName("ecosystem_user_id")
+	private String ecosystemUserID = null;
 
 	public AuthToken() {
 	}
 
-	public AuthToken(String token, Boolean activated, String expirationDate, String appID, String userID) {
+	public AuthToken(String token, Boolean activated, String expirationDate, String appID, String userID,
+		String ecosystemUserID) {
 		this.token = token;
 		this.activated = activated;
 		this.expirationDate = expirationDate;
 		this.appID = appID;
 		this.userID = userID;
+		this.ecosystemUserID = ecosystemUserID;
 	}
 
 	public AuthToken token(String token) {
@@ -111,6 +115,10 @@ public class AuthToken {
 		return userID;
 	}
 
+	public String getEcosystemUserID() {
+		return ecosystemUserID;
+	}
+
 	@Override
 	public boolean equals(java.lang.Object o) {
 		if (this == o) {
@@ -142,6 +150,7 @@ public class AuthToken {
 		sb.append("    activated: ").append(toIndentedString(activated)).append("\n");
 		sb.append("    appID: ").append(toIndentedString(appID)).append("\n");
 		sb.append("    userID: ").append(toIndentedString(userID)).append("\n");
+		sb.append("    ecosystemUserID: ").append(toIndentedString(ecosystemUserID)).append("\n");
 		sb.append("    expirationDate: ").append(toIndentedString(expirationDate)).append("\n");
 		sb.append("}");
 		return sb.toString();

@@ -18,6 +18,8 @@ public interface AuthDataSource {
 
 	String getUserID();
 
+	String getEcosystemUserID();
+
 	void setAuthToken(@NonNull final AuthToken authToken);
 
 	AuthToken getAuthTokenSync();
@@ -37,6 +39,8 @@ public interface AuthDataSource {
 		String getDeviceID();
 
 		String getUserID();
+
+		String getEcosystemUserID();
 
 		AuthToken getAuthTokenSync();
 
