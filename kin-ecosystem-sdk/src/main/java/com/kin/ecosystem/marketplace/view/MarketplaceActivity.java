@@ -33,7 +33,8 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
 
     private SpendRecyclerAdapter spendRecyclerAdapter;
     private EarnRecyclerAdapter earnRecyclerAdapter;
-    private OffersEmptyView offersEmptyView;
+    private OffersEmptyView spendEmptyView;
+    private OffersEmptyView earnEmptyView;
 
     @Override
     protected int getLayoutRes() {
@@ -194,20 +195,22 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
 
     @Override
     public void setEarnEmptyView() {
-        earnRecyclerAdapter.setEmptyView(getOffersEmptyView());
+        earnEmptyView = createEmptyView(earnEmptyView);
+        earnRecyclerAdapter.setEmptyView(earnEmptyView);
     }
 
 
     @Override
     public void setSpendEmptyView() {
-        spendRecyclerAdapter.setEmptyView(getOffersEmptyView());
+        spendEmptyView = createEmptyView(spendEmptyView);
+        spendRecyclerAdapter.setEmptyView(spendEmptyView);
     }
 
-    private OffersEmptyView getOffersEmptyView() {
-        if (offersEmptyView == null) {
-            offersEmptyView = new OffersEmptyView(this);
+    private OffersEmptyView createEmptyView(OffersEmptyView emptyView) {
+        if (emptyView == null) {
+            emptyView = new OffersEmptyView(this);
         }
-        return offersEmptyView;
+        return emptyView;
     }
 
     @Override
