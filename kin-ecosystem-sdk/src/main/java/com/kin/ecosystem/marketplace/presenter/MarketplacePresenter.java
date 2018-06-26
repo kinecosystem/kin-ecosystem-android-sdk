@@ -19,6 +19,7 @@ import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.offer.OfferDataSource;
 import com.kin.ecosystem.data.order.OrderDataSource;
 import com.kin.ecosystem.exception.KinEcosystemException;
+import com.kin.ecosystem.main.INavigator;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.marketplace.view.IMarketplaceView;
 import com.kin.ecosystem.network.model.Offer;
@@ -39,6 +40,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private final OfferDataSource offerRepository;
 	private final OrderDataSource orderRepository;
 	private final BlockchainSource blockchainSource;
+	private final INavigator navigator;
 	private final EventLogger eventLogger;
 
 	private List<Offer> spendList = new ArrayList<>();
@@ -48,16 +50,20 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private Observer<Order> completedOrderObserver;
 	private final Gson gson;
 
-	public MarketplacePresenter(@NonNull final OfferDataSource offerRepository,
-		@NonNull final OrderDataSource orderRepository, @Nullable final BlockchainSource blockchainSource, @NonNull
-		EventLogger eventLogger) {
+	public MarketplacePresenter(@NonNull final IMarketplaceView view, @NonNull final OfferDataSource offerRepository,
+		@NonNull final OrderDataSource orderRepository, @Nullable final BlockchainSource blockchainSource,
+		@NonNull INavigator navigator, @NonNull EventLogger eventLogger) {
+		this.view = view;
 		this.spendList = new ArrayList<>();
 		this.earnList = new ArrayList<>();
 		this.offerRepository = offerRepository;
 		this.orderRepository = orderRepository;
 		this.blockchainSource = blockchainSource;
+		this.navigator = navigator;
 		this.eventLogger = eventLogger;
 		this.gson = new Gson();
+
+		this.view.attachPresenter(this);
 	}
 
 	@Override
@@ -331,14 +337,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	@Override
-	public void balanceItemClicked() {
-		eventLogger.send(BalanceTapped.create());
-		if (view != null) {
-			view.navigateToOrderHistory();
-		}
-	}
-
-	@Override
 	public void showOfferActivityFailed() {
 		showSomethingWentWrong();
 	}
@@ -346,9 +344,11 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	@Override
 	public void backButtonPressed() {
 		eventLogger.send(BackButtonOnMarketplacePageTapped.create());
-		if (view != null) {
-			view.navigateBack();
-		}
+	}
+
+	@Override
+	public INavigator getNavigator() {
+		return navigator;
 	}
 
 	private void showSpendDialog(@NonNull final OfferInfo offerInfo, @NonNull final Offer offer) {

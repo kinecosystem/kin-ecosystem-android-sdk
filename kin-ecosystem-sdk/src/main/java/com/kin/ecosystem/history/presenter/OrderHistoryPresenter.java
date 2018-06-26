@@ -15,6 +15,7 @@ import com.kin.ecosystem.data.model.Coupon.CouponInfo;
 import com.kin.ecosystem.data.order.OrderDataSource;
 import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.history.view.IOrderHistoryView;
+import com.kin.ecosystem.main.INavigator;
 import com.kin.ecosystem.network.model.CouponCodeResult;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.Order.Status;
@@ -34,11 +35,18 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 
 	private boolean isFirstSpendOrder;
 
-	public OrderHistoryPresenter(@NonNull final OrderDataSource orderRepository, @NonNull final EventLogger eventLogger,boolean isFirstSpendOrder) {
+	public OrderHistoryPresenter(@NonNull IOrderHistoryView view,
+		@NonNull final OrderDataSource orderRepository,
+		@NonNull final INavigator navigator,
+		@NonNull final EventLogger eventLogger,
+		boolean isFirstSpendOrder) {
+		this.view = view;
 		this.orderRepository = orderRepository;
 		this.eventLogger = eventLogger;
 		this.isFirstSpendOrder = isFirstSpendOrder;
 		this.gson = new Gson();
+
+		view.attachPresenter(this);
 	}
 
 	@Override
@@ -143,6 +151,11 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 		if (view != null) {
 			view.onItemUpdated(index);
 		}
+	}
+
+	@Override
+	public void backButtonPressed() {
+		//TODO add eventlogger back button
 	}
 
 	@Override

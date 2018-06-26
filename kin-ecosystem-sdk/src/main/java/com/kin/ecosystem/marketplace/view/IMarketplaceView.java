@@ -13,7 +13,7 @@ public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
 
     void setEarnList(List<Offer> response);
 
-    void navigateToOrderHistory();
+//    void navigateToOrderHistory();
 
     void showOfferActivity(PollBundle pollBundle);
 
@@ -34,6 +34,4 @@ public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
     void setEarnEmptyView();
 
     void setSpendEmptyView();
-
-    void navigateBack();
 }

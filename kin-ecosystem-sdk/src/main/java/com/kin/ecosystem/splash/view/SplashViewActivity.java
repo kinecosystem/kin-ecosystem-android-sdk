@@ -15,7 +15,7 @@ import android.widget.Toast;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.data.auth.AuthRepository;
-import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
+import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.splash.presenter.ISplashPresenter;
 import com.kin.ecosystem.splash.presenter.SplashPresenter;
 import com.kin.ecosystem.splash.view.SplashScreenButton.LoadAnimationListener;
@@ -104,7 +104,7 @@ public class SplashViewActivity extends AppCompatActivity implements ISplashView
 
     @Override
     public void navigateToMarketPlace() {
-        Intent marketplaceIntent = new Intent(this, MarketplaceActivity.class);
+        Intent marketplaceIntent = new Intent(this, EcosystemActivity.class);
         startActivity(marketplaceIntent);
         finish();
     }

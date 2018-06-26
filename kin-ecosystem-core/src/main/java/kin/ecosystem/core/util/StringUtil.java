@@ -1,5 +1,6 @@
 package kin.ecosystem.core.util;
 
+import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -40,5 +41,10 @@ public class StringUtil {
 
   public static String getAmountFormatted(int amount) {
     return NumberFormat.getNumberInstance(Locale.US).format(amount);
+  }
+
+  public static String getAmountFormatted(String amount) {
+    int amountInt = new BigDecimal(amount).intValue();
+    return getAmountFormatted(amountInt);
   }
 }

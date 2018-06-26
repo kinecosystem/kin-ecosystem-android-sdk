@@ -28,8 +28,8 @@ import com.kin.ecosystem.data.order.OrderRemoteData;
 import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.exception.BlockchainException;
 import com.kin.ecosystem.exception.ClientException;
+import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
-import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
 import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.network.model.SignInData.SignInTypeEnum;
 import com.kin.ecosystem.splash.view.SplashViewActivity;
@@ -204,7 +204,7 @@ public class Kin {
 	}
 
 	private static void navigateToMarketplace(@NonNull final Activity activity) {
-		activity.startActivity(new Intent(activity, MarketplaceActivity.class));
+		activity.startActivity(new Intent(activity, EcosystemActivity.class));
 		activity.overridePendingTransition(R.anim.kinecosystem_slide_in_right, R.anim.kinecosystem_slide_out_left);
 	}
 
