@@ -38,7 +38,7 @@ class EventsApi {
 		Object localVarPostBody = event;
 
 		// create path and map variables
-		String localVarPath = "/eco_";
+		String localVarPath = "";
 
 		List<Pair> localVarQueryParams = new ArrayList<Pair>();
 		List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
