@@ -2,11 +2,17 @@ package com.kin.ecosystem.data.order;
 
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.bi.EventLogger;
+import com.kin.ecosystem.bi.events.SpendOrderCompletionSubmitted;
+import com.kin.ecosystem.bi.events.SpendOrderCreationFailed;
+import com.kin.ecosystem.bi.events.SpendOrderCreationReceived;
+import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainSubmitted;
 import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.network.model.JWTBodyPaymentConfirmationResult;
+import com.kin.ecosystem.network.model.Offer.OfferType;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.util.ErrorUtil;
@@ -22,16 +28,18 @@ class CreateExternalOrderCall extends Thread {
 	private final BlockchainSource blockchainSource;
 	private final String orderJwt;
 	private final ExternalOrderCallbacks externalOrderCallbacks;
+	private final EventLogger eventLogger;
 
 	private OpenOrder openOrder;
 	private MainThreadExecutor mainThreadExecutor = new MainThreadExecutor();
 
 	CreateExternalOrderCall(@NonNull OrderDataSource.Remote remote, @NonNull BlockchainSource blockchainSource,
-		@NonNull String orderJwt,
+		@NonNull String orderJwt, EventLogger eventLogger,
 		@NonNull ExternalOrderCallbacks externalOrderCallbacks) {
 		this.remote = remote;
 		this.blockchainSource = blockchainSource;
 		this.orderJwt = orderJwt;
+		this.eventLogger = eventLogger;
 		this.externalOrderCallbacks = externalOrderCallbacks;
 	}
 
@@ -40,6 +48,9 @@ class CreateExternalOrderCall extends Thread {
 		try {
 			// Create external order
 			openOrder = remote.createExternalOrderSync(orderJwt);
+
+			sendOrderCreationReceivedEvent();
+
 			runOnMainThread(new Runnable() {
 				@Override
 				public void run() {
@@ -52,18 +63,14 @@ class CreateExternalOrderCall extends Thread {
 				getOrder(orderID);
 			} else {
 
-				runOnMainThread(new Runnable() {
-					@Override
-					public void run() {
-						externalOrderCallbacks.onOrderFailed(ErrorUtil.fromApiException(e));
-					}
-				});
+				onOrderFailed(ErrorUtil.fromApiException(e));
 			}
 			return;
 		}
 
 		if (externalOrderCallbacks instanceof ExternalSpendOrderCallbacks) {
 			// Send transaction to the network.
+			sendSpendOrderCompletionSubmittedEvent();
 			blockchainSource.sendTransaction(openOrder.getBlockchainData().getRecipientAddress(),
 				new BigDecimal(openOrder.getAmount()), openOrder.getId(), openOrder.getOfferId());
 
@@ -100,6 +107,33 @@ class CreateExternalOrderCall extends Thread {
 		});
 	}
 
+	private void sendOrderCreationReceivedEvent() {
+		if (openOrder != null) {
+			switch (openOrder.getOfferType()) {
+				case SPEND:
+					eventLogger.send(SpendOrderCreationReceived
+						.create(openOrder.getOfferId(), openOrder.getId(), true));
+					break;
+				case EARN:
+					break;
+			}
+		}
+	}
+
+	private void sendSpendOrderCompletionSubmittedEvent() {
+		if (openOrder != null) {
+			switch (openOrder.getOfferType()) {
+				case SPEND:
+					eventLogger
+						.send(SpendOrderCompletionSubmitted.create(openOrder.getOfferId(), openOrder.getId(), true));
+
+					break;
+				case EARN:
+					break;
+			}
+		}
+	}
+
 	private String extractOrderID(Map<String, List<String>> responseHeaders) {
 		String orderID = null;
 		List<String> locationList = responseHeaders.get("location");
@@ -129,7 +163,7 @@ class CreateExternalOrderCall extends Thread {
 					@Override
 					public void run() {
 						externalOrderCallbacks
-							.onOrderConfirmed(((JWTBodyPaymentConfirmationResult) order.getResult()).getJwt());
+							.onOrderConfirmed(((JWTBodyPaymentConfirmationResult) order.getResult()).getJwt(), order);
 					}
 				});
 
@@ -137,15 +171,33 @@ class CreateExternalOrderCall extends Thread {
 
 			@Override
 			public void onFailure(final ApiException e) {
-				runOnMainThread(new Runnable() {
-					@Override
-					public void run() {
-						externalOrderCallbacks
-							.onOrderFailed(ErrorUtil.fromApiException(e));
-					}
-				});
+				onOrderFailed(ErrorUtil.fromApiException(e));
 			}
 		}).start();
+	}
+
+	private void onOrderFailed(final KinEcosystemException exception) {
+		if (openOrder != null) {
+			switch (openOrder.getOfferType()) {
+				case SPEND:
+					eventLogger.send(SpendOrderCreationFailed
+						.create(exception.getCause().getMessage(), openOrder.getOfferId(), true));
+					break;
+				case EARN:
+					break;
+			}
+
+		}
+		final OpenOrder finalOpenOrder = openOrder;
+		runOnMainThread(new Runnable() {
+			@Override
+			public void run() {
+				externalOrderCallbacks
+					.onOrderFailed(
+						exception, finalOpenOrder
+					);
+			}
+		});
 	}
 
 	private void runOnMainThread(Runnable runnable) {
@@ -168,9 +220,9 @@ class CreateExternalOrderCall extends Thread {
 
 		void onOrderCreated(OpenOrder openOrder);
 
-		void onOrderConfirmed(String confirmationJwt);
+		void onOrderConfirmed(String confirmationJwt, Order order);
 
-		void onOrderFailed(KinEcosystemException exception);
+		void onOrderFailed(KinEcosystemException exception, OpenOrder order);
 	}
 
 	interface ExternalSpendOrderCallbacks extends ExternalOrderCallbacks {
