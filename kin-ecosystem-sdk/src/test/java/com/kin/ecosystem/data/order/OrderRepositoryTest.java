@@ -399,7 +399,7 @@ public class OrderRepositoryTest extends BaseTestClass{
     }
 
     @Test
-    public void purchase_Succeed() throws Exception {
+    public void purchase_Spend_Succeed() throws Exception {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         ArgumentCaptor<Observer<Payment>> paymentCapture = ArgumentCaptor.forClass(Observer.class);
         ArgumentCaptor<Callback<Order, ApiException>> getOrderCapture = ArgumentCaptor.forClass(Callback.class);
@@ -412,6 +412,7 @@ public class OrderRepositoryTest extends BaseTestClass{
         when(remote.createExternalOrderSync(anyString())).thenReturn(openOrder);
         when(remote.getOrderSync(anyString())).thenReturn(confirmedOrder);
         when(offerRepository.getPendingOffer()).thenReturn(pendingOffer);
+        when(openOrder.getOfferType()).thenReturn(OfferType.SPEND);
 
         orderRepository.purchase("A GENERATED NATIVE OFFER JWT", new KinCallback<OrderConfirmation>() {
             @Override
@@ -520,7 +521,7 @@ public class OrderRepositoryTest extends BaseTestClass{
     }
 
     @Test
-    public void purchase_Failed_Payment_Failed() throws Exception {
+    public void purchase_Spend_Failed_Payment_Failed() throws Exception {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         ArgumentCaptor<Observer<Payment>> paymentCapture = ArgumentCaptor.forClass(Observer.class);
         ArgumentCaptor<Callback<Void, ApiException>> cancelOrderCallback = ArgumentCaptor.forClass(Callback.class);
@@ -529,6 +530,7 @@ public class OrderRepositoryTest extends BaseTestClass{
         when(offerRepository.getPendingOffer()).thenReturn(pendingOffer);
         when(remote.createExternalOrderSync(anyString())).thenReturn(openOrder);
         when(payment.isSucceed()).thenReturn(false);
+        when(openOrder.getOfferType()).thenReturn(OfferType.SPEND);
 
         orderRepository.purchase("generatedOfferJWT", new KinCallback<OrderConfirmation>() {
             @Override
