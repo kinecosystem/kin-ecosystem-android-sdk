@@ -36,7 +36,6 @@ import java.util.List;
 
 public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implements IMarketplacePresenter {
 
-	private static final String TAG = "MarketplacePresenter";
 	private static final int NOT_FOUND = -1;
 
 	private static final String EMPTY_SUBTITLE = "Check back tomorrow for more great opportunities";
@@ -94,7 +93,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 					if (view != null) {
 						view.updateEarnSubtitle(subtitle);
 						if (value) {
-							Log.d(TAG, "EarnEmptyObserver onChanged:  setEarnEmptyView");
 							view.setEarnEmptyView();
 						}
 					}
@@ -114,7 +112,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 					if (view != null) {
 						view.updateSpendSubtitle(subtitle);
 						if (value) {
-							Log.d(TAG, "SpendEmptyObserver onChanged:  setSpendEmptyView");
 							view.setSpendEmptyView();
 						}
 					}
@@ -185,28 +182,24 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private void notifyEarnItemRemoved(int index) {
 		if (view != null) {
-			Log.d(TAG, "notifyEarnItemRemoved: " + getSafeIndexEarnEmptyState(index) + " isEmpty= " + isEarnEmpty.getValue());
-			view.notifyEarnItemRemoved(index);
+			view.notifyEarnItemRemoved(getSafeIndexEarnEmptyState(index));
 		}
 	}
 
 	private void notifyEarnItemInserted(int index) {
 		if (view != null) {
-			Log.d(TAG, "notifyEarnItemInserted: " + getSafeIndexEarnEmptyState(index) + " isEmpty= " + isEarnEmpty.getValue());
 			view.notifyEarnItemInserted(getSafeIndexEarnEmptyState(index));
 		}
 	}
 
 	private void notifySpendItemRemoved(int index) {
 		if (view != null) {
-			Log.d(TAG, "notifySpendItemRemoved: " + getSafeIndexEarnEmptyState(index) + " isEmpty= " + isSpendEmpty.getValue());
 			view.notifySpendItemRemoved(getSafeIndexSpendEmptyState(index));
 		}
 	}
 
 	private void notifySpendItemInserted(int index) {
 		if (view != null) {
-			Log.d(TAG, "notifySpendItemInserted: " + getSafeIndexSpendEmptyState(index) + " isEmpty= " + isSpendEmpty.getValue());
 			view.notifySpendItemInserted(getSafeIndexSpendEmptyState(index));
 		}
 	}
@@ -234,7 +227,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	@Override
 	public void getOffers() {
-		Log.d(TAG, "getOffers");
 		this.offerRepository.getOffers(new KinCallback<OfferList>() {
 			@Override
 			public void onResponse(OfferList offerList) {
