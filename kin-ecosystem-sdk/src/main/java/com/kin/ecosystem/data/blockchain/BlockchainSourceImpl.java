@@ -179,7 +179,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 						@Override
 						public void onError(Exception e) {
 							eventLogger.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
-							completedPayment.setValue(new Payment(orderID, false, e));
+							completedPayment.postValue(new Payment(orderID, false, e));
 							Log.d(TAG, "sendTransaction onError: " + e.getMessage());
 						}
 					});
@@ -189,7 +189,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			public void onFailure(OperationFailedException e) {
 				final String errorMessage = "Trustline failed - " + e.getMessage();
 				eventLogger.send(SpendTransactionBroadcastToBlockchainFailed.create(errorMessage, offerID, orderID));
-				completedPayment.setValue(new Payment(orderID, false, e));
+				completedPayment.postValue(new Payment(orderID, false, e));
 				Log.d(TAG, "sendTransaction onError: " + e.getMessage());
 			}
 		});
@@ -352,7 +352,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 					Log.d(TAG,
 						"startPaymentListener onEvent: the orderId: " + orderID + " with memo: " + data.memo());
 					if (orderID != null) {
-						completedPayment.setValue(new Payment(orderID, data.hash().id(), data.amount()));
+						completedPayment.postValue(new Payment(orderID, data.hash().id(), data.amount()));
 						Log.d(TAG, "completedPayment order id: " + orderID);
 					}
 					// UpdateBalance if there is no balance sse open connection.

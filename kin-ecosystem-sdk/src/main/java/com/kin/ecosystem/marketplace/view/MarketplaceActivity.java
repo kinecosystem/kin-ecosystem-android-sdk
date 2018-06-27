@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.chad.library.adapter.base.BaseRecyclerAdapter;
 import com.chad.library.adapter.base.BaseRecyclerAdapter.OnItemClickListener;
@@ -31,6 +32,8 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
 
     private IMarketplacePresenter marketplacePresenter;
 
+    private TextView spendSubTitle;
+    private TextView earnSubTitle;
     private SpendRecyclerAdapter spendRecyclerAdapter;
     private EarnRecyclerAdapter earnRecyclerAdapter;
     private OffersEmptyView spendEmptyView;
@@ -82,6 +85,9 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
 
     @Override
     protected void initViews() {
+        spendSubTitle = findViewById(R.id.spend_subtitle);
+        earnSubTitle = findViewById(R.id.earn_subtitle);
+
         //Space item decoration for both of the recyclers
         int margin = getResources().getDimensionPixelOffset(R.dimen.kinecosystem_main_margin);
         int space = getResources().getDimensionPixelOffset(R.dimen.kinecosystem_offer_item_list_space);
@@ -206,7 +212,17 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
         spendRecyclerAdapter.setEmptyView(spendEmptyView);
     }
 
-    private OffersEmptyView createEmptyView(OffersEmptyView emptyView) {
+	@Override
+	public void updateEarnSubtitle(String subtitle) {
+        earnSubTitle.setText(subtitle);
+	}
+
+	@Override
+	public void updateSpendSubtitle(String subtitle) {
+        spendSubTitle.setText(subtitle);
+	}
+
+	private OffersEmptyView createEmptyView(OffersEmptyView emptyView) {
         if (emptyView == null) {
             emptyView = new OffersEmptyView(this);
         }

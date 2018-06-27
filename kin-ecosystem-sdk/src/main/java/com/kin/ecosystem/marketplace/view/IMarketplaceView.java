@@ -35,5 +35,9 @@ public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
 
     void setSpendEmptyView();
 
+    void updateEarnSubtitle(String subtitle);
+
+    void updateSpendSubtitle(String subtitle);
+
     void navigateBack();
 }

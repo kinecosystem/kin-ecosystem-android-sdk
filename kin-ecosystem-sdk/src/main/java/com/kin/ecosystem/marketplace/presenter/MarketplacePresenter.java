@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.BasePresenter;
+import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.BackButtonOnMarketplacePageTapped;
@@ -36,6 +37,10 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private static final int NOT_FOUND = -1;
 
+	private static final String EMPTY_SUBTITLE  = "Check back tomorrow for more great opportunities";
+	private static final String EARN_SUBTITLE  = "Complete tasks and earn KIN";
+	private static final String SPEND_SUBTITLE  = "Use your KIN to enjoy stuff you like";
+
 	private final OfferDataSource offerRepository;
 	private final OrderDataSource orderRepository;
 	private final BlockchainSource blockchainSource;
@@ -46,6 +51,12 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private Observer<Offer> pendingOfferObserver;
 	private Observer<Order> completedOrderObserver;
+
+	private ObservableData<Boolean> isEarnEmpty = ObservableData.create(false);
+	private ObservableData<Boolean> isSpendEmpty = ObservableData.create(false);
+	private Observer<Boolean> isEarnEmptyObserver;
+	private Observer<Boolean> isSpendEmptyObserver;
+
 	private final Gson gson;
 
 	public MarketplacePresenter(@NonNull final OfferDataSource offerRepository,
@@ -63,10 +74,43 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	@Override
 	public void onAttach(IMarketplaceView view) {
 		super.onAttach(view);
+		isEarnEmpty.addObserver(getEarnEmptyObserver());
+		isSpendEmpty.addObserver(getSpendEmptyObserver());
 		getCachedOffers();
 		listenToPendingOffers();
 		listenToCompletedOrders();
 		eventLogger.send(MarketplacePageViewed.create());
+	}
+
+	private Observer<Boolean> getEarnEmptyObserver() {
+		if(isEarnEmptyObserver == null) {
+			isEarnEmptyObserver = new Observer<Boolean>() {
+				@Override
+				public void onChanged(Boolean value) {
+					final String subtitle = value ? EMPTY_SUBTITLE : EARN_SUBTITLE;
+					if(view != null) {
+						view.updateEarnSubtitle(subtitle);
+					}
+				}
+			};
+		}
+		return isEarnEmptyObserver;
+
+	}
+
+	private Observer<Boolean> getSpendEmptyObserver() {
+		if(isSpendEmptyObserver == null) {
+			isSpendEmptyObserver = new Observer<Boolean>() {
+				@Override
+				public void onChanged(Boolean value) {
+					final String subtitle = value ? EMPTY_SUBTITLE : SPEND_SUBTITLE;
+					if(view != null) {
+						view.updateSpendSubtitle(subtitle);
+					}
+				}
+			};
+		}
+		return isSpendEmptyObserver;
 	}
 
 	private void getCachedOffers() {
@@ -119,6 +163,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private void setEarnEmptyViewIfNeeded() {
 		if (earnList.size() == 0) {
 			if (view != null) {
+				isEarnEmpty.postValue(true);
 				view.setEarnEmptyView();
 			}
 		}
@@ -127,6 +172,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private void setSpendEmptyViewIfNeeded() {
 		if (spendList.size() == 0) {
 			if (view != null) {
+				isSpendEmpty.postValue(true);
 				view.setSpendEmptyView();
 			}
 		}
@@ -163,6 +209,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void release() {
+		isEarnEmpty.removeObserver(isEarnEmptyObserver);
+		isSpendEmpty.removeObserver(isSpendEmptyObserver);
 		offerRepository.getPendingOffer().removeObserver(pendingOfferObserver);
 		orderRepository.removeCompletedOrderObserver(completedOrderObserver);
 	}
@@ -234,8 +282,14 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private void notifyItemInserted(int index, OfferType offerType) {
 		if (isSpend(offerType)) {
+			if(isSpendEmpty.getValue()){
+				isSpendEmpty.postValue(false);
+			}
 			notifySpendItemInserted(index);
 		} else {
+			if(isEarnEmpty.getValue()){
+				isEarnEmpty.postValue(false);
+			}
 			notifyEarnItemInserted(index);
 		}
 	}
