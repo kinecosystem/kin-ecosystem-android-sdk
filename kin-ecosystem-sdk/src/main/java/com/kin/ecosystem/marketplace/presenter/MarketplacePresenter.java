@@ -3,7 +3,6 @@ package com.kin.ecosystem.marketplace.presenter;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.kin.ecosystem.KinCallback;
@@ -37,10 +36,6 @@ import java.util.List;
 public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implements IMarketplacePresenter {
 
 	private static final int NOT_FOUND = -1;
-
-	private static final String EMPTY_SUBTITLE = "Check back tomorrow for more great opportunities";
-	private static final String EARN_SUBTITLE = "Complete tasks and earn KIN";
-	private static final String SPEND_SUBTITLE = "Use your KIN to enjoy stuff you like";
 
 	private final OfferDataSource offerRepository;
 	private final OrderDataSource orderRepository;
@@ -89,12 +84,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			isEarnEmptyObserver = new Observer<Boolean>() {
 				@Override
 				public void onChanged(Boolean value) {
-					final String subtitle = value ? EMPTY_SUBTITLE : EARN_SUBTITLE;
 					if (view != null) {
-						view.updateEarnSubtitle(subtitle);
-						if (value) {
-							view.setEarnEmptyView();
-						}
+						view.updateEarnSubtitle(value);
 					}
 				}
 			};
@@ -108,12 +99,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			isSpendEmptyObserver = new Observer<Boolean>() {
 				@Override
 				public void onChanged(Boolean value) {
-					final String subtitle = value ? EMPTY_SUBTITLE : SPEND_SUBTITLE;
 					if (view != null) {
-						view.updateSpendSubtitle(subtitle);
-						if (value) {
-							view.setSpendEmptyView();
-						}
+						view.updateSpendSubtitle(value);
 					}
 				}
 			};

@@ -30,14 +30,12 @@ import java.util.List;
 
 public class MarketplaceActivity extends BaseToolbarActivity implements IMarketplaceView {
 
-    private IMarketplacePresenter marketplacePresenter;
+	private IMarketplacePresenter marketplacePresenter;
 
     private TextView spendSubTitle;
     private TextView earnSubTitle;
     private SpendRecyclerAdapter spendRecyclerAdapter;
     private EarnRecyclerAdapter earnRecyclerAdapter;
-    private OffersEmptyView spendEmptyView;
-    private OffersEmptyView earnEmptyView;
 
     @Override
     protected int getLayoutRes() {
@@ -87,31 +85,33 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
         int space = getResources().getDimensionPixelOffset(R.dimen.kinecosystem_offer_item_list_space);
         SpaceItemDecoration itemDecoration = new SpaceItemDecoration(margin, space);
 
-        //Spend Recycler
-        RecyclerView spendRecycler = findViewById(R.id.spend_recycler);
-        spendRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        spendRecycler.addItemDecoration(itemDecoration);
-        spendRecyclerAdapter = new SpendRecyclerAdapter(this);
-        spendRecyclerAdapter.bindToRecyclerView(spendRecycler);
-        spendRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
-                marketplacePresenter.onItemClicked(position, OfferType.SPEND);
-            }
-        });
+		//Spend Recycler
+		RecyclerView spendRecycler = findViewById(R.id.spend_recycler);
+		spendRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+		spendRecycler.addItemDecoration(itemDecoration);
+		spendRecyclerAdapter = new SpendRecyclerAdapter(this);
+		spendRecyclerAdapter.bindToRecyclerView(spendRecycler);
+		spendRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
+				marketplacePresenter.onItemClicked(position, OfferType.SPEND);
+			}
+		});
+		spendRecyclerAdapter.setEmptyView(new OffersEmptyView(this));
 
-        //Earn Recycler
-        RecyclerView earnRecycler = findViewById(R.id.earn_recycler);
-        earnRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        earnRecycler.addItemDecoration(itemDecoration);
-        earnRecyclerAdapter = new EarnRecyclerAdapter(this);
-        earnRecyclerAdapter.bindToRecyclerView(earnRecycler);
-        earnRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
-                marketplacePresenter.onItemClicked(position, OfferType.EARN);
-            }
-        });
+		//Earn Recycler
+		RecyclerView earnRecycler = findViewById(R.id.earn_recycler);
+		earnRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+		earnRecycler.addItemDecoration(itemDecoration);
+		earnRecyclerAdapter = new EarnRecyclerAdapter(this);
+		earnRecyclerAdapter.bindToRecyclerView(earnRecycler);
+		earnRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
+				marketplacePresenter.onItemClicked(position, OfferType.EARN);
+			}
+		});
+		earnRecyclerAdapter.setEmptyView(new OffersEmptyView(this));
 
         findViewById(R.id.balance_view).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -193,27 +193,16 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
         showToast(getString(R.string.kinecosystem_something_went_wrong));
     }
 
-    @Override
-    public void setEarnEmptyView() {
-        earnEmptyView = createEmptyView(earnEmptyView);
-        earnRecyclerAdapter.setEmptyView(earnEmptyView);
-    }
-
-
-    @Override
-    public void setSpendEmptyView() {
-        spendEmptyView = createEmptyView(spendEmptyView);
-        spendRecyclerAdapter.setEmptyView(spendEmptyView);
-    }
-
 	@Override
-	public void updateEarnSubtitle(String subtitle) {
-        earnSubTitle.setText(subtitle);
+	public void updateEarnSubtitle(boolean isEmpty) {
+		earnSubTitle.setText(isEmpty ? R.string.kinecosystem_empty_tomorrow_more_opportunities
+			: R.string.kinecosystem_complete_tasks_and_earn_kin);
 	}
 
 	@Override
-	public void updateSpendSubtitle(String subtitle) {
-        spendSubTitle.setText(subtitle);
+	public void updateSpendSubtitle(boolean isEmpty) {
+		spendSubTitle.setText(isEmpty ? R.string.kinecosystem_empty_tomorrow_more_opportunities
+			: R.string.kinecosystem_use_your_kin_to_enjoy_stuff_you_like);
 	}
 
 	private OffersEmptyView createEmptyView(OffersEmptyView emptyView) {
