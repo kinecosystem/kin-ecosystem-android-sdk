@@ -156,20 +156,16 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void setEarnEmptyViewIfNeeded() {
-		if (earnList.size() == 0) {
-			isEarnEmpty.postValue(true);
-		}
+		isEarnEmpty.postValue(earnList.size() == 0);
 	}
 
 	private void setSpendEmptyViewIfNeeded() {
-		if (spendList.size() == 0) {
-			isSpendEmpty.postValue(true);
-		}
+		isSpendEmpty.postValue(spendList.size() == 0);
 	}
 
 	private void notifyEarnItemRemoved(int index) {
 		if (view != null) {
-			view.notifyEarnItemRemoved(getSafeIndexEarnEmptyState(index));
+			view.notifyEarnItemRemoved(index);
 		}
 	}
 
@@ -181,7 +177,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private void notifySpendItemRemoved(int index) {
 		if (view != null) {
-			view.notifySpendItemRemoved(getSafeIndexSpendEmptyState(index));
+			view.notifySpendItemRemoved(index);
 		}
 	}
 
