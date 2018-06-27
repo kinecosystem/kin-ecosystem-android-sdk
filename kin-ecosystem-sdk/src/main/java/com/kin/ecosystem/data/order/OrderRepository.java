@@ -12,7 +12,6 @@ import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.EarnOrderPaymentConfirmed;
 import com.kin.ecosystem.bi.events.SpendOrderCompleted;
 import com.kin.ecosystem.bi.events.SpendOrderCompletionSubmitted;
-import com.kin.ecosystem.bi.events.SpendOrderCreationReceived;
 import com.kin.ecosystem.bi.events.SpendOrderCreationRequested;
 import com.kin.ecosystem.bi.events.SpendOrderFailed;
 import com.kin.ecosystem.data.Callback;
@@ -32,7 +31,6 @@ import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.Order.Status;
 import com.kin.ecosystem.network.model.OrderList;
 import com.kin.ecosystem.util.ErrorUtil;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import kin.ecosystem.core.network.ApiException;
@@ -313,11 +311,9 @@ public class OrderRepository implements OrderDataSource {
 
 				@Override
 				public void onTransactionSent(OpenOrder openOrder) {
-
+					submitOrder(openOrder.getOfferId(), null, openOrder.getId(), null);
 					eventLogger
 						.send(SpendOrderCompletionSubmitted.create(openOrder.getOfferId(), openOrder.getId(), true));
-
-					submitOrder(openOrder.getOfferId(), null, openOrder.getId(), null);
 				}
 
 				@Override
@@ -325,14 +321,12 @@ public class OrderRepository implements OrderDataSource {
 					cancelOrder(openOrder.getOfferId(), openOrder.getId(), new KinCallback<Void>() {
 						@Override
 						public void onResponse(Void response) {
-							handleOnFailure(exception, openOrder != null ? openOrder.getOfferId() : "null",
-								openOrder != null ? openOrder.getId() : "null");
+							handleOnFailure(exception, openOrder.getOfferId(), openOrder.getId());
 						}
 
 						@Override
 						public void onFailure(KinEcosystemException e) {
-							handleOnFailure(exception, openOrder != null ? openOrder.getOfferId() : "null",
-								openOrder != null ? openOrder.getId() : "null");
+							handleOnFailure(exception, openOrder.getOfferId(), openOrder.getId());
 						}
 
 					});

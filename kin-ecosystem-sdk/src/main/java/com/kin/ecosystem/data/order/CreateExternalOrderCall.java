@@ -3,7 +3,6 @@ package com.kin.ecosystem.data.order;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
-import com.kin.ecosystem.bi.events.SpendOrderCompletionSubmitted;
 import com.kin.ecosystem.bi.events.SpendOrderCreationFailed;
 import com.kin.ecosystem.bi.events.SpendOrderCreationReceived;
 import com.kin.ecosystem.data.Callback;
@@ -32,7 +31,7 @@ class CreateExternalOrderCall extends Thread {
 	private MainThreadExecutor mainThreadExecutor = new MainThreadExecutor();
 
 	CreateExternalOrderCall(@NonNull OrderDataSource.Remote remote, @NonNull BlockchainSource blockchainSource,
-		@NonNull String orderJwt, EventLogger eventLogger,
+		@NonNull String orderJwt, @NonNull EventLogger eventLogger,
 		@NonNull ExternalOrderCallbacks externalOrderCallbacks) {
 		this.remote = remote;
 		this.blockchainSource = blockchainSource;
@@ -59,15 +58,13 @@ class CreateExternalOrderCall extends Thread {
 				String orderID = extractOrderID(e.getResponseHeaders());
 				getOrder(orderID);
 			} else {
-
+				sendOrderCreationFailedEvent(e);
 				onOrderFailed(ErrorUtil.fromApiException(e));
 			}
 			return;
 		}
 
 		if (externalOrderCallbacks instanceof ExternalSpendOrderCallbacks) {
-			// Send transaction to the network.
-			sendSpendOrderCompletionSubmittedEvent();
 			blockchainSource.sendTransaction(openOrder.getBlockchainData().getRecipientAddress(),
 				new BigDecimal(openOrder.getAmount()), openOrder.getId(), openOrder.getOfferId());
 
@@ -104,26 +101,29 @@ class CreateExternalOrderCall extends Thread {
 		});
 	}
 
+	private void sendOrderCreationFailedEvent(ApiException exception) {
+		if (openOrder != null) {
+			switch (openOrder.getOfferType()) {
+				case SPEND:
+					final Throwable cause = exception.getCause();
+					final String reason =  cause != null ? cause.getMessage() : exception.getMessage();
+					eventLogger.send(SpendOrderCreationFailed.create(reason, openOrder.getOfferId(), true));
+					break;
+				case EARN:
+					//TODO add event
+					// We don't have event correctly
+					break;
+			}
+
+		}
+	}
+
 	private void sendOrderCreationReceivedEvent() {
 		if (openOrder != null) {
 			switch (openOrder.getOfferType()) {
 				case SPEND:
 					eventLogger.send(SpendOrderCreationReceived
 						.create(openOrder.getOfferId(), openOrder.getId(), true));
-					break;
-				case EARN:
-					break;
-			}
-		}
-	}
-
-	private void sendSpendOrderCompletionSubmittedEvent() {
-		if (openOrder != null) {
-			switch (openOrder.getOfferType()) {
-				case SPEND:
-					eventLogger
-						.send(SpendOrderCompletionSubmitted.create(openOrder.getOfferId(), openOrder.getId(), true));
-
 					break;
 				case EARN:
 					break;
@@ -174,18 +174,6 @@ class CreateExternalOrderCall extends Thread {
 	}
 
 	private void onOrderFailed(final KinEcosystemException exception) {
-		if (openOrder != null) {
-			switch (openOrder.getOfferType()) {
-				case SPEND:
-					eventLogger.send(SpendOrderCreationFailed
-						.create(exception.getCause().getMessage(), openOrder.getOfferId(), true));
-					break;
-				case EARN:
-					// We don't have correctly
-					break;
-			}
-
-		}
 		final OpenOrder finalOpenOrder = openOrder;
 		runOnMainThread(new Runnable() {
 			@Override
