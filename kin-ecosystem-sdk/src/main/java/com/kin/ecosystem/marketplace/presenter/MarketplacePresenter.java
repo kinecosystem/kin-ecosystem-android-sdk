@@ -37,9 +37,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private static final int NOT_FOUND = -1;
 
-	private static final String EMPTY_SUBTITLE  = "Check back tomorrow for more great opportunities";
-	private static final String EARN_SUBTITLE  = "Complete tasks and earn KIN";
-	private static final String SPEND_SUBTITLE  = "Use your KIN to enjoy stuff you like";
+	private static final String EMPTY_SUBTITLE = "Check back tomorrow for more great opportunities";
+	private static final String EARN_SUBTITLE = "Complete tasks and earn KIN";
+	private static final String SPEND_SUBTITLE = "Use your KIN to enjoy stuff you like";
 
 	private final OfferDataSource offerRepository;
 	private final OrderDataSource orderRepository;
@@ -52,8 +52,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private Observer<Offer> pendingOfferObserver;
 	private Observer<Order> completedOrderObserver;
 
-	private ObservableData<Boolean> isEarnEmpty = ObservableData.create(false);
-	private ObservableData<Boolean> isSpendEmpty = ObservableData.create(false);
+	private ObservableData<Boolean> isEarnEmpty = ObservableData.create();
+	private ObservableData<Boolean> isSpendEmpty = ObservableData.create();
 	private Observer<Boolean> isEarnEmptyObserver;
 	private Observer<Boolean> isSpendEmptyObserver;
 
@@ -83,13 +83,16 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private Observer<Boolean> getEarnEmptyObserver() {
-		if(isEarnEmptyObserver == null) {
+		if (isEarnEmptyObserver == null) {
 			isEarnEmptyObserver = new Observer<Boolean>() {
 				@Override
 				public void onChanged(Boolean value) {
 					final String subtitle = value ? EMPTY_SUBTITLE : EARN_SUBTITLE;
-					if(view != null) {
+					if (view != null) {
 						view.updateEarnSubtitle(subtitle);
+						if (value) {
+							view.setEarnEmptyView();
+						}
 					}
 				}
 			};
@@ -99,13 +102,16 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private Observer<Boolean> getSpendEmptyObserver() {
-		if(isSpendEmptyObserver == null) {
+		if (isSpendEmptyObserver == null) {
 			isSpendEmptyObserver = new Observer<Boolean>() {
 				@Override
 				public void onChanged(Boolean value) {
 					final String subtitle = value ? EMPTY_SUBTITLE : SPEND_SUBTITLE;
-					if(view != null) {
+					if (view != null) {
 						view.updateSpendSubtitle(subtitle);
+						if (value) {
+							view.setSpendEmptyView();
+						}
 					}
 				}
 			};
@@ -162,44 +168,46 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private void setEarnEmptyViewIfNeeded() {
 		if (earnList.size() == 0) {
-			if (view != null) {
-				isEarnEmpty.postValue(true);
-				view.setEarnEmptyView();
-			}
+			isEarnEmpty.postValue(true);
 		}
 	}
 
 	private void setSpendEmptyViewIfNeeded() {
 		if (spendList.size() == 0) {
-			if (view != null) {
-				isSpendEmpty.postValue(true);
-				view.setSpendEmptyView();
-			}
+			isSpendEmpty.postValue(true);
 		}
 	}
 
 	private void notifyEarnItemRemoved(int index) {
 		if (view != null) {
-			view.notifyEarnItemRemoved(index);
+			view.notifyEarnItemRemoved(getSafeIndexEarnEmptyState(index));
 		}
 	}
 
 	private void notifyEarnItemInserted(int index) {
 		if (view != null) {
-			view.notifyEarnItemInserted(index);
+			view.notifyEarnItemInserted(getSafeIndexEarnEmptyState(index));
 		}
 	}
 
 	private void notifySpendItemRemoved(int index) {
 		if (view != null) {
-			view.notifySpendItemRemoved(index);
+			view.notifySpendItemRemoved(getSafeIndexSpendEmptyState(index));
 		}
 	}
 
 	private void notifySpendItemInserted(int index) {
 		if (view != null) {
-			view.notifySpendItemInserted(index);
+			view.notifySpendItemInserted(getSafeIndexSpendEmptyState(index));
 		}
+	}
+
+	private int getSafeIndexEarnEmptyState(final int index) {
+		return isEarnEmpty.getValue() ? 1 : index;
+	}
+
+	private int getSafeIndexSpendEmptyState(final int index) {
+		return isSpendEmpty.getValue() ? 1 : index;
 	}
 
 	@Override
@@ -238,9 +246,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			splitOffersByType(offerList.getOffers(), newEarnOffers, newSpendOffers);
 			syncList(newEarnOffers, earnList, OfferType.EARN);
 			syncList(newSpendOffers, spendList, OfferType.SPEND);
-
-			setEarnEmptyViewIfNeeded();
-			setSpendEmptyViewIfNeeded();
 		}
 	}
 
@@ -270,6 +275,12 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 				notifyItemInserted(i, offerType);
 			}
 		}
+
+		if (offerType == OfferType.EARN) {
+			setEarnEmptyViewIfNeeded();
+		} else {
+			setSpendEmptyViewIfNeeded();
+		}
 	}
 
 	private void notifyItemRemoved(int index, OfferType offerType) {
@@ -282,12 +293,12 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private void notifyItemInserted(int index, OfferType offerType) {
 		if (isSpend(offerType)) {
-			if(isSpendEmpty.getValue()){
+			if (isSpendEmpty.getValue() == null || isSpendEmpty.getValue()) {
 				isSpendEmpty.postValue(false);
 			}
 			notifySpendItemInserted(index);
 		} else {
-			if(isEarnEmpty.getValue()){
+			if (isEarnEmpty.getValue() == null || isEarnEmpty.getValue()) {
 				isEarnEmpty.postValue(false);
 			}
 			notifyEarnItemInserted(index);
@@ -302,9 +313,13 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		if (offerList != null && offerList.getOffers() != null) {
 			splitOffersByType(offerList.getOffers(), this.earnList, this.spendList);
 		}
+
 		if (this.view != null) {
 			this.view.setEarnList(earnList);
 			this.view.setSpendList(spendList);
+
+			isEarnEmpty.postValue(earnList.size() == 0);
+			isSpendEmpty.postValue(spendList.size() == 0);
 		}
 	}
 
