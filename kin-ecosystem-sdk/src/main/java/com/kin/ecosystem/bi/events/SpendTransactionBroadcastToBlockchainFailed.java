@@ -17,16 +17,15 @@ public class SpendTransactionBroadcastToBlockchainFailed implements Event {
 	public static final String EVENT_TYPE = "log";
 
 	// Augmented by script
-	public static SpendTransactionBroadcastToBlockchainFailed create(String errorReason, String offerId, String orderId,
-		Boolean isNative) {
+	public static SpendTransactionBroadcastToBlockchainFailed create(String errorReason, String offerId,
+		String orderId) {
 		return new SpendTransactionBroadcastToBlockchainFailed(
 			(Common) EventsStore.common(),
 			(User) EventsStore.user(),
 			(Client) EventsStore.client(),
 			errorReason,
 			offerId,
-			orderId,
-			isNative);
+			orderId);
 	}
 
 	/**
@@ -80,12 +79,6 @@ public class SpendTransactionBroadcastToBlockchainFailed implements Event {
 	@SerializedName("order_id")
 	@Expose
 	private String orderId;
-	/**
-	 * (Required)
-	 */
-	@SerializedName("is_native")
-	@Expose
-	private Boolean isNative;
 
 	/**
 	 * No args constructor for use in serialization
@@ -103,10 +96,9 @@ public class SpendTransactionBroadcastToBlockchainFailed implements Event {
 	 * @param offerId
 
 	 * @param user
-	 * @param isNative
 	 */
 	public SpendTransactionBroadcastToBlockchainFailed(Common common, User user, Client client, String errorReason,
-		String offerId, String orderId, Boolean isNative) {
+		String offerId, String orderId) {
 		super();
 		this.common = common;
 		this.user = user;
@@ -114,7 +106,6 @@ public class SpendTransactionBroadcastToBlockchainFailed implements Event {
 		this.errorReason = errorReason;
 		this.offerId = offerId;
 		this.orderId = orderId;
-		this.isNative = isNative;
 	}
 
 	/**
@@ -233,20 +224,6 @@ public class SpendTransactionBroadcastToBlockchainFailed implements Event {
 	 */
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
-	}
-
-	/**
-	 * (Required)
-	 */
-	public Boolean getIsNative() {
-		return isNative;
-	}
-
-	/**
-	 * (Required)
-	 */
-	public void setIsNative(Boolean isNative) {
-		this.isNative = isNative;
 	}
 
 }

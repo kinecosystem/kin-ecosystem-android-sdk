@@ -6,13 +6,11 @@ import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.SpendOrderCompletionSubmitted;
 import com.kin.ecosystem.bi.events.SpendOrderCreationFailed;
 import com.kin.ecosystem.bi.events.SpendOrderCreationReceived;
-import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainSubmitted;
 import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.network.model.JWTBodyPaymentConfirmationResult;
-import com.kin.ecosystem.network.model.Offer.OfferType;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.util.ErrorUtil;
@@ -48,7 +46,6 @@ class CreateExternalOrderCall extends Thread {
 		try {
 			// Create external order
 			openOrder = remote.createExternalOrderSync(orderJwt);
-
 			sendOrderCreationReceivedEvent();
 
 			runOnMainThread(new Runnable() {
@@ -184,6 +181,7 @@ class CreateExternalOrderCall extends Thread {
 						.create(exception.getCause().getMessage(), openOrder.getOfferId(), true));
 					break;
 				case EARN:
+					// We don't have correctly
 					break;
 			}
 
@@ -193,23 +191,13 @@ class CreateExternalOrderCall extends Thread {
 			@Override
 			public void run() {
 				externalOrderCallbacks
-					.onOrderFailed(
-						exception, finalOpenOrder
-					);
+					.onOrderFailed(exception, finalOpenOrder);
 			}
 		});
 	}
 
 	private void runOnMainThread(Runnable runnable) {
 		mainThreadExecutor.execute(runnable);
-	}
-
-	private String getApiExceptionsMessage(Throwable t) {
-		try {
-			return ((ApiException) t).getResponseBody().getMessage();
-		} catch (Exception e) {
-			return hasMessage(t) ? t.getMessage() : "Task failed";
-		}
 	}
 
 	private boolean hasMessage(Throwable t) {

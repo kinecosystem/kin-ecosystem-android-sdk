@@ -157,7 +157,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	@Override
 	public void setAppID(String appID) {
-		Log.d(TAG, "setAppID: " + appID);
 		if (!TextUtils.isEmpty(appID)) {
 			this.appID = appID;
 		}
@@ -166,7 +165,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	public void sendTransaction(@NonNull final String publicAddress, @NonNull final BigDecimal amount,
 		@NonNull final String orderID, @NonNull final String offerID) {
-		eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offerID, orderID, false));
+		eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offerID, orderID));
 		createTrustLineIfNeeded(new TrustlineCallback() {
 			@Override
 			public void onSuccess() {
@@ -174,13 +173,13 @@ public class BlockchainSourceImpl implements BlockchainSource {
 					new ResultCallback<TransactionId>() {
 						@Override
 						public void onResult(TransactionId result) {
-							eventLogger.send(SpendTransactionBroadcastToBlockchainSucceeded.create(result.id(), offerID, orderID, false));
+							eventLogger.send(SpendTransactionBroadcastToBlockchainSucceeded.create(result.id(), offerID, orderID));
 							Log.d(TAG, "sendTransaction onResult: " + result.id());
 						}
 
 						@Override
 						public void onError(Exception e) {
-							eventLogger.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID, false));
+							eventLogger.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
 							completedPayment.setValue(new Payment(orderID, false, e));
 							Log.d(TAG, "sendTransaction onError: " + e.getMessage());
 						}
@@ -190,7 +189,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			@Override
 			public void onFailure(OperationFailedException e) {
 				final String errorMessage = "Trustline failed - " + e.getMessage();
-				eventLogger.send(SpendTransactionBroadcastToBlockchainFailed.create(errorMessage, offerID, orderID, false));
+				eventLogger.send(SpendTransactionBroadcastToBlockchainFailed.create(errorMessage, offerID, orderID));
 				completedPayment.setValue(new Payment(orderID, false, e));
 				Log.d(TAG, "sendTransaction onError: " + e.getMessage());
 			}

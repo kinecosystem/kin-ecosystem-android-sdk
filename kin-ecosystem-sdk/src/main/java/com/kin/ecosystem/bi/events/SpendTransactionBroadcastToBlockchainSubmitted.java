@@ -17,15 +17,13 @@ public class SpendTransactionBroadcastToBlockchainSubmitted implements Event {
 	public static final String EVENT_TYPE = "log";
 
 	// Augmented by script
-	public static SpendTransactionBroadcastToBlockchainSubmitted create(String offerId, String orderId,
-		Boolean isNative) {
+	public static SpendTransactionBroadcastToBlockchainSubmitted create(String offerId, String orderId) {
 		return new SpendTransactionBroadcastToBlockchainSubmitted(
 			(Common) EventsStore.common(),
 			(User) EventsStore.user(),
 			(Client) EventsStore.client(),
 			offerId,
-			orderId,
-			isNative);
+			orderId);
 	}
 
 	/**
@@ -73,12 +71,6 @@ public class SpendTransactionBroadcastToBlockchainSubmitted implements Event {
 	@SerializedName("order_id")
 	@Expose
 	private String orderId;
-	/**
-	 * (Required)
-	 */
-	@SerializedName("is_native")
-	@Expose
-	private Boolean isNative;
 
 	/**
 	 * No args constructor for use in serialization
@@ -95,17 +87,15 @@ public class SpendTransactionBroadcastToBlockchainSubmitted implements Event {
 	 * @param offerId
 
 	 * @param user
-	 * @param isNative
 	 */
 	public SpendTransactionBroadcastToBlockchainSubmitted(Common common, User user, Client client, String offerId,
-		String orderId, Boolean isNative) {
+		String orderId) {
 		super();
 		this.common = common;
 		this.user = user;
 		this.client = client;
 		this.offerId = offerId;
 		this.orderId = orderId;
-		this.isNative = isNative;
 	}
 
 	/**
@@ -210,20 +200,6 @@ public class SpendTransactionBroadcastToBlockchainSubmitted implements Event {
 	 */
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
-	}
-
-	/**
-	 * (Required)
-	 */
-	public Boolean getIsNative() {
-		return isNative;
-	}
-
-	/**
-	 * (Required)
-	 */
-	public void setIsNative(Boolean isNative) {
-		this.isNative = isNative;
 	}
 
 }
