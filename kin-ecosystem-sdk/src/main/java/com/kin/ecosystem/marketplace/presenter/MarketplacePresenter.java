@@ -7,7 +7,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.BasePresenter;
-import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.BackButtonOnMarketplacePageTapped;
@@ -50,7 +49,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private boolean isEarnListEmpty;
 	private boolean isSpendListEmpty;
-
 
 
 	private final Gson gson;
@@ -163,7 +161,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private int getSafeIndexEarnEmptyState(final int index) {
-		return isEarnListEmpty? 1 : index;
+		return isEarnListEmpty ? 1 : index;
 	}
 
 	private int getSafeIndexSpendEmptyState(final int index) {
