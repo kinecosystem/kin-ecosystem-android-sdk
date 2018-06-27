@@ -12,6 +12,7 @@ import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.KinBalanceUpdated;
 import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainFailed;
+import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainSubmitted;
 import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainSucceeded;
 import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupFailed;
 import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupSucceeded;
@@ -156,7 +157,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	@Override
 	public void setAppID(String appID) {
-		Log.d(TAG, "setAppID: " + appID);
 		if (!TextUtils.isEmpty(appID)) {
 			this.appID = appID;
 		}
@@ -165,6 +165,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	public void sendTransaction(@NonNull final String publicAddress, @NonNull final BigDecimal amount,
 		@NonNull final String orderID, @NonNull final String offerID) {
+		eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offerID, orderID));
 		createTrustLineIfNeeded(new TrustlineCallback() {
 			@Override
 			public void onSuccess() {
