@@ -72,12 +72,6 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        marketplacePresenter.getOffers();
-    }
-
-    @Override
     public void attachPresenter(MarketplacePresenter presenter) {
         marketplacePresenter = presenter;
         marketplacePresenter.onAttach(this);
