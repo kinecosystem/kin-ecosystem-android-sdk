@@ -102,7 +102,7 @@ class CreateExternalOrderCall extends Thread {
 	}
 
 	private void sendOrderCreationFailedEvent(ApiException exception) {
-		if (openOrder != null) {
+		if (openOrder != null && openOrder.getOfferType() != null) {
 			switch (openOrder.getOfferType()) {
 				case SPEND:
 					final Throwable cause = exception.getCause();
@@ -119,7 +119,7 @@ class CreateExternalOrderCall extends Thread {
 	}
 
 	private void sendOrderCreationReceivedEvent() {
-		if (openOrder != null) {
+		if (openOrder != null && openOrder.getOfferType() != null) {
 			switch (openOrder.getOfferType()) {
 				case SPEND:
 					eventLogger.send(SpendOrderCreationReceived

@@ -335,8 +335,8 @@ public class OrderRepository implements OrderDataSource {
 
 				@Override
 				public void onOrderConfirmed(String confirmationJwt, Order order) {
-					String offerID = null;
-					String orderId = null;
+					String offerID = "null";
+					String orderId = "null";
 					if (order != null) {
 						offerID = order.getOfferId();
 						orderId = order.getOrderId();
