@@ -461,7 +461,7 @@ public class OrderRepository implements OrderDataSource {
 				if (response != null) {
 					final List<Order> orders = response.getOrders();
 					if (orders != null && orders.size() > 0) {
-						final Order order = orders.get(orders.size());
+						final Order order = orders.get(orders.size() - 1);
 						OrderConfirmation orderConfirmation = new OrderConfirmation();
 						OrderConfirmation.Status status = OrderConfirmation.Status
 							.fromValue(order.getStatus().getValue());
