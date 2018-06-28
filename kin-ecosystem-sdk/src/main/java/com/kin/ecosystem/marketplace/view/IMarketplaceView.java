@@ -9,29 +9,27 @@ import java.util.List;
 
 public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
 
-    void setSpendList(List<Offer> response);
+	void setSpendList(List<Offer> response);
 
-    void setEarnList(List<Offer> response);
+	void setEarnList(List<Offer> response);
 
-//    void navigateToOrderHistory();
+	void showOfferActivity(PollBundle pollBundle);
 
-    void showOfferActivity(PollBundle pollBundle);
+	void showSpendDialog(ISpendDialogPresenter spendDialogPresenter);
 
-    void showSpendDialog(ISpendDialogPresenter spendDialogPresenter);
+	void showToast(String msg);
 
-    void showToast(String msg);
+	void notifyEarnItemRemoved(int index);
 
-    void notifyEarnItemRemoved(int index);
+	void notifyEarnItemInserted(int index);
 
-    void notifyEarnItemInserted(int index);
+	void notifySpendItemRemoved(int index);
 
-    void notifySpendItemRemoved(int index);
+	void notifySpendItemInserted(int index);
 
-    void notifySpendItemInserted(int index);
+	void showSomethingWentWrong();
 
-    void showSomethingWentWrong();
+	void updateEarnSubtitle(boolean isEmpty);
 
-    void setEarnEmptyView();
-
-    void setSpendEmptyView();
+	void updateSpendSubtitle(boolean isEmpty);
 }

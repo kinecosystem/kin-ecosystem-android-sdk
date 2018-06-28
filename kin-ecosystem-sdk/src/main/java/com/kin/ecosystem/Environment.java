@@ -15,8 +15,8 @@ public class Environment implements KinEnvironment {
 		"Public Global Kin Ecosystem Network ; June 2018",
 		"GDF42M3IPERQCBLWFEZKQRK77JQ65SCKTU3CW36HZVCX7XX5A5QXZIVK",
 		"https://api.kinmarketplace.com/v1",
-		"http://htmlpoll.kinecosystem.com.s3-website-us-east-1.amazonaws.com/",
-		"https://kin-bi.appspot.com");
+		"https://cdn.kinmarketplace.com/",
+		"https://kin-bi.appspot.com/eco_");
 
 	private static final Environment PLAYGROUND = new Environment(
 		"https://stellar.kinplayground.com",
@@ -24,7 +24,7 @@ public class Environment implements KinEnvironment {
 		"GDVIWJ2NYBCPHMGTIBO5BBZCP5QCYC4YT4VINTV5PZOSE7BAJCH5JI64",
 		"https://api.kinplayground.com/v1",
 		"https://s3.amazonaws.com/assets.kinplayground.com/web-offers/cards-based/index.html",
-		"https://kin-bi.appspot.com");
+		"https://kin-bi.appspot.com/eco_play_");
 
 	private final String blockchainNetworkUrl;
 	private final String blockchainPassphrase;

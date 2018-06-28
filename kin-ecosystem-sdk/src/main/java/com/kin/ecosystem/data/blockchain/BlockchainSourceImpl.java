@@ -12,6 +12,7 @@ import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.KinBalanceUpdated;
 import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainFailed;
+import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainSubmitted;
 import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainSucceeded;
 import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupFailed;
 import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupSucceeded;
@@ -156,7 +157,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	@Override
 	public void setAppID(String appID) {
-		Log.d(TAG, "setAppID: " + appID);
 		if (!TextUtils.isEmpty(appID)) {
 			this.appID = appID;
 		}
@@ -165,6 +165,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	public void sendTransaction(@NonNull final String publicAddress, @NonNull final BigDecimal amount,
 		@NonNull final String orderID, @NonNull final String offerID) {
+		eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offerID, orderID));
 		createTrustLineIfNeeded(new TrustlineCallback() {
 			@Override
 			public void onSuccess() {
@@ -179,7 +180,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 						@Override
 						public void onError(Exception e) {
 							eventLogger.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
-							completedPayment.setValue(new Payment(orderID, false, e));
+							completedPayment.postValue(new Payment(orderID, false, e));
 							Log.d(TAG, "sendTransaction onError: " + e.getMessage());
 						}
 					});
@@ -189,7 +190,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			public void onFailure(OperationFailedException e) {
 				final String errorMessage = "Trustline failed - " + e.getMessage();
 				eventLogger.send(SpendTransactionBroadcastToBlockchainFailed.create(errorMessage, offerID, orderID));
-				completedPayment.setValue(new Payment(orderID, false, e));
+				completedPayment.postValue(new Payment(orderID, false, e));
 				Log.d(TAG, "sendTransaction onError: " + e.getMessage());
 			}
 		});
@@ -352,7 +353,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 					Log.d(TAG,
 						"startPaymentListener onEvent: the orderId: " + orderID + " with memo: " + data.memo());
 					if (orderID != null) {
-						completedPayment.setValue(new Payment(orderID, data.hash().id(), data.amount()));
+						completedPayment.postValue(new Payment(orderID, data.hash().id(), data.amount()));
 						Log.d(TAG, "completedPayment order id: " + orderID);
 					}
 					// UpdateBalance if there is no balance sse open connection.

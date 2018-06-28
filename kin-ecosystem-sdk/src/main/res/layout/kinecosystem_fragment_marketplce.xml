@@ -35,8 +35,7 @@
                 android:id="@+id/earn_subtitle"
                 style="@style/KinecosysSubTitle"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/kinecosystem_complete_tasks_and_earn_kin"/>
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 
@@ -83,8 +82,7 @@
                 android:id="@+id/spend_subtitle"
                 style="@style/KinecosysSubTitle"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/kinecosystem_use_your_kin_to_enjoy_stuff_you_like"/>
+                android:layout_height="wrap_content"/>
         </LinearLayout>
 
 

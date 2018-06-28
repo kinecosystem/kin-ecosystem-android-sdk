@@ -66,18 +66,18 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
     }
 
     private void createOrder() {
-		eventLogger.send(SpendOrderCreationRequested.create(offer.getId()));
+		eventLogger.send(SpendOrderCreationRequested.create(offer.getId(), false));
         orderRepository.createOrder(offer.getId(), new KinCallback<OpenOrder>() {
             @Override
             public void onResponse(OpenOrder response) {
                 openOrder = response;
-				eventLogger.send(SpendOrderCreationReceived.create(offer.getId(), response != null ? response.getId() : null));
+				eventLogger.send(SpendOrderCreationReceived.create(offer.getId(), response != null ? response.getId() : null,false));
             }
 
             @Override
             public void onFailure(KinEcosystemException exception) {
                 showToast("Oops something went wrong...");
-				eventLogger.send(SpendOrderCreationFailed.create(exception.getCause().getMessage(), offer.getId()));
+				eventLogger.send(SpendOrderCreationFailed.create(exception.getCause().getMessage(), offer.getId(), false));
             }
         });
     }
@@ -169,13 +169,12 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
     }
 
     private void sendTransaction(String addressee, BigDecimal amount, String orderID) {
-		eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offer.getId(), orderID));
 		blockchainSource.sendTransaction(addressee, amount, orderID, offer.getId());
     }
 
     private void submitOrder(String offerID, String orderID) {
         isOrderSubmitted = true;
-		eventLogger.send(SpendOrderCompletionSubmitted.create(offerID, orderID));
+		eventLogger.send(SpendOrderCompletionSubmitted.create(offerID, orderID, false));
 		orderRepository.submitOrder(offerID, null, orderID, new KinCallback<Order>() {
             @Override
             public void onResponse(Order response) {

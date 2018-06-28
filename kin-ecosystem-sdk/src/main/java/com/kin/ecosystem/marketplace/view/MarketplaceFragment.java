@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.chad.library.adapter.base.BaseRecyclerAdapter;
 import com.chad.library.adapter.base.BaseRecyclerAdapter.OnItemClickListener;
@@ -32,10 +33,10 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 
 	private IMarketplacePresenter marketplacePresenter;
 
+	private TextView spendSubTitle;
+	private TextView earnSubTitle;
 	private SpendRecyclerAdapter spendRecyclerAdapter;
 	private EarnRecyclerAdapter earnRecyclerAdapter;
-	private OffersEmptyView spendEmptyView;
-	private OffersEmptyView earnEmptyView;
 
 	@Nullable
 	@Override
@@ -65,6 +66,9 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 	}
 
 	protected void initViews(View root) {
+		spendSubTitle = root.findViewById(R.id.spend_subtitle);
+		earnSubTitle = root.findViewById(R.id.earn_subtitle);
+
 		//Space item decoration for both of the recyclers
 		int margin = getResources().getDimensionPixelOffset(R.dimen.kinecosystem_main_margin);
 		int space = getResources().getDimensionPixelOffset(R.dimen.kinecosystem_offer_item_list_space);
@@ -82,6 +86,7 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 				marketplacePresenter.onItemClicked(position, OfferType.SPEND);
 			}
 		});
+		spendRecyclerAdapter.setEmptyView(new OffersEmptyView(getContext()));
 
 		//Earn Recycler
 		RecyclerView earnRecycler = root.findViewById(R.id.earn_recycler);
@@ -95,6 +100,7 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 				marketplacePresenter.onItemClicked(position, OfferType.EARN);
 			}
 		});
+		earnRecyclerAdapter.setEmptyView(new OffersEmptyView(getContext()));
 
 	}
 
@@ -108,13 +114,6 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 	public void setEarnList(List<Offer> earnList) {
 		earnRecyclerAdapter.setNewData(earnList);
 	}
-
-//	@Override
-//	public void navigateToOrderHistory() {
-//		marketplacePresenter.
-//		Intent orderHistory = new Intent(this, OrderHistoryActivity.class);
-//		navigateToActivity(orderHistory);
-//	}
 
 	@Override
 	public void showOfferActivity(PollBundle pollBundle) {
@@ -166,22 +165,14 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 	}
 
 	@Override
-	public void setEarnEmptyView() {
-		earnEmptyView = createEmptyView(earnEmptyView);
-		earnRecyclerAdapter.setEmptyView(earnEmptyView);
+	public void updateEarnSubtitle(boolean isEmpty) {
+		earnSubTitle.setText(isEmpty ? R.string.kinecosystem_empty_tomorrow_more_opportunities
+			: R.string.kinecosystem_complete_tasks_and_earn_kin);
 	}
-
 
 	@Override
-	public void setSpendEmptyView() {
-		spendEmptyView = createEmptyView(spendEmptyView);
-		spendRecyclerAdapter.setEmptyView(spendEmptyView);
-	}
-
-	private OffersEmptyView createEmptyView(OffersEmptyView emptyView) {
-		if (emptyView == null) {
-			emptyView = new OffersEmptyView(getContext());
-		}
-		return emptyView;
+	public void updateSpendSubtitle(boolean isEmpty) {
+		spendSubTitle.setText(isEmpty ? R.string.kinecosystem_empty_tomorrow_more_opportunities
+			: R.string.kinecosystem_use_your_kin_to_enjoy_stuff_you_like);
 	}
 }
