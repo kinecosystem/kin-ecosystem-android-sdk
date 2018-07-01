@@ -3,6 +3,7 @@ package com.ecosystem.kin.app;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Base64;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -106,7 +107,10 @@ public class JwtUtil {
 
     private static class JWTOfferPart {
 
+
+        @JsonProperty("id")
         private String id;
+        @JsonProperty("amount")
         private int amount;
 
         /**
@@ -138,9 +142,11 @@ public class JwtUtil {
     }
 
     private static class JWTOrderPart {
-
+        @JsonProperty("user_id")
         private String user_id; // Optional in case of spend order
+        @JsonProperty("title")
         private String title;
+        @JsonProperty("description")
         private String description;
 
         JWTOrderPart(String user_id, String title, String description) {
