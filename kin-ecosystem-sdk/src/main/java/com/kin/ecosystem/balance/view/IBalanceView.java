@@ -1,13 +1,17 @@
 package com.kin.ecosystem.balance.view;
 
-import android.support.annotation.Nullable;
-import com.kin.ecosystem.base.IBasePresenter;
+import com.kin.ecosystem.balance.presenter.BalancePresenter.OrderStatus;
+import com.kin.ecosystem.balance.presenter.BalancePresenter.OrderType;
+import com.kin.ecosystem.balance.presenter.IBalancePresenter;
 import com.kin.ecosystem.base.IBaseView;
-import com.kin.ecosystem.network.model.Order.Status;
 
-public interface IBalanceView extends IBaseView<IBasePresenter<IBalanceView>> {
+public interface IBalanceView extends IBaseView<IBalancePresenter> {
 
 	void updateBalance(String balance);
 
-	void updateSubTitle(String subTitle, @Nullable Status status);
+	void setWelcomeSubtitle();
+
+	void updateSubTitle(final int amount, @OrderStatus final int status, @OrderType final int orderType);
+
+	void clearSubTitle();
 }

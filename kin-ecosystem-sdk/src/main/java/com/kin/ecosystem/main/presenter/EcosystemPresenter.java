@@ -27,14 +27,14 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 	public void onAttach(IEcosystemView view) {
 		super.onAttach(view);
 		if (this.view != null && visibleScreen != MARKETPLACE) {
-			this.view.navigateToMarketplace();
+			navigator.navigateToMarketplace();
 		}
 	}
 
 	@Override
 	public void balanceItemClicked() {
 		if (view != null && visibleScreen != ORDER_HISTORY) {
-			view.navigateToOrderHistory(false);
+			navigator.navigateToOrderHistory(false);
 		}
 	}
 

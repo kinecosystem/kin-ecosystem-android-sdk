@@ -3,9 +3,12 @@ package com.kin.ecosystem.main.view;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 import com.kin.ecosystem.R;
+import com.kin.ecosystem.balance.presenter.BalancePresenter;
+import com.kin.ecosystem.balance.presenter.IBalancePresenter;
+import com.kin.ecosystem.balance.presenter.IBalancePresenter.BalanceClickListener;
+import com.kin.ecosystem.balance.view.IBalanceView;
 import com.kin.ecosystem.base.BaseToolbarActivity;
 import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.data.blockchain.BlockchainSourceImpl;
@@ -24,9 +27,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 
-public class EcosystemActivity extends BaseToolbarActivity implements IEcosystemView , INavigator {
-
-	private static final String TAG = EcosystemActivity.class.getSimpleName();
+public class EcosystemActivity extends BaseToolbarActivity implements IEcosystemView, INavigator {
 
 	public static final int MARKETPLACE = 0x00000001;
 	public static final int ORDER_HISTORY = 0x00000002;
@@ -40,6 +41,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	public static final String ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG = "ecosystem_marketplace_fragment_tag";
 	public static final String ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG = "ecosystem_order_history_fragment_tag";
 
+	private IBalancePresenter balancePresenter;
 	private IEcosystemPresenter ecosystemPresenter;
 	private IMarketplacePresenter marketplacePresenter;
 	private IOrderHistoryPresenter orderHistoryPresenter;
@@ -72,13 +74,17 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ecosystemPresenter = new EcosystemPresenter(this, this);
-		findViewById(R.id.balance_view).setOnClickListener(new View.OnClickListener() {
+		IBalanceView balanceView = findViewById(R.id.balance_view);
+		balancePresenter = new BalancePresenter(balanceView, BlockchainSourceImpl.getInstance(),
+			OfferRepository.getInstance(), OrderRepository.getInstance());
+		balancePresenter.onAttach(balanceView);
+		balancePresenter.setClickListener(new BalanceClickListener() {
 			@Override
-			public void onClick(View v) {
+			public void onClick() {
 				ecosystemPresenter.balanceItemClicked();
 			}
 		});
+		ecosystemPresenter = new EcosystemPresenter(this, this);
 	}
 
 	@Override
@@ -104,7 +110,12 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 			.replace(R.id.fragment_frame, marketplaceFragment, ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG)
 			.commit();
 
-		ecosystemPresenter.visibleScreen(MARKETPLACE);
+		setVisibleScreen(MARKETPLACE);
+	}
+
+	private void setVisibleScreen(@ScreenId final int id) {
+		ecosystemPresenter.visibleScreen(id);
+		balancePresenter.visibleScreen(id);
 	}
 
 	@Override
@@ -131,7 +142,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 			.replace(R.id.fragment_frame, orderHistoryFragment, ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG)
 			.addToBackStack(null).commit();
 
-		ecosystemPresenter.visibleScreen(ORDER_HISTORY);
+		setVisibleScreen(ORDER_HISTORY);
 	}
 
 	@Override
@@ -165,7 +176,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 		} else {
 			getSupportFragmentManager().popBackStackImmediate();
 			orderHistoryPresenter.backButtonPressed();
-			ecosystemPresenter.visibleScreen(MARKETPLACE);
+			setVisibleScreen(MARKETPLACE);
 		}
 	}
 
@@ -173,6 +184,9 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	protected void onDestroy() {
 		super.onDestroy();
 		ecosystemPresenter.onDetach();
+		if (balancePresenter != null) {
+			balancePresenter.onDetach();
+		}
 		if (marketplacePresenter != null) {
 			marketplacePresenter.onDetach();
 		}
