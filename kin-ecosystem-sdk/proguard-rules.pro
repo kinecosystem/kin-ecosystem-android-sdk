@@ -1,2 +1,7 @@
-#keep JSON schema genrated BI Enums
--keep enum com.kin.ecosystem.bi.events { *; }
+#keep JSON schema genrated BI Enums and models
+-keepclassmembers enum com.kin.ecosystem.** { *; }
+
+# Preserve annotated Javascript interface methods. // just incase hosting app doesn't use getDefaultProguardFile
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}
