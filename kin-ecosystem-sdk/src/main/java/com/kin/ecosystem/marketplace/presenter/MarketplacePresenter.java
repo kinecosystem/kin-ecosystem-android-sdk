@@ -46,6 +46,11 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private Observer<Offer> pendingOfferObserver;
 	private Observer<Order> completedOrderObserver;
+
+	private boolean isEarnListEmpty;
+	private boolean isSpendListEmpty;
+
+
 	private final Gson gson;
 
 	public MarketplacePresenter(@NonNull final OfferDataSource offerRepository,
@@ -64,6 +69,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	public void onAttach(IMarketplaceView view) {
 		super.onAttach(view);
 		getCachedOffers();
+		getOffers();
 		listenToPendingOffers();
 		listenToCompletedOrders();
 		eventLogger.send(MarketplacePageViewed.create());
@@ -103,7 +109,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			if (index != NOT_FOUND) {
 				earnList.remove(index);
 				notifyEarnItemRemoved(index);
-				setEarnEmptyViewIfNeeded();
+				setEarnEmptyViewState();
 			}
 
 		} else {
@@ -111,24 +117,22 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			if (index != NOT_FOUND) {
 				spendList.remove(index);
 				notifySpendItemRemoved(index);
-				setSpendEmptyViewIfNeeded();
+				setSpendEmptyViewState();
 			}
 		}
 	}
 
-	private void setEarnEmptyViewIfNeeded() {
-		if (earnList.size() == 0) {
-			if (view != null) {
-				view.setEarnEmptyView();
-			}
+	private void setEarnEmptyViewState() {
+		isEarnListEmpty = earnList.isEmpty();
+		if (view != null) {
+			view.updateEarnSubtitle(isEarnListEmpty);
 		}
 	}
 
-	private void setSpendEmptyViewIfNeeded() {
-		if (spendList.size() == 0) {
-			if (view != null) {
-				view.setSpendEmptyView();
-			}
+	private void setSpendEmptyViewState() {
+		isSpendListEmpty = spendList.isEmpty();
+		if (view != null) {
+			view.updateSpendSubtitle(isSpendListEmpty);
 		}
 	}
 
@@ -140,7 +144,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private void notifyEarnItemInserted(int index) {
 		if (view != null) {
-			view.notifyEarnItemInserted(index);
+			view.notifyEarnItemInserted(getSafeIndexEarnEmptyState(index));
 		}
 	}
 
@@ -152,8 +156,16 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private void notifySpendItemInserted(int index) {
 		if (view != null) {
-			view.notifySpendItemInserted(index);
+			view.notifySpendItemInserted(getSafeIndexSpendEmptyState(index));
 		}
+	}
+
+	private int getSafeIndexEarnEmptyState(final int index) {
+		return isEarnListEmpty ? 1 : index;
+	}
+
+	private int getSafeIndexSpendEmptyState(final int index) {
+		return isSpendListEmpty ? 1 : index;
 	}
 
 	@Override
@@ -190,9 +202,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			splitOffersByType(offerList.getOffers(), newEarnOffers, newSpendOffers);
 			syncList(newEarnOffers, earnList, OfferType.EARN);
 			syncList(newSpendOffers, spendList, OfferType.SPEND);
-
-			setEarnEmptyViewIfNeeded();
-			setSpendEmptyViewIfNeeded();
 		}
 	}
 
@@ -222,6 +231,12 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 				notifyItemInserted(i, offerType);
 			}
 		}
+
+		if (offerType == OfferType.EARN) {
+			setEarnEmptyViewState();
+		} else {
+			setSpendEmptyViewState();
+		}
 	}
 
 	private void notifyItemRemoved(int index, OfferType offerType) {
@@ -235,8 +250,10 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private void notifyItemInserted(int index, OfferType offerType) {
 		if (isSpend(offerType)) {
 			notifySpendItemInserted(index);
+			setSpendEmptyViewState();
 		} else {
 			notifyEarnItemInserted(index);
+			setEarnEmptyViewState();
 		}
 	}
 
@@ -248,9 +265,13 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		if (offerList != null && offerList.getOffers() != null) {
 			splitOffersByType(offerList.getOffers(), this.earnList, this.spendList);
 		}
+
 		if (this.view != null) {
 			this.view.setEarnList(earnList);
 			this.view.setSpendList(spendList);
+
+			setEarnEmptyViewState();
+			setSpendEmptyViewState();
 		}
 	}
 
