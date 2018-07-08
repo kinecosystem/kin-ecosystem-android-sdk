@@ -121,8 +121,8 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 							break;
 						case COMPLETED:
 						case FAILED:
-						case DELAYED:
 							pendingOrderCount--;
+						case DELAYED:
 							if (isCurrentOrder(order)) {
 								status = getStatus(order);
 								updateSubTitle(order.getAmount(), status, getType(order.getOfferType()));
