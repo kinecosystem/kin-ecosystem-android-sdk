@@ -189,6 +189,15 @@ public class OrderRemoteData implements OrderDataSource.Remote {
     }
 
     @Override
+    public void cancelOrderSync(@NonNull String orderID) {
+        try {
+            ordersApi.cancelOrder(orderID, "");
+        } catch (ApiException e) {
+            Log.d(TAG, "Cancel order: " + orderID + " sync failed, code: " + e.getCode());
+        }
+    }
+
+    @Override
     public void getOrder(String orderID, final Callback<Order, ApiException> callback) {
         new GetOrderPollingCall(this, orderID, new Callback<Order, ApiException>() {
             @Override

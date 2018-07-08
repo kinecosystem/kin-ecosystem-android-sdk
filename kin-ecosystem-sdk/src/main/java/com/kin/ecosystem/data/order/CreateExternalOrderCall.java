@@ -7,7 +7,9 @@ import com.kin.ecosystem.bi.events.SpendOrderCreationFailed;
 import com.kin.ecosystem.bi.events.SpendOrderCreationReceived;
 import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
+import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.Payment;
+import com.kin.ecosystem.exception.BlockchainException;
 import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.network.model.OpenOrder;
@@ -16,6 +18,7 @@ import com.kin.ecosystem.util.ErrorUtil;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import kin.core.exception.InsufficientKinException;
 import kin.ecosystem.core.network.ApiException;
 import kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
 
@@ -46,6 +49,13 @@ class CreateExternalOrderCall extends Thread {
 			// Create external order
 			openOrder = remote.createExternalOrderSync(orderJwt);
 			sendOrderCreationReceivedEvent();
+
+			Balance balance = blockchainSource.getBalance();
+			if (balance.getAmount().intValue() < openOrder.getAmount()) {
+				remote.cancelOrderSync(openOrder.getId());
+				externalOrderCallbacks.onOrderFailed(ErrorUtil.getBlockchainException(new InsufficientKinException()), openOrder);
+				return;
+			}
 
 			runOnMainThread(new Runnable() {
 				@Override

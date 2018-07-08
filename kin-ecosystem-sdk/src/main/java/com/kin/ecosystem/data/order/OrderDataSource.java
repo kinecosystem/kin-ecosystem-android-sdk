@@ -58,6 +58,8 @@ public interface OrderDataSource {
 
         void cancelOrder(@NonNull final String orderID, final Callback<Void, ApiException> callback);
 
+        void cancelOrderSync(@NonNull final String orderID);
+
         void getOrder(String orderID, Callback<Order, ApiException> callback);
 
         Order getOrderSync(String orderID);
