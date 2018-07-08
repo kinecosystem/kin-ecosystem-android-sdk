@@ -32,8 +32,6 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 		return new MarketplaceFragment();
 	}
 
-	private static final String TAG = MarketplaceFragment.class.getSimpleName();
-
 	private IMarketplacePresenter marketplacePresenter;
 
 	private TextView spendSubTitle;
@@ -46,7 +44,6 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
 		@Nullable Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.kinecosystem_fragment_marketplce, container, false);
-		Log.d(TAG, "onCreateView -> marketplacePresenter.onAttach ???");
 		initViews(root);
 		marketplacePresenter.onAttach(this);
 		return root;
@@ -55,7 +52,6 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		Log.d(TAG, "onDestroyView -> marketplacePresenter.onDetach");
 		marketplacePresenter.onDetach();
 	}
 

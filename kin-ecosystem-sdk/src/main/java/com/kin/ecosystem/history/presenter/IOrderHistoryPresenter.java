@@ -5,7 +5,5 @@ import com.kin.ecosystem.history.view.IOrderHistoryView;
 
 public interface IOrderHistoryPresenter extends IBasePresenter<IOrderHistoryView> {
 
-    void backButtonPressed();
-
     void onItemCLicked(int position);
 }

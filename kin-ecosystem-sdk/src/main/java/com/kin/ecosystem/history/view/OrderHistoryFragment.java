@@ -84,7 +84,6 @@ public class OrderHistoryFragment extends Fragment implements IOrderHistoryView 
 
 	@Override
 	public void showCouponDialog(@NonNull ICouponDialogPresenter presenter) {
-//		 TODO check the view is visible
 		CouponDialog couponDialog = new CouponDialog(getActivity(), presenter);
 		couponDialog.show();
 	}

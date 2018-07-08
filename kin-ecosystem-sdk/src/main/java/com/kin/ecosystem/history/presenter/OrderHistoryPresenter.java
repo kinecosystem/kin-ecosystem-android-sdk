@@ -154,11 +154,6 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 	}
 
 	@Override
-	public void backButtonPressed() {
-		//TODO add eventlogger back button
-	}
-
-	@Override
 	public void onItemCLicked(int position) {
 		Order order = orderHistoryList.get(position);
 		if (order != null) {

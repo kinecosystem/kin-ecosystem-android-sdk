@@ -14,6 +14,7 @@ import com.kin.ecosystem.bi.events.SpendOrderCreationFailed;
 import com.kin.ecosystem.bi.events.SpendOrderCreationReceived;
 import com.kin.ecosystem.bi.events.SpendOrderCreationRequested;
 import com.kin.ecosystem.bi.events.SpendThankyouPageViewed;
+import com.kin.ecosystem.data.KinCallbackAdapter;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.order.OrderDataSource;
 import com.kin.ecosystem.exception.KinEcosystemException;
@@ -27,8 +28,6 @@ import java.math.BigDecimal;
 
 
 public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements ISpendDialogPresenter {
-
-	private static final String TAG = SpendDialogPresenter.class.getSimpleName();
 
 	private final OrderDataSource orderRepository;
 	private final BlockchainSource blockchainSource;
@@ -134,7 +133,7 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
 	@Override
 	public void dialogDismissed() {
 		if (isUserConfirmedPurchase) {
-			orderRepository.isFirstSpendOrder(new KinCallback<Boolean>() {
+			orderRepository.isFirstSpendOrder(new KinCallbackAdapter<Boolean>() {
 				@Override
 				public void onResponse(Boolean response) {
 					if (response) {
@@ -142,11 +141,6 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
 						orderRepository.setIsFirstSpendOrder(false);
 					}
 					onDetach();
-				}
-
-				@Override
-				public void onFailure(KinEcosystemException exception) {
-
 				}
 			});
 		} else {
@@ -180,18 +174,7 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
 
 	private void submitOrder(String offerID, String orderID) {
 		eventLogger.send(SpendOrderCompletionSubmitted.create(offerID, orderID, false));
-		orderRepository.submitOrder(offerID, null, orderID, new KinCallback<Order>() {
-			@Override
-			public void onResponse(Order response) {
-				Log.i(TAG, "onResponse: " + response);
-			}
-
-			@Override
-			public void onFailure(KinEcosystemException exception) {
-				//TODO handle failure
-				Log.i(TAG, "onFailure: " + exception.getMessage());
-			}
-		});
+		orderRepository.submitOrder(offerID, null, orderID, null);
 	}
 
 	private void showToast(String msg) {

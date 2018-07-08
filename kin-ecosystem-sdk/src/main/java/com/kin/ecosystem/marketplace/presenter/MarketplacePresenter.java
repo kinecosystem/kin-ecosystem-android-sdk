@@ -15,6 +15,7 @@ import com.kin.ecosystem.bi.events.EarnOfferTapped;
 import com.kin.ecosystem.bi.events.MarketplacePageViewed;
 import com.kin.ecosystem.bi.events.NotEnoughKinPageViewed;
 import com.kin.ecosystem.bi.events.SpendOfferTapped;
+import com.kin.ecosystem.data.KinCallbackAdapter;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.offer.OfferDataSource;
 import com.kin.ecosystem.data.order.OrderDataSource;
@@ -34,8 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implements IMarketplacePresenter {
-
-	private static final String TAG = MarketplacePresenter.class.getSimpleName();
 
 	private static final int NOT_FOUND = -1;
 
@@ -75,7 +74,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	@Override
 	public void onAttach(IMarketplaceView view) {
 		super.onAttach(view);
-		Log.d(TAG, "onAttach");
 		getCachedOffers();
 		getOffers();
 		listenToCompletedOrders();
@@ -93,11 +91,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			public void onChanged(Order order) {
 				switch (order.getStatus()) {
 					case PENDING:
-						Log.d(TAG, "orderObserver -> pending -> removeOfferFromList");
 						removeOfferFromList(order.getOfferId(), order.getOfferType());
 						break;
 					case COMPLETED:
-						Log.d(TAG, "orderObserver -> completed -> getOffers");
 						getOffers();
 						break;
 				}
@@ -180,7 +176,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		Log.d(TAG, "onDetach");
 		release();
 	}
 
@@ -190,16 +185,10 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	@Override
 	public void getOffers() {
-		Log.d(TAG, "getOffers");
-		this.offerRepository.getOffers(new KinCallback<OfferList>() {
+		this.offerRepository.getOffers(new KinCallbackAdapter<OfferList>() {
 			@Override
 			public void onResponse(OfferList offerList) {
 				syncOffers(offerList);
-			}
-
-			@Override
-			public void onFailure(KinEcosystemException exception) {
-				//TODO show error msg
 			}
 		});
 	}
