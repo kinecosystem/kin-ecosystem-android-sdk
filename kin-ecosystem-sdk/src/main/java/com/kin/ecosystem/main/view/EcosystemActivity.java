@@ -36,7 +36,6 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	private IBalancePresenter balancePresenter;
 	private IEcosystemPresenter ecosystemPresenter;
 	private IMarketplacePresenter marketplacePresenter;
-	private IOrderHistoryPresenter orderHistoryPresenter;
 
 	@Override
 	protected int getLayoutRes() {
@@ -135,13 +134,11 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 			.replace(R.id.fragment_frame, orderHistoryFragment, ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG)
 			.addToBackStack(null).commit();
 
-		orderHistoryPresenter = new OrderHistoryPresenter(orderHistoryFragment,
+		new OrderHistoryPresenter(orderHistoryFragment,
 			OrderRepository.getInstance(),
 			this,
 			EventLoggerImpl.getInstance(),
 			isFirstSpendOrder);
-
-
 
 		setVisibleScreen(ORDER_HISTORY);
 	}
@@ -171,7 +168,6 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 			marketplacePresenter.backButtonPressed();
 		} else {
 			getSupportFragmentManager().popBackStackImmediate();
-			orderHistoryPresenter.backButtonPressed();
 			setVisibleScreen(MARKETPLACE);
 		}
 	}
