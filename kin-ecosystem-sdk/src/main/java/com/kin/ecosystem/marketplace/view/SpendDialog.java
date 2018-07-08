@@ -39,11 +39,6 @@ public class SpendDialog extends BottomDialog<ISpendDialogPresenter> implements 
     @Override
     public void navigateToOrderHistory() {
         navigator.navigateToOrderHistory(true);
-//        Activity owner = getOwnerActivity();
-//        if (owner != null) {
-//            owner.startActivity(OrderHistoryActivity.createIntent(getContext(), true));
-//            owner.overridePendingTransition(R.anim.kinecosystem_slide_in_right, R.anim.kinecosystem_slide_out_left);
-//        }
     }
 
     @Override
