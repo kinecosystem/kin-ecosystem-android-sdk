@@ -2,14 +2,6 @@ package com.kin.ecosystem;
 
 public class Environment implements KinEnvironment {
 
-	private static final Environment OLD_PRODUCTION = new Environment(
-		"https://horizon-kik.kininfrastructure.com/",
-		"private testnet",
-		"GBQ3DQOA7NF52FVV7ES3CR3ZMHUEY4LTHDAQKDTO6S546JCLFPEQGCPK",
-		"http://ec2-34-203-202-205.compute-1.amazonaws.com/v1",
-		"http://htmlpoll.kinecosystem.com.s3-website-us-east-1.amazonaws.com/",
-		"https://kin-bi.appspot.com");
-
 	private static final Environment PRODUCTION = new Environment(
 		"https://horizon-kin-ecosystem.kininfrastructure.com/",
 		"Public Global Kin Ecosystem Network ; June 2018",
@@ -74,7 +66,7 @@ public class Environment implements KinEnvironment {
 	}
 
 	public static KinEnvironment getProduction() {
-		return OLD_PRODUCTION;
+		return PRODUCTION;
 	}
 
 	public static KinEnvironment getPlayground() {

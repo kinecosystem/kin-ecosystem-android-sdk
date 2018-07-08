@@ -13,6 +13,7 @@
         android:layout_marginBottom="@dimen/kinecosystem_tiny_margin"
         android:layout_marginLeft="@dimen/kinecosystem_main_margin"
         android:text="@string/kinecosystem_kin_balance"
+        tools:text="@string/kinecosystem_kin_balance"
         app:layout_constraintStart_toStartOf="parent"/>
 
     <TextSwitcher

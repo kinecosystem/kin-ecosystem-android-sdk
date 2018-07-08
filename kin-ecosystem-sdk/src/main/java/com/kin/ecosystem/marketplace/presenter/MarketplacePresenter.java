@@ -3,6 +3,7 @@ package com.kin.ecosystem.marketplace.presenter;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.kin.ecosystem.KinCallback;
@@ -34,6 +35,8 @@ import java.util.List;
 
 public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implements IMarketplacePresenter {
 
+	private static final String TAG = MarketplacePresenter.class.getSimpleName();
+
 	private static final int NOT_FOUND = -1;
 
 	private final OfferDataSource offerRepository;
@@ -45,8 +48,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private List<Offer> spendList = new ArrayList<>();
 	private List<Offer> earnList = new ArrayList<>();
 
-	private Observer<Offer> pendingOfferObserver;
-	private Observer<Order> completedOrderObserver;
+	private Observer<Order> orderObserver;
 
 	private boolean isEarnListEmpty;
 	private boolean isSpendListEmpty;
@@ -73,9 +75,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	@Override
 	public void onAttach(IMarketplaceView view) {
 		super.onAttach(view);
+		Log.d(TAG, "onAttach");
 		getCachedOffers();
 		getOffers();
-		listenToPendingOffers();
 		listenToCompletedOrders();
 		eventLogger.send(MarketplacePageViewed.create());
 	}
@@ -86,43 +88,45 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void listenToCompletedOrders() {
-		completedOrderObserver = new Observer<Order>() {
+		orderObserver = new Observer<Order>() {
 			@Override
 			public void onChanged(Order order) {
-				getOffers();
+				switch (order.getStatus()) {
+					case PENDING:
+						Log.d(TAG, "orderObserver -> pending -> removeOfferFromList");
+						removeOfferFromList(order.getOfferId(), order.getOfferType());
+						break;
+					case COMPLETED:
+						Log.d(TAG, "orderObserver -> completed -> getOffers");
+						getOffers();
+						break;
+				}
+
 			}
 		};
-		orderRepository.addCompletedOrderObserver(completedOrderObserver);
+		orderRepository.addOrderObserver(orderObserver);
 	}
 
-	private void listenToPendingOffers() {
-		pendingOfferObserver = new Observer<Offer>() {
-			@Override
-			public void onChanged(Offer offer) {
-				if (offer != null) {
-					removeOfferFromList(offer);
+	private void removeOfferFromList(String offerId, OfferType offerType) {
+		if (offerType == OfferType.EARN) {
+			for (int i = 0; i < earnList.size(); i++) {
+				Offer offer = earnList.get(i);
+				if (offer.getId().equals(offerId)) {
+					earnList.remove(i);
+					notifyEarnItemRemoved(i);
+					setEarnEmptyViewState();
+					return;
 				}
 			}
-		};
-		offerRepository.getPendingOffer().addObserver(pendingOfferObserver);
-	}
-
-	private void removeOfferFromList(Offer offer) {
-		int index;
-		if (offer.getOfferType() == OfferType.EARN) {
-			index = earnList.indexOf(offer);
-			if (index != NOT_FOUND) {
-				earnList.remove(index);
-				notifyEarnItemRemoved(index);
-				setEarnEmptyViewState();
-			}
-
 		} else {
-			index = spendList.indexOf(offer);
-			if (index != NOT_FOUND) {
-				spendList.remove(index);
-				notifySpendItemRemoved(index);
-				setSpendEmptyViewState();
+			for (int i = 0; i < spendList.size(); i++) {
+				Offer offer = spendList.get(i);
+				if (offer.getId().equals(offerId)) {
+					spendList.remove(i);
+					notifyEarnItemRemoved(i);
+					setEarnEmptyViewState();
+					return;
+				}
 			}
 		}
 	}
@@ -176,16 +180,17 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	@Override
 	public void onDetach() {
 		super.onDetach();
+		Log.d(TAG, "onDetach");
 		release();
 	}
 
 	private void release() {
-		offerRepository.getPendingOffer().removeObserver(pendingOfferObserver);
-		orderRepository.removeCompletedOrderObserver(completedOrderObserver);
+		orderRepository.removeOrderObserver(orderObserver);
 	}
 
 	@Override
 	public void getOffers() {
+		Log.d(TAG, "getOffers");
 		this.offerRepository.getOffers(new KinCallback<OfferList>() {
 			@Override
 			public void onResponse(OfferList offerList) {

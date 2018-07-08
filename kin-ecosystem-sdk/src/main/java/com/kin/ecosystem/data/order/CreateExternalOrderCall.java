@@ -188,10 +188,6 @@ class CreateExternalOrderCall extends Thread {
 		mainThreadExecutor.execute(runnable);
 	}
 
-	private boolean hasMessage(Throwable t) {
-		return t != null && t.getMessage() != null && !t.getMessage().isEmpty();
-	}
-
 	interface ExternalOrderCallbacks {
 
 		void onOrderCreated(OpenOrder openOrder);

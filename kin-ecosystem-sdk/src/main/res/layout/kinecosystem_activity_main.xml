@@ -13,8 +13,7 @@
         android:id="@+id/balance_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:subTitle="@string/kinecosystem_welcome_to_kin_marketplace"
-        app:showArrow="true"/>
+        app:subTitle="@string/kinecosystem_welcome_to_kin_marketplace"/>
 
     <FrameLayout
         android:id="@+id/fragment_frame"

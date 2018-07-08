@@ -31,9 +31,9 @@ public interface OrderDataSource {
 
     void requestPayment(String offerJwt, KinCallback<OrderConfirmation> callback);
 
-    void addCompletedOrderObserver(@NonNull final Observer<Order> observer);
+    void addOrderObserver(@NonNull final Observer<Order> observer);
 
-    void removeCompletedOrderObserver(@NonNull final Observer<Order> observer);
+    void removeOrderObserver(@NonNull final Observer<Order> observer);
 
     void isFirstSpendOrder(@NonNull final KinCallback<Boolean> callback);
 

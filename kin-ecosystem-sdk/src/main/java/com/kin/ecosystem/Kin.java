@@ -109,8 +109,8 @@ public class Kin {
 		registerAccount(appContext, signInData);
 		initEventCommonData(appContext);
 		instance.eventLogger.send(KinSdkInitiated.create());
-		initOfferRepository();
 		initOrderRepository(appContext);
+		initOfferRepository();
 		setAppID();
 	}
 
@@ -158,13 +158,12 @@ public class Kin {
 	}
 
 	private static void initOfferRepository() {
-		OfferRepository.init(OfferRemoteData.getInstance(instance.executorsUtil));
+		OfferRepository.init(OfferRemoteData.getInstance(instance.executorsUtil), OrderRepository.getInstance());
 		OfferRepository.getInstance().getOffers(null);
 	}
 
 	private static void initOrderRepository(@NonNull final Context context) {
 		OrderRepository.init(BlockchainSourceImpl.getInstance(),
-			OfferRepository.getInstance(),
 			instance.eventLogger,
 			OrderRemoteData.getInstance(instance.executorsUtil),
 			OrderLocalData.getInstance(context, instance.executorsUtil));

@@ -1,12 +1,13 @@
 package com.kin.ecosystem.main.presenter;
 
-import static com.kin.ecosystem.main.view.EcosystemActivity.MARKETPLACE;
-import static com.kin.ecosystem.main.view.EcosystemActivity.ORDER_HISTORY;
+
+import static com.kin.ecosystem.main.ScreenId.MARKETPLACE;
+import static com.kin.ecosystem.main.ScreenId.ORDER_HISTORY;
 
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.main.INavigator;
-import com.kin.ecosystem.main.view.EcosystemActivity.ScreenId;
+import com.kin.ecosystem.main.ScreenId;
 import com.kin.ecosystem.main.view.IEcosystemView;
 
 public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements IEcosystemPresenter {
@@ -14,7 +15,8 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 	private static final String KIN_MARKETPLACE_BETA_TITLE = "Kin Marketplace (Beta)";
 	private static final String ORDER_HISTORY_TITLE = "Transaction History";
 
-	private @ScreenId int visibleScreen;
+	private @ScreenId
+	int visibleScreen;
 	private final INavigator navigator;
 
 	public EcosystemPresenter(@NonNull IEcosystemView view, @NonNull INavigator navigator) {

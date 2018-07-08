@@ -14,4 +14,6 @@ public interface IBalanceView extends IBaseView<IBalancePresenter> {
 	void updateSubTitle(final int amount, @OrderStatus final int status, @OrderType final int orderType);
 
 	void clearSubTitle();
+
+	void animateArrow(boolean showArrow);
 }

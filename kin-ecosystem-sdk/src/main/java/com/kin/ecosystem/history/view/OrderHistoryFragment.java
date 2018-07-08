@@ -42,6 +42,12 @@ public class OrderHistoryFragment extends Fragment implements IOrderHistoryView 
 		orderHistoryPresenter.onAttach(this);
 	}
 
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		orderHistoryPresenter.onDetach();
+	}
+
 	protected void initViews(View root) {
 		RecyclerView orderRecyclerView = root.findViewById(R.id.order_history_recycler);
 		orderRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
@@ -78,6 +84,7 @@ public class OrderHistoryFragment extends Fragment implements IOrderHistoryView 
 
 	@Override
 	public void showCouponDialog(@NonNull ICouponDialogPresenter presenter) {
+//		 TODO check the view is visible
 		CouponDialog couponDialog = new CouponDialog(getActivity(), presenter);
 		couponDialog.show();
 	}

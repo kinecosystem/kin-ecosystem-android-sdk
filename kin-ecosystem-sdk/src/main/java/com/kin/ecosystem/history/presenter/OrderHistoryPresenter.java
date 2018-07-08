@@ -127,7 +127,7 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 				}
 			}
 		};
-		orderRepository.addCompletedOrderObserver(completedOrderObserver);
+		orderRepository.addOrderObserver(completedOrderObserver);
 	}
 
 	private void addOrderOrUpdate(Order order) {
@@ -200,6 +200,6 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 	}
 
 	private void release() {
-		orderRepository.removeCompletedOrderObserver(completedOrderObserver);
+		orderRepository.removeOrderObserver(completedOrderObserver);
 	}
 }

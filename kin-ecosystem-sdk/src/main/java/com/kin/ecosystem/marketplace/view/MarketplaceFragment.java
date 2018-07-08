@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,8 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 		return new MarketplaceFragment();
 	}
 
+	private static final String TAG = MarketplaceFragment.class.getSimpleName();
+
 	private IMarketplacePresenter marketplacePresenter;
 
 	private TextView spendSubTitle;
@@ -43,21 +46,17 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
 		@Nullable Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.kinecosystem_fragment_marketplce, container, false);
+		Log.d(TAG, "onCreateView -> marketplacePresenter.onAttach ???");
 		initViews(root);
+		marketplacePresenter.onAttach(this);
 		return root;
 	}
 
 	@Override
-	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-		marketplacePresenter.onAttach(this);
-	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
-		marketplacePresenter.getOffers();
-
+	public void onDestroyView() {
+		super.onDestroyView();
+		Log.d(TAG, "onDestroyView -> marketplacePresenter.onDetach");
+		marketplacePresenter.onDetach();
 	}
 
 	@Override

@@ -1,7 +1,9 @@
 package com.kin.ecosystem.main.view;
 
+import static com.kin.ecosystem.main.ScreenId.MARKETPLACE;
+import static com.kin.ecosystem.main.ScreenId.ORDER_HISTORY;
+
 import android.os.Bundle;
-import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.view.View;
 import com.kin.ecosystem.R;
@@ -18,25 +20,15 @@ import com.kin.ecosystem.history.presenter.IOrderHistoryPresenter;
 import com.kin.ecosystem.history.presenter.OrderHistoryPresenter;
 import com.kin.ecosystem.history.view.OrderHistoryFragment;
 import com.kin.ecosystem.main.INavigator;
+import com.kin.ecosystem.main.ScreenId;
 import com.kin.ecosystem.main.presenter.EcosystemPresenter;
 import com.kin.ecosystem.main.presenter.IEcosystemPresenter;
 import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter;
 import com.kin.ecosystem.marketplace.presenter.MarketplacePresenter;
 import com.kin.ecosystem.marketplace.view.MarketplaceFragment;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 
 public class EcosystemActivity extends BaseToolbarActivity implements IEcosystemView, INavigator {
-
-	public static final int MARKETPLACE = 0x00000001;
-	public static final int ORDER_HISTORY = 0x00000002;
-
-	@IntDef({MARKETPLACE, ORDER_HISTORY})
-	@Retention(RetentionPolicy.SOURCE)
-	public @interface ScreenId {
-
-	}
 
 	public static final String ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG = "ecosystem_marketplace_fragment_tag";
 	public static final String ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG = "ecosystem_order_history_fragment_tag";
@@ -75,9 +67,8 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		IBalanceView balanceView = findViewById(R.id.balance_view);
-		balancePresenter = new BalancePresenter(balanceView, BlockchainSourceImpl.getInstance(),
-			OfferRepository.getInstance(), OrderRepository.getInstance());
-		balancePresenter.onAttach(balanceView);
+		balancePresenter = new BalancePresenter(balanceView, EventLoggerImpl.getInstance(),
+			BlockchainSourceImpl.getInstance(), OrderRepository.getInstance());
 		balancePresenter.setClickListener(new BalanceClickListener() {
 			@Override
 			public void onClick() {
@@ -99,18 +90,26 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 		if (marketplaceFragment == null) {
 			marketplaceFragment = MarketplaceFragment.newInstance();
 		}
-
-		marketplacePresenter = new MarketplacePresenter(marketplaceFragment, OfferRepository.getInstance(),
-			OrderRepository.getInstance(),
-			BlockchainSourceImpl.getInstance(),
-			this,
-			EventLoggerImpl.getInstance());
-
 		getSupportFragmentManager().beginTransaction()
 			.replace(R.id.fragment_frame, marketplaceFragment, ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG)
 			.commit();
 
+		marketplacePresenter = getMarketplacePresenter(marketplaceFragment);
+
 		setVisibleScreen(MARKETPLACE);
+
+	}
+
+	private IMarketplacePresenter getMarketplacePresenter(MarketplaceFragment marketplaceFragment) {
+		if (marketplacePresenter == null) {
+			marketplacePresenter = new MarketplacePresenter(marketplaceFragment, OfferRepository.getInstance(),
+				OrderRepository.getInstance(),
+				BlockchainSourceImpl.getInstance(),
+				this,
+				EventLoggerImpl.getInstance());
+		}
+
+		return marketplacePresenter;
 	}
 
 	private void setVisibleScreen(@ScreenId final int id) {
@@ -127,12 +126,6 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 			orderHistoryFragment = OrderHistoryFragment.newInstance();
 		}
 
-		orderHistoryPresenter = new OrderHistoryPresenter(orderHistoryFragment,
-			OrderRepository.getInstance(),
-			this,
-			EventLoggerImpl.getInstance(),
-			isFirstSpendOrder);
-
 		getSupportFragmentManager().beginTransaction()
 			.setCustomAnimations(
 				R.anim.kinecosystem_slide_in_right,
@@ -141,6 +134,14 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 				R.anim.kinecosystem_slide_out_right)
 			.replace(R.id.fragment_frame, orderHistoryFragment, ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG)
 			.addToBackStack(null).commit();
+
+		orderHistoryPresenter = new OrderHistoryPresenter(orderHistoryFragment,
+			OrderRepository.getInstance(),
+			this,
+			EventLoggerImpl.getInstance(),
+			isFirstSpendOrder);
+
+
 
 		setVisibleScreen(ORDER_HISTORY);
 	}
@@ -153,12 +154,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 
 	@Override
 	protected void initViews() {
-		findViewById(R.id.balance_view).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				ecosystemPresenter.balanceItemClicked();
-			}
-		});
+
 	}
 
 	@Override
@@ -186,12 +182,6 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 		ecosystemPresenter.onDetach();
 		if (balancePresenter != null) {
 			balancePresenter.onDetach();
-		}
-		if (marketplacePresenter != null) {
-			marketplacePresenter.onDetach();
-		}
-		if (orderHistoryPresenter != null) {
-			orderHistoryPresenter.onDetach();
 		}
 	}
 }
