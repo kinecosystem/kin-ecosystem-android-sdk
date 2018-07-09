@@ -114,14 +114,14 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 				if (order.getOrigin() == Origin.MARKETPLACE) {
 					switch (order.getStatus()) {
 						case PENDING:
-							pendingOrderCount++;
+							incrementPendingCount();
 							currentPendingOrder = order;
 							status = getStatus(order);
 							updateSubTitle(order.getAmount(), status, getType(order.getOfferType()));
 							break;
 						case COMPLETED:
 						case FAILED:
-							pendingOrderCount--;
+							decrementPendingCount();
 						case DELAYED:
 							if (isCurrentOrder(order)) {
 								status = getStatus(order);
@@ -135,11 +135,21 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 		};
 	}
 
+	private void incrementPendingCount() {
+		pendingOrderCount++;
+	}
+
+	private void decrementPendingCount() {
+		if(pendingOrderCount > 0) {
+			pendingOrderCount--;
+		}
+	}
+
 	private boolean isCurrentOrder(Order order) {
 		return order != null && currentPendingOrder != null && currentPendingOrder.equals(order);
 	}
 
-	private int getStatus(Order order) {
+	private @OrderStatus int getStatus(Order order) {
 		switch (order.getStatus()) {
 			case COMPLETED:
 				return COMPLETED;

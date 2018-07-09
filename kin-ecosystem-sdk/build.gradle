@@ -25,7 +25,6 @@ dependencies {
     implementation devDependencies.recyclerView_v7
     implementation devDependencies.constraintLayout
     implementation devDependencies.picasso
-    implementation devDependencies.baseRecyclerAdapter
 
     testImplementation testingDependencies.junit
     testImplementation testingDependencies.mockito

@@ -6,15 +6,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.chad.library.adapter.base.BaseRecyclerAdapter;
-import com.chad.library.adapter.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.R;
+import com.kin.ecosystem.base.BaseRecyclerAdapter;
+import com.kin.ecosystem.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.exception.ClientException;
 import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter;
 import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
@@ -73,7 +72,7 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 		RecyclerView spendRecycler = root.findViewById(R.id.spend_recycler);
 		spendRecycler.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
 		spendRecycler.addItemDecoration(itemDecoration);
-		spendRecyclerAdapter = new SpendRecyclerAdapter(getContext());
+		spendRecyclerAdapter = new SpendRecyclerAdapter();
 		spendRecyclerAdapter.bindToRecyclerView(spendRecycler);
 		spendRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -87,7 +86,7 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 		RecyclerView earnRecycler = root.findViewById(R.id.earn_recycler);
 		earnRecycler.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
 		earnRecycler.addItemDecoration(itemDecoration);
-		earnRecyclerAdapter = new EarnRecyclerAdapter(getContext());
+		earnRecyclerAdapter = new EarnRecyclerAdapter();
 		earnRecyclerAdapter.bindToRecyclerView(earnRecycler);
 		earnRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -120,6 +119,7 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 		} catch (ClientException e) {
 			marketplacePresenter.showOfferActivityFailed();
 		}
+
 	}
 
 	@Override
@@ -136,22 +136,22 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 
 	@Override
 	public void notifyEarnItemRemoved(int index) {
-		earnRecyclerAdapter.notifyItemRemoved(index);
+		earnRecyclerAdapter.itemRemoved(index);
 	}
 
 	@Override
 	public void notifyEarnItemInserted(int index) {
-		earnRecyclerAdapter.notifyItemInserted(index);
+		earnRecyclerAdapter.itemInserted(index);
 	}
 
 	@Override
 	public void notifySpendItemRemoved(int index) {
-		spendRecyclerAdapter.notifyItemRemoved(index);
+		spendRecyclerAdapter.itemRemoved(index);
 	}
 
 	@Override
 	public void notifySpendItemInserted(int index) {
-		spendRecyclerAdapter.notifyItemInserted(index);
+		spendRecyclerAdapter.itemInserted(index);
 	}
 
 	@Override

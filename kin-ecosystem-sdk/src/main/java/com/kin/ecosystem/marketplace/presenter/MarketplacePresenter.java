@@ -44,13 +44,10 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private final INavigator navigator;
 	private final EventLogger eventLogger;
 
-	private List<Offer> spendList = new ArrayList<>();
-	private List<Offer> earnList = new ArrayList<>();
+	private List<Offer> spendList;
+	private List<Offer> earnList;
 
 	private Observer<Order> orderObserver;
-
-	private boolean isEarnListEmpty;
-	private boolean isSpendListEmpty;
 
 
 	private final Gson gson;
@@ -59,8 +56,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		@NonNull final OrderDataSource orderRepository, @Nullable final BlockchainSource blockchainSource,
 		@NonNull INavigator navigator, @NonNull EventLogger eventLogger) {
 		this.view = view;
-		this.spendList = new ArrayList<>();
-		this.earnList = new ArrayList<>();
 		this.offerRepository = offerRepository;
 		this.orderRepository = orderRepository;
 		this.blockchainSource = blockchainSource;
@@ -81,8 +76,25 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void getCachedOffers() {
-		OfferList cachedOfferList = offerRepository.getCachedOfferList();
-		setOfferList(cachedOfferList);
+		if(earnList == null && spendList == null) {
+			earnList = new ArrayList<>();
+			spendList = new ArrayList<>();
+			OfferList cachedOfferList = offerRepository.getCachedOfferList();
+			if (cachedOfferList != null && cachedOfferList.getOffers() != null) {
+				splitOffersByType(cachedOfferList.getOffers(), this.earnList, this.spendList);
+			}
+		}
+		setOfferLists();
+	}
+
+	private void setOfferLists() {
+		if (this.view != null) {
+			this.view.setEarnList(earnList);
+			this.view.setSpendList(spendList);
+
+			setEarnEmptyViewState();
+			setSpendEmptyViewState();
+		}
 	}
 
 	private void listenToCompletedOrders() {
@@ -119,8 +131,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 				Offer offer = spendList.get(i);
 				if (offer.getId().equals(offerId)) {
 					spendList.remove(i);
-					notifyEarnItemRemoved(i);
-					setEarnEmptyViewState();
+					notifySpendItemRemoved(i);
+					setSpendEmptyViewState();
 					return;
 				}
 			}
@@ -128,14 +140,14 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void setEarnEmptyViewState() {
-		isEarnListEmpty = earnList.isEmpty();
+		boolean isEarnListEmpty = earnList.isEmpty();
 		if (view != null) {
 			view.updateEarnSubtitle(isEarnListEmpty);
 		}
 	}
 
 	private void setSpendEmptyViewState() {
-		isSpendListEmpty = spendList.isEmpty();
+		boolean isSpendListEmpty = spendList.isEmpty();
 		if (view != null) {
 			view.updateSpendSubtitle(isSpendListEmpty);
 		}
@@ -149,7 +161,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private void notifyEarnItemInserted(int index) {
 		if (view != null) {
-			view.notifyEarnItemInserted(getSafeIndexEarnEmptyState(index));
+			view.notifyEarnItemInserted(index);
 		}
 	}
 
@@ -161,16 +173,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private void notifySpendItemInserted(int index) {
 		if (view != null) {
-			view.notifySpendItemInserted(getSafeIndexSpendEmptyState(index));
+			view.notifySpendItemInserted(index);
 		}
-	}
-
-	private int getSafeIndexEarnEmptyState(final int index) {
-		return isEarnListEmpty ? 1 : index;
-	}
-
-	private int getSafeIndexSpendEmptyState(final int index) {
-		return isSpendListEmpty ? 1 : index;
 	}
 
 	@Override
@@ -258,20 +262,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private boolean isSpend(OfferType offerType) {
 		return offerType == OfferType.SPEND;
-	}
-
-	private void setOfferList(OfferList offerList) {
-		if (offerList != null && offerList.getOffers() != null) {
-			splitOffersByType(offerList.getOffers(), this.earnList, this.spendList);
-		}
-
-		if (this.view != null) {
-			this.view.setEarnList(earnList);
-			this.view.setSpendList(spendList);
-
-			setEarnEmptyViewState();
-			setSpendEmptyViewState();
-		}
 	}
 
 	private void splitOffersByType(List<Offer> list, List<Offer> earnList, List<Offer> spendList) {
