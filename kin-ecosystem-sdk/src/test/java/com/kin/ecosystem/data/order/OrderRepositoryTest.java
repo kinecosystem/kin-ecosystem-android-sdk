@@ -230,7 +230,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 	}
 
 	@Test
-	public void submitOrder_Succeed_SpendOrder_StautsCompleted() throws Exception {
+	public void submitOrder_Succeed_SpendOrder_StatusCompleted() throws Exception {
 		KinCallback<Order> orderCallback = mock(KinCallback.class);
 		ArgumentCaptor<Callback<Order, ApiException>> submitOrderCapture = ArgumentCaptor.forClass(Callback.class);
 		ArgumentCaptor<Observer<Payment>> paymentCapture = ArgumentCaptor.forClass(Observer.class);
