@@ -9,9 +9,9 @@ import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.Payment;
-import com.kin.ecosystem.exception.BlockchainException;
 import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.network.model.JWTBodyPaymentConfirmationResult;
+import com.kin.ecosystem.network.model.Offer.OfferType;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.util.ErrorUtil;
@@ -50,11 +50,14 @@ class CreateExternalOrderCall extends Thread {
 			openOrder = remote.createExternalOrderSync(orderJwt);
 			sendOrderCreationReceivedEvent();
 
-			Balance balance = blockchainSource.getBalance();
-			if (balance.getAmount().intValue() < openOrder.getAmount()) {
-				remote.cancelOrderSync(openOrder.getId());
-				externalOrderCallbacks.onOrderFailed(ErrorUtil.getBlockchainException(new InsufficientKinException()), openOrder);
-				return;
+			if (openOrder.getOfferType() == OfferType.SPEND) {
+				Balance balance = blockchainSource.getBalance();
+				if (balance.getAmount().intValue() < openOrder.getAmount()) {
+					remote.cancelOrderSync(openOrder.getId());
+					externalOrderCallbacks
+						.onOrderFailed(ErrorUtil.getBlockchainException(new InsufficientKinException()), openOrder);
+					return;
+				}
 			}
 
 			runOnMainThread(new Runnable() {

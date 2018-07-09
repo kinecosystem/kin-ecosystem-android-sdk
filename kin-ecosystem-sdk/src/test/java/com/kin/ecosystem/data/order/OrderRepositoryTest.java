@@ -525,6 +525,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 		final CountDownLatch countDownLatch = new CountDownLatch(1);
 
 		when(remote.createExternalOrderSync(anyString())).thenReturn(openOrder);
+		when(openOrder.getOfferType()).thenReturn(OfferType.SPEND);
 		when(blockchainSource.getBalance()).thenReturn(new Balance(new BigDecimal(3)));
 
 		orderRepository.purchase("generatedOfferJWT", new KinCallback<OrderConfirmation>() {
