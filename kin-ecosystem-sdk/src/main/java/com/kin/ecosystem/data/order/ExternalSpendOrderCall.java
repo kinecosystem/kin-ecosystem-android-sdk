@@ -5,9 +5,9 @@ import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.order.OrderDataSource.Remote;
 
-public class ExternalSpendOrderCall extends CreateExternalOrderCall {
+class ExternalSpendOrderCall extends CreateExternalOrderCall {
 
-	public ExternalSpendOrderCall(
+	ExternalSpendOrderCall(
 		@NonNull Remote remote,
 		@NonNull BlockchainSource blockchainSource,
 		@NonNull String orderJwt,
