@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="bluePrimary">#047CFC</color>
-    <color name="bluePrimaryDark">#0365ce</color>
+    <color name="kinecosystem_bluePrimary">#047CFC</color>
+    <color name="kinecosystem_bluePrimaryDark">#0365ce</color>
 
-    <color name="title">#5C6786</color>
-    <color name="subtitle">#7884A5</color>
+    <color name="kinecosystem_title">#5C6786</color>
+    <color name="kinecosystem_subtitle">#7884A5</color>
 
-    <color name="white">#fff</color>
+    <color name="kinecosystem_white">#fff</color>
 
-    <color name="black">#000</color>
+    <color name="kinecosystem_black">#000</color>
 
-    <color name="gray_light">#d7dce9</color>
-    <color name="gray_darker">#aaa</color>
+    <color name="kinecosystem_gray_light">#d7dce9</color>
+    <color name="kinecosystem_gray_darker">#aaa</color>
 
-    <color name="transparent">#00000000</color>
+    <color name="kinecosystem_transparent">#00000000</color>
 
-    <color name="orange">#ff862e</color>
-    <color name="red">#ff5e77</color>
+    <color name="kinecosystem_orange">#ff862e</color>
+    <color name="kinecosystem_red">#ff5e77</color>
 
-    <color name="dark_blue">#047efb</color>
-    <color name="light_blue">#07b6f3</color>
+    <color name="kinecosystem_dark_blue">#047efb</color>
+    <color name="kinecosystem_light_blue">#07b6f3</color>
 
-    <color name="cyan">#82ffee</color>
+    <color name="kinecosystem_cyan">#82ffee</color>
 
 </resources>

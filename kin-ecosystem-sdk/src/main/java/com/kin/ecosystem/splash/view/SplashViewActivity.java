@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.kin.ecosystem.R;
+import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
 import com.kin.ecosystem.splash.presenter.ISplashPresenter;
@@ -35,8 +36,8 @@ public class SplashViewActivity extends AppCompatActivity implements ISplashView
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
-        attachPresenter(new SplashPresenter(AuthRepository.getInstance()));
+        setContentView(R.layout.kinecosystem_activity_splash);
+        attachPresenter(new SplashPresenter(AuthRepository.getInstance(), EventLoggerImpl.getInstance()));
         initViews();
         initAnimations();
     }

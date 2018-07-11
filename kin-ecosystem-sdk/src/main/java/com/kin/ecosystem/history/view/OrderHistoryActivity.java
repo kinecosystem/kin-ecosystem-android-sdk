@@ -13,7 +13,9 @@ import com.chad.library.adapter.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseToolbarActivity;
 import com.kin.ecosystem.base.IBottomDialogPresenter;
+import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.data.order.OrderRepository;
+import com.kin.ecosystem.history.presenter.ICouponDialogPresenter;
 import com.kin.ecosystem.history.presenter.IOrderHistoryPresenter;
 import com.kin.ecosystem.history.presenter.OrderHistoryPresenter;
 import com.kin.ecosystem.network.model.Order;
@@ -35,17 +37,17 @@ public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderH
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.activity_order_history;
+        return R.layout.kinecosystem_activity_order_history;
     }
 
     @Override
     protected int getTitleRes() {
-        return R.string.transaction_history;
+        return R.string.kinecosystem_transaction_history;
     }
 
     @Override
     public int getNavigationIcon() {
-        return R.drawable.ic_back;
+        return R.drawable.kinecosystem_ic_back;
     }
 
     @Override
@@ -62,7 +64,7 @@ public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderH
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         boolean isFirstSpendOrder = getIntent().getBooleanExtra(IS_FIRST_SPEND_ORDER, false);
-        attachPresenter(new OrderHistoryPresenter(OrderRepository.getInstance(), isFirstSpendOrder));
+        attachPresenter(new OrderHistoryPresenter(OrderRepository.getInstance(), EventLoggerImpl.getInstance(), isFirstSpendOrder));
     }
 
     @Override
@@ -102,7 +104,7 @@ public class OrderHistoryActivity extends BaseToolbarActivity implements IOrderH
     }
 
     @Override
-    public void showCouponDialog(@NonNull IBottomDialogPresenter<ICouponDialog> presenter) {
+    public void showCouponDialog(@NonNull ICouponDialogPresenter presenter) {
         CouponDialog couponDialog = new CouponDialog(this, presenter);
         couponDialog.show();
     }

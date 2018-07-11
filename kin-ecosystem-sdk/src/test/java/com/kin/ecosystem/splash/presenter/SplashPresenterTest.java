@@ -3,46 +3,57 @@ package com.kin.ecosystem.splash.presenter;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.BaseTestClass;
+import com.kin.ecosystem.Kin;
+import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.bi.Event;
+import com.kin.ecosystem.bi.EventLogger;
+import com.kin.ecosystem.bi.events.BackButtonOnWelcomeScreenPageTapped;
+import com.kin.ecosystem.bi.events.WelcomeScreenButtonTapped;
+import com.kin.ecosystem.bi.events.WelcomeScreenPageViewed;
+import com.kin.ecosystem.data.Callback;
+import com.kin.ecosystem.data.auth.AuthDataSource;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.splash.view.ISplashView;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 
-public class SplashPresenterTest {
+@RunWith(JUnit4.class)
+public class SplashPresenterTest extends BaseTestClass{
 
     @Mock
-    private AuthRepository authRepository;
+    private AuthDataSource authRepository;
+
+    @Mock
+	private EventLogger eventLogger;
 
     @Mock
     private ISplashView splashView;
 
     @Captor
-    private ArgumentCaptor<Callback<Void>> activateCapture;
+    private ArgumentCaptor<KinCallback<Void>> activateCapture;
 
     private SplashPresenter splashPresenter;
 
     @Before
     public void setUp() throws Exception {
+        super.setUp();
         MockitoAnnotations.initMocks(this);
-        splashPresenter = new SplashPresenter(authRepository);
+        splashPresenter = new SplashPresenter(authRepository, eventLogger);
         splashPresenter.onAttach(splashView);
         assertNotNull(splashPresenter.getView());
+        verify(eventLogger).send(any(WelcomeScreenPageViewed.class));
     }
 
     @After
@@ -54,6 +65,7 @@ public class SplashPresenterTest {
     @Test
     public void getStartedClicked_AnimationEndedNavigateMP() throws Exception {
         splashPresenter.getStartedClicked();
+        verify(eventLogger).send(any(WelcomeScreenButtonTapped.class));
         verify(authRepository).activateAccount(activateCapture.capture());
 
         activateCapture.getValue().onResponse(null);
@@ -94,6 +106,7 @@ public class SplashPresenterTest {
     @Test
     public void backButtonPressed_NavigateBack() throws Exception {
         splashPresenter.backButtonPressed();
+        verify(eventLogger).send(any(BackButtonOnWelcomeScreenPageTapped.class));
         verify(splashView, times(1)).navigateBack();
     }
 }

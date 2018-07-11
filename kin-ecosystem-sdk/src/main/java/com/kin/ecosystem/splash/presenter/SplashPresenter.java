@@ -1,24 +1,39 @@
 package com.kin.ecosystem.splash.presenter;
 
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.bi.EventLogger;
+import com.kin.ecosystem.bi.events.BackButtonOnWelcomeScreenPageTapped;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.base.BasePresenter;
+import com.kin.ecosystem.bi.events.WelcomeScreenButtonTapped;
+import com.kin.ecosystem.bi.events.WelcomeScreenPageViewed;
 import com.kin.ecosystem.data.auth.AuthDataSource;
+import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.splash.view.ISplashView;
 
 public class SplashPresenter extends BasePresenter<ISplashView> implements ISplashPresenter {
 
     private final AuthDataSource authRepository;
+    private final EventLogger eventLogger;
 
     private boolean animationEnded = false;
     private boolean confirmedSucceed = false;
 
-    public SplashPresenter(@NonNull final AuthDataSource authRepository) {
+    public SplashPresenter(@NonNull final AuthDataSource authRepository, @NonNull EventLogger eventLogger) {
         this.authRepository = authRepository;
+        this.eventLogger = eventLogger;
     }
 
-    @Override
+	@Override
+	public void onAttach(ISplashView view) {
+		super.onAttach(view);
+		this.eventLogger.send(WelcomeScreenPageViewed.create());
+	}
+
+	@Override
     public void getStartedClicked() {
+    	eventLogger.send(WelcomeScreenButtonTapped.create());
         animateLoading();
         activateAccount();
     }
@@ -30,7 +45,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
     }
 
     private void activateAccount() {
-        authRepository.activateAccount(new Callback<Void>() {
+        authRepository.activateAccount(new KinCallback<Void>() {
             @Override
             public void onResponse(Void response) {
                 confirmedSucceed = true;
@@ -38,7 +53,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(KinEcosystemException exception) {
                 showToast("Oops something went wrong...");
                 stopLoading(true);
             }
@@ -67,6 +82,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 
     @Override
     public void backButtonPressed() {
+        eventLogger.send(BackButtonOnWelcomeScreenPageTapped.create());
         if (view != null) {
             view.navigateBack();
         }

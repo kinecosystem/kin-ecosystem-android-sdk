@@ -4,8 +4,8 @@ package com.kin.ecosystem.data.order;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.Callback;
-import com.kin.ecosystem.util.ExecutorsUtil;
+import com.kin.ecosystem.data.Callback;
+import kin.ecosystem.core.util.ExecutorsUtil;
 
 public class OrderLocalData implements OrderDataSource.Local {
 
@@ -35,7 +35,7 @@ public class OrderLocalData implements OrderDataSource.Local {
     }
 
     @Override
-    public void isFirstSpendOrder(@NonNull final Callback<Boolean> callback) {
+    public void isFirstSpendOrder(@NonNull final Callback<Boolean, Void> callback) {
         Runnable command = new Runnable() {
             @Override
             public void run() {

@@ -6,15 +6,17 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.chad.library.adapter.base.BaseRecyclerAdapter;
 import com.chad.library.adapter.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseToolbarActivity;
-import com.kin.ecosystem.data.blockchain.BlockchainSource;
+import com.kin.ecosystem.bi.EventLoggerImpl;
+import com.kin.ecosystem.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderRepository;
-import com.kin.ecosystem.exception.TaskFailedException;
+import com.kin.ecosystem.exception.ClientException;
 import com.kin.ecosystem.history.view.OrderHistoryActivity;
 import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter;
 import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
@@ -28,25 +30,26 @@ import java.util.List;
 
 public class MarketplaceActivity extends BaseToolbarActivity implements IMarketplaceView {
 
-    private IMarketplacePresenter marketplacePresenter;
+	private IMarketplacePresenter marketplacePresenter;
 
+    private TextView spendSubTitle;
+    private TextView earnSubTitle;
     private SpendRecyclerAdapter spendRecyclerAdapter;
     private EarnRecyclerAdapter earnRecyclerAdapter;
-    private OffersEmptyView offersEmptyView;
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.activity_marketplace;
+        return R.layout.kinecosystem_activity_marketplace;
     }
 
     @Override
     protected int getTitleRes() {
-        return R.string.kin_marketplace;
+        return R.string.kinecosystem_kin_marketplace;
     }
 
     @Override
     protected int getNavigationIcon() {
-        return R.drawable.ic_back;
+        return R.drawable.kinecosystem_ic_back;
     }
 
     @Override
@@ -63,13 +66,7 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         attachPresenter(new MarketplacePresenter(OfferRepository.getInstance(), OrderRepository.getInstance(),
-            BlockchainSource.getInstance()));
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        marketplacePresenter.getOffers();
+            BlockchainSourceImpl.getInstance(), EventLoggerImpl.getInstance()));
     }
 
     @Override
@@ -80,36 +77,41 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
 
     @Override
     protected void initViews() {
+        spendSubTitle = findViewById(R.id.spend_subtitle);
+        earnSubTitle = findViewById(R.id.earn_subtitle);
+
         //Space item decoration for both of the recyclers
-        int margin = getResources().getDimensionPixelOffset(R.dimen.main_margin);
-        int space = getResources().getDimensionPixelOffset(R.dimen.offer_item_list_space);
+        int margin = getResources().getDimensionPixelOffset(R.dimen.kinecosystem_main_margin);
+        int space = getResources().getDimensionPixelOffset(R.dimen.kinecosystem_offer_item_list_space);
         SpaceItemDecoration itemDecoration = new SpaceItemDecoration(margin, space);
 
-        //Spend Recycler
-        RecyclerView spendRecycler = findViewById(R.id.spend_recycler);
-        spendRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        spendRecycler.addItemDecoration(itemDecoration);
-        spendRecyclerAdapter = new SpendRecyclerAdapter(this);
-        spendRecyclerAdapter.bindToRecyclerView(spendRecycler);
-        spendRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
-                marketplacePresenter.onItemClicked(position, OfferType.SPEND);
-            }
-        });
+		//Spend Recycler
+		RecyclerView spendRecycler = findViewById(R.id.spend_recycler);
+		spendRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+		spendRecycler.addItemDecoration(itemDecoration);
+		spendRecyclerAdapter = new SpendRecyclerAdapter(this);
+		spendRecyclerAdapter.bindToRecyclerView(spendRecycler);
+		spendRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
+				marketplacePresenter.onItemClicked(position, OfferType.SPEND);
+			}
+		});
+		spendRecyclerAdapter.setEmptyView(new OffersEmptyView(this));
 
-        //Earn Recycler
-        RecyclerView earnRecycler = findViewById(R.id.earn_recycler);
-        earnRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        earnRecycler.addItemDecoration(itemDecoration);
-        earnRecyclerAdapter = new EarnRecyclerAdapter(this);
-        earnRecyclerAdapter.bindToRecyclerView(earnRecycler);
-        earnRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
-                marketplacePresenter.onItemClicked(position, OfferType.EARN);
-            }
-        });
+		//Earn Recycler
+		RecyclerView earnRecycler = findViewById(R.id.earn_recycler);
+		earnRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+		earnRecycler.addItemDecoration(itemDecoration);
+		earnRecyclerAdapter = new EarnRecyclerAdapter(this);
+		earnRecyclerAdapter.bindToRecyclerView(earnRecycler);
+		earnRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
+				marketplacePresenter.onItemClicked(position, OfferType.EARN);
+			}
+		});
+		earnRecyclerAdapter.setEmptyView(new OffersEmptyView(this));
 
         findViewById(R.id.balance_view).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,8 +123,13 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
 
     @Override
     public void onBackPressed() {
+        marketplacePresenter.backButtonPressed();
+    }
+
+    @Override
+    public void navigateBack() {
         super.onBackPressed();
-        overridePendingTransition(0, R.anim.slide_out_right);
+        overridePendingTransition(0, R.anim.kinecosystem_slide_out_right);
     }
 
     @Override
@@ -145,7 +152,7 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
     public void showOfferActivity(PollBundle pollBundle) {
         try {
             navigateToActivity(PollWebViewActivity.createIntent(this, pollBundle));
-        } catch (TaskFailedException e) {
+        } catch (ClientException e) {
             marketplacePresenter.showOfferActivityFailed();
         }
     }
@@ -183,25 +190,26 @@ public class MarketplaceActivity extends BaseToolbarActivity implements IMarketp
 
     @Override
     public void showSomethingWentWrong() {
-        showToast(getString(R.string.something_went_wrong));
+        showToast(getString(R.string.kinecosystem_something_went_wrong));
     }
 
-    @Override
-    public void setEarnEmptyView() {
-        earnRecyclerAdapter.setEmptyView(getOffersEmptyView());
-    }
+	@Override
+	public void updateEarnSubtitle(boolean isEmpty) {
+		earnSubTitle.setText(isEmpty ? R.string.kinecosystem_empty_tomorrow_more_opportunities
+			: R.string.kinecosystem_complete_tasks_and_earn_kin);
+	}
 
+	@Override
+	public void updateSpendSubtitle(boolean isEmpty) {
+		spendSubTitle.setText(isEmpty ? R.string.kinecosystem_empty_tomorrow_more_opportunities
+			: R.string.kinecosystem_use_your_kin_to_enjoy_stuff_you_like);
+	}
 
-    @Override
-    public void setSpendEmptyView() {
-        spendRecyclerAdapter.setEmptyView(getOffersEmptyView());
-    }
-
-    private OffersEmptyView getOffersEmptyView() {
-        if (offersEmptyView == null) {
-            offersEmptyView = new OffersEmptyView(this);
+	private OffersEmptyView createEmptyView(OffersEmptyView emptyView) {
+        if (emptyView == null) {
+            emptyView = new OffersEmptyView(this);
         }
-        return offersEmptyView;
+        return emptyView;
     }
 
     @Override

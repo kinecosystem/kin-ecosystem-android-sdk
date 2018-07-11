@@ -1,7 +1,7 @@
 package com.kin.ecosystem.history.view;
 
-import static com.kin.ecosystem.util.DateUtil.getDateFormatted;
-import static com.kin.ecosystem.util.StringUtil.getAmountFormatted;
+import static kin.ecosystem.core.util.DateUtil.getDateFormatted;
+import static kin.ecosystem.core.util.StringUtil.getAmountFormatted;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -19,8 +19,8 @@ import com.chad.library.adapter.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.history.view.OrderHistoryRecyclerAdapter.ViewHolder;
+import com.kin.ecosystem.network.model.Offer.OfferType;
 import com.kin.ecosystem.network.model.Order;
-import com.kin.ecosystem.network.model.Order.OfferTypeEnum;
 import com.kin.ecosystem.network.model.Order.Status;
 
 
@@ -39,29 +39,29 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
     private static final String TRANSACTION_FAILED_MSG = "Transaction failed";
 
     OrderHistoryRecyclerAdapter() {
-        super(R.layout.order_history_recycler_item);
+        super(R.layout.kinecosystem_order_history_recycler_item);
         openLoadAnimation(SLIDEIN_TOP);
     }
 
     private void initColors(Context context) {
         if (colorBlue == NOT_INITIALIZED) {
-            colorBlue = ContextCompat.getColor(context, R.color.bluePrimary);
+            colorBlue = ContextCompat.getColor(context, R.color.kinecosystem_bluePrimary);
         }
         if (colorRed == NOT_INITIALIZED) {
-            colorRed = ContextCompat.getColor(context, R.color.red);
+            colorRed = ContextCompat.getColor(context, R.color.kinecosystem_red);
         }
         if (colorGrayLight == NOT_INITIALIZED) {
-            colorGrayLight = ContextCompat.getColor(context, R.color.gray_light);
+            colorGrayLight = ContextCompat.getColor(context, R.color.kinecosystem_gray_light);
         }
     }
 
     private void initSizes(Context context) {
         Resources resources = context.getResources();
         if (subTitleFontSize == NOT_INITIALIZED) {
-            subTitleFontSize = resources.getDimensionPixelSize(R.dimen.sub_title_size);
+            subTitleFontSize = resources.getDimensionPixelSize(R.dimen.kinecosystem_sub_title_size);
         }
         if (itemHeight == NOT_INITIALIZED) {
-            itemHeight = resources.getDimensionPixelOffset(R.dimen.order_history_item_height);
+            itemHeight = resources.getDimensionPixelOffset(R.dimen.kinecosystem_order_history_item_height);
             itemHalfHeight = itemHeight / 2;
         }
     }
@@ -104,11 +104,11 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
         private void setAmountAndIcon(Order item) {
             if (item.getStatus() == Status.COMPLETED) {
                 String amount = getAmountFormatted(item.getAmount());
-                if (item.getOfferType() == Order.OfferTypeEnum.SPEND) {
-                    setImageResource(R.id.amount_ico, R.drawable.invoice);
+                if (item.getOfferType() == OfferType.SPEND) {
+                    setImageResource(R.id.amount_ico, R.drawable.kinecosystem_invoice);
                     setText(R.id.amount_text, MINUS_SIGN + amount);
                 } else {
-                    setImageResource(R.id.amount_ico, R.drawable.coins);
+                    setImageResource(R.id.amount_ico, R.drawable.kinecosystem_coins);
                     setText(R.id.amount_text, PLUS_SIGN + amount);
                 }
             }
@@ -133,7 +133,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
             setText(R.id.action_text, actionText);
             switch (item.getStatus()) {
                 case COMPLETED:
-                    if (item.getOfferType() == OfferTypeEnum.SPEND) {
+                    if (item.getOfferType() == OfferType.SPEND) {
                         Spannable titleSpannable = new SpannableString(brand + delimiter);
                         titleSpannable.setSpan(new ForegroundColorSpan(colorBlue),
                             0, brand.length(),
@@ -182,7 +182,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
             LayerDrawable layerDrawable = ((LayerDrawable) view.getDrawable());
             Drawable drawable = layerDrawable.getDrawable(1);
             // Timeline dot color
-            if (item.getOfferType() == Order.OfferTypeEnum.SPEND) {
+            if (item.getOfferType() == OfferType.SPEND) {
                 switch (item.getStatus()) {
                     case COMPLETED:
                         drawable.setColorFilter(colorBlue, PorterDuff.Mode.SRC_ATOP);

@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.balance.presenter.BalancePresenter;
 import com.kin.ecosystem.base.IBasePresenter;
-import com.kin.ecosystem.data.blockchain.BlockchainSource;
+import com.kin.ecosystem.data.blockchain.BlockchainSourceImpl;
 
 public class BalanceView extends ConstraintLayout implements IBalanceView {
 
@@ -41,16 +41,16 @@ public class BalanceView extends ConstraintLayout implements IBalanceView {
     }
 
     private void init(Context context, @Nullable AttributeSet attrs) {
-        inflate(getContext(), R.layout.balance_view, this);
+        inflate(getContext(), R.layout.kinecosystem_balance_view, this);
         setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT));
-        int topPadding = getResources().getDimensionPixelOffset(R.dimen.main_medium_margin);
+        int topPadding = getResources().getDimensionPixelOffset(R.dimen.kinecosystem_main_medium_margin);
         setPadding(0, topPadding, 0, 0);
 
-        TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.BalanceView, 0, 0);
+        TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.KinEcosystemBalanceView, 0, 0);
         boolean showArrow;
         try {
-            showArrow = styledAttributes.getBoolean(R.styleable.BalanceView_showArrow, false);
+            showArrow = styledAttributes.getBoolean(R.styleable.KinEcosystemBalanceView_showArrow, false);
         } finally {
             styledAttributes.recycle();
         }
@@ -60,7 +60,7 @@ public class BalanceView extends ConstraintLayout implements IBalanceView {
         setBalanceTextAnimations();
         setArrowVisibility(showArrow);
 
-        attachPresenter(new BalancePresenter(BlockchainSource.getInstance()));
+        attachPresenter(new BalancePresenter(BlockchainSourceImpl.getInstance()));
     }
 
     private void setBalanceTextAnimations() {

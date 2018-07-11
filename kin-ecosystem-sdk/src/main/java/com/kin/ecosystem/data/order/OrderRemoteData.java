@@ -3,17 +3,18 @@ package com.kin.ecosystem.data.order;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import com.kin.ecosystem.Callback;
-import com.kin.ecosystem.network.ApiCallback;
-import com.kin.ecosystem.network.ApiException;
+
+import kin.ecosystem.core.network.ApiCallback;
+import kin.ecosystem.core.network.ApiException;
+
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.network.api.OrdersApi;
 import com.kin.ecosystem.network.model.EarnSubmission;
 import com.kin.ecosystem.network.model.ExternalOrderRequest;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
-import com.kin.ecosystem.network.model.Order.Status;
 import com.kin.ecosystem.network.model.OrderList;
-import com.kin.ecosystem.util.ExecutorsUtil;
+import kin.ecosystem.core.util.ExecutorsUtil;
 import java.util.List;
 import java.util.Map;
 
@@ -46,12 +47,12 @@ public class OrderRemoteData implements OrderDataSource.Remote {
     }
 
     @Override
-    public void getAllOrderHistory(@NonNull final Callback<OrderList> callback) {
+    public void getAllOrderHistory(@NonNull final Callback<OrderList, ApiException> callback) {
         getHistory(null, null, ORDERS_ITEMS_LIMIT, callback);
     }
 
     @Override
-    public void createOrder(@NonNull final String offerID, @NonNull final Callback<OpenOrder> callback) {
+    public void createOrder(@NonNull final String offerID, @NonNull final Callback<OpenOrder, ApiException> callback) {
         try {
             ordersApi.createOrderAsync(offerID, "", new ApiCallback<OpenOrder>() {
                 @Override
@@ -96,7 +97,7 @@ public class OrderRemoteData implements OrderDataSource.Remote {
     }
 
     @Override
-    public void submitOrder(@NonNull String content, @NonNull String orderID, @NonNull final Callback<Order> callback) {
+    public void submitOrder(@NonNull String content, @NonNull String orderID, @NonNull final Callback<Order, ApiException> callback) {
         try {
             ordersApi.submitOrderAsync(new EarnSubmission().content(content), orderID, "", new ApiCallback<Order>() {
                 @Override
@@ -140,7 +141,7 @@ public class OrderRemoteData implements OrderDataSource.Remote {
     }
 
     @Override
-    public void cancelOrder(@NonNull final String orderID, @Nullable final Callback<Void> callback) {
+    public void cancelOrder(@NonNull final String orderID, @Nullable final Callback<Void, ApiException> callback) {
         try {
             ordersApi.cancelOrderAsync(orderID, "", new ApiCallback<Void>() {
                 @Override
@@ -188,8 +189,17 @@ public class OrderRemoteData implements OrderDataSource.Remote {
     }
 
     @Override
-    public void getOrder(String orderID, final Callback<Order> callback) {
-        new GetOrderPollingCall(this, orderID, new Callback<Order>() {
+    public void cancelOrderSync(@NonNull String orderID) {
+        try {
+            ordersApi.cancelOrder(orderID, "");
+        } catch (ApiException e) {
+            Log.d(TAG, "Cancel order: " + orderID + " sync failed, code: " + e.getCode());
+        }
+    }
+
+    @Override
+    public void getOrder(String orderID, final Callback<Order, ApiException> callback) {
+        new GetOrderPollingCall(this, orderID, new Callback<Order, ApiException>() {
             @Override
             public void onResponse(final Order result) {
                 executorsUtil.mainThread().execute(new Runnable() {
@@ -201,7 +211,7 @@ public class OrderRemoteData implements OrderDataSource.Remote {
             }
 
             @Override
-            public void onFailure(final Throwable e) {
+            public void onFailure(final ApiException e) {
                 executorsUtil.mainThread().execute(new Runnable() {
                     @Override
                     public void run() {
@@ -229,12 +239,12 @@ public class OrderRemoteData implements OrderDataSource.Remote {
 
     @Override
     public void getFilteredOrderHistory(@Nullable String origin, @NonNull String offerID,
-        @NonNull Callback<OrderList> callback) {
+        @NonNull Callback<OrderList, ApiException> callback) {
         getHistory(origin, offerID, ONE_ORDER_LIMIT, callback);
     }
 
     private void getHistory(@Nullable String origin, @Nullable String offerID, int limit,
-        @NonNull final Callback<OrderList> callback) {
+        @NonNull final Callback<OrderList, ApiException> callback) {
         try {
             ordersApi.getHistoryAsync("", origin, offerID, limit, null, null, new ApiCallback<OrderList>() {
                 @Override

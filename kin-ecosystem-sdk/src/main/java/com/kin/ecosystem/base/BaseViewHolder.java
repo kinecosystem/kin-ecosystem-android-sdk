@@ -21,7 +21,7 @@ class BaseViewHolder<T> extends com.chad.library.adapter.base.BaseViewHolder<T> 
     protected BaseViewHolder setImageUrlResized(@IdRes int viewId, String imageURL, int width, int height) {
         ImageView view = getView(viewId);
         if (view != null) {
-            Picasso.with(view.getContext())
+            Picasso.get()
                 .load(Uri.parse(imageURL))
                 .transform(new RoundedCornersTransformation(5, 0))
                 .resize(width, height)

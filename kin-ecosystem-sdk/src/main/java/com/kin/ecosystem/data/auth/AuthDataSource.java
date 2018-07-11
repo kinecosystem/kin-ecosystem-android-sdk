@@ -1,47 +1,61 @@
 package com.kin.ecosystem.data.auth;
 
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.Callback;
+import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.ObservableData;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.network.model.SignInData;
+import kin.ecosystem.core.network.ApiException;
 
 public interface AuthDataSource {
 
-    void setSignInData(@NonNull final SignInData signInData);
+	void setSignInData(@NonNull final SignInData signInData);
 
-    ObservableData<String> getAppID();
+	ObservableData<String> getAppID();
 
-    void setAuthToken(@NonNull final AuthToken authToken);
+	String getDeviceID();
 
-    AuthToken getAuthTokenSync();
+	String getUserID();
 
-    boolean isActivated();
+	String getEcosystemUserID();
 
-    void activateAccount(@NonNull final Callback<Void> callback);
+	void setAuthToken(@NonNull final AuthToken authToken);
 
-    interface Local {
+	AuthToken getAuthTokenSync();
 
-        void setSignInData(@NonNull final SignInData signInData);
+	boolean isActivated();
 
-        void setAuthToken(@NonNull final AuthToken authToken);
+	void activateAccount(@NonNull final KinCallback<Void> callback);
 
-        void getAppId(@NonNull final Callback<String> callback);
+	interface Local {
 
-        AuthToken getAuthTokenSync();
+		void setSignInData(@NonNull final SignInData signInData);
 
-        boolean isActivated();
+		void setAuthToken(@NonNull final AuthToken authToken);
 
-        void activateAccount();
+		void getAppId(@NonNull final Callback<String, Void> callback);
 
-    }
+		String getDeviceID();
 
-    interface Remote {
+		String getUserID();
 
-        void setSignInData(@NonNull final SignInData signInData);
+		String getEcosystemUserID();
 
-        AuthToken getAuthTokenSync();
+		AuthToken getAuthTokenSync();
 
-        void activateAccount(@NonNull final Callback<AuthToken> callback);
-    }
+		boolean isActivated();
+
+		void activateAccount();
+
+	}
+
+	interface Remote {
+
+		void setSignInData(@NonNull final SignInData signInData);
+
+		AuthToken getAuthTokenSync();
+
+		void activateAccount(@NonNull final Callback<AuthToken, ApiException> callback);
+	}
 }

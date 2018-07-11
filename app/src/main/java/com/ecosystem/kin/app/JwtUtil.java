@@ -3,6 +3,7 @@ package com.ecosystem.kin.app;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Base64;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -24,9 +25,11 @@ public class JwtUtil {
 
     private static final String JWT_CLAIM_OBJECT_OFFER_PART = "offer";
     private static final String JWT_CLAIM_OBJECT_SENDER_PART = "sender"; // Should be part of native SPEND jwt
+    private static final String JWT_CLAIM_OBJECT_RECIPIENT_PART = "recipient"; // Should be part of native EARN jwt
 
     private static final String JWT_SUBJECT_REGISTER = "register";
     private static final String JWT_SUBJECT_SPEND = "spend";
+    private static final String JWT_SUBJECT_EARN = "earn";
 
     private static final String JWT_KEY_USER_ID = "user_id";
 
@@ -53,13 +56,22 @@ public class JwtUtil {
         return jwt;
     }
 
+    public static String generateEarnOfferExampleJWT(String appID, String userID) {
+        String jwt = getBasicJWT(appID)
+            .setSubject(JWT_SUBJECT_EARN)
+            .claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject())
+            .claim(JWT_CLAIM_OBJECT_RECIPIENT_PART, new JWTRecipientPart(userID, "Received Kin", "upload profile picture"))
+            .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
+        return jwt;
+    }
+
     @NonNull
     private static String getPrivateKeyForJWT() {
         return BuildConfig.RS512_PRIVATE_KEY;
     }
 
     private static JwtBuilder getBasicJWT(String appID) {
-        return Jwts.builder().setHeaderParam(JWT_HEADER_KID, "1")
+        return Jwts.builder().setHeaderParam(JWT_HEADER_KID, BuildConfig.RS512_PRIVATE_KEY_ID)
             .setHeaderParam(JWT_HEADER_TYP, JWT)
             .setIssuedAt(new Date())
             .setIssuer(appID)
@@ -95,7 +107,10 @@ public class JwtUtil {
 
     private static class JWTOfferPart {
 
+
+        @JsonProperty("id")
         private String id;
+        @JsonProperty("amount")
         private int amount;
 
         /**
@@ -126,20 +141,21 @@ public class JwtUtil {
         }
     }
 
-
-    private static class JWTSenderPart {
-
+    private static class JWTOrderPart {
+        @JsonProperty("user_id")
         private String user_id; // Optional in case of spend order
+        @JsonProperty("title")
         private String title;
+        @JsonProperty("description")
         private String description;
 
-        public JWTSenderPart(String user_id, String title, String description) {
+        JWTOrderPart(String user_id, String title, String description) {
             this.user_id = user_id;
             this.title = title;
             this.description = description;
         }
 
-        public JWTSenderPart(String title, String description) {
+        JWTOrderPart(String title, String description) {
             this.title = title;
             this.description = description;
         }
@@ -166,6 +182,25 @@ public class JwtUtil {
 
         public void setDescription(String description) {
             this.description = description;
+        }
+    }
+
+    private static class JWTSenderPart extends JWTOrderPart {
+
+        // User Id is optional
+        JWTSenderPart(String user_id, String title, String description) {
+            super(user_id, title, description);
+        }
+
+        JWTSenderPart(String title, String description) {
+            super(title, description);
+        }
+    }
+
+    private static class JWTRecipientPart extends JWTOrderPart {
+
+        JWTRecipientPart(String user_id, String title, String description) {
+            super(user_id, title, description);
         }
     }
 }

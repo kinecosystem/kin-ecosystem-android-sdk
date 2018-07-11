@@ -1,6 +1,6 @@
 package com.kin.ecosystem.base;
 
-import static com.kin.ecosystem.util.StringUtil.getAmountFormatted;
+import static kin.ecosystem.core.util.StringUtil.getAmountFormatted;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -24,7 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.kin.ecosystem.R;
-import com.kin.ecosystem.util.DeviceUtils;
+import kin.ecosystem.core.util.DeviceUtils;
 import com.squareup.picasso.Picasso;
 
 public abstract class BottomDialog<T extends IBottomDialogPresenter> extends Dialog
@@ -48,12 +48,12 @@ public abstract class BottomDialog<T extends IBottomDialogPresenter> extends Dia
     private static int imageHeight = NOT_INITIALIZED;
     protected static int colorBlue = NOT_INITIALIZED;
 
-    private int layoutRes = R.layout.dialog_base_bottom_layout;
+    private int layoutRes = R.layout.kinecosystem_dialog_base_bottom_layout;
 
     protected abstract void initViews();
 
     public BottomDialog(@NonNull Context context, @NonNull T presenter, @LayoutRes int layoutRes) {
-        super(context, R.style.FullScreenDialogStyle);
+        super(context, R.style.KinecosysFullScreenDialogStyle);
         this.setUpWindowLayout();
         this.updateSizes();
         this.initColors();
@@ -67,7 +67,7 @@ public abstract class BottomDialog<T extends IBottomDialogPresenter> extends Dia
         newParams.width = WindowManager.LayoutParams.MATCH_PARENT;
         newParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
         newParams.gravity = Gravity.BOTTOM;
-        newParams.windowAnimations = R.style.BottomAnimationDialog;
+        newParams.windowAnimations = R.style.KinecosysBottomAnimationDialog;
         getWindow().setAttributes(newParams);
     }
 
@@ -82,7 +82,7 @@ public abstract class BottomDialog<T extends IBottomDialogPresenter> extends Dia
 
     private void initColors() {
         if (colorBlue == NOT_INITIALIZED) {
-            colorBlue = ContextCompat.getColor(getContext(), R.color.bluePrimary);
+            colorBlue = ContextCompat.getColor(getContext(), R.color.kinecosystem_bluePrimary);
         }
     }
 
@@ -123,9 +123,9 @@ public abstract class BottomDialog<T extends IBottomDialogPresenter> extends Dia
     }
 
     public void setupImage(String image) {
-        Picasso.with(getContext())
+        Picasso.get()
             .load(image)
-            .placeholder(R.drawable.placeholder)
+            .placeholder(R.drawable.kinecosystem_placeholder)
             .fit()
             .into(brandImage);
     }

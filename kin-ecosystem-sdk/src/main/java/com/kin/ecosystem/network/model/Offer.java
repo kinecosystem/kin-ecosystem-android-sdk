@@ -93,6 +93,8 @@ public class Offer {
 
         POLL("poll"),
         COUPON("coupon"),
+        QUIZ("quiz"),
+		TUTORIAL("tutorial"),
         EXTERNAL("external");
 
 
