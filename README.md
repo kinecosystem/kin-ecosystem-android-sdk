@@ -138,9 +138,9 @@ The following sections show how to implement some common workflows using the Kin
 <a name="CreateAccount"></a>
 ### Creating or Accessing a User’s Kin Account ###
 
-If your app presents Kin Spend and Earn offers to your users, then each user needs a Kin wallet and account in order to take advantage of those offers. During initialization, your app must call the SDK’s ```Kin.start(…)``` function while passing a unique ID for the current user. If that user already has a Kin account, the function only accesses the existing account. Otherwise, the function creates a new wallet and account for the user.
+If your app presents Kin Spend and Earn offers to your users, then each user needs a Kin wallet and account in order to take advantage of those offers. During initialization and before any other Kin sdk API calls, your app must call the SDK’s ```Kin.start(…)``` function while passing a unique ID for the current user. If that user already has a Kin account, the function only accesses the existing account. Otherwise, the function creates a new wallet and account for the user.
 
-*To create or access a user’s Kin account:*
+*To create or access a user’s Kin account:* 
 
 Call ```Kin.start(…)```, passing the user’s unique ID and your chosen authentication credentials (either whitelist or JWT credentials).
 
@@ -249,23 +249,13 @@ Create an ```Observer``` object and implements its ```onChanged()``` function.
 <a name="CreateCustomSpendOffer"></a>
 ### Creating a Custom Spend Offer ###
 
-A custom Spend offer allows your users to buy virtual goods that you define. (Custom offers are created by your app, as opposed to [built-in offers displayed in the Kin Marketplace offer wall](#AddingToMP).) Your app displays the offer, guides the user through the spend activity, and then [requests payment using the Kin SDK](#RequestPayment).
+A custom Spend offer allows your users to unlock unique spend opportunities that you define within your app. (Custom offers are created by your app, as opposed to [built-in offers displayed in the Kin Marketplace offer wall](#AddingToMP).) Your app displays the offer, request user approval, and then [requests payment using the Kin purcash API](#purcasheRequest).
 
 *To create a custom Spend offer:*
 
-Create a ```NativeSpendOffer``` object as in the example below.
 
-```
-NativeSpendOffer nativeOffer =
-        new NativeSpendOffer("The offerID") // OfferId must be a UUID
-            .title("Offer Title") // Title to display with offer
-            .description("Offer Description") // Desc. to display with offer
-            .amount(1000) // Purchase amount in Kin
-            .image("Image URL"); // Image to display with offer
-```
-
-<a name="RequestPayment"></a>
-### Requesting Payment for a Custom Spend Offer ###
+<a name="purcasheRequest"></a>
+### Requesting purchase Payment for a Custom Spend Offer ###
 
 *To request payment for a custom Spend offer:*
 
@@ -343,7 +333,16 @@ You can also choose to display a banner for your custom offer in the Kin Marketp
 
 *To add a custom Spend offer to the Kin Marketplace:*
 
-1.	Create a ```NativeSpendOffer``` object (see [Creating a Custom Spend Offer](#CreateCustomSpendOffer)).
+1. Create a ```NativeSpendOffer``` object as in the example below.
+
+```
+NativeSpendOffer nativeOffer =
+        new NativeSpendOffer("The offerID") // OfferId must be a UUID
+            .title("Offer Title") // Title to display with offer
+            .description("Offer Description") // Desc. to display with offer
+            .amount(1000) // Purchase amount in Kin
+            .image("Image URL"); // Image to display with offer
+```
 2.	Create a ```NativeOfferObserver``` object to be notified when the user clicks on your offer in the Kin Marketplace.
 
     >**NOTE:** You can remove the Observer by calling ```Kin.removeNativeOfferClickedObserver(…)```.
