@@ -2,7 +2,7 @@
 
 ## What is the Kin Ecosystem SDK? ##
 
-The Kin Ecosystem SDK allows you to quickly and easily integrate with the Kin platform. This enables you to provide your users with new opportunities to earn and spend the Kin digital currency from inside your app or from the Kin Marketplace offer wall. For each user, you create an account and a wallet. By calling the appropriate SDK functions, your application performs users’ buy and sell transactions using their wallet objects. Your users can also view their account balance and their transaction history.
+The Kin Ecosystem SDK allows you to quickly and easily integrate with the Kin platform. This enables you to provide your users with new opportunities to earn and spend the Kin digital currency from inside your app or from the Kin Marketplace offer wall. For each user, the SDK will create wallet and an account on Kin blockchain. By calling the appropriate SDK functions, your application can performs earn and spend transactions. Your users can also view their account balance and their transaction history.
 See [Kin Ecosystem and SDK Overview](ADDLINK) to learn more about Kin and the Kin Ecosystem.
 
 ## Playground and Production Environments ##
