@@ -54,8 +54,12 @@ class CreateExternalOrderCall extends Thread {
 				Balance balance = blockchainSource.getBalance();
 				if (balance.getAmount().intValue() < openOrder.getAmount()) {
 					remote.cancelOrderSync(openOrder.getId());
-					externalOrderCallbacks
-						.onOrderFailed(ErrorUtil.getBlockchainException(new InsufficientKinException()), openOrder);
+					runOnMainThread(new Runnable() {
+						@Override
+						public void run() {
+							externalOrderCallbacks.onOrderFailed(ErrorUtil.getBlockchainException(new InsufficientKinException()), openOrder);
+						}
+					});
 					return;
 				}
 			}
