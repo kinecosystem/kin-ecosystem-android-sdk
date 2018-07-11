@@ -18,7 +18,6 @@ When your app calls ```Kin.start(…)```, you specify which environment to work 
 
 >**NOTES:**
 >* When working with the Playground environment, you can only register up to 1000 users. An attempt to register additional users will result in an error.
->* In the Playground environment, all Spend transaction requests will be approved, regardless of whether the source account has sufficient funds. In Production, “insufficient funds” errors may occur.
 >* In order to switch between environments, you’ll need to clear the application cache.
 
 ## Obtaining Authentication Credentials ##
@@ -89,7 +88,7 @@ The Kin Ecosystem SDK Sample App demonstrates how to perform common workflows su
 >**NOTE:** The Sample App is for demonstration only, and should not be used for any other purpose.
 
 The Sample App is pre-configured with the default whitelist credentials ```appId='test'``` and 
-```apiKey='A2XEJTdN8hGiuUvg9VSHZ'```. These credentials can be used for integration testing in any app, but authorization will fail if you attempt to use them in a production environment.
+```apiKey='AyINT44OAKagkSav2vzMz'```. These credentials can be used for integration testing in any app, but authorization will fail if you attempt to use them in a production environment.
 
 You can also request unique apiKey and appId values from Kin, and override the default settings, working either in whitelist or JWT authentication mode.
 
@@ -100,7 +99,7 @@ Create or edit a local ```credential.properties``` file in the ```app``` module 
 ```
 APP_ID="YOUR_APP_ID" // For whitelist registration, and also as the issuer (iss). Default = 'test'.
 
-API_KEY="YOUR_API_KEY" // For whitelist registration. Default = 'A2XEJTdN8hGiuUvg9VSHZ'.
+API_KEY="YOUR_API_KEY" // For whitelist registration. Default = 'AyINT44OAKagkSav2vzMz'.
 
 ES256_PRIVATE_KEY="YOUR_ES256_PRIVATE_KEY” // Optional. Only required when testing JWT on the sample app. For production, JWT is created by server side with ES256 signature.
 
