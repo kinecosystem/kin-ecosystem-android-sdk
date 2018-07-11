@@ -33,13 +33,8 @@ public class OrderHistoryFragment extends Fragment implements IOrderHistoryView 
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.kinecosystem_fragment_order_history, container, false);
 		initViews(root);
-		return root;
-	}
-
-	@Override
-	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
 		orderHistoryPresenter.onAttach(this);
+		return root;
 	}
 
 	@Override

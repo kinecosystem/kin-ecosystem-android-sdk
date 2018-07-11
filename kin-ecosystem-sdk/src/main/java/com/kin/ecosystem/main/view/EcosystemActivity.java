@@ -89,11 +89,12 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 		if (marketplaceFragment == null) {
 			marketplaceFragment = MarketplaceFragment.newInstance();
 		}
+
+		marketplacePresenter = getMarketplacePresenter(marketplaceFragment);
+
 		getSupportFragmentManager().beginTransaction()
 			.replace(R.id.fragment_frame, marketplaceFragment, ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG)
 			.commit();
-
-		marketplacePresenter = getMarketplacePresenter(marketplaceFragment);
 
 		setVisibleScreen(MARKETPLACE);
 
@@ -125,6 +126,12 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 			orderHistoryFragment = OrderHistoryFragment.newInstance();
 		}
 
+		new OrderHistoryPresenter(orderHistoryFragment,
+			OrderRepository.getInstance(),
+			this,
+			EventLoggerImpl.getInstance(),
+			isFirstSpendOrder);
+
 		getSupportFragmentManager().beginTransaction()
 			.setCustomAnimations(
 				R.anim.kinecosystem_slide_in_right,
@@ -134,11 +141,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 			.replace(R.id.fragment_frame, orderHistoryFragment, ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG)
 			.addToBackStack(null).commit();
 
-		new OrderHistoryPresenter(orderHistoryFragment,
-			OrderRepository.getInstance(),
-			this,
-			EventLoggerImpl.getInstance(),
-			isFirstSpendOrder);
+
 
 		setVisibleScreen(ORDER_HISTORY);
 	}
