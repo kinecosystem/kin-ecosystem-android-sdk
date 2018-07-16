@@ -16,16 +16,7 @@ import static kin.ecosystem.core.network.ApiClient.GET;
 import static kin.ecosystem.core.network.ApiClient.POST;
 
 import com.google.gson.reflect.TypeToken;
-
 import com.kin.ecosystem.Configuration;
-import kin.ecosystem.core.network.ApiCallback;
-import kin.ecosystem.core.network.ApiClient;
-import kin.ecosystem.core.network.ApiException;
-import kin.ecosystem.core.network.ApiResponse;
-import kin.ecosystem.core.network.Pair;
-import kin.ecosystem.core.network.ProgressRequestBody;
-import kin.ecosystem.core.network.ProgressResponseBody;
-
 import com.kin.ecosystem.network.model.EarnSubmission;
 import com.kin.ecosystem.network.model.ExternalOrderRequest;
 import com.kin.ecosystem.network.model.OpenOrder;
@@ -37,6 +28,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import kin.ecosystem.core.network.ApiCallback;
+import kin.ecosystem.core.network.ApiClient;
+import kin.ecosystem.core.network.ApiException;
+import kin.ecosystem.core.network.ApiResponse;
+import kin.ecosystem.core.network.Pair;
+import kin.ecosystem.core.network.ProgressRequestBody;
+import kin.ecosystem.core.network.ProgressResponseBody;
 import okhttp3.Call;
 import okhttp3.Interceptor;
 import okhttp3.Response;

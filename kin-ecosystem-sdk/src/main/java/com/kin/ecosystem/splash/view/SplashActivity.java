@@ -1,5 +1,8 @@
 package com.kin.ecosystem.splash.view;
 
+import static com.kin.ecosystem.splash.presenter.ISplashPresenter.SOMETHING_WENT_WRONG;
+import static com.kin.ecosystem.splash.presenter.ISplashPresenter.TRY_AGAIN;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,15 +15,18 @@ import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
 import com.kin.ecosystem.splash.presenter.ISplashPresenter;
+import com.kin.ecosystem.splash.presenter.ISplashPresenter.Message;
 import com.kin.ecosystem.splash.presenter.SplashPresenter;
 import com.kin.ecosystem.splash.view.SplashScreenButton.LoadAnimationListener;
+import java.util.Timer;
 
-public class SplashViewActivity extends AppCompatActivity implements ISplashView {
+public class SplashActivity extends AppCompatActivity implements ISplashView {
 
     private ISplashPresenter splashPresenter;
 
@@ -37,7 +43,7 @@ public class SplashViewActivity extends AppCompatActivity implements ISplashView
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.kinecosystem_activity_splash);
-        attachPresenter(new SplashPresenter(AuthRepository.getInstance(), EventLoggerImpl.getInstance()));
+        attachPresenter(new SplashPresenter(Kin.getAccountManager() ,AuthRepository.getInstance(), EventLoggerImpl.getInstance(), new Timer()));
         initViews();
         initAnimations();
     }
@@ -121,9 +127,14 @@ public class SplashViewActivity extends AppCompatActivity implements ISplashView
     }
 
     @Override
-    public void stopLoading(boolean reset) {
-        letsGetStartedBtn.stopLoading(reset);
-        fadeOutLoading();
+    public void stopLoading(final boolean reset) {
+    	runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				letsGetStartedBtn.stopLoading(reset);
+				fadeOutLoading();
+			}
+		});
     }
 
     private void fadeInView(View view) {
@@ -136,11 +147,21 @@ public class SplashViewActivity extends AppCompatActivity implements ISplashView
     }
 
     @Override
-    public void showToast(final String msg) {
+    public void showToast(@Message final int message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(SplashViewActivity.this, msg, Toast.LENGTH_SHORT).show();
+            	String msg;
+            	switch (message) {
+					case TRY_AGAIN:
+						msg = getString(R.string.kinecosystem_try_again_later);
+						break;
+					default:
+					case SOMETHING_WENT_WRONG:
+						msg = getString(R.string.kinecosystem_something_went_wrong);
+						break;
+				}
+				Toast.makeText(SplashActivity.this, msg, Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -5,7 +5,7 @@
     <application>
         <activity
             android:label="@string/kinecosystem_welcome_to_kin"
-            android:name=".splash.view.SplashViewActivity"
+            android:name=".splash.view.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/KinecosysNoActionBar"/>
         <activity

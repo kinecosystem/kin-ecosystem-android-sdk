@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:parentTag="android.widget.FrameLayout">
+<!--<merge xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--xmlns:tools="http://schemas.android.com/tools"-->
+<!--tools:parentTag="android.widget.FrameLayout">-->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
     <Button
         android:id="@+id/lets_get_started_button"
@@ -21,6 +25,7 @@
         android:layout_width="@dimen/kinecosystem_round_button_height"
         android:layout_height="@dimen/kinecosystem_round_button_height"
         android:layout_gravity="center"
+        android:visibility="gone"
         android:background="@drawable/kinecosystem_circle_dash_line"/>
 
     <ImageView
@@ -29,7 +34,9 @@
         android:layout_height="@dimen/kinecosystem_round_button_height"
         android:layout_gravity="center"
         android:padding="@dimen/kinecosystem_main_small_margin"
+        android:visibility="gone"
         android:src="@drawable/kinecosystem_diamond_1"
         />
 
-</merge>
+</FrameLayout>
+    <!--</merge>-->

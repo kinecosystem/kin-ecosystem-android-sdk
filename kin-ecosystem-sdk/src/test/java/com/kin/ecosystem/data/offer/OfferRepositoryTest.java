@@ -10,11 +10,9 @@ import static org.mockito.Mockito.when;
 
 import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
-
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OfferList;
 import com.kin.ecosystem.network.model.Paging;

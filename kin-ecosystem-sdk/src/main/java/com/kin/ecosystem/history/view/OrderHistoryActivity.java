@@ -12,7 +12,6 @@ import com.chad.library.adapter.base.BaseRecyclerAdapter;
 import com.chad.library.adapter.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseToolbarActivity;
-import com.kin.ecosystem.base.IBottomDialogPresenter;
 import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.data.order.OrderRepository;
 import com.kin.ecosystem.history.presenter.ICouponDialogPresenter;

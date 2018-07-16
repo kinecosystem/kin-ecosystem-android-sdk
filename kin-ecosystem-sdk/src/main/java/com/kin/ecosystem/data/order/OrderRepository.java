@@ -4,8 +4,8 @@ import static com.kin.ecosystem.exception.ClientException.INTERNAL_INCONSISTENCY
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.Log;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
@@ -170,7 +170,7 @@ public class OrderRepository implements OrderDataSource {
 					}
 				};
 				blockchainSource.addPaymentObservable(paymentObserver);
-				Log.d(TAG, "listenForCompletedPayment: addPaymentObservable");
+				new Log().withTag(TAG).text("listenForCompletedPayment: addPaymentObservable").log();
 			}
 			paymentObserverCount++;
 		}
@@ -217,7 +217,7 @@ public class OrderRepository implements OrderDataSource {
 	}
 
 	private void setCompletedOrder(@NonNull Order order) {
-		Log.i(TAG, "setCompletedOrder: " + order);
+		new Log().withTag(TAG).put("setCompletedOrder", order).log();
 		completedOrder.postValue(order);
 		sendSpendOrderCompleted(order);
 		if (!hasMorePendingOffers()) {
@@ -472,7 +472,7 @@ public class OrderRepository implements OrderDataSource {
 									.setJwtConfirmation(
 										((JWTBodyPaymentConfirmationResult) order.getResult()).getJwt());
 							} catch (ClassCastException e) {
-								Log.d(TAG, "could not cast to jwt confirmation");
+								new Log().withTag(TAG).text("could not cast to jwt confirmation").log();
 								callback.onFailure(ErrorUtil
 									.getClientException(INTERNAL_INCONSISTENCY, new DataNotAvailableException()));
 							}

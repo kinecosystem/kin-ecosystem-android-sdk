@@ -1,8 +1,8 @@
 package com.kin.ecosystem.marketplace.presenter;
 
 import android.os.Handler;
-import android.util.Log;
 import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.Log;
 import com.kin.ecosystem.base.BaseDialogPresenter;
 import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.CloseButtonOnOfferPageTapped;
@@ -14,7 +14,7 @@ import com.kin.ecosystem.bi.events.SpendOrderCreationFailed;
 import com.kin.ecosystem.bi.events.SpendOrderCreationReceived;
 import com.kin.ecosystem.bi.events.SpendOrderCreationRequested;
 import com.kin.ecosystem.bi.events.SpendThankyouPageViewed;
-import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainSubmitted;
+import com.kin.ecosystem.data.KinCallbackAdapter;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.order.OrderDataSource;
 import com.kin.ecosystem.exception.KinEcosystemException;
@@ -27,7 +27,7 @@ import com.kin.ecosystem.network.model.Order;
 import java.math.BigDecimal;
 
 
-public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements ISpendDialogPresenter {
+class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements ISpendDialogPresenter {
 
     private static final String TAG = SpendDialogPresenter.class.getSimpleName();
 
@@ -47,7 +47,7 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
 
     private static final int CLOSE_DELAY = 2000;
 
-    public SpendDialogPresenter(OfferInfo offerInfo, Offer offer, BlockchainSource blockchainSource,
+    SpendDialogPresenter(OfferInfo offerInfo, Offer offer, BlockchainSource blockchainSource,
         OrderDataSource orderRepository, EventLogger eventLogger) {
         this.offerInfo = offerInfo;
         this.offer = offer;
@@ -126,20 +126,15 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
     @Override
     public void dialogDismissed() {
         if (isOrderSubmitted) {
-            orderRepository.isFirstSpendOrder(new KinCallback<Boolean>() {
+            orderRepository.isFirstSpendOrder(new KinCallbackAdapter<Boolean>() {
                 @Override
                 public void onResponse(Boolean response) {
-                    Log.d(TAG, "isFirstSpendOrder: " + response);
+                    new Log().withTag(TAG).put("isFirstSpendOrder", response);
                     if (response) {
                         navigateToOrderHistory();
                         orderRepository.setIsFirstSpendOrder(false);
                     }
                     onDetach();
-                }
-
-                @Override
-                public void onFailure(KinEcosystemException exception) {
-
                 }
             });
         }
@@ -178,13 +173,12 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
 		orderRepository.submitOrder(offerID, null, orderID, new KinCallback<Order>() {
             @Override
             public void onResponse(Order response) {
-                Log.i(TAG, "onResponse: " + response);
+                new Log().withTag(TAG).put(" Submit onResponse", response).log();
             }
 
             @Override
             public void onFailure(KinEcosystemException exception) {
-                //TODO handle failure
-                Log.i(TAG, "onFailure: " + exception.getMessage());
+                new Log().withTag(TAG).put(" Submit onFailure", exception).log();
             }
         });
     }

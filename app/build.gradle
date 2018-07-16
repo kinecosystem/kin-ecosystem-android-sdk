@@ -70,13 +70,10 @@ dependencies {
     //implementation 'com.github.kinfoundation:kin-ecosystem-android-sdk:0.0.10'
     implementation 'io.jsonwebtoken:jjwt:0.9.0'
     implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
         transitive = true;
     }
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 }
 
 

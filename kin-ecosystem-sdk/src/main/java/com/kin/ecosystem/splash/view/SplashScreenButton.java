@@ -96,7 +96,6 @@ public class SplashScreenButton extends FrameLayout {
     }
 
     private void setUpButtonAnimation() {
-
         ValueAnimator widthAnimation = ValueAnimator.ofInt(initialWidth, toWidth);
         widthAnimation.setDuration(BUTTON_ANIM_DURATION);
         widthAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -125,6 +124,8 @@ public class SplashScreenButton extends FrameLayout {
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 letsGetStartedBtn.setVisibility(INVISIBLE);
+                circleDash.setVisibility(VISIBLE);
+                centerImage.setVisibility(VISIBLE);
                 startDashAnimation();
                 startShowImageAnimation();
             }
@@ -133,6 +134,7 @@ public class SplashScreenButton extends FrameLayout {
     }
 
     private void startButtonAnimation() {
+    	letsGetStartedBtn.setClickable(false);
         buttonAnimation.start();
     }
 
@@ -245,6 +247,7 @@ public class SplashScreenButton extends FrameLayout {
         }
         circleDash.setVisibility(GONE);
         centerImage.setVisibility(GONE);
+		letsGetStartedBtn.setClickable(true);
     }
 
     private void cancelAndResetAnimations() {

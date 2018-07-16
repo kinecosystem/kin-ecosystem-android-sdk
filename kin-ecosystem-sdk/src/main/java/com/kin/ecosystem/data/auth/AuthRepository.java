@@ -31,13 +31,15 @@ public class AuthRepository implements AuthDataSource {
 	private AuthToken cachedAuthToken;
 	private ObservableData<String> appId = ObservableData.create(null);
 
-	private AuthRepository(@NonNull EventLogger eventLogger, @NonNull AuthDataSource.Local local, @NonNull AuthDataSource.Remote remote) {
+	private AuthRepository(@NonNull EventLogger eventLogger, @NonNull AuthDataSource.Local local,
+		@NonNull AuthDataSource.Remote remote) {
 		this.eventLogger = eventLogger;
 		this.localData = local;
 		this.remoteData = remote;
 	}
 
-	public static void init(@NonNull EventLogger eventLogger, @NonNull AuthDataSource.Local localData, @NonNull AuthDataSource.Remote remoteData) {
+	public static void init(@NonNull EventLogger eventLogger, @NonNull AuthDataSource.Local localData,
+		@NonNull AuthDataSource.Remote remoteData) {
 		if (instance == null) {
 			synchronized (AuthRepository.class) {
 				if (instance == null) {
@@ -165,6 +167,26 @@ public class AuthRepository implements AuthDataSource {
 		cachedAuthToken = authToken;
 		localData.setAuthToken(authToken);
 		postAppID(authToken.getAppID());
+	}
+
+	@Override
+	public void getAuthToken(@Nullable final KinCallback<AuthToken> callback) {
+		remoteData.getAuthToken(new Callback<AuthToken, ApiException>() {
+			@Override
+			public void onResponse(AuthToken authToken) {
+				setAuthToken(authToken);
+				if (callback != null) {
+					callback.onResponse(cachedAuthToken);
+				}
+			}
+
+			@Override
+			public void onFailure(ApiException exception) {
+				if (callback != null) {
+					callback.onFailure(ErrorUtil.fromApiException(exception));
+				}
+			}
+		});
 	}
 
 	private void postAppID(@Nullable String appID) {

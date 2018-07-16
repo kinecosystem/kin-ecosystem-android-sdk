@@ -17,13 +17,13 @@ import com.kin.ecosystem.exception.BlockchainException;
 import com.kin.ecosystem.exception.ClientException;
 import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.exception.ServiceException;
-import kin.ecosystem.core.network.ApiException;
-import kin.ecosystem.core.network.model.Error;
 import kin.core.exception.AccountNotActivatedException;
 import kin.core.exception.AccountNotFoundException;
 import kin.core.exception.CreateAccountException;
 import kin.core.exception.InsufficientKinException;
 import kin.core.exception.TransactionFailedException;
+import kin.ecosystem.core.network.ApiException;
+import kin.ecosystem.core.network.model.Error;
 
 public class ErrorUtil {
 

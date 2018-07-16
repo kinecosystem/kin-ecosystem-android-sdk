@@ -47,7 +47,7 @@ public class App extends Application {
             }
         }
 
-
+        Kin.enableLogs(true);
     }
 
     @NonNull

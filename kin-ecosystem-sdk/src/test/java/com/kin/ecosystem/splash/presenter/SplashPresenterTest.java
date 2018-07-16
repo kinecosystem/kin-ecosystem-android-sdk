@@ -1,23 +1,27 @@
 package com.kin.ecosystem.splash.presenter;
 
+import static com.kin.ecosystem.AccountManager.CREATION_COMPLETED;
+import static com.kin.ecosystem.AccountManager.REQUIRE_TRUSTLINE;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import com.kin.ecosystem.AccountManager;
 import com.kin.ecosystem.BaseTestClass;
-import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.KinCallback;
-import com.kin.ecosystem.bi.Event;
+import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.BackButtonOnWelcomeScreenPageTapped;
 import com.kin.ecosystem.bi.events.WelcomeScreenButtonTapped;
 import com.kin.ecosystem.bi.events.WelcomeScreenPageViewed;
-import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.data.auth.AuthDataSource;
-import com.kin.ecosystem.data.auth.AuthRepository;
 import com.kin.ecosystem.splash.view.ISplashView;
+import java.util.Timer;
+import java.util.TimerTask;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,83 +34,148 @@ import org.mockito.MockitoAnnotations;
 
 
 @RunWith(JUnit4.class)
-public class SplashPresenterTest extends BaseTestClass{
+public class SplashPresenterTest extends BaseTestClass {
 
-    @Mock
-    private AuthDataSource authRepository;
+	@Mock
+	private AccountManager accountManager;
 
-    @Mock
+	@Mock
+	private AuthDataSource authRepository;
+
+	@Mock
 	private EventLogger eventLogger;
 
-    @Mock
-    private ISplashView splashView;
+	@Mock
+	private Timer timer;
 
-    @Captor
-    private ArgumentCaptor<KinCallback<Void>> activateCapture;
+	@Mock
+	private ISplashView splashView;
 
-    private SplashPresenter splashPresenter;
+	@Captor
+	private ArgumentCaptor<KinCallback<Void>> activateCapture;
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        MockitoAnnotations.initMocks(this);
-        splashPresenter = new SplashPresenter(authRepository, eventLogger);
-        splashPresenter.onAttach(splashView);
-        assertNotNull(splashPresenter.getView());
-        verify(eventLogger).send(any(WelcomeScreenPageViewed.class));
-    }
+	private SplashPresenter splashPresenter;
 
-    @After
-    public void tearDown() throws Exception {
-        splashPresenter.onDetach();
-        assertNull(splashPresenter.getView());
-    }
+	@Before
+	public void setUp() throws Exception {
+		super.setUp();
+		MockitoAnnotations.initMocks(this);
+		splashPresenter = new SplashPresenter(accountManager, authRepository, eventLogger, timer);
+		splashPresenter.onAttach(splashView);
+		assertNotNull(splashPresenter.getView());
+		verify(eventLogger).send(any(WelcomeScreenPageViewed.class));
+	}
 
-    @Test
-    public void getStartedClicked_AnimationEndedNavigateMP() throws Exception {
-        splashPresenter.getStartedClicked();
-        verify(eventLogger).send(any(WelcomeScreenButtonTapped.class));
-        verify(authRepository).activateAccount(activateCapture.capture());
+	@After
+	public void tearDown() throws Exception {
+		splashPresenter.onDetach();
+		assertNull(splashPresenter.getView());
+	}
 
-        activateCapture.getValue().onResponse(null);
-        verify(splashView, times(0)).navigateToMarketPlace();
-        verify(splashView, times(1)).animateLoading();
+	@Test
+	public void getStartedClicked_AccountCreated_AnimationEndedNavigateMP() {
+		when(accountManager.getAccountState()).thenReturn(CREATION_COMPLETED);
+		splashPresenter.getStartedClicked();
+		verify(eventLogger).send(any(WelcomeScreenButtonTapped.class));
+		verify(authRepository).activateAccount(activateCapture.capture());
 
-        splashPresenter.onAnimationEnded();
-        verify(splashView, times(1)).navigateToMarketPlace();
-    }
+		activateCapture.getValue().onResponse(null);
+		verify(splashView, times(0)).navigateToMarketPlace();
+		verify(splashView, times(1)).animateLoading();
 
-    @Test
-    public void getStartedClicked_CallbackSuccessNavigateMP() throws Exception {
-        splashPresenter.getStartedClicked();
-        verify(authRepository).activateAccount(activateCapture.capture());
-        verify(splashView, times(1)).animateLoading();
+		splashPresenter.onAnimationEnded();
+		verify(splashView, times(1)).navigateToMarketPlace();
+	}
 
-        splashPresenter.onAnimationEnded();
-        verify(splashView, times(0)).navigateToMarketPlace();
+	@Test
+	public void getStartedClicked_AccountCreated_CallbackSuccessNavigateMP() {
+		when(accountManager.getAccountState()).thenReturn(CREATION_COMPLETED);
+		splashPresenter.getStartedClicked();
+		verify(authRepository).activateAccount(activateCapture.capture());
+		verify(splashView, times(1)).animateLoading();
 
-        activateCapture.getValue().onResponse(null);
-        verify(splashView, times(1)).navigateToMarketPlace();
-    }
+		splashPresenter.onAnimationEnded();
+		verify(splashView, times(0)).navigateToMarketPlace();
 
-    @Test
-    public void getStartedClicked_CallbackFailed_Reset() throws Exception {
-        splashPresenter.getStartedClicked();
-        verify(authRepository).activateAccount(activateCapture.capture());
+		activateCapture.getValue().onResponse(null);
+		verify(splashView, times(1)).navigateToMarketPlace();
+	}
 
-        splashPresenter.onAnimationEnded();
-        activateCapture.getValue().onFailure(null);
-        verify(splashView, times(1)).animateLoading();
-        verify(splashView, times(0)).navigateToMarketPlace();
+	@Test
+	public void getStartedClicked_AccountCreated_CallbackFailed_Reset() {
+		when(accountManager.getAccountState()).thenReturn(CREATION_COMPLETED);
+		splashPresenter.getStartedClicked();
+		verify(authRepository).activateAccount(activateCapture.capture());
 
-        verify(splashView, times(1)).showToast("Oops something went wrong...");
-        verify(splashView, times(1)).stopLoading(true);
-    }
+		splashPresenter.onAnimationEnded();
+		activateCapture.getValue().onFailure(null);
 
-    @Test
-    public void backButtonPressed_NavigateBack() throws Exception {
-        splashPresenter.backButtonPressed();
-        verify(eventLogger).send(any(BackButtonOnWelcomeScreenPageTapped.class));
-        verify(splashView, times(1)).navigateBack();
-    }
+		verify(splashView, times(1)).animateLoading();
+		verify(splashView, times(0)).navigateToMarketPlace();
+
+		verify(splashView, times(1)).showToast(ISplashPresenter.SOMETHING_WENT_WRONG);
+		verify(splashView, times(1)).stopLoading(true);
+	}
+
+	@Test
+	public void getStartedClicked_AccountNotCreated_NotNavigateToMP() {
+		when(accountManager.getAccountState()).thenReturn(REQUIRE_TRUSTLINE);
+		splashPresenter.getStartedClicked();
+		verify(authRepository).activateAccount(activateCapture.capture());
+		splashPresenter.onAnimationEnded();
+		activateCapture.getValue().onResponse(null);
+
+		verify(splashView, times(0)).navigateToMarketPlace();
+	}
+
+	@Test
+	public void getStartedClicked_AccountNotCreated_Timeout_NotNavigateToMP() {
+		ArgumentCaptor<TimerTask> timeoutTask = ArgumentCaptor.forClass(TimerTask.class);
+		ArgumentCaptor<Observer<Integer>> accountStateObserver = ArgumentCaptor.forClass(Observer.class);
+		when(accountManager.getAccountState()).thenReturn(REQUIRE_TRUSTLINE);
+
+		splashPresenter.getStartedClicked();
+		verify(timer).schedule(timeoutTask.capture(), anyLong());
+		verify(authRepository).activateAccount(activateCapture.capture());
+		verify(accountManager).addAccountStateObserver(accountStateObserver.capture());
+		verify(splashView, times(1)).animateLoading();
+
+		splashPresenter.onAnimationEnded();
+		activateCapture.getValue().onResponse(null);
+
+		timeoutTask.getValue().run();
+		verify(splashView).stopLoading(true);
+		verify(splashView).showToast(ISplashPresenter.TRY_AGAIN);
+		verify(splashView, times(0)).navigateToMarketPlace();
+		verify(accountManager).removeAccountStateObserver(accountStateObserver.getValue());
+	}
+
+	@Test
+	public void getStartedClicked_AccountNotCreated_ObserverOnChange_AccountCreated_NavigateToMP() {
+		ArgumentCaptor<TimerTask> timeoutTask = ArgumentCaptor.forClass(TimerTask.class);
+		ArgumentCaptor<Observer<Integer>> accountStateObserver = ArgumentCaptor.forClass(Observer.class);
+		when(accountManager.getAccountState()).thenReturn(REQUIRE_TRUSTLINE);
+
+		splashPresenter.getStartedClicked();
+		verify(timer).schedule(timeoutTask.capture(), anyLong());
+		verify(authRepository).activateAccount(activateCapture.capture());
+		verify(accountManager).addAccountStateObserver(accountStateObserver.capture());
+		verify(splashView, times(1)).animateLoading();
+
+		splashPresenter.onAnimationEnded();
+		activateCapture.getValue().onResponse(null);
+		verify(splashView, times(0)).navigateToMarketPlace();
+
+		accountStateObserver.getValue().onChanged(CREATION_COMPLETED);
+		verify(accountManager).removeAccountStateObserver(accountStateObserver.getValue());
+		verify(timer).purge();
+		verify(splashView).navigateToMarketPlace();
+	}
+
+	@Test
+	public void backButtonPressed_NavigateBack() {
+		splashPresenter.backButtonPressed();
+		verify(eventLogger).send(any(BackButtonOnWelcomeScreenPageTapped.class));
+		verify(splashView, times(1)).navigateBack();
+	}
 }
