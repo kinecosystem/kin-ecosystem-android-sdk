@@ -66,21 +66,6 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 	@Mock
 	private BlockchainEvents blockchainEvents;
 
-
-	@Captor
-	private ArgumentCaptor<EventListener<Void>> accountCreationCaptor;
-
-	@Mock
-	private ListenerRegistration accountRegistration;
-
-
-	@Mock
-	private Request<Void> activateAccountReq;
-
-	@Captor
-	private ArgumentCaptor<ResultCallback<Void>> accountActivateCaptor;
-
-
 	@Mock
 	private Request<kin.core.Balance> getBalanceReq;
 
@@ -101,8 +86,6 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 		when(kinClient.addAccount()).thenReturn(kinAccount);
 		when(kinAccount.blockchainEvents()).thenReturn(blockchainEvents);
 		when(kinAccount.getBalance()).thenReturn(getBalanceReq);
-		when(kinAccount.activate()).thenReturn(activateAccountReq);
-		when(blockchainEvents.addAccountCreationListener(any(EventListener.class))).thenReturn(accountRegistration);
 		when(balanceObj.value()).thenReturn(new BigDecimal(20));
 		when(kinAccount.getPublicAddress()).thenReturn(PUBLIC_ADDRESS);
 		doNothing().when(kinAccount).activateSync();
@@ -113,14 +96,6 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 		// Account Creation
 		verify(kinClient).addAccount();
 
-		verify(blockchainEvents).addAccountCreationListener(accountCreationCaptor.capture());
-		accountCreationCaptor.getValue().onEvent(null);
-
-		Thread.sleep(250);
-		verify(kinAccount).activateSync();
-		verify(eventLogger).send(any(StellarKinTrustlineSetupSucceeded.class));
-
-
 		// init Balance
 		verify(getBalanceReq).run(getBalanceCaptor.capture());
 		getBalanceCaptor.getValue().onResult(balanceObj);
@@ -128,9 +103,6 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 
 		when(kinClient.getAccount(0)).thenReturn(kinAccount);
 		balance = new Balance();
-
-
-
 	}
 
 
