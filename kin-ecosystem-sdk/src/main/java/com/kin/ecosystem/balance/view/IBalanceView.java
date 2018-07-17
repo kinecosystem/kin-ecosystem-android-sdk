@@ -7,7 +7,7 @@ import com.kin.ecosystem.base.IBaseView;
 
 public interface IBalanceView extends IBaseView<IBalancePresenter> {
 
-	void updateBalance(String balance);
+	void updateBalance(int balance);
 
 	void setWelcomeSubtitle();
 

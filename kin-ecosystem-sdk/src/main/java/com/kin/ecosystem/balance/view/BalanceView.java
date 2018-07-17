@@ -30,6 +30,8 @@ import com.kin.ecosystem.balance.presenter.IBalancePresenter;
 
 public class BalanceView extends ConstraintLayout implements IBalanceView {
 
+	private static final String BALANCE_ZERO_TEXT = "0.00";
+
 	private static final int ANIM_DURATION = 200;
 	private static final float FLOAT_1 = 1f;
 	private static final float FLOAT_0 = 0f;
@@ -177,12 +179,18 @@ public class BalanceView extends ConstraintLayout implements IBalanceView {
 	}
 
 	@Override
-	public void updateBalance(final String balance) {
+	public void updateBalance(final int balance) {
+		final String balanceString;
+		if (balance == 0) {
+			balanceString = BALANCE_ZERO_TEXT;
+		} else {
+			balanceString = getAmountFormatted(balance);
+		}
 		if (this.balanceText != null) {
 			post(new Runnable() {
 				@Override
 				public void run() {
-					balanceText.setText(balance);
+					balanceText.setText(balanceString);
 				}
 			});
 		}
@@ -190,10 +198,15 @@ public class BalanceView extends ConstraintLayout implements IBalanceView {
 
 	@Override
 	public void setWelcomeSubtitle() {
-		TextView nextTextView = (TextView) subTitleTextView.getNextView();
-		nextTextView.setTextColor(subTitleColor);
-		nextTextView.setText(R.string.kinecosystem_welcome_to_kin_marketplace);
-		subTitleTextView.showNext();
+		post(new Runnable() {
+			@Override
+			public void run() {
+				TextView nextTextView = (TextView) subTitleTextView.getNextView();
+				nextTextView.setTextColor(subTitleColor);
+				nextTextView.setText(R.string.kinecosystem_welcome_to_kin_marketplace);
+				subTitleTextView.showNext();
+			}
+		});
 	}
 
 	@Override
@@ -202,45 +215,48 @@ public class BalanceView extends ConstraintLayout implements IBalanceView {
 			post(new Runnable() {
 				@Override
 				public void run() {
-					int color;
-					String subtitle;
-					TextView nextTextView = (TextView) subTitleTextView.getNextView();
-					switch (orderStatus) {
-						case DELAYED:
-							subtitle = getResources().getString(R.string.kinecosystem_sorry_this_may_take_some_time);
-							color = orangeColor;
-							break;
-						case COMPLETED:
-							if (isSpend(orderType)) {
-								subtitle = getResources().getString(R.string.kinecosystem_spend_completed);
-								color = blueColor;
-							} else {
+					if (subTitleTextView != null) {
+						int color;
+						String subtitle;
+						TextView nextTextView = (TextView) subTitleTextView.getNextView();
+						switch (orderStatus) {
+							case DELAYED:
 								subtitle = getResources()
-									.getString(R.string.kinecosystem_earn_completed, getAmountFormatted(amount));
+									.getString(R.string.kinecosystem_sorry_this_may_take_some_time);
+								color = orangeColor;
+								break;
+							case COMPLETED:
+								if (isSpend(orderType)) {
+									subtitle = getResources().getString(R.string.kinecosystem_spend_completed);
+									color = blueColor;
+								} else {
+									subtitle = getResources()
+										.getString(R.string.kinecosystem_earn_completed, getAmountFormatted(amount));
+									color = subTitleColor;
+								}
+
+								break;
+							case FAILED:
+								subtitle = getResources().getString(R.string.kinecosystem_something_went_wrong);
+								color = redColor;
+								break;
+							case PENDING:
+							default:
+								if (isSpend(orderType)) {
+									subtitle = getResources().getString(R.string.kinecosystem_spend_pending);
+								} else {
+									subtitle = getResources()
+										.getString(R.string.kinecosystem_earn_pending, getAmountFormatted(amount));
+								}
 								color = subTitleColor;
-							}
+								break;
 
-							break;
-						case FAILED:
-							subtitle = getResources().getString(R.string.kinecosystem_something_went_wrong);
-							color = redColor;
-							break;
-						case PENDING:
-						default:
-							if (isSpend(orderType)) {
-								subtitle = getResources().getString(R.string.kinecosystem_spend_pending);
-							} else {
-								subtitle = getResources()
-									.getString(R.string.kinecosystem_earn_pending, getAmountFormatted(amount));
-							}
-							color = subTitleColor;
-							break;
+						}
 
+						nextTextView.setTextColor(color);
+						nextTextView.setText(subtitle);
+						subTitleTextView.showNext();
 					}
-
-					nextTextView.setTextColor(color);
-					nextTextView.setText(subtitle);
-					subTitleTextView.showNext();
 				}
 
 			});
@@ -253,7 +269,12 @@ public class BalanceView extends ConstraintLayout implements IBalanceView {
 
 	@Override
 	public void clearSubTitle() {
-		subTitleTextView.setText("");
+		post(new Runnable() {
+			@Override
+			public void run() {
+				subTitleTextView.setText("");
+			}
+		});
 	}
 
 

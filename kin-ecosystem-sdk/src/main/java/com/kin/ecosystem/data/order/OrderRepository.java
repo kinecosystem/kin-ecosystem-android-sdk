@@ -194,7 +194,11 @@ public class OrderRepository implements OrderDataSource {
 			@Override
 			public void onResponse(Order order) {
 				decrementPendingOrdersCount();
-				updateOrder(order);
+				getOrderWatcher().postValue(order);
+				sendSpendOrderCompleted(order);
+				if (!hasMorePendingOffers()) {
+					removeCachedOpenOrderByID(order.getOrderId());
+				}
 			}
 
 			@Override
@@ -207,14 +211,6 @@ public class OrderRepository implements OrderDataSource {
 	private void decrementPendingOrdersCount() {
 		if (hasMorePendingOffers()) {
 			pendingOrdersCount.decrementAndGet();
-		}
-	}
-
-	private void updateOrder(@NonNull Order order) {
-		getOrderWatcher().postValue(order);
-		sendSpendOrderCompleted(order);
-		if (!hasMorePendingOffers()) {
-			removeCachedOpenOrderByID(order.getOrderId());
 		}
 	}
 
@@ -264,7 +260,6 @@ public class OrderRepository implements OrderDataSource {
 		remoteData.cancelOrder(orderID, new Callback<Void, ApiException>() {
 			@Override
 			public void onResponse(Void response) {
-				removeCachedOpenOrderByID(orderID);
 				if (callback != null) {
 					callback.onResponse(response);
 				}

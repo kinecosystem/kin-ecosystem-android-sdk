@@ -3,10 +3,8 @@ package com.kin.ecosystem.marketplace.presenter;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
@@ -19,7 +17,6 @@ import com.kin.ecosystem.data.KinCallbackAdapter;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.offer.OfferDataSource;
 import com.kin.ecosystem.data.order.OrderDataSource;
-import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.main.INavigator;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.marketplace.view.IMarketplaceView;
@@ -71,7 +68,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		super.onAttach(view);
 		getCachedOffers();
 		getOffers();
-		listenToCompletedOrders();
+		listenToOrders();
 		eventLogger.send(MarketplacePageViewed.create());
 	}
 
@@ -97,7 +94,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		}
 	}
 
-	private void listenToCompletedOrders() {
+	private void listenToOrders() {
 		orderObserver = new Observer<Order>() {
 			@Override
 			public void onChanged(Order order) {
@@ -105,6 +102,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 					case PENDING:
 						removeOfferFromList(order.getOfferId(), order.getOfferType());
 						break;
+					case FAILED:
 					case COMPLETED:
 						getOffers();
 						break;

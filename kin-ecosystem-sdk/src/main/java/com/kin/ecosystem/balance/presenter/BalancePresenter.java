@@ -2,7 +2,6 @@ package com.kin.ecosystem.balance.presenter;
 
 import static com.kin.ecosystem.main.ScreenId.MARKETPLACE;
 import static com.kin.ecosystem.main.ScreenId.ORDER_HISTORY;
-import static kin.ecosystem.core.util.StringUtil.getAmountFormatted;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
@@ -22,8 +21,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 public class BalancePresenter extends BasePresenter<IBalanceView> implements IBalancePresenter {
-
-	private static final String BALANCE_ZERO_TEXT = "0.00";
 
 	private final EventLogger eventLogger;
 	private final BlockchainSource blockchainSource;
@@ -86,18 +83,13 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 
 	private void updateBalance(Balance balance) {
 		int balanceValue = balance.getAmount().intValue();
-		String balanceString;
-		if (balanceValue == 0) {
-			balanceString = BALANCE_ZERO_TEXT;
-		} else {
-			balanceString = getAmountFormatted(balanceValue);
-		}
 		if (view != null) {
-			view.updateBalance(balanceString);
+			view.updateBalance(balanceValue);
 		}
 	}
 
-	private int getType(OfferType offerType) {
+	private @OrderType
+	int getType(OfferType offerType) {
 		switch (offerType) {
 			case SPEND:
 				return SPEND;
@@ -140,7 +132,7 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 	}
 
 	private void decrementPendingCount() {
-		if(pendingOrderCount > 0) {
+		if (pendingOrderCount > 0) {
 			pendingOrderCount--;
 		}
 	}
@@ -149,7 +141,8 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 		return order != null && currentPendingOrder != null && currentPendingOrder.equals(order);
 	}
 
-	private @OrderStatus int getStatus(Order order) {
+	private @OrderStatus
+	int getStatus(@NonNull Order order) {
 		switch (order.getStatus()) {
 			case COMPLETED:
 				return COMPLETED;

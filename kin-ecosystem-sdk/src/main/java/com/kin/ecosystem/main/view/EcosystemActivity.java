@@ -1,7 +1,9 @@
 package com.kin.ecosystem.main.view;
 
-import static com.kin.ecosystem.main.ScreenId.MARKETPLACE;
+import  static com.kin.ecosystem.main.ScreenId.MARKETPLACE;
 import static com.kin.ecosystem.main.ScreenId.ORDER_HISTORY;
+import static com.kin.ecosystem.main.Title.MARKETPLACE_TITLE;
+import static com.kin.ecosystem.main.Title.ORDER_HISTORY_TITLE;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,11 +18,11 @@ import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.data.offer.OfferRepository;
 import com.kin.ecosystem.data.order.OrderRepository;
-import com.kin.ecosystem.history.presenter.IOrderHistoryPresenter;
 import com.kin.ecosystem.history.presenter.OrderHistoryPresenter;
 import com.kin.ecosystem.history.view.OrderHistoryFragment;
 import com.kin.ecosystem.main.INavigator;
 import com.kin.ecosystem.main.ScreenId;
+import com.kin.ecosystem.main.Title;
 import com.kin.ecosystem.main.presenter.EcosystemPresenter;
 import com.kin.ecosystem.main.presenter.IEcosystemPresenter;
 import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter;
@@ -78,8 +80,18 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	}
 
 	@Override
-	public void updateTitle(String title) {
-		getToolbar().setTitle(title);
+	public void updateTitle(@Title final int title) {
+		final int titleResId;
+		switch (title) {
+			case ORDER_HISTORY_TITLE:
+				titleResId = R.string.kinecosystem_transaction_history;
+				break;
+			case MARKETPLACE_TITLE:
+			default:
+				titleResId = R.string.kinecosystem_kin_marketplace;
+				break;
+		}
+		getToolbar().setTitle(titleResId);
 	}
 
 	@Override
@@ -128,7 +140,6 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 
 		new OrderHistoryPresenter(orderHistoryFragment,
 			OrderRepository.getInstance(),
-			this,
 			EventLoggerImpl.getInstance(),
 			isFirstSpendOrder);
 
@@ -140,8 +151,6 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 				R.anim.kinecosystem_slide_out_right)
 			.replace(R.id.fragment_frame, orderHistoryFragment, ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG)
 			.addToBackStack(null).commit();
-
-
 
 		setVisibleScreen(ORDER_HISTORY);
 	}
@@ -166,9 +175,9 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	public void navigateBack() {
 		int count = getSupportFragmentManager().getBackStackEntryCount();
 		if (count == 0) {
+			marketplacePresenter.backButtonPressed();
 			super.onBackPressed();
 			overridePendingTransition(0, R.anim.kinecosystem_slide_out_right);
-			marketplacePresenter.backButtonPressed();
 		} else {
 			getSupportFragmentManager().popBackStackImmediate();
 			setVisibleScreen(MARKETPLACE);

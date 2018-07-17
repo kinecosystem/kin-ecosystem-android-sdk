@@ -37,7 +37,6 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 
 	public OrderHistoryPresenter(@NonNull IOrderHistoryView view,
 		@NonNull final OrderDataSource orderRepository,
-		@NonNull final INavigator navigator,
 		@NonNull final EventLogger eventLogger,
 		boolean isFirstSpendOrder) {
 		this.view = view;
@@ -121,9 +120,12 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 		completedOrderObserver = new Observer<Order>() {
 			@Override
 			public void onChanged(Order order) {
-				addOrderOrUpdate(order);
-				if (isFirstSpendOrder) {
-					showCouponDialog(RedeemTrigger.SYSTEM_INIT, order);
+				Status status = order.getStatus();
+				if (status == Status.FAILED || status == Status.COMPLETED){
+					addOrderOrUpdate(order);
+					if (status == Status.COMPLETED && isFirstSpendOrder) {
+						showCouponDialog(RedeemTrigger.SYSTEM_INIT, order);
+					}
 				}
 			}
 		};
@@ -191,10 +193,6 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		release();
-	}
-
-	private void release() {
 		orderRepository.removeOrderObserver(completedOrderObserver);
 	}
 }
