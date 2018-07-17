@@ -110,11 +110,11 @@ public class BalancePresenterTest extends BaseTestClass {
 	public void test_Update_Balance() throws Exception {
 		Balance balance = new Balance();
 		balanceObserverCaptor.getValue().onChanged(balance);
-		verify(balanceView).updateBalance("0.00");
+		verify(balanceView).updateBalance(0);
 
 		balance.setAmount(new BigDecimal(30));
 		balanceObserverCaptor.getValue().onChanged(balance);
-		verify(balanceView).updateBalance("30");
+		verify(balanceView).updateBalance(30);
 	}
 
 	@Test
