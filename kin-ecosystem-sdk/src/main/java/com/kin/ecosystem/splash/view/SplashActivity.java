@@ -19,7 +19,7 @@ import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.bi.EventLoggerImpl;
 import com.kin.ecosystem.data.auth.AuthRepository;
-import com.kin.ecosystem.marketplace.view.MarketplaceActivity;
+import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.splash.presenter.ISplashPresenter;
 import com.kin.ecosystem.splash.presenter.ISplashPresenter.Message;
 import com.kin.ecosystem.splash.presenter.SplashPresenter;
@@ -110,7 +110,7 @@ public class SplashActivity extends AppCompatActivity implements ISplashView {
 
     @Override
     public void navigateToMarketPlace() {
-        Intent marketplaceIntent = new Intent(this, MarketplaceActivity.class);
+        Intent marketplaceIntent = new Intent(this, EcosystemActivity.class);
         startActivity(marketplaceIntent);
         finish();
     }

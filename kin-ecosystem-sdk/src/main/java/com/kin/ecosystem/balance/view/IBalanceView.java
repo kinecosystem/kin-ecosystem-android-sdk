@@ -1,11 +1,19 @@
 package com.kin.ecosystem.balance.view;
 
-import com.kin.ecosystem.base.IBasePresenter;
+import com.kin.ecosystem.balance.presenter.BalancePresenter.OrderStatus;
+import com.kin.ecosystem.balance.presenter.BalancePresenter.OrderType;
+import com.kin.ecosystem.balance.presenter.IBalancePresenter;
 import com.kin.ecosystem.base.IBaseView;
 
-public interface IBalanceView extends IBaseView<IBasePresenter<IBalanceView>> {
+public interface IBalanceView extends IBaseView<IBalancePresenter> {
 
-    void updateBalance(String balance);
+	void updateBalance(int balance);
 
-    void updateSubTitle(String subTitle);
+	void setWelcomeSubtitle();
+
+	void updateSubTitle(final int amount, @OrderStatus final int status, @OrderType final int orderType);
+
+	void clearSubTitle();
+
+	void animateArrow(boolean showArrow);
 }

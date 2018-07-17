@@ -18,10 +18,6 @@ public interface OfferDataSource {
 
 	void getOffers(KinCallback<OfferList> callback);
 
-	ObservableData<Offer> getPendingOffer();
-
-	void setPendingOfferByID(String offerID);
-
 	void addNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer);
 
 	void removeNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer);
