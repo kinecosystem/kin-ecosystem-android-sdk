@@ -21,6 +21,12 @@
     <string name="kinecosystem_digging_for_gems">Digging for Gems…</string>
     <string name="kinecosystem_welcome_to_kin_marketplace">Welcome to Kin Marketplace</string>
     <string name="kinecosystem_something_went_wrong">Oops something went wrong…</string>
+    <string name="kinecosystem_earn_pending">Thanks! %s Kin are on the way</string>
+    <string name="kinecosystem_spend_pending">Thanks! We\'re generating your code…</string>
+    <string name="kinecosystem_earn_completed">Done! %s Kin earned</string>
+    <string name="kinecosystem_spend_completed">Great, your code is ready</string>
+    <string name="kinecosystem_sorry_this_may_take_some_time">Sorry - this may take some time</string>
+
 
     <!--Menu-->
     <string name="kinecosystem_info_menu">Info</string>

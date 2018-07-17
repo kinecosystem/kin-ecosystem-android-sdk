@@ -5,20 +5,19 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.BackButtonOnMarketplacePageTapped;
-import com.kin.ecosystem.bi.events.BalanceTapped;
 import com.kin.ecosystem.bi.events.EarnOfferTapped;
 import com.kin.ecosystem.bi.events.MarketplacePageViewed;
 import com.kin.ecosystem.bi.events.NotEnoughKinPageViewed;
 import com.kin.ecosystem.bi.events.SpendOfferTapped;
+import com.kin.ecosystem.data.KinCallbackAdapter;
 import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.offer.OfferDataSource;
 import com.kin.ecosystem.data.order.OrderDataSource;
-import com.kin.ecosystem.exception.KinEcosystemException;
+import com.kin.ecosystem.main.INavigator;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.marketplace.view.IMarketplaceView;
 import com.kin.ecosystem.network.model.Offer;
@@ -39,30 +38,29 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private final OfferDataSource offerRepository;
 	private final OrderDataSource orderRepository;
 	private final BlockchainSource blockchainSource;
+	private final INavigator navigator;
 	private final EventLogger eventLogger;
 
-	private List<Offer> spendList = new ArrayList<>();
-	private List<Offer> earnList = new ArrayList<>();
+	private List<Offer> spendList;
+	private List<Offer> earnList;
 
-	private Observer<Offer> pendingOfferObserver;
-	private Observer<Order> completedOrderObserver;
-
-	private boolean isEarnListEmpty;
-	private boolean isSpendListEmpty;
+	private Observer<Order> orderObserver;
 
 
 	private final Gson gson;
 
-	public MarketplacePresenter(@NonNull final OfferDataSource offerRepository,
-		@NonNull final OrderDataSource orderRepository, @Nullable final BlockchainSource blockchainSource, @NonNull
-		EventLogger eventLogger) {
-		this.spendList = new ArrayList<>();
-		this.earnList = new ArrayList<>();
+	public MarketplacePresenter(@NonNull final IMarketplaceView view, @NonNull final OfferDataSource offerRepository,
+		@NonNull final OrderDataSource orderRepository, @Nullable final BlockchainSource blockchainSource,
+		@NonNull INavigator navigator, @NonNull EventLogger eventLogger) {
+		this.view = view;
 		this.offerRepository = offerRepository;
 		this.orderRepository = orderRepository;
 		this.blockchainSource = blockchainSource;
+		this.navigator = navigator;
 		this.eventLogger = eventLogger;
 		this.gson = new Gson();
+
+		this.view.attachPresenter(this);
 	}
 
 	@Override
@@ -70,67 +68,84 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		super.onAttach(view);
 		getCachedOffers();
 		getOffers();
-		listenToPendingOffers();
-		listenToCompletedOrders();
+		listenToOrders();
 		eventLogger.send(MarketplacePageViewed.create());
 	}
 
 	private void getCachedOffers() {
-		OfferList cachedOfferList = offerRepository.getCachedOfferList();
-		setOfferList(cachedOfferList);
+		if(earnList == null && spendList == null) {
+			earnList = new ArrayList<>();
+			spendList = new ArrayList<>();
+			OfferList cachedOfferList = offerRepository.getCachedOfferList();
+			if (cachedOfferList != null && cachedOfferList.getOffers() != null) {
+				splitOffersByType(cachedOfferList.getOffers(), this.earnList, this.spendList);
+			}
+		}
+		setOfferLists();
 	}
 
-	private void listenToCompletedOrders() {
-		completedOrderObserver = new Observer<Order>() {
+	private void setOfferLists() {
+		if (this.view != null) {
+			this.view.setEarnList(earnList);
+			this.view.setSpendList(spendList);
+
+			setEarnEmptyViewState();
+			setSpendEmptyViewState();
+		}
+	}
+
+	private void listenToOrders() {
+		orderObserver = new Observer<Order>() {
 			@Override
 			public void onChanged(Order order) {
-				getOffers();
+				switch (order.getStatus()) {
+					case PENDING:
+						removeOfferFromList(order.getOfferId(), order.getOfferType());
+						break;
+					case FAILED:
+					case COMPLETED:
+						getOffers();
+						break;
+				}
+
 			}
 		};
-		orderRepository.addCompletedOrderObserver(completedOrderObserver);
+		orderRepository.addOrderObserver(orderObserver);
 	}
 
-	private void listenToPendingOffers() {
-		pendingOfferObserver = new Observer<Offer>() {
-			@Override
-			public void onChanged(Offer offer) {
-				if (offer != null) {
-					removeOfferFromList(offer);
+	private void removeOfferFromList(String offerId, OfferType offerType) {
+		if (offerType == OfferType.EARN) {
+			for (int i = 0; i < earnList.size(); i++) {
+				Offer offer = earnList.get(i);
+				if (offer.getId().equals(offerId)) {
+					earnList.remove(i);
+					notifyEarnItemRemoved(i);
+					setEarnEmptyViewState();
+					return;
 				}
 			}
-		};
-		offerRepository.getPendingOffer().addObserver(pendingOfferObserver);
-	}
-
-	private void removeOfferFromList(Offer offer) {
-		int index;
-		if (offer.getOfferType() == OfferType.EARN) {
-			index = earnList.indexOf(offer);
-			if (index != NOT_FOUND) {
-				earnList.remove(index);
-				notifyEarnItemRemoved(index);
-				setEarnEmptyViewState();
-			}
-
 		} else {
-			index = spendList.indexOf(offer);
-			if (index != NOT_FOUND) {
-				spendList.remove(index);
-				notifySpendItemRemoved(index);
-				setSpendEmptyViewState();
+			for (int i = 0; i < spendList.size(); i++) {
+				Offer offer = spendList.get(i);
+				if (offer.getId().equals(offerId)) {
+					spendList.remove(i);
+					notifySpendItemRemoved(i);
+					setSpendEmptyViewState();
+					return;
+				}
 			}
 		}
 	}
 
 	private void setEarnEmptyViewState() {
-		isEarnListEmpty = earnList.isEmpty();
+		boolean isEarnListEmpty = earnList.isEmpty();
 		if (view != null) {
 			view.updateEarnSubtitle(isEarnListEmpty);
 		}
 	}
 
 	private void setSpendEmptyViewState() {
-		isSpendListEmpty = spendList.isEmpty();
+		boolean isSpendListEmpty = spendList.isEmpty();
 		if (view != null) {
 			view.updateSpendSubtitle(isSpendListEmpty);
 		}
@@ -144,7 +159,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private void notifyEarnItemInserted(int index) {
 		if (view != null) {
-			view.notifyEarnItemInserted(getSafeIndexEarnEmptyState(index));
+			view.notifyEarnItemInserted(index);
 		}
 	}
 
@@ -156,16 +171,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private void notifySpendItemInserted(int index) {
 		if (view != null) {
-			view.notifySpendItemInserted(getSafeIndexSpendEmptyState(index));
+			view.notifySpendItemInserted(index);
 		}
-	}
-
-	private int getSafeIndexEarnEmptyState(final int index) {
-		return isEarnListEmpty ? 1 : index;
-	}
-
-	private int getSafeIndexSpendEmptyState(final int index) {
-		return isSpendListEmpty ? 1 : index;
 	}
 
 	@Override
@@ -175,21 +182,15 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void release() {
-		offerRepository.getPendingOffer().removeObserver(pendingOfferObserver);
-		orderRepository.removeCompletedOrderObserver(completedOrderObserver);
+		orderRepository.removeOrderObserver(orderObserver);
 	}
 
 	@Override
 	public void getOffers() {
-		this.offerRepository.getOffers(new KinCallback<OfferList>() {
+		this.offerRepository.getOffers(new KinCallbackAdapter<OfferList>() {
 			@Override
 			public void onResponse(OfferList offerList) {
 				syncOffers(offerList);
-			}
-
-			@Override
-			public void onFailure(KinEcosystemException exception) {
-				//TODO show error msg
 			}
 		});
 	}
@@ -259,20 +260,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private boolean isSpend(OfferType offerType) {
 		return offerType == OfferType.SPEND;
-	}
-
-	private void setOfferList(OfferList offerList) {
-		if (offerList != null && offerList.getOffers() != null) {
-			splitOffersByType(offerList.getOffers(), this.earnList, this.spendList);
-		}
-
-		if (this.view != null) {
-			this.view.setEarnList(earnList);
-			this.view.setSpendList(spendList);
-
-			setEarnEmptyViewState();
-			setSpendEmptyViewState();
-		}
 	}
 
 	private void splitOffersByType(List<Offer> list, List<Offer> earnList, List<Offer> spendList) {
@@ -352,14 +339,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	@Override
-	public void balanceItemClicked() {
-		eventLogger.send(BalanceTapped.create());
-		if (view != null) {
-			view.navigateToOrderHistory();
-		}
-	}
-
-	@Override
 	public void showOfferActivityFailed() {
 		showSomethingWentWrong();
 	}
@@ -367,9 +346,11 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	@Override
 	public void backButtonPressed() {
 		eventLogger.send(BackButtonOnMarketplacePageTapped.create());
-		if (view != null) {
-			view.navigateBack();
-		}
+	}
+
+	@Override
+	public INavigator getNavigator() {
+		return navigator;
 	}
 
 	private void showSpendDialog(@NonNull final OfferInfo offerInfo, @NonNull final Offer offer) {

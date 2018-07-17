@@ -1,22 +1,23 @@
 package com.kin.ecosystem.marketplace.view;
 
-import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ImageView;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BottomDialog;
-import com.kin.ecosystem.history.view.OrderHistoryActivity;
+import com.kin.ecosystem.main.INavigator;
 import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
 
 
 public class SpendDialog extends BottomDialog<ISpendDialogPresenter> implements ISpendDialog {
 
     private ImageView confirmationImage;
+    private INavigator navigator;
 
-    public SpendDialog(@NonNull Activity activity, @NonNull ISpendDialogPresenter presenter) {
-        super(activity, presenter, R.layout.kinecosystem_dialog_spend);
-        setOwnerActivity(activity);
+    SpendDialog(@NonNull Context context, @NonNull INavigator navigator, @NonNull ISpendDialogPresenter presenter) {
+        super(context, presenter, R.layout.kinecosystem_dialog_spend);
+        this.navigator = navigator;
     }
 
     @Override
@@ -37,11 +38,7 @@ public class SpendDialog extends BottomDialog<ISpendDialogPresenter> implements 
 
     @Override
     public void navigateToOrderHistory() {
-        Activity owner = getOwnerActivity();
-        if (owner != null) {
-            owner.startActivity(OrderHistoryActivity.createIntent(getContext(), true));
-            owner.overridePendingTransition(R.anim.kinecosystem_slide_in_right, R.anim.kinecosystem_slide_out_left);
-        }
+        navigator.navigateToOrderHistory(true);
     }
 
     @Override

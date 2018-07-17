@@ -15,6 +15,7 @@ import com.kin.ecosystem.data.model.Coupon.CouponInfo;
 import com.kin.ecosystem.data.order.OrderDataSource;
 import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.history.view.IOrderHistoryView;
+import com.kin.ecosystem.main.INavigator;
 import com.kin.ecosystem.network.model.CouponCodeResult;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.Order.Status;
@@ -34,11 +35,17 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 
 	private boolean isFirstSpendOrder;
 
-	public OrderHistoryPresenter(@NonNull final OrderDataSource orderRepository, @NonNull final EventLogger eventLogger,boolean isFirstSpendOrder) {
+	public OrderHistoryPresenter(@NonNull IOrderHistoryView view,
+		@NonNull final OrderDataSource orderRepository,
+		@NonNull final EventLogger eventLogger,
+		boolean isFirstSpendOrder) {
+		this.view = view;
 		this.orderRepository = orderRepository;
 		this.eventLogger = eventLogger;
 		this.isFirstSpendOrder = isFirstSpendOrder;
 		this.gson = new Gson();
+
+		view.attachPresenter(this);
 	}
 
 	@Override
@@ -113,13 +120,16 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 		completedOrderObserver = new Observer<Order>() {
 			@Override
 			public void onChanged(Order order) {
-				addOrderOrUpdate(order);
-				if (isFirstSpendOrder) {
-					showCouponDialog(RedeemTrigger.SYSTEM_INIT, order);
+				Status status = order.getStatus();
+				if (status == Status.FAILED || status == Status.COMPLETED){
+					addOrderOrUpdate(order);
+					if (status == Status.COMPLETED && isFirstSpendOrder) {
+						showCouponDialog(RedeemTrigger.SYSTEM_INIT, order);
+					}
 				}
 			}
 		};
-		orderRepository.addCompletedOrderObserver(completedOrderObserver);
+		orderRepository.addOrderObserver(completedOrderObserver);
 	}
 
 	private void addOrderOrUpdate(Order order) {
@@ -183,10 +193,6 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		release();
-	}
-
-	private void release() {
-		orderRepository.removeCompletedOrderObserver(completedOrderObserver);
+		orderRepository.removeOrderObserver(completedOrderObserver);
 	}
 }
