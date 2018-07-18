@@ -1,34 +1,25 @@
 package com.kin.ecosystem.base.transformation;
 
+import static com.kin.ecosystem.base.transformation.CornerType.ALL;
+import static com.kin.ecosystem.base.transformation.CornerType.BOTTOM;
+import static com.kin.ecosystem.base.transformation.CornerType.BOTTOM_LEFT;
+import static com.kin.ecosystem.base.transformation.CornerType.BOTTOM_RIGHT;
+import static com.kin.ecosystem.base.transformation.CornerType.LEFT;
+import static com.kin.ecosystem.base.transformation.CornerType.RIGHT;
+import static com.kin.ecosystem.base.transformation.CornerType.TOP;
+import static com.kin.ecosystem.base.transformation.CornerType.TOP_LEFT;
+import static com.kin.ecosystem.base.transformation.CornerType.TOP_RIGHT;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import android.support.annotation.IntDef;
 import com.squareup.picasso.Transformation;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 
 public class RoundedCornersTransformation implements Transformation {
-
-    public static final int ALL = 0;
-    public static final int TOP_LEFT = 1;
-    public static final int TOP_RIGHT = 2;
-    public static final int BOTTOM_LEFT = 3;
-    public static final int BOTTOM_RIGHT = 4;
-    public static final int TOP = 5;
-    public static final int BOTTOM = 6;
-    public static final int LEFT = 7;
-    public static final int RIGHT = 8;
-
-    @IntDef({ALL, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, TOP, BOTTOM, LEFT, RIGHT})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface CornerType {
-
-    }
 
     private int mRadius;
     private int mDiameter;

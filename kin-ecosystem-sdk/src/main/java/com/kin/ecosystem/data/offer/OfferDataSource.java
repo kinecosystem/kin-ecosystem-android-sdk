@@ -7,7 +7,6 @@ import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.marketplace.model.NativeOffer;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
-import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OfferList;
 import kin.ecosystem.core.network.ApiException;
 
