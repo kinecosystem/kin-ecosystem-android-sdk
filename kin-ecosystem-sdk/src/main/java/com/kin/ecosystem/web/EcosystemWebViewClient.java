@@ -6,6 +6,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import com.kin.ecosystem.Log;
+import com.kin.ecosystem.Logger;
 
 public class EcosystemWebViewClient extends WebViewClient {
 
@@ -17,11 +18,11 @@ public class EcosystemWebViewClient extends WebViewClient {
 
     @Override
     public void onPageFinished(WebView view, String url) {
-		new Log().withTag(TAG).text("onPageFinished(WEB_VIEW, \"" + url + "\")").log();
+		Logger.log(new Log().withTag(TAG).text("onPageFinished(WEB_VIEW, \"" + url + "\")"));
     }
 
     @Override
     public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-		new Log().withTag(TAG).text("onReceivedError(WEB_VIEW, REQUEST, \"" + error.toString() + "\")").log();
+		Logger.log(new Log().withTag(TAG).text("onReceivedError(WEB_VIEW, REQUEST, \"" + error.toString() + "\")"));
     }
 }

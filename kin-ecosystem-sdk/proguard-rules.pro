@@ -5,3 +5,8 @@
 -keepclassmembers class * {
     @android.webkit.JavascriptInterface <methods>;
 }
+
+# Remove logs code in release
+-assumenosideeffects class com.kin.ecosystem.Logger {
+    public static *** log(...);
+}

@@ -45,7 +45,9 @@ public class Log {
 	}
 
 	public Log text(String name) {
-		content.append(name).append(SPACE);
+		content.append(SPACE)
+			.append(name)
+			.append(SPACE);
 		return this;
 	}
 

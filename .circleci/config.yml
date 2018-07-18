@@ -31,10 +31,10 @@ jobs:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
-      # run tests!
+      # Run tests!
       - run:
           name: Build And Test
-          command: ./gradlew assembleDebug -Pandroid.buildOnlyTargetAbi=false -Pcircleci test
+          command: ./gradlew assemble -Pandroid.buildOnlyTargetAbi=false -Pcircleci test
       # Store APK
       - store_artifacts:
                 path: app/build/outputs/apk/

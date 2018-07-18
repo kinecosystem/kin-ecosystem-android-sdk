@@ -9,6 +9,7 @@ import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.Log;
+import com.kin.ecosystem.Logger;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
@@ -113,7 +114,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	private void startAccountCreationListener() {
-		new Log().withTag(TAG).text("startAccountCreationListener").log();
+		Logger.log(new Log().withTag(TAG).text("startAccountCreationListener"));
 		accountCreationRegistration = account.blockchainEvents()
 			.addAccountCreationListener(new EventListener<Void>() {
 				@Override
@@ -176,14 +177,14 @@ public class BlockchainSourceImpl implements BlockchainSource {
 						@Override
 						public void onResult(TransactionId result) {
 							eventLogger.send(SpendTransactionBroadcastToBlockchainSucceeded.create(result.id(), offerID, orderID));
-							new Log().withTag(TAG).put("sendTransaction onResult", result.id()).log();
+							Logger.log(new Log().withTag(TAG).put("sendTransaction onResult", result.id()));
 						}
 
 						@Override
 						public void onError(Exception e) {
 							eventLogger.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
 							completedPayment.postValue(new Payment(orderID, false, e));
-							new Log().withTag(TAG).priority(ERROR).put("sendTransaction onError", e.getMessage()).log();
+							Logger.log(new Log().withTag(TAG).priority(ERROR).put("sendTransaction onError", e.getMessage()));
 						}
 					});
 			}
@@ -193,7 +194,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				final String errorMessage = "Trustline failed - " + e.getMessage();
 				eventLogger.send(SpendTransactionBroadcastToBlockchainFailed.create(errorMessage, offerID, orderID));
 				completedPayment.postValue(new Payment(orderID, false, e));
-				new Log().withTag(TAG).priority(ERROR).put("sendTransaction onError", e.getMessage()).log();
+				Logger.log(new Log().withTag(TAG).priority(ERROR).put("sendTransaction onError", e.getMessage()));
 			}
 		});
 
@@ -231,7 +232,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 						callback.onResponse(balance.getValue());
 					}
 				});
-				new Log().withTag(TAG).put("getBalance onResult", balanceObj.value().intValue()).log();
+				Logger.log(new Log().withTag(TAG).put("getBalance onResult", balanceObj.value().intValue()));
 			}
 
 			@Override
@@ -242,7 +243,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 						callback.onFailure(ErrorUtil.getBlockchainException(e));
 					}
 				});
-				new Log().withTag(TAG).priority(ERROR).put("getBalance onError", e).log();
+				Logger.log(new Log().withTag(TAG).priority(ERROR).put("getBalance onError", e));
 			}
 		});
 	}
@@ -253,7 +254,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		// if the values are not equals so we need to update,
 		// no need to update for equal values.
 		if (balanceTemp.getAmount().compareTo(balanceObj.value()) != 0) {
-			new Log().withTag(TAG).text("setBalance: Balance changed, should get update").log();
+			Logger.log(new Log().withTag(TAG).text("setBalance: Balance changed, should get update"));
 			balanceTemp.setAmount(balanceObj.value());
 			balance.postValue(balanceTemp);
 			local.setBalance(balanceObj.value().intValue());
@@ -269,7 +270,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	public void addBalanceObserverAndStartListen(@NonNull Observer<Balance> observer) {
 		addBalanceObserver(observer);
-		new Log().withTag(TAG).put("addBalanceObserverAndStartListen count", balanceObserversCount).log();
+		Logger.log(new Log().withTag(TAG).put("addBalanceObserverAndStartListen count", balanceObserversCount));
 		incrementBalanceCount();
 	}
 
@@ -283,7 +284,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	private void startBalanceListener() {
-		new Log().withTag(TAG).text("startBalanceListener");
+		Logger.log(new Log().withTag(TAG).text("startBalanceListener"));
 		balanceRegistration = account.blockchainEvents()
 			.addBalanceListener(new EventListener<kin.core.Balance>() {
 				@Override
@@ -297,7 +298,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	@Override
 	public void removeBalanceObserver(@NonNull Observer<Balance> observer) {
-		new Log().withTag(TAG).text("removeBalanceObserver");
+		Logger.log(new Log().withTag(TAG).text("removeBalanceObserver"));
 		balance.removeObserver(observer);
 	}
 
@@ -315,10 +316,10 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 			if (balanceObserversCount == 0) {
 				removeRegistration(balanceRegistration);
-				new Log().withTag(TAG).text("decrementBalanceCount: removeRegistration").log();
+				Logger.log(new Log().withTag(TAG).text("decrementBalanceCount: removeRegistration"));
 			}
 		}
-		new Log().withTag(TAG).put("decrementBalanceCount: count", balanceObserversCount).log();
+		Logger.log(new Log().withTag(TAG).put("decrementBalanceCount: count", balanceObserversCount));
 	}
 
 
@@ -352,11 +353,11 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				@Override
 				public void onEvent(PaymentInfo data) {
 					String orderID = extractOrderId(data.memo());
-					new Log().withTag(TAG).put("startPaymentListener onEvent: the orderId", orderID)
-						.put("with memo", data.memo()).log();
+					Logger.log(new Log().withTag(TAG).put("startPaymentListener onEvent: the orderId", orderID)
+						.put("with memo", data.memo()));
 					if (orderID != null) {
 						completedPayment.postValue(new Payment(orderID, data.hash().id(), data.amount()));
-						new Log().withTag(TAG).put("completedPayment order id", orderID).log();
+						Logger.log(new Log().withTag(TAG).put("completedPayment order id", orderID));
 					}
 					// UpdateBalance if there is no balance sse open connection.
 					if (balanceObserversCount == 0) {
