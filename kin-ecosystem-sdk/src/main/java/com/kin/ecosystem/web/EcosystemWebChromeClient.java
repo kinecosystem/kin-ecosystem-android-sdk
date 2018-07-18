@@ -7,6 +7,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Toast;
 import com.kin.ecosystem.Log;
+import com.kin.ecosystem.Logger;
 
 public class EcosystemWebChromeClient extends WebChromeClient {
 
@@ -20,13 +21,13 @@ public class EcosystemWebChromeClient extends WebChromeClient {
 
     @Override
     public boolean onConsoleMessage(final ConsoleMessage consoleMessage) {
-        new Log().withTag(TAG).text("onConsoleMessage(\"" + consoleMessage.message() + "\")").log();
+        Logger.log(new Log().withTag(TAG).text("onConsoleMessage(\"" + consoleMessage.message() + "\")"));
         return true;
     }
 
     @Override
     public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-        new Log().withTag(TAG).text("onJsAlert(WEB_VIEW, \"" + url + "\"), \"" + message + "\", RESULT)").log();
+        Logger.log(new Log().withTag(TAG).text("onJsAlert(WEB_VIEW, \"" + url + "\"), \"" + message + "\", RESULT)"));
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         return true;
     }
