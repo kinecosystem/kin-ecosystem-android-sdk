@@ -191,7 +191,7 @@ public class OrderRemoteData implements OrderDataSource.Remote {
         try {
             ordersApi.cancelOrder(orderID, "");
         } catch (ApiException e) {
-			new Log().withTag(TAG).put("Cancel order", orderID).put("sync failed, code", e.getCode()).log();
+			new Log().withTag(TAG).priority(Log.ERROR).put("Cancel order", orderID).put("sync failed, code", e.getCode()).log();
         }
     }
 
@@ -226,7 +226,7 @@ public class OrderRemoteData implements OrderDataSource.Remote {
         try {
             order = ordersApi.getOrder(orderID, "");
         } catch (ApiException e) {
-			new Log().withTag(TAG).put("Get order", orderID).put("sync failed, code",e.getCode()).log();
+			new Log().withTag(TAG).priority(Log.ERROR).put("Get order", orderID).put("sync failed, code",e.getCode()).log();
         }
         return order;
     }

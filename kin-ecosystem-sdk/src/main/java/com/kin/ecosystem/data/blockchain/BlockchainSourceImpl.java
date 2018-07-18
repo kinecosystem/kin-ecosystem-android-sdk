@@ -1,5 +1,7 @@
 package com.kin.ecosystem.data.blockchain;
 
+import static com.kin.ecosystem.Log.ERROR;
+
 import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -181,7 +183,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 						public void onError(Exception e) {
 							eventLogger.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
 							completedPayment.postValue(new Payment(orderID, false, e));
-							new Log().withTag(TAG).put("sendTransaction onError", e.getMessage()).log();
+							new Log().withTag(TAG).priority(ERROR).put("sendTransaction onError", e.getMessage()).log();
 						}
 					});
 			}
@@ -191,7 +193,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				final String errorMessage = "Trustline failed - " + e.getMessage();
 				eventLogger.send(SpendTransactionBroadcastToBlockchainFailed.create(errorMessage, offerID, orderID));
 				completedPayment.postValue(new Payment(orderID, false, e));
-				new Log().withTag(TAG).put("sendTransaction onError", e.getMessage()).log();
+				new Log().withTag(TAG).priority(ERROR).put("sendTransaction onError", e.getMessage()).log();
 			}
 		});
 
@@ -240,7 +242,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 						callback.onFailure(ErrorUtil.getBlockchainException(e));
 					}
 				});
-				new Log().withTag(TAG).put("getBalance onError", e).log();
+				new Log().withTag(TAG).priority(ERROR).put("getBalance onError", e).log();
 			}
 		});
 	}

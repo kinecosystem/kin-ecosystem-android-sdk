@@ -1,8 +1,9 @@
 package com.kin.ecosystem;
 
-import static com.kin.ecosystem.Logger.DEBUG;
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
-import com.kin.ecosystem.Logger.Priority;
+import android.support.annotation.IntDef;
+import java.lang.annotation.Retention;
 
 public class Log {
 	private static String COLON = ": ";
@@ -12,6 +13,17 @@ public class Log {
 	private int priority = DEBUG;
 	private String tag;
 	private StringBuilder content = new StringBuilder();
+
+	public static final int DEBUG = 3;
+	public static final int INFO = 4;
+	public static final int WARN = 5;
+	public static final int ERROR = 6;
+
+	@IntDef({DEBUG, INFO, WARN, ERROR})
+	@Retention(SOURCE)
+	public @interface Priority {
+
+	}
 
 	public Log priority(@Priority final int priority) {
 		this.priority = priority;
