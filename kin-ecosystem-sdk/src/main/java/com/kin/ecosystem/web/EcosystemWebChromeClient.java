@@ -1,14 +1,17 @@
 package com.kin.ecosystem.web;
 
 import android.content.Context;
-import android.util.Log;
 import android.webkit.ConsoleMessage;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Toast;
+import com.kin.ecosystem.Log;
 
 public class EcosystemWebChromeClient extends WebChromeClient {
+
+    private static final String TAG = EcosystemWebChromeClient.class.getSimpleName();
+
     private final Context context;
 
     EcosystemWebChromeClient(final Context context) {
@@ -17,13 +20,13 @@ public class EcosystemWebChromeClient extends WebChromeClient {
 
     @Override
     public boolean onConsoleMessage(final ConsoleMessage consoleMessage) {
-        Log.d("WebChromeClient", "onConsoleMessage(\"" + consoleMessage.message() + "\")");
+        new Log().withTag(TAG).text("onConsoleMessage(\"" + consoleMessage.message() + "\")").log();
         return true;
     }
 
     @Override
     public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-        Log.d("WebChromeClient", "onJsAlert(WEB_VIEW, \"" + url + "\"), \"" + message + "\", RESULT)");
+        new Log().withTag(TAG).text("onJsAlert(WEB_VIEW, \"" + url + "\"), \"" + message + "\", RESULT)").log();
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         return true;
     }

@@ -81,21 +81,21 @@ public class Kin {
 	}
 
 	private static SignInData getWhiteListSignInData(@NonNull final WhitelistData whitelistData) {
-		SignInData signInData = new SignInData()
+		return new SignInData()
 			.signInType(SignInTypeEnum.WHITELIST)
 			.userId(whitelistData.getUserID())
 			.appId(whitelistData.getAppID())
 			.apiKey(whitelistData.getApiKey());
+	}
 
-		return signInData;
+	public static void enableLogs(final boolean enableLogs) {
+		Logger.enableLogs(enableLogs);
 	}
 
 	private static SignInData getJwtSignInData(@NonNull final String jwt) {
-		SignInData signInData = new SignInData()
+		return new SignInData()
 			.signInType(SignInTypeEnum.JWT)
 			.jwt(jwt);
-
-		return signInData;
 	}
 
 	private static void init(@NonNull Context appContext, @NonNull SignInData signInData,

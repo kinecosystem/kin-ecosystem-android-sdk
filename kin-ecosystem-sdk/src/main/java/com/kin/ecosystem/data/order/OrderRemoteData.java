@@ -2,7 +2,7 @@ package com.kin.ecosystem.data.order;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import com.kin.ecosystem.Log;
 import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.network.api.OrdersApi;
 import com.kin.ecosystem.network.model.EarnSubmission;
@@ -191,7 +191,7 @@ public class OrderRemoteData implements OrderDataSource.Remote {
         try {
             ordersApi.cancelOrder(orderID, "");
         } catch (ApiException e) {
-            Log.d(TAG, "Cancel order: " + orderID + " sync failed, code: " + e.getCode());
+			new Log().withTag(TAG).put("Cancel order", orderID).put("sync failed, code", e.getCode()).log();
         }
     }
 
@@ -226,7 +226,7 @@ public class OrderRemoteData implements OrderDataSource.Remote {
         try {
             order = ordersApi.getOrder(orderID, "");
         } catch (ApiException e) {
-            Log.d(TAG, "Get order: " + orderID + " sync failed, code: " + e.getCode());
+			new Log().withTag(TAG).put("Get order", orderID).put("sync failed, code",e.getCode()).log();
         }
         return order;
     }
