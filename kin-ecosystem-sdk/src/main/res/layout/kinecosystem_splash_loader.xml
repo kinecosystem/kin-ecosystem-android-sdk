@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<merge xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--xmlns:tools="http://schemas.android.com/tools"-->
-<!--tools:parentTag="android.widget.FrameLayout">-->
-
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="android.widget.FrameLayout">
 
     <Button
         android:id="@+id/lets_get_started_button"
@@ -38,5 +34,4 @@
         android:src="@drawable/kinecosystem_diamond_1"
         />
 
-</FrameLayout>
-    <!--</merge>-->
+</merge>

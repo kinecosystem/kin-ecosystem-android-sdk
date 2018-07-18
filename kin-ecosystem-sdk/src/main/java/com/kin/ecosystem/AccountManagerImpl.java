@@ -5,6 +5,10 @@ import com.kin.ecosystem.CreateTrustLineCall.TrustlineCallback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
+import com.kin.ecosystem.bi.events.StellarAccountCreationRequested;
+import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupFailed;
+import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupSucceeded;
+import com.kin.ecosystem.bi.events.WalletCreationSucceeded;
 import com.kin.ecosystem.data.KinCallbackAdapter;
 import com.kin.ecosystem.data.auth.AuthDataSource;
 import com.kin.ecosystem.network.model.AuthToken;
@@ -61,6 +65,7 @@ class AccountManagerImpl implements AccountManager {
 			this.local.setAccountState(accountState);
 			switch (accountState) {
 				case REQUIRE_CREATION:
+					eventLogger.send(StellarAccountCreationRequested.create());
 					new Log().withTag(TAG).put("setAccountState", "REQUIRE_CREATION").log();
 					// Trigger account creation from server side.
 					authRepository.getAuthToken(new KinCallbackAdapter<AuthToken>() {
@@ -89,17 +94,20 @@ class AccountManagerImpl implements AccountManager {
 					new CreateTrustLineCall(kinAccount, new TrustlineCallback() {
 						@Override
 						public void onSuccess() {
+							eventLogger.send(StellarKinTrustlineSetupSucceeded.create());
 							setAccountState(CREATION_COMPLETED);
 						}
 
 						@Override
 						public void onFailure(OperationFailedException e) {
+							eventLogger.send(StellarKinTrustlineSetupFailed.create(e.getMessage()));
 							setAccountState(REQUIRE_TRUSTLINE);
 						}
 					}).start();
 					break;
 				case CREATION_COMPLETED:
 					// Mark account creation completed.
+					eventLogger.send(WalletCreationSucceeded.create());
 					new Log().withTag(TAG).put("setAccountState", "CREATION_COMPLETED").log();
 					break;
 				default:

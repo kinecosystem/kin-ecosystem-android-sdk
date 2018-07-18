@@ -112,7 +112,7 @@ public class Kin {
 		DeviceUtils.init(appContext);
 		Configuration.setEnvironment(environment);
 		instance = getInstance(appContext);
-		BlockchainSource blockchainSource = initBlockchain(appContext);
+		initBlockchain(appContext);
 		initAuthRepository(appContext, signInData);
 		initEventCommonData(appContext);
 		instance.eventLogger.send(KinSdkInitiated.create());
@@ -120,7 +120,7 @@ public class Kin {
 		initOfferRepository();
 		setAppID();
 
-		KinAccount account = blockchainSource.getKinAccount();
+		KinAccount account = BlockchainSourceImpl.getInstance().getKinAccount();
 		if (account != null && instance.accountManager.getAccountState() != AccountManager.CREATION_COMPLETED) {
 			instance.accountManager.start(AuthRepository.getInstance(), account);
 		}
@@ -147,7 +147,7 @@ public class Kin {
 		BlockchainSourceImpl.getInstance().setAppID(appID);
 	}
 
-	private static BlockchainSource initBlockchain(Context context) throws BlockchainException {
+	private static void initBlockchain(Context context) throws BlockchainException {
 		final String networkUrl = Configuration.getEnvironment().getBlockchainNetworkUrl();
 		final String networkId = Configuration.getEnvironment().getBlockchainPassphrase();
 		KinClient kinClient = new KinClient(context, new ServiceProvider(networkUrl, networkId) {
@@ -156,7 +156,7 @@ public class Kin {
 				return Configuration.getEnvironment().getIssuer();
 			}
 		}, KIN_ECOSYSTEM_STORE_PREFIX_KEY);
-		return BlockchainSourceImpl.init(instance.eventLogger, kinClient, BlockchainSourceLocal.getInstance(context));
+		BlockchainSourceImpl.init(instance.eventLogger, kinClient, BlockchainSourceLocal.getInstance(context));
 	}
 
 	private static void initAuthRepository(@NonNull final Context context, @NonNull final SignInData signInData)

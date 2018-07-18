@@ -5,7 +5,7 @@ import kin.core.exception.OperationFailedException;
 
 class CreateTrustLineCall extends Thread {
 
-	private static final int[] DELAY_SECONDS = {2, 4, 8, 16, 32, 32, 32, 32, 32};
+	private static final int[] DELAY_SECONDS = {2, 4, 8, 16, 32, 32, 32, 32, 32, 32};
 	private static final int SEC_IN_MILLI = 1000;
 	private static final int MAX_TRIES = 10;
 

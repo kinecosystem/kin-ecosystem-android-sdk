@@ -70,8 +70,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	private static final int ORDER_ID_INDEX = 2;
 	private static final int MEMO_SPLIT_LENGTH = 3;
 
-	private BlockchainSourceImpl(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient,
-		@NonNull BlockchainSource.Local local)
+	private BlockchainSourceImpl(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient, @NonNull BlockchainSource.Local local)
 		throws BlockchainException {
 		this.eventLogger = eventLogger;
 		this.kinClient = kinClient;
@@ -80,8 +79,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		initBalance();
 	}
 
-	public static BlockchainSource init(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient,
-		@NonNull BlockchainSource.Local local)
+	public static void init(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient, @NonNull BlockchainSource.Local local)
 		throws BlockchainException {
 		if (instance == null) {
 			synchronized (BlockchainSourceImpl.class) {
@@ -90,7 +88,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				}
 			}
 		}
-		return instance;
 	}
 
 	public static BlockchainSourceImpl getInstance() {
