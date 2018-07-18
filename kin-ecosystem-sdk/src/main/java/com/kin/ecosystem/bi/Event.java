@@ -1,7 +1,7 @@
 package com.kin.ecosystem.bi;
 
-import com.kin.ecosystem.bi.events.User;
 import com.kin.ecosystem.bi.events.Common;
+import com.kin.ecosystem.bi.events.User;
 
 public interface Event {
     Common getCommon();

@@ -1,7 +1,6 @@
 package com.kin.ecosystem.marketplace.presenter;
 
 import android.os.Handler;
-import android.util.Log;
 import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.BaseDialogPresenter;
 import com.kin.ecosystem.bi.EventLogger;
@@ -23,7 +22,6 @@ import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OfferInfo;
 import com.kin.ecosystem.network.model.OfferInfo.Confirmation;
 import com.kin.ecosystem.network.model.OpenOrder;
-import com.kin.ecosystem.network.model.Order;
 import java.math.BigDecimal;
 
 

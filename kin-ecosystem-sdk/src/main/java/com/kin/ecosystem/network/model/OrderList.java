@@ -2,7 +2,6 @@ package com.kin.ecosystem.network.model;
 
 import android.support.annotation.NonNull;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

@@ -2,11 +2,11 @@ package com.kin.ecosystem.bi;
 
 import com.kin.ecosystem.bi.events.ClientProxy;
 import com.kin.ecosystem.bi.events.ClientReadonly;
-import java.util.concurrent.atomic.AtomicBoolean;
 import com.kin.ecosystem.bi.events.CommonProxy;
 import com.kin.ecosystem.bi.events.CommonReadonly;
 import com.kin.ecosystem.bi.events.UserProxy;
 import com.kin.ecosystem.bi.events.UserReadonly;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class EventsStore {
     private static final Object userModifierMutex = new Object();

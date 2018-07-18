@@ -3,10 +3,6 @@ package com.kin.ecosystem.data.order;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-
-import kin.ecosystem.core.network.ApiCallback;
-import kin.ecosystem.core.network.ApiException;
-
 import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.network.api.OrdersApi;
 import com.kin.ecosystem.network.model.EarnSubmission;
@@ -14,9 +10,11 @@ import com.kin.ecosystem.network.model.ExternalOrderRequest;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.OrderList;
-import kin.ecosystem.core.util.ExecutorsUtil;
 import java.util.List;
 import java.util.Map;
+import kin.ecosystem.core.network.ApiCallback;
+import kin.ecosystem.core.network.ApiException;
+import kin.ecosystem.core.util.ExecutorsUtil;
 
 public class OrderRemoteData implements OrderDataSource.Remote {
 

@@ -16,7 +16,6 @@ package com.kin.ecosystem.network.api;
 import static kin.ecosystem.core.network.ApiClient.POST;
 
 import com.google.gson.reflect.TypeToken;
-
 import com.kin.ecosystem.Configuration;
 import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.network.model.SignInData;

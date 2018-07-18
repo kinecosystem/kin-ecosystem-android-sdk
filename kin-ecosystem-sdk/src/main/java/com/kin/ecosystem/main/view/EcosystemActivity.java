@@ -1,6 +1,6 @@
 package com.kin.ecosystem.main.view;
 
-import  static com.kin.ecosystem.main.ScreenId.MARKETPLACE;
+import static com.kin.ecosystem.main.ScreenId.MARKETPLACE;
 import static com.kin.ecosystem.main.ScreenId.ORDER_HISTORY;
 import static com.kin.ecosystem.main.Title.MARKETPLACE_TITLE;
 import static com.kin.ecosystem.main.Title.ORDER_HISTORY_TITLE;

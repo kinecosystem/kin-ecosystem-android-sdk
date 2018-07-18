@@ -1,45 +1,25 @@
 package com.kin.ecosystem.base.transformation;
 
+import static com.kin.ecosystem.base.transformation.CornerType.ALL;
+import static com.kin.ecosystem.base.transformation.CornerType.BOTTOM;
+import static com.kin.ecosystem.base.transformation.CornerType.BOTTOM_LEFT;
+import static com.kin.ecosystem.base.transformation.CornerType.BOTTOM_RIGHT;
+import static com.kin.ecosystem.base.transformation.CornerType.LEFT;
+import static com.kin.ecosystem.base.transformation.CornerType.RIGHT;
+import static com.kin.ecosystem.base.transformation.CornerType.TOP;
+import static com.kin.ecosystem.base.transformation.CornerType.TOP_LEFT;
+import static com.kin.ecosystem.base.transformation.CornerType.TOP_RIGHT;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import android.support.annotation.IntDef;
-
 import com.squareup.picasso.Transformation;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import static com.kin.ecosystem.base.transformation.RoundedCornersTransformation.CornerType.ALL;
-import static com.kin.ecosystem.base.transformation.RoundedCornersTransformation.CornerType.BOTTOM;
-import static com.kin.ecosystem.base.transformation.RoundedCornersTransformation.CornerType.BOTTOM_LEFT;
-import static com.kin.ecosystem.base.transformation.RoundedCornersTransformation.CornerType.BOTTOM_RIGHT;
-import static com.kin.ecosystem.base.transformation.RoundedCornersTransformation.CornerType.LEFT;
-import static com.kin.ecosystem.base.transformation.RoundedCornersTransformation.CornerType.RIGHT;
-import static com.kin.ecosystem.base.transformation.RoundedCornersTransformation.CornerType.TOP;
-import static com.kin.ecosystem.base.transformation.RoundedCornersTransformation.CornerType.TOP_LEFT;
-import static com.kin.ecosystem.base.transformation.RoundedCornersTransformation.CornerType.TOP_RIGHT;
 
 
 public class RoundedCornersTransformation implements Transformation {
-
-
-    @IntDef({ALL, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, TOP, BOTTOM, LEFT, RIGHT})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface CornerType {
-        int ALL = 0;
-        int TOP_LEFT = 1;
-        int TOP_RIGHT = 2;
-        int BOTTOM_LEFT = 3;
-        int BOTTOM_RIGHT = 4;
-        int TOP = 5;
-        int BOTTOM = 6;
-        int LEFT = 7;
-        int RIGHT = 8;
-    }
 
     private int mRadius;
     private int mDiameter;
@@ -48,7 +28,7 @@ public class RoundedCornersTransformation implements Transformation {
     private @CornerType int mCornerType;
 
     public RoundedCornersTransformation(int radius, int margin) {
-        this(radius, margin, CornerType.ALL);
+        this(radius, margin, ALL);
     }
 
     public RoundedCornersTransformation(int radius, int margin, @CornerType int cornerType) {
