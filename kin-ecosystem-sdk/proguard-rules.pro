@@ -8,5 +8,5 @@
 
 # Remove logs code in release
 -assumenosideeffects class com.kin.ecosystem.Logger {
-    public static *** log(...);
+    public static void log(...);
 }
