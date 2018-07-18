@@ -16,7 +16,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @IntDef({ALL, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, TOP, BOTTOM, LEFT, RIGHT})
 @Retention(RetentionPolicy.SOURCE)
-@interface CornerType {
+public @interface CornerType {
 	int ALL = 0;
 	int TOP_LEFT = 1;
 	int TOP_RIGHT = 2;
