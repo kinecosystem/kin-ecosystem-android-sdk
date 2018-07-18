@@ -2,10 +2,9 @@ package com.kin.ecosystem.splash.presenter;
 
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.BackButtonOnWelcomeScreenPageTapped;
-import com.kin.ecosystem.data.Callback;
-import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.bi.events.WelcomeScreenButtonTapped;
 import com.kin.ecosystem.bi.events.WelcomeScreenPageViewed;
 import com.kin.ecosystem.data.auth.AuthDataSource;

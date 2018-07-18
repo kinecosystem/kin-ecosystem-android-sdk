@@ -1,18 +1,5 @@
 package com.kin.ecosystem.base.transformation;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapShader;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.RectF;
-import android.graphics.Shader;
-import android.support.annotation.IntDef;
-
-import com.squareup.picasso.Transformation;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 import static com.kin.ecosystem.base.transformation.RoundedCornersTransformation.CornerType.ALL;
 import static com.kin.ecosystem.base.transformation.RoundedCornersTransformation.CornerType.BOTTOM;
 import static com.kin.ecosystem.base.transformation.RoundedCornersTransformation.CornerType.BOTTOM_LEFT;
@@ -22,6 +9,17 @@ import static com.kin.ecosystem.base.transformation.RoundedCornersTransformation
 import static com.kin.ecosystem.base.transformation.RoundedCornersTransformation.CornerType.TOP;
 import static com.kin.ecosystem.base.transformation.RoundedCornersTransformation.CornerType.TOP_LEFT;
 import static com.kin.ecosystem.base.transformation.RoundedCornersTransformation.CornerType.TOP_RIGHT;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.Shader;
+import android.support.annotation.IntDef;
+import com.squareup.picasso.Transformation;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 
 public class RoundedCornersTransformation implements Transformation {

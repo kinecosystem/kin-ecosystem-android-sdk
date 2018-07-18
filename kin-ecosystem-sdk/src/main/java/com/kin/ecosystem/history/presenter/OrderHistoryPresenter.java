@@ -15,7 +15,6 @@ import com.kin.ecosystem.data.model.Coupon.CouponInfo;
 import com.kin.ecosystem.data.order.OrderDataSource;
 import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.history.view.IOrderHistoryView;
-import com.kin.ecosystem.main.INavigator;
 import com.kin.ecosystem.network.model.CouponCodeResult;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.Order.Status;

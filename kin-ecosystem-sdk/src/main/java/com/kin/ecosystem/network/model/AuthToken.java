@@ -12,7 +12,6 @@ package com.kin.ecosystem.network.model;/*
 
 
 import com.google.gson.annotations.SerializedName;
-import java.util.Objects;
 
 /**
  * token issued by marketplace server

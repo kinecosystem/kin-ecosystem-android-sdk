@@ -3,14 +3,14 @@ package com.kin.ecosystem.data.order;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.KinCallback;
-import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
+import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.data.model.OrderConfirmation;
-import kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.network.model.OpenOrder;
 import com.kin.ecosystem.network.model.Order;
 import com.kin.ecosystem.network.model.OrderList;
+import kin.ecosystem.core.network.ApiException;
 
 public interface OrderDataSource {
 

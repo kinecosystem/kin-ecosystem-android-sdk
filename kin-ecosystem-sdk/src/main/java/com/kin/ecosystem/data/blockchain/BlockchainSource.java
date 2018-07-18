@@ -2,7 +2,6 @@ package com.kin.ecosystem.data.blockchain;
 
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.KinCallback;
-import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.Payment;

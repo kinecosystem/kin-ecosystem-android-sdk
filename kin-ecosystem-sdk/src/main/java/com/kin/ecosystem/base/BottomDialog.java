@@ -24,8 +24,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.kin.ecosystem.R;
-import kin.ecosystem.core.util.DeviceUtils;
 import com.squareup.picasso.Picasso;
+import kin.ecosystem.core.util.DeviceUtils;
 
 public abstract class BottomDialog<T extends IBottomDialogPresenter> extends Dialog
     implements IBottomDialog<T>, OnClickListener {
