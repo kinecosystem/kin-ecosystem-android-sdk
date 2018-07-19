@@ -3,6 +3,7 @@ package com.kin.ecosystem.marketplace.presenter;
 import android.os.Handler;
 import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.Log;
+import com.kin.ecosystem.Logger;
 import com.kin.ecosystem.base.BaseDialogPresenter;
 import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.CloseButtonOnOfferPageTapped;
@@ -179,12 +180,12 @@ class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements 
 		orderRepository.submitOrder(offerID, null, orderID, new KinCallback<Order>() {
             @Override
             public void onResponse(Order response) {
-                new Log().withTag(TAG).put(" Submit onResponse", response).log();
+				Logger.log(new Log().withTag(TAG).put(" Submit onResponse", response));
             }
 
             @Override
             public void onFailure(KinEcosystemException exception) {
-                new Log().withTag(TAG).put(" Submit onFailure", exception).log();
+				Logger.log(new Log().withTag(TAG).put(" Submit onFailure", exception));
             }
         });
     }

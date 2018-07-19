@@ -9,24 +9,24 @@ import com.kin.ecosystem.AccountManager.AccountState;
 
 class AccountManagerLocal implements AccountManager.Local {
 
-	private static final String ACC_MANAGER_PREF_NAME_FILE_KEY = "kinecosystem_account_manager";
+	private static final String ACCOUNT_MANAGER_PREF_NAME_FILE_KEY = "kinecosystem_account_manager";
 
-	private static final String ACC_STATE_KEY = "account_state";
+	private static final String ACCOUNT_STATE_KEY = "account_state";
 
 	private final SharedPreferences accountStateSharedPref;
 
 	AccountManagerLocal(@NonNull Context context) {
 		this.accountStateSharedPref = context
-			.getSharedPreferences(ACC_MANAGER_PREF_NAME_FILE_KEY, Context.MODE_PRIVATE);
+			.getSharedPreferences(ACCOUNT_MANAGER_PREF_NAME_FILE_KEY, Context.MODE_PRIVATE);
 	}
 
 	@Override
 	public int getAccountState() {
-		return accountStateSharedPref.getInt(ACC_STATE_KEY, REQUIRE_CREATION);
+		return accountStateSharedPref.getInt(ACCOUNT_STATE_KEY, REQUIRE_CREATION);
 	}
 
 	@Override
 	public void setAccountState(@AccountState int accountState) {
-		accountStateSharedPref.edit().putInt(ACC_STATE_KEY, accountState).apply();
+		accountStateSharedPref.edit().putInt(ACCOUNT_STATE_KEY, accountState).apply();
 	}
 }

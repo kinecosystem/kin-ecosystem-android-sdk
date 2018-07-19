@@ -7,7 +7,6 @@ class CreateTrustLineCall extends Thread {
 
 	private static final int[] DELAY_SECONDS = {2, 4, 8, 16, 32, 32, 32, 32, 32, 32};
 	private static final int SEC_IN_MILLI = 1000;
-	private static final int MAX_TRIES = 10;
 
 	private final KinAccount account;
 	private final TrustlineCallback trustlineCallback;
@@ -28,7 +27,7 @@ class CreateTrustLineCall extends Thread {
 			account.activateSync();
 			trustlineCallback.onSuccess();
 		} catch (OperationFailedException e) {
-			if (tries < MAX_TRIES) {
+			if (tries < DELAY_SECONDS.length) {
 				try {
 					sleep(DELAY_SECONDS[tries] * SEC_IN_MILLI);
 					createTrustline(++tries);

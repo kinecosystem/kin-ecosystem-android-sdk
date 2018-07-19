@@ -16,7 +16,6 @@ import com.kin.ecosystem.bi.events.KinSdkInitiated;
 import com.kin.ecosystem.data.auth.AuthLocalData;
 import com.kin.ecosystem.data.auth.AuthRemoteData;
 import com.kin.ecosystem.data.auth.AuthRepository;
-import com.kin.ecosystem.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.data.blockchain.BlockchainSourceLocal;
 import com.kin.ecosystem.data.model.Balance;
@@ -120,9 +119,11 @@ public class Kin {
 		initOfferRepository();
 		setAppID();
 
-		KinAccount account = BlockchainSourceImpl.getInstance().getKinAccount();
-		if (account != null && instance.accountManager.getAccountState() != AccountManager.CREATION_COMPLETED) {
-			instance.accountManager.start(AuthRepository.getInstance(), account);
+		if (getAccountManager().getAccountState() != AccountManager.CREATION_COMPLETED) {
+			KinAccount account = BlockchainSourceImpl.getInstance().getKinAccount();
+			if (account != null) {
+				instance.accountManager.start(AuthRepository.getInstance(), account);
+			}
 		}
 	}
 

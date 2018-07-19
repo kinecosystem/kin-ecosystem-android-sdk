@@ -12,6 +12,7 @@ import com.kin.ecosystem.bi.events.WalletCreationSucceeded;
 import com.kin.ecosystem.data.KinCallbackAdapter;
 import com.kin.ecosystem.data.auth.AuthDataSource;
 import com.kin.ecosystem.network.model.AuthToken;
+import kin.core.AccountStatus;
 import kin.core.EventListener;
 import kin.core.KinAccount;
 import kin.core.ListenerRegistration;
@@ -32,7 +33,7 @@ class AccountManagerImpl implements AccountManager {
 	AccountManagerImpl(@NonNull final AccountManager.Local local, @NonNull final EventLogger eventLogger) {
 		this.local = local;
 		this.eventLogger = eventLogger;
-		this.accountState = ObservableData.create(NONE);
+		this.accountState = ObservableData.create(local.getAccountState());
 	}
 
 	@Override
@@ -53,20 +54,25 @@ class AccountManagerImpl implements AccountManager {
 
 
 	void start(@NonNull final AuthDataSource authRepository, @NonNull final KinAccount kinAccount) {
-		new Log().withTag(TAG).put("setAccountState", "start").log();
+		Logger.log(new Log().withTag(TAG).put("setAccountState", "start"));
 		this.authRepository = authRepository;
 		this.kinAccount = kinAccount;
-		this.setAccountState(local.getAccountState());
+
+		if (getAccountState() != CREATION_COMPLETED) {
+			this.setAccountState(getAccountState());
+		} else {
+			accountState.postValue(getAccountState());
+		}
 	}
 
 	private void setAccountState(@AccountState final int accountState) {
-		if (!isPreviousState(this.accountState.getValue(), accountState)) {
-			this.accountState.postValue(accountState);
+		if (isValidState(this.accountState.getValue(), accountState)) {
 			this.local.setAccountState(accountState);
+			this.accountState.postValue(accountState);
 			switch (accountState) {
 				case REQUIRE_CREATION:
 					eventLogger.send(StellarAccountCreationRequested.create());
-					new Log().withTag(TAG).put("setAccountState", "REQUIRE_CREATION").log();
+					Logger.log(new Log().withTag(TAG).put("setAccountState", "REQUIRE_CREATION"));
 					// Trigger account creation from server side.
 					authRepository.getAuthToken(new KinCallbackAdapter<AuthToken>() {
 						@Override
@@ -76,7 +82,7 @@ class AccountManagerImpl implements AccountManager {
 					});
 					break;
 				case PENDING_CREATION:
-					new Log().withTag(TAG).put("setAccountState", "PENDING_CREATION").log();
+					Logger.log(new Log().withTag(TAG).put("setAccountState", "PENDING_CREATION"));
 					// Start listen for account creation on the blockchain side.
 					accountCreationRegistration = kinAccount.blockchainEvents()
 						.addAccountCreationListener(new EventListener<Void>() {
@@ -89,7 +95,7 @@ class AccountManagerImpl implements AccountManager {
 						});
 					break;
 				case REQUIRE_TRUSTLINE:
-					new Log().withTag(TAG).put("setAccountState", "REQUIRE_TRUSTLINE").log();
+					Logger.log(new Log().withTag(TAG).put("setAccountState", "REQUIRE_TRUSTLINE"));
 					// Create trustline transaction with KIN
 					new CreateTrustLineCall(kinAccount, new TrustlineCallback() {
 						@Override
@@ -108,7 +114,7 @@ class AccountManagerImpl implements AccountManager {
 				case CREATION_COMPLETED:
 					// Mark account creation completed.
 					eventLogger.send(WalletCreationSucceeded.create());
-					new Log().withTag(TAG).put("setAccountState", "CREATION_COMPLETED").log();
+					Logger.log(new Log().withTag(TAG).put("setAccountState", "CREATION_COMPLETED"));
 					break;
 				default:
 					break;
@@ -116,8 +122,8 @@ class AccountManagerImpl implements AccountManager {
 		}
 	}
 
-	private boolean isPreviousState(int currentState, int newState) {
-		return newState < currentState;
+	private boolean isValidState(int currentState, int newState) {
+		return newState >= currentState;
 	}
 
 }

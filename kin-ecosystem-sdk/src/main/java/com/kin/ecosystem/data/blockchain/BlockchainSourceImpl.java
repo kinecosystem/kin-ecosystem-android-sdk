@@ -129,7 +129,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				public void onResult(TransactionId result) {
 					eventLogger
 						.send(SpendTransactionBroadcastToBlockchainSucceeded.create(result.id(), offerID, orderID));
-					new Log().withTag(TAG).put("sendTransaction onResult", result.id()).log();
+					Logger.log(new Log().withTag(TAG).put("sendTransaction onResult", result.id()));
 				}
 
 				@Override
@@ -137,7 +137,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 					eventLogger
 						.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
 					completedPayment.postValue(new Payment(orderID, false, e));
-					new Log().withTag(TAG).put("sendTransaction onError", e.getMessage()).log();
+					Logger.log(new Log().withTag(TAG).put("sendTransaction onError", e.getMessage()));
 				}
 			});
 	}

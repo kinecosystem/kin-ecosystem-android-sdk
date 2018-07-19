@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.Log;
+import com.kin.ecosystem.Logger;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
@@ -168,7 +169,7 @@ public class OrderRepository implements OrderDataSource {
 					}
 				};
 				blockchainSource.addPaymentObservable(paymentObserver);
-				new Log().withTag(TAG).text("listenForCompletedPayment: addPaymentObservable").log();
+				Logger.log(new Log().withTag(TAG).text("listenForCompletedPayment: addPaymentObservable"));
 			}
 			paymentObserverCount++;
 		}
