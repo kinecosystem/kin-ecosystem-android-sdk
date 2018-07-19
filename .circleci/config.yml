@@ -34,7 +34,7 @@ jobs:
       # run tests!
       - run:
           name: Build And Test
-          command: ./gradlew assembleDebug -Pandroid.buildOnlyTargetAbi=false -Pcircleci test
+          command: ./gradlew assemble -Pandroid.buildOnlyTargetAbi=false -Pcircleci test
       # Store APK
       - store_artifacts:
                 path: app/build/outputs/apk/
