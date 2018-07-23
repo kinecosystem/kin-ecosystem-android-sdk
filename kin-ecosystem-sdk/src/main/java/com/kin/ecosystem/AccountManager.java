@@ -25,6 +25,8 @@ public interface AccountManager {
 	@AccountState
 	int getAccountState();
 
+	boolean isAccountCreated();
+
 	void addAccountStateObserver(@NonNull final Observer<Integer> observer);
 
 	void removeAccountStateObserver(@NonNull final Observer<Integer> observer);

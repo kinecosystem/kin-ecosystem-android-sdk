@@ -43,8 +43,14 @@ class AccountManagerImpl implements AccountManager {
 	}
 
 	@Override
+	public boolean isAccountCreated() {
+		return local.getAccountState() == CREATION_COMPLETED;
+	}
+
+	@Override
 	public void addAccountStateObserver(@NonNull Observer<Integer> observer) {
 		accountState.addObserver(observer);
+		accountState.postValue(local.getAccountState());
 	}
 
 	@Override

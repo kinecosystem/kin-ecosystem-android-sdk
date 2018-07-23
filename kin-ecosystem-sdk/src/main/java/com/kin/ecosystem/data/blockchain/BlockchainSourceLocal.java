@@ -42,14 +42,4 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 	public void setBalance(int balance) {
 		blockchainSharedPreferences.edit().putInt(BALANCE_KEY, balance).apply();
 	}
-
-	@Override
-	public boolean hasTrustLine() {
-		return blockchainSharedPreferences.getBoolean(HAS_TRUSTLINE_KEY, false);
-	}
-
-	@Override
-	public void setHasTrustline(boolean hasTrustline) {
-		 blockchainSharedPreferences.edit().putBoolean(HAS_TRUSTLINE_KEY, hasTrustline).apply();
-	}
 }

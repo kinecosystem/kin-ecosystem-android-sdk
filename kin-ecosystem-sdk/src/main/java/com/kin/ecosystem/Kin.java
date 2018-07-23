@@ -119,7 +119,7 @@ public class Kin {
 		initOfferRepository();
 		setAppID();
 
-		if (getAccountManager().getAccountState() != AccountManager.CREATION_COMPLETED) {
+		if (!getAccountManager().isAccountCreated()) {
 			KinAccount account = BlockchainSourceImpl.getInstance().getKinAccount();
 			if (account != null) {
 				instance.accountManager.start(AuthRepository.getInstance(), account);
@@ -202,7 +202,7 @@ public class Kin {
 		checkInstanceNotNull();
 		instance.eventLogger.send(EntrypointButtonTapped.create());
 		boolean isActivated = AuthRepository.getInstance().isActivated();
-		boolean isAccountCreated = instance.accountManager.getAccountState() == AccountManager.CREATION_COMPLETED;
+		boolean isAccountCreated = getAccountManager().isAccountCreated();
 		if (isActivated && isAccountCreated) {
 			navigateToMarketplace(activity);
 		} else {

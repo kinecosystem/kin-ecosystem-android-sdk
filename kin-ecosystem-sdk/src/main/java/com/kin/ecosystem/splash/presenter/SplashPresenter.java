@@ -96,7 +96,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 			.put("isActivate", isAccountCreated)
 			.put("accountState", accountManager.getAccountState()));
 
-		if (accountManager.getAccountState() != CREATION_COMPLETED) {
+		if (!accountManager.isAccountCreated()) {
 			Logger.log(new Log().withTag(TAG).text("addAccountStateObserver"));
 			accountManager.addAccountStateObserver(accountStateObserver);
 			startCreationTimeout(TIME_OUT_DURATION);

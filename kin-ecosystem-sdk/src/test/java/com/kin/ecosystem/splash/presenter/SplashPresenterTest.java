@@ -74,7 +74,7 @@ public class SplashPresenterTest extends BaseTestClass {
 
 	@Test
 	public void getStartedClicked_AccountCreated_AnimationEndedNavigateMP() {
-		when(accountManager.getAccountState()).thenReturn(CREATION_COMPLETED);
+		when(accountManager.isAccountCreated()).thenReturn(true);
 		splashPresenter.getStartedClicked();
 		verify(eventLogger).send(any(WelcomeScreenButtonTapped.class));
 		verify(authRepository).activateAccount(activateCapture.capture());
@@ -89,7 +89,7 @@ public class SplashPresenterTest extends BaseTestClass {
 
 	@Test
 	public void getStartedClicked_AccountCreated_CallbackSuccessNavigateMP() {
-		when(accountManager.getAccountState()).thenReturn(CREATION_COMPLETED);
+		when(accountManager.isAccountCreated()).thenReturn(true);
 		splashPresenter.getStartedClicked();
 		verify(authRepository).activateAccount(activateCapture.capture());
 		verify(splashView, times(1)).animateLoading();
@@ -103,7 +103,7 @@ public class SplashPresenterTest extends BaseTestClass {
 
 	@Test
 	public void getStartedClicked_AccountCreated_CallbackFailed_Reset() {
-		when(accountManager.getAccountState()).thenReturn(CREATION_COMPLETED);
+		when(accountManager.isAccountCreated()).thenReturn(true);
 		splashPresenter.getStartedClicked();
 		verify(authRepository).activateAccount(activateCapture.capture());
 
@@ -119,7 +119,7 @@ public class SplashPresenterTest extends BaseTestClass {
 
 	@Test
 	public void getStartedClicked_AccountNotCreated_NotNavigateToMP() {
-		when(accountManager.getAccountState()).thenReturn(REQUIRE_TRUSTLINE);
+		when(accountManager.isAccountCreated()).thenReturn(false);
 		splashPresenter.getStartedClicked();
 		verify(authRepository).activateAccount(activateCapture.capture());
 		splashPresenter.onAnimationEnded();
@@ -132,7 +132,7 @@ public class SplashPresenterTest extends BaseTestClass {
 	public void getStartedClicked_AccountNotCreated_Timeout_NotNavigateToMP() {
 		ArgumentCaptor<TimerTask> timeoutTask = ArgumentCaptor.forClass(TimerTask.class);
 		ArgumentCaptor<Observer<Integer>> accountStateObserver = ArgumentCaptor.forClass(Observer.class);
-		when(accountManager.getAccountState()).thenReturn(REQUIRE_TRUSTLINE);
+		when(accountManager.isAccountCreated()).thenReturn(false);
 
 		splashPresenter.getStartedClicked();
 		verify(timer).schedule(timeoutTask.capture(), anyLong());
@@ -154,7 +154,7 @@ public class SplashPresenterTest extends BaseTestClass {
 	public void getStartedClicked_AccountNotCreated_ObserverOnChange_AccountCreated_NavigateToMP() {
 		ArgumentCaptor<TimerTask> timeoutTask = ArgumentCaptor.forClass(TimerTask.class);
 		ArgumentCaptor<Observer<Integer>> accountStateObserver = ArgumentCaptor.forClass(Observer.class);
-		when(accountManager.getAccountState()).thenReturn(REQUIRE_TRUSTLINE);
+		when(accountManager.isAccountCreated()).thenReturn(false);
 
 		splashPresenter.getStartedClicked();
 		verify(timer).schedule(timeoutTask.capture(), anyLong());

@@ -16,7 +16,6 @@ import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainFailed;
 import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainSucceeded;
-import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupSucceeded;
 import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.Payment;
 import java.lang.reflect.Field;
@@ -25,7 +24,6 @@ import kin.core.BlockchainEvents;
 import kin.core.EventListener;
 import kin.core.KinAccount;
 import kin.core.KinClient;
-import kin.core.ListenerRegistration;
 import kin.core.Request;
 import kin.core.ResultCallback;
 import kin.core.TransactionId;
@@ -156,7 +154,6 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 			forClass(ResultCallback.class);
 		when(kinAccount.sendTransaction(any(String.class), any(BigDecimal.class), any(String.class)))
 			.thenReturn(transactionRequest);
-		when(local.hasTrustLine()).thenReturn(true);
 
 		blockchainSource.setAppID(APP_ID);
 		blockchainSource.sendTransaction(toAddress, amount, orderID, "offerID");
@@ -181,7 +178,6 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 			forClass(ResultCallback.class);
 		when(kinAccount.sendTransaction(any(String.class), any(BigDecimal.class), any(String.class)))
 			.thenReturn(transactionRequest);
-		when(local.hasTrustLine()).thenReturn(true);
 
 		blockchainSource.setAppID(APP_ID);
 		blockchainSource.sendTransaction(toAddress, amount, orderID, "offerID");

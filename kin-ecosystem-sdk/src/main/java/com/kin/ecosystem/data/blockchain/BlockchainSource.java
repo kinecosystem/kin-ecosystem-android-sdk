@@ -87,10 +87,5 @@ public interface BlockchainSource {
         int getBalance();
 
         void setBalance(int balance);
-
-        boolean hasTrustLine();
-
-        void setHasTrustline(boolean hasTrustline);
-
     }
 }
