@@ -15,6 +15,7 @@ import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.kin.ecosystem.AccountManagerImpl;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.bi.EventLoggerImpl;
@@ -43,7 +44,7 @@ public class SplashActivity extends AppCompatActivity implements ISplashView {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.kinecosystem_activity_splash);
-        attachPresenter(new SplashPresenter(Kin.getAccountManager() ,AuthRepository.getInstance(), EventLoggerImpl.getInstance(), new Timer()));
+        attachPresenter(new SplashPresenter(AccountManagerImpl.getInstance(), AuthRepository.getInstance(), EventLoggerImpl.getInstance(), new Timer()));
         initViews();
         initAnimations();
     }

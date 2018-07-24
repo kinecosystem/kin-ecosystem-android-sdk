@@ -12,15 +12,16 @@ import com.kin.ecosystem.bi.events.WalletCreationSucceeded;
 import com.kin.ecosystem.data.KinCallbackAdapter;
 import com.kin.ecosystem.data.auth.AuthDataSource;
 import com.kin.ecosystem.network.model.AuthToken;
-import kin.core.AccountStatus;
 import kin.core.EventListener;
 import kin.core.KinAccount;
 import kin.core.ListenerRegistration;
 import kin.core.exception.OperationFailedException;
 
-class AccountManagerImpl implements AccountManager {
+public class AccountManagerImpl implements AccountManager {
 
 	private static final String TAG = AccountManagerImpl.class.getSimpleName();
+
+	private static volatile AccountManagerImpl instance;
 
 	private final AccountManager.Local local;
 	private final EventLogger eventLogger;
@@ -30,16 +31,35 @@ class AccountManagerImpl implements AccountManager {
 
 	private ListenerRegistration accountCreationRegistration;
 
-	AccountManagerImpl(@NonNull final AccountManager.Local local, @NonNull final EventLogger eventLogger) {
+	private AccountManagerImpl(@NonNull final AccountManager.Local local,
+		@NonNull final EventLogger eventLogger,
+		@NonNull final AuthDataSource authRepository) {
 		this.local = local;
 		this.eventLogger = eventLogger;
+		this.authRepository = authRepository;
 		this.accountState = ObservableData.create(local.getAccountState());
+	}
+
+	public static void init(@NonNull final AccountManager.Local local,
+		@NonNull final EventLogger eventLogger,
+		@NonNull final AuthDataSource authRepository) {
+		if (instance == null) {
+			synchronized (AccountManagerImpl.class) {
+				if (instance == null) {
+					instance = new AccountManagerImpl(local, eventLogger, authRepository);
+				}
+			}
+		}
+	}
+
+	public static AccountManagerImpl getInstance() {
+		return instance;
 	}
 
 	@Override
 	public @AccountState
 	int getAccountState() {
-		return local.getAccountState();
+		return accountState.getValue() == ERROR ? ERROR : local.getAccountState();
 	}
 
 	@Override
@@ -50,7 +70,7 @@ class AccountManagerImpl implements AccountManager {
 	@Override
 	public void addAccountStateObserver(@NonNull Observer<Integer> observer) {
 		accountState.addObserver(observer);
-		accountState.postValue(local.getAccountState());
+		accountState.postValue(accountState.getValue());
 	}
 
 	@Override
@@ -58,22 +78,31 @@ class AccountManagerImpl implements AccountManager {
 		accountState.removeObserver(observer);
 	}
 
+	@Override
+	public void retry() {
+		if (kinAccount != null && accountState.getValue() == ERROR) {
+			setAccountState(local.getAccountState());
+		}
+	}
 
-	void start(@NonNull final AuthDataSource authRepository, @NonNull final KinAccount kinAccount) {
-		Logger.log(new Log().withTag(TAG).put("setAccountState", "start"));
-		this.authRepository = authRepository;
+	@Override
+	public void start(@NonNull final KinAccount kinAccount) {
 		this.kinAccount = kinAccount;
-
+		Logger.log(new Log().withTag(TAG).put("setAccountState", "start"));
 		if (getAccountState() != CREATION_COMPLETED) {
-			this.setAccountState(getAccountState());
-		} else {
-			accountState.postValue(getAccountState());
+			if (getAccountState() == ERROR) {
+				retry();
+			} else {
+				this.setAccountState(getAccountState());
+			}
 		}
 	}
 
 	private void setAccountState(@AccountState final int accountState) {
 		if (isValidState(this.accountState.getValue(), accountState)) {
-			this.local.setAccountState(accountState);
+			if (accountState != ERROR) {
+				this.local.setAccountState(accountState);
+			}
 			this.accountState.postValue(accountState);
 			switch (accountState) {
 				case REQUIRE_CREATION:
@@ -113,7 +142,7 @@ class AccountManagerImpl implements AccountManager {
 						@Override
 						public void onFailure(OperationFailedException e) {
 							eventLogger.send(StellarKinTrustlineSetupFailed.create(e.getMessage()));
-							setAccountState(REQUIRE_TRUSTLINE);
+							setAccountState(ERROR);
 						}
 					}).start();
 					break;
@@ -123,13 +152,16 @@ class AccountManagerImpl implements AccountManager {
 					Logger.log(new Log().withTag(TAG).put("setAccountState", "CREATION_COMPLETED"));
 					break;
 				default:
+				case AccountManager.ERROR:
+					Logger.log(new Log().withTag(TAG).put("setAccountState", "ERROR"));
 					break;
+
 			}
 		}
 	}
 
 	private boolean isValidState(int currentState, int newState) {
-		return newState >= currentState;
+		return newState == ERROR || currentState == ERROR || newState >= currentState;
 	}
 
 }

@@ -11,7 +11,6 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 	private static final String BLOCKCHAIN_PREF_NAME_FILE_KEY = "kinecosystem_blockchain_source";
 
 	private static final String BALANCE_KEY = "balance_key";
-	private static final String HAS_TRUSTLINE_KEY = "has_trustline_key";
 
 	private final SharedPreferences blockchainSharedPreferences;
 

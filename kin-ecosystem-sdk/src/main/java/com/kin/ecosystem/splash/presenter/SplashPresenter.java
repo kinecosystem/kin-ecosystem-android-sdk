@@ -1,6 +1,7 @@
 package com.kin.ecosystem.splash.presenter;
 
 import static com.kin.ecosystem.AccountManager.CREATION_COMPLETED;
+import static com.kin.ecosystem.AccountManager.ERROR;
 
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.AccountManager;
@@ -36,24 +37,22 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 		@Override
 		public void onChanged(@AccountStatus Integer value) {
 			Logger.log(new Log().withTag(TAG).put("accountStateObserver", value));
-			if (value == CREATION_COMPLETED) {
-				isAccountCreated = true;
+			if (value == CREATION_COMPLETED || value == ERROR) {
 				removeAccountStateObserver();
 				cancelTimeoutTask();
-				navigateToMarketplace();
+
+				if (value == CREATION_COMPLETED) {
+					isAccountCreated = true;
+					navigateToMarketplace();
+				} else {
+					showTryAgainLater();
+					stopLoading(true);
+				}
 			}
 		}
 	};
 
-	private TimerTask timeOutTask = new TimerTask() {
-		@Override
-		public void run() {
-			Logger.log(new Log().withTag(TAG).text("Account creation time out"));
-			stopLoading(true);
-			showTryAgainLater();
-			removeAccountStateObserver();
-		}
-	};
+	private TimerTask timeOutTask;
 
 	private boolean animationEnded = false;
 	private boolean isAccountActivated = false;
@@ -98,8 +97,14 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 
 		if (!accountManager.isAccountCreated()) {
 			Logger.log(new Log().withTag(TAG).text("addAccountStateObserver"));
-			accountManager.addAccountStateObserver(accountStateObserver);
 			startCreationTimeout(TIME_OUT_DURATION);
+			accountManager.addAccountStateObserver(accountStateObserver);
+
+			if (accountManager.getAccountState() == AccountManager.ERROR) {
+				Logger.log(new Log().withTag(TAG).text("accountManager -> retry"));
+				accountManager.retry();
+			}
+
 		} else {
 			isAccountCreated = true;
 		}
@@ -109,16 +114,36 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 		}
 	}
 
+	private TimerTask createTimeOutTimerTask() {
+		return new TimerTask() {
+			@Override
+			public void run() {
+				Logger.log(new Log().withTag(TAG).text("Account creation time out"));
+				stopLoading(true);
+				showTryAgainLater();
+				removeAccountStateObserver();
+			}
+		};
+	}
+
 	private void cancelTimeoutTask() {
-		timeOutTask.cancel();
+		if (timeOutTask != null) {
+			timeOutTask.cancel();
+			timeOutTask = null;
+		}
 		timer.purge();
 	}
 
 	private void startCreationTimeout(final int sec) {
+		if (timeOutTask != null) {
+			timeOutTask.cancel();
+		}
+		timeOutTask = createTimeOutTimerTask();
 		timer.schedule(timeOutTask, sec * SEC_IN_MILI);
 	}
 
 	private void showTryAgainLater() {
+		Logger.log(new Log().withTag(TAG).text("showTryAgainLater"));
 		showToast(TRY_AGAIN);
 	}
 
@@ -162,7 +187,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 		}
 	}
 
-	private synchronized void navigateToMarketplace() {
+	private void navigateToMarketplace() {
 		if (animationEnded && isAccountActivated && isAccountCreated) {
 			if (view != null) {
 				Logger.log(new Log().withTag(TAG).text("navigateToMarketPlace"));

@@ -49,20 +49,17 @@ public class Kin {
 
 	private final ExecutorsUtil executorsUtil;
 	private final EventLogger eventLogger;
-	private final AccountManagerImpl accountManager;
 
-
-	private Kin(final Context context) {
+	private Kin() {
 		executorsUtil = new ExecutorsUtil();
 		eventLogger = EventLoggerImpl.getInstance();
-		accountManager = new AccountManagerImpl(new AccountManagerLocal(context), eventLogger);
 	}
 
-	private static Kin getInstance(final Context context) {
+	private static Kin getInstance() {
 		if (instance == null) {
 			synchronized (Kin.class) {
 				if (instance == null) {
-					instance = new Kin(context);
+					instance = new Kin();
 				}
 			}
 		}
@@ -105,30 +102,30 @@ public class Kin {
 			.jwt(jwt);
 	}
 
-	private static void init(@NonNull Context appContext, @NonNull SignInData signInData,
+	private synchronized static void init(@NonNull Context appContext, @NonNull SignInData signInData,
 		@NonNull KinEnvironment environment) throws ClientException, BlockchainException {
+		Configuration.setEnvironment(environment);
+		instance = getInstance();
 		appContext = appContext.getApplicationContext(); // use application context to avoid leaks.
 		DeviceUtils.init(appContext);
-		Configuration.setEnvironment(environment);
-		instance = getInstance(appContext);
 		initBlockchain(appContext);
 		initAuthRepository(appContext, signInData);
 		initEventCommonData(appContext);
 		instance.eventLogger.send(KinSdkInitiated.create());
+		initAccountManager(appContext);
 		initOrderRepository(appContext);
 		initOfferRepository();
 		setAppID();
-
-		if (!getAccountManager().isAccountCreated()) {
-			KinAccount account = BlockchainSourceImpl.getInstance().getKinAccount();
-			if (account != null) {
-				instance.accountManager.start(AuthRepository.getInstance(), account);
-			}
-		}
 	}
 
-	public static AccountManager getAccountManager() {
-		return instance.accountManager;
+	private static void initAccountManager(@NonNull final Context context) {
+		AccountManagerImpl.init(AccountManagerLocal.getInstance(context), instance.eventLogger, AuthRepository.getInstance());
+		if (!AccountManagerImpl.getInstance().isAccountCreated()) {
+			KinAccount account = BlockchainSourceImpl.getInstance().getKinAccount();
+			if (account != null) {
+				AccountManagerImpl.getInstance().start(account);
+			}
+		}
 	}
 
 	private static void initEventCommonData(@NonNull Context context) {
@@ -148,7 +145,7 @@ public class Kin {
 		BlockchainSourceImpl.getInstance().setAppID(appID);
 	}
 
-	private static void initBlockchain(Context context) throws BlockchainException {
+	private static void initBlockchain(@NonNull final Context context) throws BlockchainException {
 		final String networkUrl = Configuration.getEnvironment().getBlockchainNetworkUrl();
 		final String networkId = Configuration.getEnvironment().getBlockchainPassphrase();
 		KinClient kinClient = new KinClient(context, new ServiceProvider(networkUrl, networkId) {
@@ -162,7 +159,7 @@ public class Kin {
 
 	private static void initAuthRepository(@NonNull final Context context, @NonNull final SignInData signInData)
 		throws ClientException {
-		AuthRepository.init(instance.eventLogger, AuthLocalData.getInstance(context, instance.executorsUtil),
+		AuthRepository.init(AuthLocalData.getInstance(context, instance.executorsUtil),
 			AuthRemoteData.getInstance(instance.executorsUtil));
 		String deviceID = AuthRepository.getInstance().getDeviceID();
 		signInData.setDeviceId(deviceID != null ? deviceID : UUID.randomUUID().toString());
@@ -202,7 +199,7 @@ public class Kin {
 		checkInstanceNotNull();
 		instance.eventLogger.send(EntrypointButtonTapped.create());
 		boolean isActivated = AuthRepository.getInstance().isActivated();
-		boolean isAccountCreated = getAccountManager().isAccountCreated();
+		boolean isAccountCreated = AccountManagerImpl.getInstance().isAccountCreated();
 		if (isActivated && isAccountCreated) {
 			navigateToMarketplace(activity);
 		} else {

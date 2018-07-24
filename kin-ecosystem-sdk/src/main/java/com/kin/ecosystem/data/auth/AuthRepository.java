@@ -7,8 +7,6 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.ObservableData;
-import com.kin.ecosystem.bi.EventLogger;
-import com.kin.ecosystem.bi.events.StellarAccountCreationRequested;
 import com.kin.ecosystem.data.Callback;
 import com.kin.ecosystem.network.model.AuthToken;
 import com.kin.ecosystem.network.model.SignInData;
@@ -25,25 +23,22 @@ public class AuthRepository implements AuthDataSource {
 	private final AuthDataSource.Local localData;
 	private final AuthDataSource.Remote remoteData;
 
-	private final EventLogger eventLogger;
-
 	private SignInData cachedSignInData;
 	private AuthToken cachedAuthToken;
 	private ObservableData<String> appId = ObservableData.create(null);
 
-	private AuthRepository(@NonNull EventLogger eventLogger, @NonNull AuthDataSource.Local local,
+	private AuthRepository(@NonNull AuthDataSource.Local local,
 		@NonNull AuthDataSource.Remote remote) {
-		this.eventLogger = eventLogger;
 		this.localData = local;
 		this.remoteData = remote;
 	}
 
-	public static void init(@NonNull EventLogger eventLogger, @NonNull AuthDataSource.Local localData,
+	public static void init(@NonNull AuthDataSource.Local localData,
 		@NonNull AuthDataSource.Remote remoteData) {
 		if (instance == null) {
 			synchronized (AuthRepository.class) {
 				if (instance == null) {
-					instance = new AuthRepository(eventLogger, localData, remoteData);
+					instance = new AuthRepository(localData, remoteData);
 				}
 			}
 		}
@@ -108,9 +103,6 @@ public class AuthRepository implements AuthDataSource {
 				if (authToken != null && !isAuthTokenExpired(authToken)) {
 					setAuthToken(authToken);
 				} else {
-					if (authToken == null) {
-						eventLogger.send(StellarAccountCreationRequested.create());
-					}
 					refreshTokenSync();
 				}
 				return cachedAuthToken;

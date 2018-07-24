@@ -1,11 +1,14 @@
 package com.kin.ecosystem.splash.presenter;
 
 import static com.kin.ecosystem.AccountManager.CREATION_COMPLETED;
+import static com.kin.ecosystem.AccountManager.ERROR;
 import static com.kin.ecosystem.AccountManager.REQUIRE_TRUSTLINE;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -121,6 +124,7 @@ public class SplashPresenterTest extends BaseTestClass {
 	public void getStartedClicked_AccountNotCreated_NotNavigateToMP() {
 		when(accountManager.isAccountCreated()).thenReturn(false);
 		splashPresenter.getStartedClicked();
+
 		verify(authRepository).activateAccount(activateCapture.capture());
 		splashPresenter.onAnimationEnded();
 		activateCapture.getValue().onResponse(null);
@@ -170,6 +174,42 @@ public class SplashPresenterTest extends BaseTestClass {
 		verify(accountManager).removeAccountStateObserver(accountStateObserver.getValue());
 		verify(timer).purge();
 		verify(splashView).navigateToMarketPlace();
+	}
+
+	@Test
+	public void getStartedClicked_AccountStateERROR_RetryCreation() {
+		when(accountManager.isAccountCreated()).thenReturn(false);
+		when(accountManager.getAccountState()).thenReturn(ERROR);
+
+		splashPresenter.getStartedClicked();
+
+		verify(accountManager).addAccountStateObserver(any(Observer.class));
+		verify(accountManager).retry();
+
+		verify(authRepository).activateAccount(activateCapture.capture());
+		verify(splashView, times(1)).animateLoading();
+	}
+
+	@Test
+	public void getStartedClicked_AccountNotCreated_Retry_ObserverOnChange_ERROR_CancelAndShowTryAgain() {
+		ArgumentCaptor<Observer<Integer>> accountStateObserver = ArgumentCaptor.forClass(Observer.class);
+		when(accountManager.isAccountCreated()).thenReturn(false);
+
+		splashPresenter.getStartedClicked();
+		verify(timer).schedule(any(TimerTask.class), anyLong());
+		verify(authRepository).activateAccount(activateCapture.capture());
+		verify(accountManager).addAccountStateObserver(accountStateObserver.capture());
+		verify(splashView, times(1)).animateLoading();
+
+		splashPresenter.onAnimationEnded();
+		activateCapture.getValue().onResponse(null);
+		verify(splashView, times(0)).navigateToMarketPlace();
+
+		accountStateObserver.getValue().onChanged(ERROR);
+		verify(accountManager).removeAccountStateObserver(accountStateObserver.getValue());
+		verify(timer).purge();
+		verify(splashView).showToast(ISplashPresenter.TRY_AGAIN);
+		verify(splashView, times(0)).navigateToMarketPlace();
 	}
 
 	@Test
