@@ -118,7 +118,7 @@ public class SplashActivity extends AppCompatActivity implements ISplashView {
 
     @Override
     public void navigateBack() {
-        onBackPressed();
+        splashPresenter.backButtonPressed();
     }
 
     @Override
