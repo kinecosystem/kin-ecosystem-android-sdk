@@ -172,7 +172,7 @@ public class SplashPresenterTest extends BaseTestClass {
 
 		accountStateObserver.getValue().onChanged(CREATION_COMPLETED);
 		verify(accountManager).removeAccountStateObserver(accountStateObserver.getValue());
-		verify(timer).purge();
+		verify(timer, times(2)).purge();
 		verify(splashView).navigateToMarketPlace();
 	}
 
@@ -207,7 +207,7 @@ public class SplashPresenterTest extends BaseTestClass {
 
 		accountStateObserver.getValue().onChanged(ERROR);
 		verify(accountManager).removeAccountStateObserver(accountStateObserver.getValue());
-		verify(timer).purge();
+		verify(timer, times(2)).purge();
 		verify(splashView).showToast(ISplashPresenter.TRY_AGAIN);
 		verify(splashView, times(0)).navigateToMarketPlace();
 	}
