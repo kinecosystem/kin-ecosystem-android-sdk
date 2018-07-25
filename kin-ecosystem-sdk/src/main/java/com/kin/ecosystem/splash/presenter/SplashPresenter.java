@@ -135,9 +135,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 	}
 
 	private void startCreationTimeout(final int sec) {
-		if (timeOutTask != null) {
-			timeOutTask.cancel();
-		}
+		cancelTimeoutTask();
 		timeOutTask = createTimeOutTimerTask();
 		timer.schedule(timeOutTask, sec * SEC_IN_MILI);
 	}
@@ -169,6 +167,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 			@Override
 			public void onFailure(KinEcosystemException exception) {
 				Logger.log(new Log().withTag(TAG).put("Activate account fail", exception));
+				cancelTimeoutTask();
 				showSomethingWentWrong();
 				stopLoading(true);
 			}

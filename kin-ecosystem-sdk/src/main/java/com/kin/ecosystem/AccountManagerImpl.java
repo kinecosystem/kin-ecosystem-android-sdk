@@ -9,8 +9,8 @@ import com.kin.ecosystem.bi.events.StellarAccountCreationRequested;
 import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupFailed;
 import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupSucceeded;
 import com.kin.ecosystem.bi.events.WalletCreationSucceeded;
-import com.kin.ecosystem.data.KinCallbackAdapter;
 import com.kin.ecosystem.data.auth.AuthDataSource;
+import com.kin.ecosystem.exception.KinEcosystemException;
 import com.kin.ecosystem.network.model.AuthToken;
 import kin.core.EventListener;
 import kin.core.KinAccount;
@@ -90,11 +90,7 @@ public class AccountManagerImpl implements AccountManager {
 		this.kinAccount = kinAccount;
 		Logger.log(new Log().withTag(TAG).put("setAccountState", "start"));
 		if (getAccountState() != CREATION_COMPLETED) {
-			if (getAccountState() == ERROR) {
-				retry();
-			} else {
-				this.setAccountState(getAccountState());
-			}
+			this.setAccountState(local.getAccountState());
 		}
 	}
 
@@ -109,22 +105,29 @@ public class AccountManagerImpl implements AccountManager {
 					eventLogger.send(StellarAccountCreationRequested.create());
 					Logger.log(new Log().withTag(TAG).put("setAccountState", "REQUIRE_CREATION"));
 					// Trigger account creation from server side.
-					authRepository.getAuthToken(new KinCallbackAdapter<AuthToken>() {
+					authRepository.getAuthToken(new KinCallback<AuthToken>() {
 						@Override
 						public void onResponse(AuthToken response) {
 							setAccountState(PENDING_CREATION);
+						}
+
+						@Override
+						public void onFailure(KinEcosystemException error) {
+							setAccountState(ERROR);
 						}
 					});
 					break;
 				case PENDING_CREATION:
 					Logger.log(new Log().withTag(TAG).put("setAccountState", "PENDING_CREATION"));
 					// Start listen for account creation on the blockchain side.
+					if (accountCreationRegistration != null) {
+						removeAccountCreationRegistration();
+					}
 					accountCreationRegistration = kinAccount.blockchainEvents()
 						.addAccountCreationListener(new EventListener<Void>() {
 							@Override
 							public void onEvent(Void data) {
-								accountCreationRegistration.remove();
-								accountCreationRegistration = null;
+								removeAccountCreationRegistration();
 								setAccountState(REQUIRE_TRUSTLINE);
 							}
 						});
@@ -158,6 +161,11 @@ public class AccountManagerImpl implements AccountManager {
 
 			}
 		}
+	}
+
+	private void removeAccountCreationRegistration() {
+		accountCreationRegistration.remove();
+		accountCreationRegistration = null;
 	}
 
 	private boolean isValidState(int currentState, int newState) {
