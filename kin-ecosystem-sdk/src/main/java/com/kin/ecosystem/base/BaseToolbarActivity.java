@@ -47,11 +47,6 @@ public abstract class BaseToolbarActivity extends AppCompatActivity {
         topToolBar.setNavigationOnClickListener(getNavigationClickListener());
     }
 
-    protected void navigateToActivity(Intent intent) {
-        startActivity(intent);
-        overridePendingTransition(R.anim.kinecosystem_slide_in_right, R.anim.kinecosystem_slide_out_left);
-    }
-
     public Toolbar getToolbar() {
         return topToolBar;
     }

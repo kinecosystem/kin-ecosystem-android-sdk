@@ -116,9 +116,15 @@ public class SplashActivity extends AppCompatActivity implements ISplashView {
         finish();
     }
 
-    @Override
+	@Override
+	public void onBackPressed() {
+		splashPresenter.backButtonPressed();
+	}
+
+	@Override
     public void navigateBack() {
-        onBackPressed();
+        super.onBackPressed();
+		overridePendingTransition(0, R.anim.kinecosystem_slide_out_right);
     }
 
     @Override
