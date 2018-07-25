@@ -6,10 +6,13 @@ import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.Callback;
+import com.kin.ecosystem.data.order.OrderDataSource;
 import com.kin.ecosystem.marketplace.model.NativeOffer;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OfferList;
+import com.kin.ecosystem.network.model.Order;
+import com.kin.ecosystem.network.model.Order.Status;
 import com.kin.ecosystem.util.ErrorUtil;
 import kin.ecosystem.core.network.ApiException;
 
@@ -18,22 +21,24 @@ public class OfferRepository implements OfferDataSource {
     private static OfferRepository instance = null;
 
     private final OfferDataSource.Remote remoteData;
+    private final OrderDataSource orderRepository;
 
     private OfferList nativeOfferList = new OfferList();
     private OfferList cachedOfferList = new OfferList();
-    private ObservableData<Offer> pendingOffer = ObservableData.create();
 
     private ObservableData<NativeSpendOffer> nativeSpendOfferObservable = ObservableData.create();
 
-    private OfferRepository(@NonNull OfferDataSource.Remote remoteData) {
+    private OfferRepository(@NonNull OfferDataSource.Remote remoteData, @NonNull OrderDataSource orderRepository) {
         this.remoteData = remoteData;
+        this.orderRepository = orderRepository;
+        listenToPendingOrders();
     }
 
-    public static void init(@NonNull OfferDataSource.Remote remoteData) {
+    public static void init(@NonNull OfferDataSource.Remote remoteData, @NonNull OrderDataSource orderRepository) {
         if (instance == null) {
             synchronized (OfferRepository.class) {
                 if (instance == null) {
-                    instance = new OfferRepository(remoteData);
+                    instance = new OfferRepository(remoteData, orderRepository);
                 }
             }
         }
@@ -41,6 +46,17 @@ public class OfferRepository implements OfferDataSource {
 
     public static OfferRepository getInstance() {
         return instance;
+    }
+
+    private void listenToPendingOrders() {
+        orderRepository.addOrderObserver(new Observer<Order>() {
+            @Override
+            public void onChanged(Order order) {
+                if(order.getStatus() == Status.PENDING) {
+                    removeFromCachedOfferList(order.getOfferId());
+                }
+            }
+        });
     }
 
     @Override
@@ -77,31 +93,13 @@ public class OfferRepository implements OfferDataSource {
         return masterList;
     }
 
-    @Override
-    public ObservableData<Offer> getPendingOffer() {
-        return pendingOffer;
-    }
-
-    @Override
-    public void setPendingOfferByID(String offerID) {
-        Offer offer = getCachedOfferByID(offerID);
-        removeFromCachedOfferList(offer);
-        pendingOffer.postValue(offer);
-    }
-
-    private void removeFromCachedOfferList(Offer offer) {
-        if (cachedOfferList != null) {
-            cachedOfferList.remove(offer);
-        }
-    }
-
-    @Nullable
-    private Offer getCachedOfferByID(String offerID) {
+    private void removeFromCachedOfferList(String offerID) {
         if (cachedOfferList == null) {
-            return null;
+            return;
         }
 
-        return cachedOfferList.getOfferByID(offerID);
+        Offer offer = cachedOfferList.getOfferByID(offerID);
+        cachedOfferList.remove(offer);
     }
 
     @Override
@@ -121,12 +119,9 @@ public class OfferRepository implements OfferDataSource {
 
     @Override
     public boolean addNativeOffer(@NonNull NativeOffer nativeOffer) {
-        Offer offer = nativeOfferList.getOfferByID(nativeOffer.getId());
-        if (offer == null) {
-            return nativeOfferList.addAtIndex(0, nativeOffer);
-        }
-        return false;
-    }
+		Offer offer = nativeOfferList.getOfferByID(nativeOffer.getId());
+		return offer == null && nativeOfferList.addAtIndex(0, nativeOffer);
+	}
 
     @Override
     public boolean removeNativeOffer(@NonNull NativeOffer nativeOffer) {

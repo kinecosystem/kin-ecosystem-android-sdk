@@ -1,14 +1,18 @@
 package com.kin.ecosystem.web;
 
-import android.util.Log;
 import android.webkit.JavascriptInterface;
+import com.kin.ecosystem.Log;
+import com.kin.ecosystem.Logger;
 
 class EcosystemNativeApi {
+
+    private static final String TAG = EcosystemNativeApi.class.getSimpleName();
+
     private EcosystemWebPageListener listener;
 
     @JavascriptInterface
     public void loaded() {
-        Log.d("NativeApi", "loaded()");
+        Logger.log(new Log().withTag(TAG).text("loaded()"));
         if (listener != null) {
             listener.onPageLoaded();
         }
@@ -16,7 +20,7 @@ class EcosystemNativeApi {
 
     @JavascriptInterface
     public void handleCancel() {
-        Log.d("NativeApi", "handleCancel()");
+        Logger.log(new Log().withTag(TAG).text("handleCancel()"));
         if (listener != null) {
             listener.onPageCancel();
         }
@@ -24,7 +28,7 @@ class EcosystemNativeApi {
 
     @JavascriptInterface
     public void handleResult(final String result) {
-        Log.d("NativeApi", "handleResult(\"" + result + "\")");
+        Logger.log(new Log().withTag(TAG).text("handleResult(\"" + result + "\")"));
         if (listener != null) {
             listener.onPageResult(result);
         }
@@ -32,7 +36,7 @@ class EcosystemNativeApi {
 
     @JavascriptInterface
     public void displayTopBar(boolean shouldDisplay) {
-        Log.d("NativeApi", "displayTopBar(\"" + shouldDisplay + "\")");
+        Logger.log(new Log().withTag(TAG).text("displayTopBar(\"" + shouldDisplay + "\")"));
         if (listener != null) {
             if (shouldDisplay) {
                 listener.showToolbar();
@@ -44,7 +48,7 @@ class EcosystemNativeApi {
 
     @JavascriptInterface
     public void handleClose() {
-        Log.d("NativeApi", "handleClose()");
+        Logger.log(new Log().withTag(TAG).text("handleClose()"));
         if (listener != null) {
             listener.onPageClosed();
         }

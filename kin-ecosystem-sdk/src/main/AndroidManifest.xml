@@ -10,12 +10,7 @@
             android:theme="@style/KinecosysNoActionBar"/>
         <activity
             android:label="@string/kinecosystem_kin_marketplace"
-            android:name=".marketplace.view.MarketplaceActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/KinecosysNoActionBar"/>
-        <activity
-            android:label="@string/kinecosystem_transaction_history"
-            android:name=".history.view.OrderHistoryActivity"
+            android:name=".main.view.EcosystemActivity"
             android:screenOrientation="portrait"
             android:theme="@style/KinecosysNoActionBar"/>
         <activity

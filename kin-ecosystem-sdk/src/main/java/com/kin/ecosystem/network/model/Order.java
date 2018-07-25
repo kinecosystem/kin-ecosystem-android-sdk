@@ -44,6 +44,7 @@ public class Order {
 
         PENDING("pending"),
         COMPLETED("completed"),
+        DELAYED("delayed"),
         FAILED("failed");
 
         private String value;
@@ -85,6 +86,56 @@ public class Order {
         }
     }
 
+	/**
+	 * Gets or Sets status
+	 */
+	@JsonAdapter(Origin.Adapter.class)
+	public enum Origin {
+
+		MARKETPLACE("marketplace"),
+		EXTERNAL("external");
+
+		private String value;
+
+		Origin(String value) {
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		@Override
+		public String toString() {
+			return String.valueOf(value);
+		}
+
+		public static Origin fromValue(String text) {
+			for (Origin b : Origin.values()) {
+				if (String.valueOf(b.value).equals(text)) {
+					return b;
+				}
+			}
+			return null;
+		}
+
+		public static class Adapter extends TypeAdapter<Origin> {
+
+			@Override
+			public void write(final JsonWriter jsonWriter, final Origin enumeration) throws IOException {
+				jsonWriter.value(enumeration.getValue());
+			}
+
+			@Override
+			public Origin read(final JsonReader jsonReader) throws IOException {
+				String value = jsonReader.nextString();
+				return Origin.fromValue(String.valueOf(value));
+			}
+		}
+	}
+
+	@SerializedName("origin")
+	private Origin origin = null;
     @SerializedName("status")
     private Status status = null;
     @SerializedName("id")
@@ -146,6 +197,19 @@ public class Order {
     public void setStatus(Status status) {
         this.status = status;
     }
+
+	/**
+	 * Get origin
+	 *
+	 * @return origin
+	 **/
+	public Origin getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(Origin origin) {
+		this.origin = origin;
+	}
 
     public Order orderId(String orderId) {
         this.orderId = orderId;
@@ -312,6 +376,11 @@ public class Order {
         return content;
     }
 
+    public Order error(Error error) {
+        this.error = error;
+        return this;
+    }
+
     public Error getError() {
         return error;
     }
@@ -331,7 +400,7 @@ public class Order {
     @Override
     public int hashCode() {
         return result.hashCode() + status.hashCode() +  orderId.hashCode() +
-            completionDate.hashCode() +  blockchainData.hashCode() +
+            completionDate.hashCode() +  blockchainData.hashCode() + origin.hashCode() +
             offerType.hashCode() +  title.hashCode() +  description.hashCode() +
             callToAction.hashCode() + amount.hashCode();
     }
@@ -345,6 +414,7 @@ public class Order {
         sb.append("    offerId: ").append(toIndentedString(offerId)).append("\n");
         sb.append("    result: ").append(toIndentedString(result)).append("\n");
         sb.append("    status: ").append(toIndentedString(status)).append("\n");
+        sb.append("    origin: ").append(toIndentedString(origin)).append("\n");
         sb.append("    completionDate: ").append(toIndentedString(completionDate)).append("\n");
         sb.append("    blockchainData: ").append(toIndentedString(blockchainData)).append("\n");
         sb.append("    offerType: ").append(toIndentedString(offerType)).append("\n");

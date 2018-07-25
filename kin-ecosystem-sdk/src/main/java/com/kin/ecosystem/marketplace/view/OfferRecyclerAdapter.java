@@ -6,9 +6,9 @@ import static kin.ecosystem.core.util.StringUtil.getAmountFormatted;
 import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.view.View;
-import com.chad.library.adapter.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
+import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.marketplace.view.OfferRecyclerAdapter.ViewHolder;
 import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.Offer.ContentTypeEnum;
@@ -33,7 +33,6 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
 
     OfferRecyclerAdapter(@LayoutRes int layoutResID) {
         super(layoutResID);
-        openLoadAnimation(SLIDEIN_RIGHT);
     }
 
     @Override

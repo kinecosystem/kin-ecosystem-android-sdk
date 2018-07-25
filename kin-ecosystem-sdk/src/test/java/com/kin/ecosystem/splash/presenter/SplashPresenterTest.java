@@ -30,7 +30,7 @@ import org.mockito.MockitoAnnotations;
 
 
 @RunWith(JUnit4.class)
-public class SplashPresenterTest extends BaseTestClass{
+public class SplashPresenterTest extends BaseTestClass {
 
     @Mock
     private AuthDataSource authRepository;

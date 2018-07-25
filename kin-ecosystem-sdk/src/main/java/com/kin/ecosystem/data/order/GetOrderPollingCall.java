@@ -13,6 +13,7 @@ class GetOrderPollingCall extends Thread {
 
     private static final int[] DELAY_SECONDS = {2, 4, 8, 16, 32, 32, 32, 32, 32};
     private static final int SEC_IN_MILLI = 1000;
+    private static final int DELAYED_ATTEMPTED_NUMBER = 5;
 
     private final OrderDataSource.Remote remote;
     private final String orderID;
@@ -35,6 +36,9 @@ class GetOrderPollingCall extends Thread {
             if (pollingIndex < DELAY_SECONDS.length) {
                 Order order = remote.getOrderSync(orderID);
                 if (order == null || order.getStatus() == Status.PENDING) {
+                    if(order != null && pollingIndex == DELAYED_ATTEMPTED_NUMBER){
+                        callback.onResponse(order.status(Status.DELAYED));
+                    }
                     sleep(DELAY_SECONDS[pollingIndex] * SEC_IN_MILLI);
                     getOrder(++pollingIndex);
                 } else {

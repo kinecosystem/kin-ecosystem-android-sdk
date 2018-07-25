@@ -13,18 +13,20 @@
         android:layout_marginBottom="@dimen/kinecosystem_tiny_margin"
         android:layout_marginLeft="@dimen/kinecosystem_main_margin"
         android:text="@string/kinecosystem_kin_balance"
+        tools:text="@string/kinecosystem_kin_balance"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <TextView
+    <TextSwitcher
         android:id="@+id/sub_title"
         style="@style/KinecosysSubTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/kinecosystem_main_margin"
-        android:text="@string/kinecosystem_welcome_to_kin_marketplace"
+        android:inAnimation="@anim/kinecosystem_slide_fade_from_top"
+        android:outAnimation="@anim/kinecosystem_slide_fade_to_bottom"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/balance_title"
-        tools:text="@string/kinecosystem_welcome_to_kin_marketplace"/>
+        />
 
     <TextSwitcher
         android:id="@+id/balance_text"
@@ -32,22 +34,11 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="@dimen/kinecosystem_margin_large"
         android:measureAllChildren="false"
+        android:inAnimation="@anim/kinecosystem_fade_in"
+        android:outAnimation="@anim/kinecosystem_fade_out"
         app:layout_constraintBottom_toBottomOf="@+id/sub_title"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/balance_title">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/kinecosystem_bluePrimary"
-            android:textSize="@dimen/kinecosystem_title_xlarge_size"
-            tools:text="12,000"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/kinecosystem_bluePrimary"
-            android:textSize="@dimen/kinecosystem_title_xlarge_size"
-            />
-    </TextSwitcher>
+        app:layout_constraintTop_toTopOf="@+id/balance_title"/>
 
     <ImageView
         android:id="@+id/arrow"

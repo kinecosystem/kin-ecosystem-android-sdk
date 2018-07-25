@@ -15,9 +15,9 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.ImageView;
-import com.chad.library.adapter.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
+import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.history.view.OrderHistoryRecyclerAdapter.ViewHolder;
 import com.kin.ecosystem.network.model.Offer.OfferType;
 import com.kin.ecosystem.network.model.Order;
@@ -40,7 +40,6 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
 
     OrderHistoryRecyclerAdapter() {
         super(R.layout.kinecosystem_order_history_recycler_item);
-        openLoadAnimation(SLIDEIN_TOP);
     }
 
     private void initColors(Context context) {
@@ -69,6 +68,11 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
     @Override
     protected void convert(ViewHolder holder, final Order item) {
         holder.bindObject(item);
+    }
+
+    @Override
+    protected ViewHolder createBaseViewHolder(View view) {
+        return new ViewHolder(view);
     }
 
     class ViewHolder extends AbstractBaseViewHolder<Order> {

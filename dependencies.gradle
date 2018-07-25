@@ -7,7 +7,6 @@ ext {
     picassoVersion = '2.71828'
     okhttp3Version = '3.9.1'
     gsonVersion = '2.8.2'
-    baseRecyclerAdapterVersion = '18191dd'
 
     //Packages
     kinFoundationPackage = 'com.github.kinfoundation'
@@ -16,7 +15,6 @@ ext {
     picassoPackage = 'com.squareup.picasso'
     okhttp3Packace = 'com.squareup.okhttp3'
     gsonPackage = 'com.google.code.gson'
-    baseRecyclerAdapterPackage = 'com.github.OrenZak'
 
     //Testing Version
     junitVersion = '4.12'
@@ -38,7 +36,6 @@ ext {
             okhttp3            : buildDependency(okhttp3Packace, 'okhttp', okhttp3Version),
             loginInterceptor3  : buildDependency(okhttp3Packace, 'logging-interceptor', okhttp3Version),
             supportAnnotations : buildDependency(supportPackage, 'support-annotations', supportVersion),
-            baseRecyclerAdapter: buildDependency(baseRecyclerAdapterPackage, 'BaseRecyclerViewAdapterHelper', baseRecyclerAdapterVersion),
     ]
 
     testingDependencies = [

@@ -12,6 +12,6 @@
     </declare-styleable>
 
     <declare-styleable name="KinEcosystemBalanceView">
-        <attr format="boolean" name="showArrow"/>
+        <attr format="string" name="subTitle"/>
     </declare-styleable>
 </resources>

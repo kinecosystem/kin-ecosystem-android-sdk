@@ -2,8 +2,6 @@ package com.kin.ecosystem.network.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Objects;
-
 /**
  * object accompanying lists - used to fetch next/previous section
  */
