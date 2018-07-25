@@ -1,6 +1,7 @@
 package com.kin.ecosystem.data.auth;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.data.Callback;
@@ -21,6 +22,8 @@ public interface AuthDataSource {
 	String getEcosystemUserID();
 
 	void setAuthToken(@NonNull final AuthToken authToken);
+
+	void getAuthToken(@Nullable final KinCallback<AuthToken> callback);
 
 	AuthToken getAuthTokenSync();
 
@@ -53,6 +56,8 @@ public interface AuthDataSource {
 	interface Remote {
 
 		void setSignInData(@NonNull final SignInData signInData);
+
+		void getAuthToken(@NonNull final Callback<AuthToken, ApiException> callback);
 
 		AuthToken getAuthTokenSync();
 

@@ -1,6 +1,5 @@
 package com.kin.ecosystem.web;
 
-
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;

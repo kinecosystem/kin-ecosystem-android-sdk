@@ -1,13 +1,21 @@
 package com.kin.ecosystem.data.blockchain;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.kin.ecosystem.KinCallback;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.Payment;
 import java.math.BigDecimal;
+import kin.core.KinAccount;
 
 public interface BlockchainSource {
+
+    /**
+     * Getting the current account.
+     */
+    @Nullable
+    KinAccount getKinAccount();
 
     /**
      *
@@ -79,10 +87,5 @@ public interface BlockchainSource {
         int getBalance();
 
         void setBalance(int balance);
-
-        boolean hasTrustLine();
-
-        void setHasTrustline(boolean hasTrustline);
-
     }
 }

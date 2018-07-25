@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.Log;
+import com.kin.ecosystem.Logger;
 import com.kin.ecosystem.base.ObservableData;
 import com.kin.ecosystem.base.Observer;
 import com.kin.ecosystem.bi.EventLogger;
@@ -37,6 +39,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import kin.ecosystem.core.network.ApiException;
 
 public class OrderRepository implements OrderDataSource {
+
+	private static final String TAG = OrderRepository.class.getSimpleName();
 
 	private static OrderRepository instance = null;
 	private final OrderDataSource.Local localData;
@@ -165,6 +169,7 @@ public class OrderRepository implements OrderDataSource {
 					}
 				};
 				blockchainSource.addPaymentObservable(paymentObserver);
+				Logger.log(new Log().withTag(TAG).text("listenForCompletedPayment: addPaymentObservable"));
 			}
 			paymentObserverCount++;
 		}
@@ -455,7 +460,6 @@ public class OrderRepository implements OrderDataSource {
 									callback.onFailure(
 										getClientException(INTERNAL_INCONSISTENCY, new DataNotAvailableException()));
 								}
-
 							}
 							callback.onResponse(orderConfirmation);
 						} else {

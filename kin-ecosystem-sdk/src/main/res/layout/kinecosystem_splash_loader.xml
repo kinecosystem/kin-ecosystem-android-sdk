@@ -21,6 +21,7 @@
         android:layout_width="@dimen/kinecosystem_round_button_height"
         android:layout_height="@dimen/kinecosystem_round_button_height"
         android:layout_gravity="center"
+        android:visibility="gone"
         android:background="@drawable/kinecosystem_circle_dash_line"/>
 
     <ImageView
@@ -29,6 +30,7 @@
         android:layout_height="@dimen/kinecosystem_round_button_height"
         android:layout_gravity="center"
         android:padding="@dimen/kinecosystem_main_small_margin"
+        android:visibility="gone"
         android:src="@drawable/kinecosystem_diamond_1"
         />
 

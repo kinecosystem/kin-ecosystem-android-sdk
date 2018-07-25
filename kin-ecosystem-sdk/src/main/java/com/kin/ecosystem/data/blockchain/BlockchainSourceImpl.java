@@ -17,11 +17,7 @@ import com.kin.ecosystem.bi.events.KinBalanceUpdated;
 import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainFailed;
 import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainSubmitted;
 import com.kin.ecosystem.bi.events.SpendTransactionBroadcastToBlockchainSucceeded;
-import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupFailed;
-import com.kin.ecosystem.bi.events.StellarKinTrustlineSetupSucceeded;
-import com.kin.ecosystem.bi.events.WalletCreationSucceeded;
 import com.kin.ecosystem.data.KinCallbackAdapter;
-import com.kin.ecosystem.data.blockchain.CreateTrustLineCall.TrustlineCallback;
 import com.kin.ecosystem.data.model.Balance;
 import com.kin.ecosystem.data.model.Payment;
 import com.kin.ecosystem.exception.BlockchainException;
@@ -35,7 +31,6 @@ import kin.core.PaymentInfo;
 import kin.core.ResultCallback;
 import kin.core.TransactionId;
 import kin.core.exception.CreateAccountException;
-import kin.core.exception.OperationFailedException;
 import kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
 
 public class BlockchainSourceImpl implements BlockchainSource {
@@ -62,7 +57,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private ListenerRegistration paymentRegistration;
 	private ListenerRegistration balanceRegistration;
-	private ListenerRegistration accountCreationRegistration;
+
 	private final MainThreadExecutor mainThread = new MainThreadExecutor();
 
 	private String appID;
@@ -104,58 +99,17 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		if (account == null) {
 			try {
 				account = kinClient.addAccount();
-				startAccountCreationListener();
 			} catch (CreateAccountException e) {
 				throw ErrorUtil.getBlockchainException(e);
 			}
-		} else {
-			createTrustLineIfNeeded(null);
 		}
 	}
 
-	private void startAccountCreationListener() {
-		Logger.log(new Log().withTag(TAG).text("startAccountCreationListener"));
-		accountCreationRegistration = account.blockchainEvents()
-			.addAccountCreationListener(new EventListener<Void>() {
-				@Override
-				public void onEvent(Void data) {
-					createTrustLine(null);
-					removeRegistration(accountCreationRegistration);
-				}
-			});
-	}
 
-	private void createTrustLineIfNeeded(@Nullable final TrustlineCallback callback) {
-		if(!local.hasTrustLine()) {
-			createTrustLine(callback);
-		} else {
-			if(callback != null) {
-				callback.onSuccess();
-			}
-		}
-	}
-
-	private void createTrustLine(@Nullable final TrustlineCallback callback) {
-		new CreateTrustLineCall(account, new TrustlineCallback() {
-			@Override
-			public void onSuccess() {
-				if (callback != null) {
-					callback.onSuccess();
-				}
-				local.setHasTrustline(true);
-				eventLogger.send(StellarKinTrustlineSetupSucceeded.create());
-				eventLogger.send(WalletCreationSucceeded.create());
-
-			}
-
-			@Override
-			public void onFailure(OperationFailedException e) {
-				if (callback != null) {
-					callback.onFailure(e);
-				}
-				eventLogger.send(StellarKinTrustlineSetupFailed.create(e.getMessage()));
-			}
-		}).start();
+	@Override
+	@Nullable
+	public KinAccount getKinAccount() {
+		return account;
 	}
 
 	@Override
@@ -169,35 +123,23 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	public void sendTransaction(@NonNull final String publicAddress, @NonNull final BigDecimal amount,
 		@NonNull final String orderID, @NonNull final String offerID) {
 		eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offerID, orderID));
-		createTrustLineIfNeeded(new TrustlineCallback() {
-			@Override
-			public void onSuccess() {
-				account.sendTransaction(publicAddress, amount, generateMemo(orderID)).run(
-					new ResultCallback<TransactionId>() {
-						@Override
-						public void onResult(TransactionId result) {
-							eventLogger.send(SpendTransactionBroadcastToBlockchainSucceeded.create(result.id(), offerID, orderID));
-							Logger.log(new Log().withTag(TAG).put("sendTransaction onResult", result.id()));
-						}
+		account.sendTransaction(publicAddress, amount, generateMemo(orderID)).run(
+			new ResultCallback<TransactionId>() {
+				@Override
+				public void onResult(TransactionId result) {
+					eventLogger
+						.send(SpendTransactionBroadcastToBlockchainSucceeded.create(result.id(), offerID, orderID));
+					Logger.log(new Log().withTag(TAG).put("sendTransaction onResult", result.id()));
+				}
 
-						@Override
-						public void onError(Exception e) {
-							eventLogger.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
-							completedPayment.postValue(new Payment(orderID, false, e));
-							Logger.log(new Log().withTag(TAG).priority(ERROR).put("sendTransaction onError", e.getMessage()));
-						}
-					});
-			}
-
-			@Override
-			public void onFailure(OperationFailedException e) {
-				final String errorMessage = "Trustline failed - " + e.getMessage();
-				eventLogger.send(SpendTransactionBroadcastToBlockchainFailed.create(errorMessage, offerID, orderID));
-				completedPayment.postValue(new Payment(orderID, false, e));
-				Logger.log(new Log().withTag(TAG).priority(ERROR).put("sendTransaction onError", e.getMessage()));
-			}
-		});
-
+				@Override
+				public void onError(Exception e) {
+					eventLogger
+						.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
+					completedPayment.postValue(new Payment(orderID, false, e));
+					Logger.log(new Log().withTag(TAG).put("sendTransaction onError", e.getMessage()));
+				}
+			});
 	}
 
 	@SuppressLint("DefaultLocale")
@@ -310,7 +252,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private void decrementBalanceCount() {
 		synchronized (balanceObserversLock) {
-			if(balanceObserversCount > 0) {
+			if (balanceObserversCount > 0) {
 				balanceObserversCount--;
 			}
 
@@ -333,7 +275,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	@Override
 	public void addPaymentObservable(Observer<Payment> observer) {
-		createTrustLineIfNeeded(null);
 		completedPayment.addObserver(observer);
 		incrementPaymentCount();
 	}
@@ -381,7 +322,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private void decrementPaymentCount() {
 		synchronized (paymentObserversLock) {
-			if(paymentObserversCount > 0) {
+			if (paymentObserversCount > 0) {
 				paymentObserversCount--;
 			}
 
