@@ -1,24 +1,24 @@
 package com.kin.ecosystem.poll.presenter;
 
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.KinCallback;
+import kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.base.BasePresenter;
-import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.bi.EventLogger;
-import com.kin.ecosystem.bi.events.CloseButtonOnOfferPageTapped;
-import com.kin.ecosystem.bi.events.EarnOrderCancelled;
-import com.kin.ecosystem.bi.events.EarnOrderCompleted;
-import com.kin.ecosystem.bi.events.EarnOrderCompleted.OfferType;
-import com.kin.ecosystem.bi.events.EarnOrderCompletionSubmitted;
-import com.kin.ecosystem.bi.events.EarnOrderCreationFailed;
-import com.kin.ecosystem.bi.events.EarnOrderCreationReceived;
-import com.kin.ecosystem.bi.events.EarnOrderCreationRequested;
-import com.kin.ecosystem.bi.events.EarnOrderFailed;
-import com.kin.ecosystem.bi.events.EarnPageLoaded;
-import com.kin.ecosystem.data.order.OrderDataSource;
-import com.kin.ecosystem.exception.KinEcosystemException;
-import com.kin.ecosystem.network.model.OpenOrder;
-import com.kin.ecosystem.network.model.Order;
+import kin.ecosystem.common.Observer;
+import kin.ecosystem.core.bi.EventLogger;
+import kin.ecosystem.core.bi.events.CloseButtonOnOfferPageTapped;
+import kin.ecosystem.core.bi.events.EarnOrderCancelled;
+import kin.ecosystem.core.bi.events.EarnOrderCompleted;
+import kin.ecosystem.core.bi.events.EarnOrderCompleted.OfferType;
+import kin.ecosystem.core.bi.events.EarnOrderCompletionSubmitted;
+import kin.ecosystem.core.bi.events.EarnOrderCreationFailed;
+import kin.ecosystem.core.bi.events.EarnOrderCreationReceived;
+import kin.ecosystem.core.bi.events.EarnOrderCreationRequested;
+import kin.ecosystem.core.bi.events.EarnOrderFailed;
+import kin.ecosystem.core.bi.events.EarnPageLoaded;
+import kin.ecosystem.core.data.order.OrderDataSource;
+import kin.ecosystem.common.exception.KinEcosystemException;
+import kin.ecosystem.core.network.model.OpenOrder;
+import kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.poll.view.IPollWebView;
 
 

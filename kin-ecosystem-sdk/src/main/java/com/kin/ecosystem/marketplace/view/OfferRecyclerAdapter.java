@@ -10,9 +10,9 @@ import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.marketplace.view.OfferRecyclerAdapter.ViewHolder;
-import com.kin.ecosystem.network.model.Offer;
-import com.kin.ecosystem.network.model.Offer.ContentTypeEnum;
-import com.kin.ecosystem.network.model.Offer.OfferType;
+import kin.ecosystem.core.network.model.Offer;
+import kin.ecosystem.core.network.model.Offer.ContentTypeEnum;
+import kin.ecosystem.core.network.model.Offer.OfferType;
 import kin.ecosystem.core.util.DeviceUtils;
 
 class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {

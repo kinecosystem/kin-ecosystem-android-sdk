@@ -1,1 +1,1 @@
-include ':kin-ecosystem-sdk', ':app', ':kin-ecosystem-core'
+include ':kin-ecosystem-sdk', ':app', ':kin-ecosystem-core', ':kin-ecosystem-common'

@@ -3,7 +3,7 @@ package com.kin.ecosystem.marketplace.view;
 import com.kin.ecosystem.base.IBaseView;
 import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
 import com.kin.ecosystem.marketplace.presenter.MarketplacePresenter;
-import com.kin.ecosystem.network.model.Offer;
+import kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
 import java.util.List;
 

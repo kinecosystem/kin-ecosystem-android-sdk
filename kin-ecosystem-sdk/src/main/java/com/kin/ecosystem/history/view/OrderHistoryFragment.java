@@ -16,7 +16,7 @@ import com.kin.ecosystem.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.history.presenter.ICouponDialogPresenter;
 import com.kin.ecosystem.history.presenter.IOrderHistoryPresenter;
 import com.kin.ecosystem.history.presenter.OrderHistoryPresenter;
-import com.kin.ecosystem.network.model.Order;
+import kin.ecosystem.core.network.model.Order;
 import java.util.List;
 
 public class OrderHistoryFragment extends Fragment implements IOrderHistoryView {

@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import com.kin.ecosystem.base.IBaseView;
 import com.kin.ecosystem.history.presenter.ICouponDialogPresenter;
 import com.kin.ecosystem.history.presenter.OrderHistoryPresenter;
-import com.kin.ecosystem.network.model.Order;
+import kin.ecosystem.core.network.model.Order;
 import java.util.List;
 
 public interface IOrderHistoryView extends IBaseView<OrderHistoryPresenter>{

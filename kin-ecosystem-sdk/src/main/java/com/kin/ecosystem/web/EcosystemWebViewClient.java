@@ -4,8 +4,8 @@ import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import com.kin.ecosystem.Log;
-import com.kin.ecosystem.Logger;
+import kin.ecosystem.core.Log;
+import kin.ecosystem.core.Logger;
 
 public class EcosystemWebViewClient extends WebViewClient {
 

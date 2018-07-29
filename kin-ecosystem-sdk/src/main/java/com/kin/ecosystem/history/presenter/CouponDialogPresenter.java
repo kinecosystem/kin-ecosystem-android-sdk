@@ -3,15 +3,15 @@ package com.kin.ecosystem.history.presenter;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseDialogPresenter;
-import com.kin.ecosystem.bi.EventLogger;
-import com.kin.ecosystem.bi.events.RedeemUrlTapped;
-import com.kin.ecosystem.bi.events.SpendRedeemButtonTapped;
-import com.kin.ecosystem.bi.events.SpendRedeemPageViewed;
-import com.kin.ecosystem.bi.events.SpendRedeemPageViewed.RedeemTrigger;
-import com.kin.ecosystem.data.model.Coupon;
-import com.kin.ecosystem.data.model.Coupon.CouponInfo;
+import kin.ecosystem.core.bi.EventLogger;
+import kin.ecosystem.core.bi.events.RedeemUrlTapped;
+import kin.ecosystem.core.bi.events.SpendRedeemButtonTapped;
+import kin.ecosystem.core.bi.events.SpendRedeemPageViewed;
+import kin.ecosystem.core.bi.events.SpendRedeemPageViewed.RedeemTrigger;
+import kin.ecosystem.core.network.model.Coupon;
+import kin.ecosystem.core.network.model.Coupon.CouponInfo;
 import com.kin.ecosystem.history.view.ICouponDialog;
-import com.kin.ecosystem.network.model.Order;
+import kin.ecosystem.core.network.model.Order;
 
 public class CouponDialogPresenter extends BaseDialogPresenter<ICouponDialog> implements ICouponDialogPresenter {
 

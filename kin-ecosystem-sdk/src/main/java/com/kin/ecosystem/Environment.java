@@ -1,5 +1,8 @@
 package com.kin.ecosystem;
 
+
+import kin.ecosystem.common.KinEnvironment;
+
 public class Environment implements KinEnvironment {
 
 	private static final Environment PRODUCTION = new Environment(

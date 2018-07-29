@@ -6,30 +6,32 @@ import android.support.annotation.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.kin.ecosystem.base.BasePresenter;
-import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.bi.EventLogger;
-import com.kin.ecosystem.bi.events.BackButtonOnMarketplacePageTapped;
-import com.kin.ecosystem.bi.events.EarnOfferTapped;
-import com.kin.ecosystem.bi.events.MarketplacePageViewed;
-import com.kin.ecosystem.bi.events.NotEnoughKinPageViewed;
-import com.kin.ecosystem.bi.events.SpendOfferTapped;
-import com.kin.ecosystem.data.KinCallbackAdapter;
-import com.kin.ecosystem.data.blockchain.BlockchainSource;
-import com.kin.ecosystem.data.offer.OfferDataSource;
-import com.kin.ecosystem.data.order.OrderDataSource;
+import kin.ecosystem.common.Observer;
+import kin.ecosystem.common.model.NativeOffer;
+import kin.ecosystem.common.model.NativeSpendOffer;
+import kin.ecosystem.core.bi.EventLogger;
+import kin.ecosystem.core.bi.events.BackButtonOnMarketplacePageTapped;
+import kin.ecosystem.core.bi.events.EarnOfferTapped;
+import kin.ecosystem.core.bi.events.MarketplacePageViewed;
+import kin.ecosystem.core.bi.events.NotEnoughKinPageViewed;
+import kin.ecosystem.core.bi.events.SpendOfferTapped;
+import kin.ecosystem.common.KinCallbackAdapter;
+import kin.ecosystem.core.data.blockchain.BlockchainSource;
+import kin.ecosystem.core.data.offer.OfferDataSource;
+import kin.ecosystem.core.data.order.OrderDataSource;
 import com.kin.ecosystem.main.INavigator;
-import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.marketplace.view.IMarketplaceView;
-import com.kin.ecosystem.network.model.Offer;
-import com.kin.ecosystem.network.model.Offer.ContentTypeEnum;
-import com.kin.ecosystem.network.model.Offer.OfferType;
-import com.kin.ecosystem.network.model.OfferInfo;
-import com.kin.ecosystem.network.model.OfferList;
-import com.kin.ecosystem.network.model.Order;
+import kin.ecosystem.core.network.model.Offer;
+import kin.ecosystem.core.network.model.Offer.ContentTypeEnum;
+import kin.ecosystem.core.network.model.Offer.OfferType;
+import kin.ecosystem.core.network.model.OfferInfo;
+import kin.ecosystem.core.network.model.OfferList;
+import kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import kin.ecosystem.core.util.Converter;
 
 public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implements IMarketplacePresenter {
 
@@ -329,7 +331,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void nativeSpendOfferClicked(Offer offer) {
-		offerRepository.getNativeSpendOfferObservable().postValue((NativeSpendOffer) offer);
+		NativeSpendOffer nativeOffer = (NativeSpendOffer) Converter.toNativeOffer(offer);
+		offerRepository.getNativeSpendOfferObservable().postValue(nativeOffer);
 	}
 
 	private void showSomethingWentWrong() {

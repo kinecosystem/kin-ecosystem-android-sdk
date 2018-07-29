@@ -19,9 +19,9 @@ import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.history.view.OrderHistoryRecyclerAdapter.ViewHolder;
-import com.kin.ecosystem.network.model.Offer.OfferType;
-import com.kin.ecosystem.network.model.Order;
-import com.kin.ecosystem.network.model.Order.Status;
+import kin.ecosystem.core.network.model.Offer.OfferType;
+import kin.ecosystem.core.network.model.Order;
+import kin.ecosystem.core.network.model.Order.Status;
 
 
 public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, ViewHolder> {

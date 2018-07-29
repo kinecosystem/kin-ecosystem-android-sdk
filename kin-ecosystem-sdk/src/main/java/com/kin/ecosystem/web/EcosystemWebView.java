@@ -1,6 +1,7 @@
 package com.kin.ecosystem.web;
 
-import static com.kin.ecosystem.BuildConfig.DEBUG;
+
+import static kin.ecosystem.core.BuildConfig.DEBUG;
 
 import android.content.Context;
 import android.os.Build;
@@ -11,7 +12,7 @@ import android.os.Looper;
 import android.util.AttributeSet;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import com.kin.ecosystem.Configuration;
+import kin.ecosystem.core.Configuration;
 
 public class EcosystemWebView extends WebView {
 

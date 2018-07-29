@@ -7,6 +7,6 @@
 }
 
 # Remove logs code in release
--assumenosideeffects class com.kin.ecosystem.Logger {
+-assumenosideeffects class kin.ecosystem.core.Logger {
     public static void log(...);
 }

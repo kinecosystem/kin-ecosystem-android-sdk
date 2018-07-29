@@ -1,0 +1,21 @@
+apply plugin: 'com.android.library'
+apply from: '../dependencies.gradle'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "${KIN_ECOSYSTEM_COMMON_VERSION_NAME}"
+    }
+
+}
+
+
+dependencies {
+
+    implementation devDependencies.supportAnnotations
+    implementation devDependencies.gson
+}

@@ -5,11 +5,11 @@ apply plugin: 'maven'
 group = 'com.github.kinfoundation'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 26
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "${KIN_ECOSYSTEM_SDK_VERSION_NAME}"
         consumerProguardFiles 'proguard-rules.pro'
@@ -19,13 +19,14 @@ android {
 dependencies {
 
     implementation project(':kin-ecosystem-core')
+    api project(':kin-ecosystem-common')
 
-    implementation devDependencies.kinCore
     implementation devDependencies.appCompat_v7
     implementation devDependencies.recyclerView_v7
     implementation devDependencies.constraintLayout
     implementation devDependencies.picasso
 
+    testCompile project(':kin-ecosystem-core')
     testImplementation testingDependencies.junit
     testImplementation testingDependencies.mockito
     testImplementation testingDependencies.robolectric
