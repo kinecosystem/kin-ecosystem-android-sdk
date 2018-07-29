@@ -23,7 +23,7 @@ import kin.ecosystem.core.bi.events.SpendOrderCreationRequested;
 import kin.ecosystem.core.bi.events.SpendOrderFailed;
 import kin.ecosystem.core.data.blockchain.BlockchainSource;
 import kin.ecosystem.common.model.OrderConfirmation;
-import kin.ecosystem.common.model.Payment;
+import kin.ecosystem.core.data.blockchain.Payment;
 import kin.ecosystem.core.data.order.CreateExternalOrderCall.ExternalOrderCallbacks;
 import kin.ecosystem.core.data.order.CreateExternalOrderCall.ExternalSpendOrderCallbacks;
 import kin.ecosystem.core.network.ApiException;

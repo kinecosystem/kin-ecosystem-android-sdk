@@ -24,7 +24,7 @@ import kin.ecosystem.common.Callback;
 import kin.ecosystem.core.data.blockchain.BlockchainSource;
 import kin.ecosystem.common.model.Balance;
 import kin.ecosystem.common.model.OrderConfirmation;
-import kin.ecosystem.common.model.Payment;
+import kin.ecosystem.core.data.blockchain.Payment;
 import kin.ecosystem.common.exception.BlockchainException;
 import kin.ecosystem.common.exception.DataNotAvailableException;
 import kin.ecosystem.common.exception.KinEcosystemException;

@@ -17,7 +17,6 @@ import kin.ecosystem.core.bi.EventLogger;
 import kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainFailed;
 import kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainSucceeded;
 import kin.ecosystem.common.model.Balance;
-import kin.ecosystem.common.model.Payment;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import kin.core.BlockchainEvents;

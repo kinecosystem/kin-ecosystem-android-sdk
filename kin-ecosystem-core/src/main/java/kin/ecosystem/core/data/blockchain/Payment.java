@@ -1,4 +1,4 @@
-package kin.ecosystem.common.model;
+package kin.ecosystem.core.data.blockchain;
 
 import android.support.annotation.Nullable;
 import java.math.BigDecimal;

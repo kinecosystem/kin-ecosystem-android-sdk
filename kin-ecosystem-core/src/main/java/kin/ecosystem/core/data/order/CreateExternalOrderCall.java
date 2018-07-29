@@ -9,7 +9,7 @@ import kin.ecosystem.core.bi.events.SpendOrderCreationFailed;
 import kin.ecosystem.core.bi.events.SpendOrderCreationReceived;
 import kin.ecosystem.core.data.blockchain.BlockchainSource;
 import kin.ecosystem.common.model.Balance;
-import kin.ecosystem.common.model.Payment;
+import kin.ecosystem.core.data.blockchain.Payment;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;

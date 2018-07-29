@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import kin.ecosystem.common.KinCallback;
 import kin.ecosystem.common.Observer;
 import kin.ecosystem.common.model.Balance;
-import kin.ecosystem.common.model.Payment;
 import java.math.BigDecimal;
 import kin.core.KinAccount;
 
