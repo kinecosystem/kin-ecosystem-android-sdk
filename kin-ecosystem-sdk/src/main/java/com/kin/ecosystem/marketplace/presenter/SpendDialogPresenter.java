@@ -2,6 +2,8 @@ package com.kin.ecosystem.marketplace.presenter;
 
 import android.os.Handler;
 import com.kin.ecosystem.KinCallback;
+import com.kin.ecosystem.Log;
+import com.kin.ecosystem.Logger;
 import com.kin.ecosystem.base.BaseDialogPresenter;
 import com.kin.ecosystem.bi.EventLogger;
 import com.kin.ecosystem.bi.events.CloseButtonOnOfferPageTapped;
@@ -22,14 +24,17 @@ import com.kin.ecosystem.network.model.Offer;
 import com.kin.ecosystem.network.model.OfferInfo;
 import com.kin.ecosystem.network.model.OfferInfo.Confirmation;
 import com.kin.ecosystem.network.model.OpenOrder;
+import com.kin.ecosystem.network.model.Order;
 import java.math.BigDecimal;
 
 
-public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements ISpendDialogPresenter {
+class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements ISpendDialogPresenter {
 
-	private final OrderDataSource orderRepository;
-	private final BlockchainSource blockchainSource;
-	private final EventLogger eventLogger;
+    private static final String TAG = SpendDialogPresenter.class.getSimpleName();
+
+    private final OrderDataSource orderRepository;
+    private final BlockchainSource blockchainSource;
+    private final EventLogger eventLogger;
 
 	private final Handler handler = new Handler();
 
@@ -172,14 +177,24 @@ public class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> impl
 
 	private void submitOrder(String offerID, String orderID) {
 		eventLogger.send(SpendOrderCompletionSubmitted.create(offerID, orderID, false));
-		orderRepository.submitOrder(offerID, null, orderID, null);
-	}
+		orderRepository.submitOrder(offerID, null, orderID, new KinCallback<Order>() {
+            @Override
+            public void onResponse(Order response) {
+				Logger.log(new Log().withTag(TAG).put(" Submit onResponse", response));
+            }
 
-	private void showToast(String msg) {
-		if (view != null) {
-			view.showToast(msg);
-		}
-	}
+            @Override
+            public void onFailure(KinEcosystemException exception) {
+				Logger.log(new Log().withTag(TAG).put(" Submit onFailure", exception));
+            }
+        });
+    }
+
+    private void showToast(String msg) {
+        if (view != null) {
+            view.showToast(msg);
+        }
+    }
 
 	private String getOrderID() {
 		return openOrder != null ? openOrder.getId() : "null";

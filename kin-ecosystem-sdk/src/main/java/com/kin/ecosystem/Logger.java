@@ -30,3 +30,4 @@ public class Logger {
 		return BASE_TAG + tag;
 	}
 }
+ 

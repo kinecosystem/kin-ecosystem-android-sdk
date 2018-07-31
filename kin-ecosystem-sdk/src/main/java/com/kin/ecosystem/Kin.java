@@ -32,9 +32,10 @@ import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
 import com.kin.ecosystem.network.model.SignInData;
 import com.kin.ecosystem.network.model.SignInData.SignInTypeEnum;
-import com.kin.ecosystem.splash.view.SplashViewActivity;
+import com.kin.ecosystem.splash.view.SplashActivity;
 import com.kin.ecosystem.util.ErrorUtil;
 import java.util.UUID;
+import kin.core.KinAccount;
 import kin.core.KinClient;
 import kin.core.ServiceProvider;
 import kin.ecosystem.core.util.DeviceUtils;
@@ -44,19 +45,22 @@ import kin.ecosystem.core.util.ExecutorsUtil;
 public class Kin {
 
 	private static final String KIN_ECOSYSTEM_STORE_PREFIX_KEY = "kinecosystem_store";
-	private static Kin instance;
+	private static volatile Kin instance;
 
 	private final ExecutorsUtil executorsUtil;
-	private EventLogger eventLogger;
+	private final EventLogger eventLogger;
 
 	private Kin() {
 		executorsUtil = new ExecutorsUtil();
+		eventLogger = EventLoggerImpl.getInstance();
 	}
 
 	private static Kin getInstance() {
 		if (instance == null) {
 			synchronized (Kin.class) {
-				instance = new Kin();
+				if (instance == null) {
+					instance = new Kin();
+				}
 			}
 		}
 
@@ -80,6 +84,10 @@ public class Kin {
 		}
 	}
 
+	public static void enableLogs(final boolean enableLogs) {
+		Logger.enableLogs(enableLogs);
+	}
+
 	private static SignInData getWhiteListSignInData(@NonNull final WhitelistData whitelistData) {
 		return new SignInData()
 			.signInType(SignInTypeEnum.WHITELIST)
@@ -88,34 +96,36 @@ public class Kin {
 			.apiKey(whitelistData.getApiKey());
 	}
 
-	public static void enableLogs(final boolean enableLogs) {
-		Logger.enableLogs(enableLogs);
-	}
-
 	private static SignInData getJwtSignInData(@NonNull final String jwt) {
 		return new SignInData()
 			.signInType(SignInTypeEnum.JWT)
 			.jwt(jwt);
 	}
 
-	private static void init(@NonNull Context appContext, @NonNull SignInData signInData,
+	private synchronized static void init(@NonNull Context appContext, @NonNull SignInData signInData,
 		@NonNull KinEnvironment environment) throws ClientException, BlockchainException {
+		Configuration.setEnvironment(environment);
 		instance = getInstance();
 		appContext = appContext.getApplicationContext(); // use application context to avoid leaks.
 		DeviceUtils.init(appContext);
-		Configuration.setEnvironment(environment);
-		initEventLogger();
 		initBlockchain(appContext);
-		registerAccount(appContext, signInData);
+		initAuthRepository(appContext, signInData);
 		initEventCommonData(appContext);
 		instance.eventLogger.send(KinSdkInitiated.create());
+		initAccountManager(appContext);
 		initOrderRepository(appContext);
 		initOfferRepository();
 		setAppID();
 	}
 
-	private static void initEventLogger() {
-		instance.eventLogger = EventLoggerImpl.getInstance();
+	private static void initAccountManager(@NonNull final Context context) {
+		AccountManagerImpl.init(AccountManagerLocal.getInstance(context), instance.eventLogger, AuthRepository.getInstance());
+		if (!AccountManagerImpl.getInstance().isAccountCreated()) {
+			KinAccount account = BlockchainSourceImpl.getInstance().getKinAccount();
+			if (account != null) {
+				AccountManagerImpl.getInstance().start(account);
+			}
+		}
 	}
 
 	private static void initEventCommonData(@NonNull Context context) {
@@ -135,7 +145,7 @@ public class Kin {
 		BlockchainSourceImpl.getInstance().setAppID(appID);
 	}
 
-	private static void initBlockchain(Context context) throws BlockchainException {
+	private static void initBlockchain(@NonNull final Context context) throws BlockchainException {
 		final String networkUrl = Configuration.getEnvironment().getBlockchainNetworkUrl();
 		final String networkId = Configuration.getEnvironment().getBlockchainPassphrase();
 		KinClient kinClient = new KinClient(context, new ServiceProvider(networkUrl, networkId) {
@@ -147,9 +157,9 @@ public class Kin {
 		BlockchainSourceImpl.init(instance.eventLogger, kinClient, BlockchainSourceLocal.getInstance(context));
 	}
 
-	private static void registerAccount(@NonNull final Context context, @NonNull final SignInData signInData)
+	private static void initAuthRepository(@NonNull final Context context, @NonNull final SignInData signInData)
 		throws ClientException {
-		AuthRepository.init(instance.eventLogger, AuthLocalData.getInstance(context, instance.executorsUtil),
+		AuthRepository.init(AuthLocalData.getInstance(context, instance.executorsUtil),
 			AuthRemoteData.getInstance(instance.executorsUtil));
 		String deviceID = AuthRepository.getInstance().getDeviceID();
 		signInData.setDeviceId(deviceID != null ? deviceID : UUID.randomUUID().toString());
@@ -184,13 +194,13 @@ public class Kin {
 	 * Launch Kin Marketplace if the user is activated, otherwise it will launch Welcome to Kin page.
 	 *
 	 * @param activity the activity user can go back to.
-	 * @throws ClientException
 	 */
 	public static void launchMarketplace(@NonNull final Activity activity) throws ClientException {
 		checkInstanceNotNull();
 		instance.eventLogger.send(EntrypointButtonTapped.create());
 		boolean isActivated = AuthRepository.getInstance().isActivated();
-		if (isActivated) {
+		boolean isAccountCreated = AccountManagerImpl.getInstance().isAccountCreated();
+		if (isActivated && isAccountCreated) {
 			navigateToMarketplace(activity);
 		} else {
 			navigateToSplash(activity);
@@ -198,7 +208,7 @@ public class Kin {
 	}
 
 	private static void navigateToSplash(@NonNull final Activity activity) {
-		activity.startActivity(new Intent(activity, SplashViewActivity.class));
+		activity.startActivity(new Intent(activity, SplashActivity.class));
 		activity.overridePendingTransition(R.anim.kinecosystem_slide_in_right, R.anim.kinecosystem_slide_out_left);
 	}
 
@@ -209,7 +219,6 @@ public class Kin {
 
 	/**
 	 * @return The account public address
-	 * @throws ClientException
 	 */
 	public static String getPublicAddress() throws ClientException {
 		checkInstanceNotNull();
@@ -220,7 +229,6 @@ public class Kin {
 	 * Get the cached balance, can be different from the current balance on the network.
 	 *
 	 * @return balance amount
-	 * @throws ClientException
 	 */
 	public static Balance getCachedBalance() throws ClientException {
 		checkInstanceNotNull();
@@ -231,7 +239,6 @@ public class Kin {
 	 * Get the current account balance from the network.
 	 *
 	 * @param callback balance amount
-	 * @throws ClientException
 	 */
 	public static void getBalance(@NonNull final KinCallback<Balance> callback) throws ClientException {
 		checkInstanceNotNull();
