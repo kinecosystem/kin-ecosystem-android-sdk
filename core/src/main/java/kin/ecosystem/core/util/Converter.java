@@ -32,13 +32,15 @@ public class Converter {
 		}
 	}
 
-	public static NativeOffer toNativeOffer(Offer offer) {
-		NativeOffer.OfferType offerType;
-		try {
-			offerType = NativeOffer.OfferType.fromValue(offer.getOfferType().getValue());
-		} catch (Throwable throwable) {
-			return  null;
+	public static NativeSpendOffer toNativeSpendOffer(Offer offer) {
+		if(offer.getOfferType() == OfferType.SPEND) {
+			return new NativeSpendOffer(offer.getId())
+				.title(offer.getTitle())
+				.description(offer.getDescription())
+				.amount(offer.getAmount())
+				.image(offer.getImage());
+		} else {
+			return null;
 		}
-		return new NativeOffer(offer.getId(), offerType);
 	}
 }
