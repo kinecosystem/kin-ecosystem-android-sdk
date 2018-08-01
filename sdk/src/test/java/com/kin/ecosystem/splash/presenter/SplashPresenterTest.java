@@ -1,7 +1,7 @@
 package com.kin.ecosystem.splash.presenter;
 
-import static kin.ecosystem.core.accountmanager.AccountManager.CREATION_COMPLETED;
-import static kin.ecosystem.core.accountmanager.AccountManager.ERROR;
+import static com.kin.ecosystem.core.accountmanager.AccountManager.CREATION_COMPLETED;
+import static com.kin.ecosystem.core.accountmanager.AccountManager.ERROR;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -10,15 +10,15 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import kin.ecosystem.core.accountmanager.AccountManager;
+import com.kin.ecosystem.core.accountmanager.AccountManager;
 
-import kin.ecosystem.common.KinCallback;
-import kin.ecosystem.common.Observer;
-import kin.ecosystem.core.bi.EventLogger;
-import kin.ecosystem.core.bi.events.BackButtonOnWelcomeScreenPageTapped;
-import kin.ecosystem.core.bi.events.WelcomeScreenButtonTapped;
-import kin.ecosystem.core.bi.events.WelcomeScreenPageViewed;
-import kin.ecosystem.core.data.auth.AuthDataSource;
+import com.kin.ecosystem.common.KinCallback;
+import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.core.bi.EventLogger;
+import com.kin.ecosystem.core.bi.events.BackButtonOnWelcomeScreenPageTapped;
+import com.kin.ecosystem.core.bi.events.WelcomeScreenButtonTapped;
+import com.kin.ecosystem.core.bi.events.WelcomeScreenPageViewed;
+import com.kin.ecosystem.core.data.auth.AuthDataSource;
 import com.kin.ecosystem.splash.view.ISplashView;
 import java.util.Timer;
 import java.util.TimerTask;

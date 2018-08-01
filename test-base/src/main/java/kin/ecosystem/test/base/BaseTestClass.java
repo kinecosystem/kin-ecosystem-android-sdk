@@ -1,6 +1,6 @@
 package kin.ecosystem.test.base;
 
-import kin.ecosystem.core.bi.EventsStore;
+import com.kin.ecosystem.core.bi.EventsStore;
 import org.junit.Before;
 
 

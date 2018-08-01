@@ -1,7 +1,7 @@
 package com.kin.ecosystem.history.view;
 
-import static kin.ecosystem.core.util.DateUtil.getDateFormatted;
-import static kin.ecosystem.core.util.StringUtil.getAmountFormatted;
+import static com.kin.ecosystem.core.util.DateUtil.getDateFormatted;
+import static com.kin.ecosystem.core.util.StringUtil.getAmountFormatted;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -19,9 +19,9 @@ import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.history.view.OrderHistoryRecyclerAdapter.ViewHolder;
-import kin.ecosystem.core.network.model.Offer.OfferType;
-import kin.ecosystem.core.network.model.Order;
-import kin.ecosystem.core.network.model.Order.Status;
+import com.kin.ecosystem.core.network.model.Offer.OfferType;
+import com.kin.ecosystem.core.network.model.Order;
+import com.kin.ecosystem.core.network.model.Order.Status;
 
 
 public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, ViewHolder> {

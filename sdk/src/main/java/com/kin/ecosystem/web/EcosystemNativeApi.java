@@ -1,8 +1,8 @@
 package com.kin.ecosystem.web;
 
 import android.webkit.JavascriptInterface;
-import kin.ecosystem.core.Log;
-import kin.ecosystem.core.Logger;
+import com.kin.ecosystem.core.Log;
+import com.kin.ecosystem.core.Logger;
 
 class EcosystemNativeApi {
 

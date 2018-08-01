@@ -1,7 +1,7 @@
 package com.kin.ecosystem.marketplace.view;
 
-import static kin.ecosystem.core.util.DeviceUtils.DensityDpi.XXHDPI;
-import static kin.ecosystem.core.util.StringUtil.getAmountFormatted;
+import static com.kin.ecosystem.core.util.DeviceUtils.DensityDpi.XXHDPI;
+import static com.kin.ecosystem.core.util.StringUtil.getAmountFormatted;
 
 import android.content.Context;
 import android.support.annotation.LayoutRes;
@@ -10,10 +10,10 @@ import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.marketplace.view.OfferRecyclerAdapter.ViewHolder;
-import kin.ecosystem.core.network.model.Offer;
-import kin.ecosystem.core.network.model.Offer.ContentTypeEnum;
-import kin.ecosystem.core.network.model.Offer.OfferType;
-import kin.ecosystem.core.util.DeviceUtils;
+import com.kin.ecosystem.core.network.model.Offer;
+import com.kin.ecosystem.core.network.model.Offer.ContentTypeEnum;
+import com.kin.ecosystem.core.network.model.Offer.OfferType;
+import com.kin.ecosystem.core.util.DeviceUtils;
 
 class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
 

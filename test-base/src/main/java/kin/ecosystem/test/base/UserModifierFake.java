@@ -1,8 +1,8 @@
 package kin.ecosystem.test.base;
 
-import kin.ecosystem.core.bi.EventsStore.DynamicValue;
-import kin.ecosystem.core.bi.EventsStore.UserModifier;
-import kin.ecosystem.core.bi.events.UserProxy;
+import com.kin.ecosystem.core.bi.EventsStore.DynamicValue;
+import com.kin.ecosystem.core.bi.EventsStore.UserModifier;
+import com.kin.ecosystem.core.bi.events.UserProxy;
 
 public class UserModifierFake implements UserModifier {
 

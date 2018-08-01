@@ -5,7 +5,7 @@ import static com.kin.ecosystem.balance.presenter.BalancePresenter.DELAYED;
 import static com.kin.ecosystem.balance.presenter.BalancePresenter.FAILED;
 import static com.kin.ecosystem.balance.presenter.BalancePresenter.PENDING;
 import static com.kin.ecosystem.balance.presenter.BalancePresenter.SPEND;
-import static kin.ecosystem.core.util.StringUtil.getAmountFormatted;
+import static com.kin.ecosystem.core.util.StringUtil.getAmountFormatted;
 
 import android.content.Context;
 import android.content.res.Resources;

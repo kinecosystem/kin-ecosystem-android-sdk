@@ -1,6 +1,6 @@
 package com.kin.ecosystem.poll.view;
 
-import static kin.ecosystem.common.exception.ClientException.INTERNAL_INCONSISTENCY;
+import static com.kin.ecosystem.common.exception.ClientException.INTERNAL_INCONSISTENCY;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,13 +11,13 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseToolbarActivity;
-import kin.ecosystem.core.bi.EventLoggerImpl;
-import kin.ecosystem.core.data.order.OrderRepository;
-import kin.ecosystem.common.exception.ClientException;
+import com.kin.ecosystem.core.bi.EventLoggerImpl;
+import com.kin.ecosystem.core.data.order.OrderRepository;
+import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.poll.presenter.IPollWebViewPresenter;
 import com.kin.ecosystem.poll.presenter.PollWebViewPresenter;
 import com.kin.ecosystem.web.EcosystemWebView;
-import kin.ecosystem.core.util.ErrorUtil;
+import com.kin.ecosystem.core.util.ErrorUtil;
 
 public class PollWebViewActivity extends BaseToolbarActivity implements IPollWebView {
 

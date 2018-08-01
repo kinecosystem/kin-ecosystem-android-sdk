@@ -1,8 +1,8 @@
 package kin.ecosystem.test.base;
 
-import kin.ecosystem.core.bi.EventsStore.CommonModifier;
-import kin.ecosystem.core.bi.EventsStore.DynamicValue;
-import kin.ecosystem.core.bi.events.CommonProxy;
+import com.kin.ecosystem.core.bi.EventsStore.CommonModifier;
+import com.kin.ecosystem.core.bi.EventsStore.DynamicValue;
+import com.kin.ecosystem.core.bi.events.CommonProxy;
 import java.util.UUID;
 
 public class CommonModifierFake implements CommonModifier {

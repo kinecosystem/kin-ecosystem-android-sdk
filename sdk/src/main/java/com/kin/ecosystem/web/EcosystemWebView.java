@@ -12,7 +12,7 @@ import android.os.Looper;
 import android.util.AttributeSet;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import kin.ecosystem.core.Configuration;
+import com.kin.ecosystem.core.Configuration;
 
 public class EcosystemWebView extends WebView {
 

@@ -1,8 +1,8 @@
 package kin.ecosystem.test.base;
 
-import kin.ecosystem.core.bi.EventsStore.ClientModifier;
-import kin.ecosystem.core.bi.EventsStore.DynamicValue;
-import kin.ecosystem.core.bi.events.ClientProxy;
+import com.kin.ecosystem.core.bi.EventsStore.ClientModifier;
+import com.kin.ecosystem.core.bi.EventsStore.DynamicValue;
+import com.kin.ecosystem.core.bi.events.ClientProxy;
 
 public class ClientModifierFake implements ClientModifier {
 

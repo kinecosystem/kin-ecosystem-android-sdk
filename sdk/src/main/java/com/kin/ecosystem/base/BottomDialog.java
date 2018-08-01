@@ -1,6 +1,6 @@
 package com.kin.ecosystem.base;
 
-import static kin.ecosystem.core.util.StringUtil.getAmountFormatted;
+import static com.kin.ecosystem.core.util.StringUtil.getAmountFormatted;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -25,7 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.kin.ecosystem.R;
 import com.squareup.picasso.Picasso;
-import kin.ecosystem.core.util.DeviceUtils;
+import com.kin.ecosystem.core.util.DeviceUtils;
 
 public abstract class BottomDialog<T extends IBottomDialogPresenter> extends Dialog
     implements IBottomDialog<T>, OnClickListener {

@@ -6,8 +6,8 @@ import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Toast;
-import kin.ecosystem.core.Log;
-import kin.ecosystem.core.Logger;
+import com.kin.ecosystem.core.Log;
+import com.kin.ecosystem.core.Logger;
 
 public class EcosystemWebChromeClient extends WebChromeClient {
 

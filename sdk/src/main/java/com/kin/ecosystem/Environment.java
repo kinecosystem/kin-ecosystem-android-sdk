@@ -1,7 +1,7 @@
 package com.kin.ecosystem;
 
 
-import kin.ecosystem.common.KinEnvironment;
+import com.kin.ecosystem.common.KinEnvironment;
 
 public class Environment implements KinEnvironment {
 
