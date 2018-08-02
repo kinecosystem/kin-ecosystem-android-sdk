@@ -16,13 +16,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.ecosystem.kin.app.model.SignInRepo;
 import com.kin.ecosystem.Kin;
-import com.kin.ecosystem.KinCallback;
-import com.kin.ecosystem.base.Observer;
-import com.kin.ecosystem.data.model.Balance;
-import com.kin.ecosystem.data.model.OrderConfirmation;
-import com.kin.ecosystem.exception.ClientException;
-import com.kin.ecosystem.exception.KinEcosystemException;
-import com.kin.ecosystem.marketplace.model.NativeSpendOffer;
+import com.kin.ecosystem.common.KinCallback;
+import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.exception.ClientException;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
+import com.kin.ecosystem.common.model.Balance;
+import com.kin.ecosystem.common.model.NativeSpendOffer;
+import com.kin.ecosystem.common.model.OrderConfirmation;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
