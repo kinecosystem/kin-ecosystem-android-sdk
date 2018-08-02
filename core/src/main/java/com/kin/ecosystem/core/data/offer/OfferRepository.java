@@ -11,7 +11,7 @@ import com.kin.ecosystem.common.model.NativeSpendOffer;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.OfferList;
-import com.kin.ecosystem.core.util.Converter;
+import com.kin.ecosystem.core.util.OfferConverter;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
 import com.kin.ecosystem.core.network.model.Order;
@@ -122,7 +122,7 @@ public class OfferRepository implements OfferDataSource {
     public boolean addNativeOffer(@NonNull NativeOffer nativeOffer) {
 		Offer offer = nativeOfferList.getOfferByID(nativeOffer.getId());
 		if(offer == null) {
-            offer = Converter.toOffer(nativeOffer);
+            offer = OfferConverter.toOffer(nativeOffer);
             return offer != null && nativeOfferList.addAtIndex(0, offer);
         }
 		return false;
@@ -130,7 +130,7 @@ public class OfferRepository implements OfferDataSource {
 
     @Override
     public boolean removeNativeOffer(@NonNull NativeOffer nativeOffer) {
-        Offer offer = Converter.toOffer(nativeOffer);
+        Offer offer = OfferConverter.toOffer(nativeOffer);
         return nativeOfferList.remove(offer);
     }
 }

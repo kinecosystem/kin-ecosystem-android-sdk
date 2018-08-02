@@ -30,7 +30,7 @@ import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import com.kin.ecosystem.core.util.Converter;
+import com.kin.ecosystem.core.util.OfferConverter;
 
 public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implements IMarketplacePresenter {
 
@@ -330,7 +330,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void nativeSpendOfferClicked(Offer offer) {
-		NativeSpendOffer nativeOffer = Converter.toNativeSpendOffer(offer);
+		NativeSpendOffer nativeOffer = OfferConverter.toNativeSpendOffer(offer);
 		offerRepository.getNativeSpendOfferObservable().postValue(nativeOffer);
 	}
 

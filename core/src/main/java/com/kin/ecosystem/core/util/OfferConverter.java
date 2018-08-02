@@ -8,7 +8,7 @@ import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.Offer.ContentTypeEnum;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
 
-public class Converter {
+public class OfferConverter {
 
 	@Nullable
 	public static Offer toOffer(@NonNull NativeOffer nativeOffer){
