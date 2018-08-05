@@ -359,6 +359,14 @@ public class OrderRepository implements OrderDataSource {
 			}).start();
 	}
 
+	/**
+	 * Update server wit the relevant Body when and error occurred
+	 * or something that the server should know about happened.
+	 *
+	 * @param orderID the Order id that you refer to
+	 * @param body content with the relevant {@link Error}
+	 * @param kinCallback callback to receive the response from server, can be null.
+	 */
 	private void changeOrder(@NonNull String orderID, @NonNull Body body,
 		@Nullable final KinCallback<Order> kinCallback) {
 		remoteData.changeOrder(orderID, body, new Callback<Order, ApiException>() {
