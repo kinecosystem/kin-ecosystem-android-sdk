@@ -360,7 +360,7 @@ public class OrderRepository implements OrderDataSource {
 	}
 
 	/**
-	 * Update server wit the relevant Body when and error occurred
+	 * Update server with the relevant Body when an error occurred
 	 * or something that the server should know about happened.
 	 *
 	 * @param orderID the Order id that you refer to
