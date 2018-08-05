@@ -219,7 +219,7 @@ Create an ```Observer``` object and implements its ```onChanged()``` function.
 
 >**NOTES:** 
 >* The ```Observer``` object sends a first update with the last known balance, and then opens a connection to the blockchain network to receive subsequent live updates. 
->* When performing cleanup upon app exit, don’t forget to remove the Observer object in order to close the network connection.
+>* Make sure to add balance observer only when required (for example when app UI need to show updated balance) and remove the obserever as soon as possible to avoid keeping open network connection.
 
 ```
     // Add balance observer
