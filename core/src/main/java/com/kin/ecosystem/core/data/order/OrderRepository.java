@@ -3,38 +3,41 @@ package com.kin.ecosystem.core.data.order;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import com.kin.ecosystem.core.Log;
-import com.kin.ecosystem.core.bi.events.SpendOrderCompleted;
-import com.kin.ecosystem.core.bi.events.SpendOrderCompletionSubmitted;
-import com.kin.ecosystem.core.bi.events.SpendOrderCreationRequested;
-import com.kin.ecosystem.core.bi.events.SpendOrderFailed;
-import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
-import com.kin.ecosystem.core.network.ApiException;
-import com.kin.ecosystem.core.network.model.OpenOrder;
-import com.kin.ecosystem.core.util.ErrorUtil;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.KinCallbackAdapter;
 import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.exception.DataNotAvailableException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
+import com.kin.ecosystem.common.model.OrderConfirmation;
+import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.EarnOrderPaymentConfirmed;
-import com.kin.ecosystem.common.model.OrderConfirmation;
+import com.kin.ecosystem.core.bi.events.SpendOrderCompleted;
+import com.kin.ecosystem.core.bi.events.SpendOrderCompletionSubmitted;
+import com.kin.ecosystem.core.bi.events.SpendOrderCreationRequested;
+import com.kin.ecosystem.core.bi.events.SpendOrderFailed;
+import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.blockchain.Payment;
 import com.kin.ecosystem.core.data.order.CreateExternalOrderCall.ExternalOrderCallbacks;
 import com.kin.ecosystem.core.data.order.CreateExternalOrderCall.ExternalSpendOrderCallbacks;
+import com.kin.ecosystem.core.network.ApiException;
+import com.kin.ecosystem.core.network.model.Body;
+import com.kin.ecosystem.core.network.model.Error;
 import com.kin.ecosystem.core.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
+import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.Order.Origin;
 import com.kin.ecosystem.core.network.model.Order.Status;
 import com.kin.ecosystem.core.network.model.OrderList;
+import com.kin.ecosystem.core.util.ErrorUtil;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrderRepository implements OrderDataSource {
 
@@ -161,6 +164,13 @@ public class OrderRepository implements OrderDataSource {
 				paymentObserver = new Observer<Payment>() {
 					@Override
 					public void onChanged(Payment payment) {
+						if(!payment.isSucceed()) {
+							BlockchainException blockchainException = ErrorUtil.getBlockchainException(payment.getException());
+							final Error error = new Error("Transaction failed", blockchainException.getMessage(), blockchainException.getCode());
+							final Body body = new Body().error(error);
+							changeOrder(payment.getOrderID(), body, null);
+						}
+
 						sendEarnPaymentConfirmed(payment);
 						decrementPaymentObserverCount();
 						getOrder(payment.getOrderID());
@@ -301,19 +311,9 @@ public class OrderRepository implements OrderDataSource {
 
 				@Override
 				public void onTransactionFailed(final OpenOrder openOrder, final KinEcosystemException exception) {
-					cancelOrder(openOrder.getOfferId(), openOrder.getId(), new KinCallback<Void>() {
-						@Override
-						public void onResponse(Void response) {
-							handleOnFailure(exception, openOrder.getOfferId(), openOrder.getId());
-						}
-
-						@Override
-						public void onFailure(KinEcosystemException e) {
-							handleOnFailure(exception, openOrder.getOfferId(), openOrder.getId());
-						}
-
-					});
-
+					final String orderId = openOrder.getId();
+					removeCachedOpenOrderByID(orderId);
+					handleOnFailure(exception, openOrder.getOfferId(), orderId);
 				}
 
 				@Override
@@ -357,6 +357,25 @@ public class OrderRepository implements OrderDataSource {
 				}
 
 			}).start();
+	}
+
+	private void changeOrder(@NonNull String orderID, @NonNull Body body,
+		@Nullable final KinCallback<Order> kinCallback) {
+		remoteData.changeOrder(orderID, body, new Callback<Order, ApiException>() {
+			@Override
+			public void onResponse(Order response) {
+				if (kinCallback != null) {
+					kinCallback.onResponse(response);
+				}
+			}
+
+			@Override
+			public void onFailure(ApiException error) {
+				if (kinCallback != null) {
+					kinCallback.onFailure(ErrorUtil.fromApiException(error));
+				}
+			}
+		});
 	}
 
 	@Override
@@ -424,7 +443,8 @@ public class OrderRepository implements OrderDataSource {
 			@Override
 			public void onFailure(Void t) {
 				callback
-					.onFailure(ErrorUtil.getClientException(ClientException.INTERNAL_INCONSISTENCY, new DataNotAvailableException()));
+					.onFailure(ErrorUtil
+						.getClientException(ClientException.INTERNAL_INCONSISTENCY, new DataNotAvailableException()));
 			}
 		});
 	}
@@ -456,13 +476,15 @@ public class OrderRepository implements OrderDataSource {
 											((JWTBodyPaymentConfirmationResult) order.getResult()).getJwt());
 								} catch (ClassCastException e) {
 									callback.onFailure(
-										ErrorUtil.getClientException(ClientException.INTERNAL_INCONSISTENCY, new DataNotAvailableException()));
+										ErrorUtil.getClientException(ClientException.INTERNAL_INCONSISTENCY,
+											new DataNotAvailableException()));
 								}
 							}
 							callback.onResponse(orderConfirmation);
 						} else {
 							callback.onFailure(
-								ErrorUtil.getClientException(ClientException.INTERNAL_INCONSISTENCY, new DataNotAvailableException()));
+								ErrorUtil.getClientException(ClientException.INTERNAL_INCONSISTENCY,
+									new DataNotAvailableException()));
 						}
 					}
 				}
