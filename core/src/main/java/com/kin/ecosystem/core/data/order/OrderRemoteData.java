@@ -7,6 +7,7 @@ import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.network.ApiCallback;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.api.OrdersApi;
+import com.kin.ecosystem.core.network.model.Body;
 import com.kin.ecosystem.core.network.model.EarnSubmission;
 import com.kin.ecosystem.core.network.model.ExternalOrderRequest;
 import com.kin.ecosystem.core.network.model.OpenOrder;
@@ -241,6 +242,50 @@ public class OrderRemoteData implements OrderDataSource.Remote {
     public void getFilteredOrderHistory(@Nullable String origin, @NonNull String offerID,
         @NonNull Callback<OrderList, ApiException> callback) {
         getHistory(origin, offerID, ONE_ORDER_LIMIT, callback);
+    }
+
+    @Override
+    public void changeOrder(@NonNull final String orderID, @NonNull Body body, @NonNull final Callback<Order, ApiException> callback) {
+        try {
+            ordersApi.changeOrderAsync(orderID, body, new ApiCallback<Order>() {
+				@Override
+				public void onFailure(final ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+                    executorsUtil.mainThread().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onFailure(e);
+                        }
+                    });
+				}
+
+				@Override
+				public void onSuccess(final Order result, int statusCode, Map<String, List<String>> responseHeaders) {
+                    executorsUtil.mainThread().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onResponse(result);
+                        }
+                    });
+				}
+
+				@Override
+				public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
+
+				}
+
+				@Override
+				public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+
+				}
+			});
+        } catch (final ApiException e) {
+            executorsUtil.mainThread().execute(new Runnable() {
+                @Override
+                public void run() {
+                    callback.onFailure(e);
+                }
+            });
+        }
     }
 
     private void getHistory(@Nullable String origin, @Nullable String offerID, int limit,

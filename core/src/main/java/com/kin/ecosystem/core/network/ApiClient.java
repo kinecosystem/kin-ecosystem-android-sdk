@@ -84,8 +84,9 @@ public class ApiClient {
     public static final String POST = "POST";
     public static final String GET = "GET";
     public static final String DELETE = "DELETE";
+    public static final String PATCH = "PATCH";
 
-    @StringDef({POST, GET, DELETE})
+    @StringDef({POST, GET, DELETE, PATCH})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Methods {
 

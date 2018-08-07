@@ -30,6 +30,7 @@ import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
 import com.kin.ecosystem.core.data.order.OrderRepository;
 import com.kin.ecosystem.core.network.model.BlockchainData;
+import com.kin.ecosystem.core.network.model.Body;
 import com.kin.ecosystem.core.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
@@ -221,7 +222,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 	}
 
 	@Test
-	public void submitOrder_Succeed_SpendOrder_StautsCompleted() throws Exception {
+	public void submitOrder_Succeed_SpendOrder_StatusCompleted() throws Exception {
 		KinCallback<Order> orderCallback = mock(KinCallback.class);
 		ArgumentCaptor<Callback<Order, ApiException>> submitOrderCapture = ArgumentCaptor.forClass(Callback.class);
 		ArgumentCaptor<Observer<Payment>> paymentCapture = ArgumentCaptor.forClass(Observer.class);
@@ -396,6 +397,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 			observer.onChanged(payment);
 		}
 
+		verify(remote, never()).changeOrder(anyString(), any(Body.class), any(Callback.class));
 		verify(remote).getOrder(anyString(), getOrderCapture.capture());
 		List<Callback<Order, ApiException>> getOrderCallbackList = getOrderCapture.getAllValues();
 		for (Callback<Order, ApiException> callback : getOrderCallbackList) {
@@ -548,6 +550,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 
 		verify(blockchainSource).removePaymentObserver(observersList.get(0));
 		verify(blockchainSource).removePaymentObserver(observersList.get(1));
+		verify(remote).changeOrder(anyString(), any(Body.class), any(Callback.class));
 
 		assertNull(orderRepository.getOrderWatcher().getValue());
 	}
