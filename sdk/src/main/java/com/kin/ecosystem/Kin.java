@@ -334,23 +334,22 @@ public class Kin {
 	 * The offer will be added at index 0 in the spend list.
 	 *
 	 * @param nativeSpendOffer The spend offer you want to add to the spend list.
-	 * @return true if the offer added successfully, the list was changed.
+	 * @param dismissOnTap An indication if the sdk should close the marketplace when this offer tapped.
 	 * @throws ClientException Could not add the offer to the list.
 	 */
-	public static boolean addNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer) throws ClientException {
+	public static void addNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer, boolean dismissOnTap) throws ClientException {
 		checkInstanceNotNull();
-		return OfferRepository.getInstance().addNativeOffer(nativeSpendOffer);
+		OfferRepository.getInstance().addNativeOffer(nativeSpendOffer, dismissOnTap);
 	}
 
 	/**
 	 * Removes a {@link NativeSpendOffer} from the spend list on Kin Marketplace activity.
 	 *
 	 * @param nativeSpendOffer The spend offer you want to remove from the spend list.
-	 * @return true if the offer removed successfully, the list was changed.
 	 * @throws ClientException Could not remove the offer from the list.
 	 */
-	public static boolean removeNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer) throws ClientException {
+	public static void removeNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer) throws ClientException {
 		checkInstanceNotNull();
-		return OfferRepository.getInstance().removeNativeOffer(nativeSpendOffer);
+		OfferRepository.getInstance().removeNativeOffer(nativeSpendOffer);
 	}
 }

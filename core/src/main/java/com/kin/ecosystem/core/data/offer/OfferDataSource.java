@@ -8,6 +8,7 @@ import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.NativeSpendOffer;
 import com.kin.ecosystem.core.network.ApiException;
+import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.OfferList;
 
 
@@ -23,9 +24,11 @@ public interface OfferDataSource {
 
 	ObservableData<NativeSpendOffer> getNativeSpendOfferObservable();
 
-	boolean addNativeOffer(@NonNull NativeOffer nativeOffer);
+	void addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissOnTap);
 
-	boolean removeNativeOffer(@NonNull NativeOffer nativeOffer);
+	void removeNativeOffer(@NonNull NativeOffer nativeOffer);
+
+	boolean shouldCloseOnTap(Offer offer);
 
 	interface Remote {
 

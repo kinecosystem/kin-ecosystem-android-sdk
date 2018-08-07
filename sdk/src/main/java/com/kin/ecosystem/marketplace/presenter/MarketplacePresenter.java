@@ -292,6 +292,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			offer = spendList.get(position);
 			sendSpendOfferTapped(offer);
 			if (offer.getContentType() == ContentTypeEnum.EXTERNAL) {
+				if(offerRepository.shouldCloseOnTap(offer)) {
+					closeMarketplace();
+				}
 				nativeSpendOfferClicked(offer);
 				return;
 			}
@@ -311,6 +314,10 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 				showSomethingWentWrong();
 			}
 		}
+	}
+
+	private void closeMarketplace() {
+		navigator.close();
 	}
 
 	private void sendEranOfferTapped(Offer offer) {

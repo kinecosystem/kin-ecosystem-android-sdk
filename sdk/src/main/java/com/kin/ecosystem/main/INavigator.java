@@ -5,4 +5,6 @@ public interface INavigator {
 	void navigateToMarketplace();
 
 	void navigateToOrderHistory(boolean isFirstSpendOrder);
+
+	void close();
 }

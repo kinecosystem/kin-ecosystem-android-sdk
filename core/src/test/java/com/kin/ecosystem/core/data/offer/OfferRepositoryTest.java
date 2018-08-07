@@ -20,6 +20,7 @@ import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.OfferList;
 import com.kin.ecosystem.core.network.model.Paging;
 import com.kin.ecosystem.core.network.model.PagingCursors;
+import com.kin.ecosystem.core.util.OfferConverter;
 import java.lang.reflect.Field;
 import java.util.List;
 import com.kin.ecosystem.core.network.ApiException;
@@ -120,12 +121,17 @@ public class OfferRepositoryTest {
 				.amount(1000)
 				.image("Native offer image");
 
-		assertTrue(offerRepository.addNativeOffer(nativeOffer));
+		offerRepository.addNativeOffer(nativeOffer, true);
 		assertEquals(1, offerRepository.getCachedOfferList().getOffers().size());
 		assertEquals(nativeOffer.getId(), offerRepository.getCachedOfferList().getOffers().get(0).getId());
 
-		// Can't add twice same offer
-		assertFalse(offerRepository.addNativeOffer(nativeOffer));
+		Offer offer = OfferConverter.toOffer(nativeOffer);
+		assertTrue(offerRepository.shouldCloseOnTap(offer));
+
+		// Update on second time
+		offerRepository.addNativeOffer(nativeOffer, false);
+		offer = OfferConverter.toOffer(nativeOffer);
+		assertFalse(offerRepository.shouldCloseOnTap(offer));
 	}
 
 	@Test
@@ -137,15 +143,15 @@ public class OfferRepositoryTest {
 				.amount(1000)
 				.image("Native offer image");
 
-		assertTrue(offerRepository.addNativeOffer(nativeOffer));
+		offerRepository.addNativeOffer(nativeOffer, true);
 		assertEquals(1, offerRepository.getCachedOfferList().getOffers().size());
 		assertEquals(nativeOffer.getId(), offerRepository.getCachedOfferList().getOffers().get(0).getId());
 
-		assertTrue(offerRepository.removeNativeOffer(nativeOffer));
-		assertEquals(0, offerRepository.getCachedOfferList().getOffers().size());
+		Offer offer = OfferConverter.toOffer(nativeOffer);
+		assertTrue(offerRepository.shouldCloseOnTap(offer));
 
-		// Offer already removed
-		assertFalse(offerRepository.removeNativeOffer(nativeOffer));
+		offerRepository.removeNativeOffer(nativeOffer);
+		assertEquals(0, offerRepository.getCachedOfferList().getOffers().size());
 	}
 
 	private OfferList getOfferList() {

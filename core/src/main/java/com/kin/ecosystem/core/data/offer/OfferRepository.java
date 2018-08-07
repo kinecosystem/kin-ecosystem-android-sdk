@@ -16,6 +16,10 @@ import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.Order.Status;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 public class OfferRepository implements OfferDataSource {
 
@@ -24,7 +28,7 @@ public class OfferRepository implements OfferDataSource {
     private final OfferDataSource.Remote remoteData;
     private final OrderDataSource orderRepository;
 
-    private OfferList nativeOfferList = new OfferList();
+    private HashMap<Offer, Boolean> nativeOfferMap = new HashMap<>();
     private OfferList cachedOfferList = new OfferList();
 
     private ObservableData<NativeSpendOffer> nativeSpendOfferObservable = ObservableData.create();
@@ -88,7 +92,10 @@ public class OfferRepository implements OfferDataSource {
 
     private OfferList getList() {
         OfferList masterList = new OfferList();
-        masterList.addAll(nativeOfferList);
+        List<Offer> list = new ArrayList<>(nativeOfferMap.keySet());
+        OfferList nativeList = new OfferList();
+        nativeList.setOffers(list);
+        masterList.addAll(nativeList);
         masterList.addAll(cachedOfferList);
         masterList.setPaging(cachedOfferList.getPaging());
         return masterList;
@@ -119,18 +126,19 @@ public class OfferRepository implements OfferDataSource {
     }
 
     @Override
-    public boolean addNativeOffer(@NonNull NativeOffer nativeOffer) {
-		Offer offer = nativeOfferList.getOfferByID(nativeOffer.getId());
-		if(offer == null) {
-            offer = OfferConverter.toOffer(nativeOffer);
-            return offer != null && nativeOfferList.addAtIndex(0, offer);
-        }
-		return false;
+    public void addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissOnTap) {
+        Offer offer2 = OfferConverter.toOffer(nativeOffer);
+        nativeOfferMap.put(offer2, dismissOnTap);
 	}
 
     @Override
-    public boolean removeNativeOffer(@NonNull NativeOffer nativeOffer) {
+    public void removeNativeOffer(@NonNull NativeOffer nativeOffer) {
         Offer offer = OfferConverter.toOffer(nativeOffer);
-        return nativeOfferList.remove(offer);
+        nativeOfferMap.remove(offer);
+    }
+
+    @Override
+    public boolean shouldCloseOnTap(Offer offer) {
+        return nativeOfferMap.get(offer);
     }
 }
