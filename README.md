@@ -129,6 +129,9 @@ The Sample App Gradle build loads the ```credential.properties``` setting and us
 
  }
 ```
+>**NOTE:** The kin-ecosystem-android-sdk arr is tested for Android OS version 4.4 (API level 19) and above. 
+>* Some functionalities such as observing balance update will not be supported for lower OS version.
+>* If your app support lower OS versions (minSdkVersion < 19) we recomend to only enable Kin intgartion for users with version 4.4 and above.
 
 ## Common Workflows ##
 
