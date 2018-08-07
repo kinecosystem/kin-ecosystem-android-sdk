@@ -8,6 +8,7 @@ import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.core.network.ApiException;
+import com.kin.ecosystem.core.network.model.Body;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.OrderList;
@@ -67,5 +68,7 @@ public interface OrderDataSource {
         OpenOrder createExternalOrderSync(String orderJwt) throws ApiException;
 
         void getFilteredOrderHistory(@Nullable String origin, @NonNull String offerID, @NonNull final Callback<OrderList, ApiException> callback);
+
+        void changeOrder(@NonNull final String orderID, @NonNull Body body, @NonNull final Callback<Order, ApiException> callback);
     }
 }
