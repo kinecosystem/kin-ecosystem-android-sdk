@@ -46,8 +46,10 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 					isAccountCreated = true;
 					navigateToMarketplace();
 				} else {
+					Logger.log(new Log().withTag(TAG).text("accountStateObserver -> showTryAgainLater"));
 					showTryAgainLater();
 					stopLoading(true);
+					shouldShowError = false;
 				}
 			}
 		}
@@ -58,6 +60,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 	private boolean animationEnded = false;
 	private boolean isAccountActivated = false;
 	private boolean isAccountCreated = false;
+	private boolean shouldShowError = true;
 
 	public SplashPresenter(@NonNull AccountManager accountManager,
 		@NonNull final AuthDataSource authRepository,
@@ -90,6 +93,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 	@Override
 	public void getStartedClicked() {
 		eventLogger.send(WelcomeScreenButtonTapped.create());
+		shouldShowError = true;
 		isAccountActivated = authRepository.isActivated();
 		animateLoading();
 		Logger.log(new Log().withTag(TAG).text("getStartedClicked")
@@ -123,6 +127,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 				stopLoading(true);
 				showTryAgainLater();
 				removeAccountStateObserver();
+				shouldShowError = false;
 			}
 		};
 	}
@@ -142,12 +147,15 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 	}
 
 	private void showTryAgainLater() {
-		Logger.log(new Log().withTag(TAG).text("showTryAgainLater"));
-		showToast(TRY_AGAIN);
+		if(shouldShowError) {
+			showToast(TRY_AGAIN);
+		}
 	}
 
 	private void showSomethingWentWrong() {
-		showToast(SOMETHING_WENT_WRONG);
+		if(shouldShowError) {
+			showToast(SOMETHING_WENT_WRONG);
+		}
 	}
 
 	private void animateLoading() {
@@ -171,6 +179,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 				cancelTimeoutTask();
 				showSomethingWentWrong();
 				stopLoading(true);
+				shouldShowError = false;
 			}
 		});
 	}
