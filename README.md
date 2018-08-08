@@ -356,7 +356,7 @@ You can also choose to display a banner for your custom offer in the Kin Marketp
             }
         }
     
-        private Observer<NativeSpendOffer> getNativeOfferClickedObserver() {
+        private Observer<NativeOfferClicked> getNativeOfferClickedObserver() {
             if (nativeSpendOfferClickedObserver == null) {
                 nativeSpendOfferClickedObserver = new Observer<NativeOfferClicked>() {
                     @Override
