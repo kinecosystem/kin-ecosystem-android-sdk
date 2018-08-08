@@ -24,11 +24,11 @@ public interface OfferDataSource {
 
 	ObservableData<NativeSpendOffer> getNativeSpendOfferObservable();
 
-	void addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissOnTap);
+	boolean addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissOnTap);
 
-	void removeNativeOffer(@NonNull NativeOffer nativeOffer);
+	boolean removeNativeOffer(@NonNull NativeOffer nativeOffer);
 
-	boolean shouldCloseOnTap(Offer offer);
+	boolean shouldCloseOnTap(@NonNull String offerId);
 
 	interface Remote {
 

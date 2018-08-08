@@ -8,137 +8,167 @@ import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.NativeSpendOffer;
+import com.kin.ecosystem.core.data.order.OrderDataSource;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.OfferList;
-import com.kin.ecosystem.core.util.OfferConverter;
-import com.kin.ecosystem.core.util.ErrorUtil;
-import com.kin.ecosystem.core.data.order.OrderDataSource;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.Order.Status;
-import java.util.ArrayList;
-import java.util.Collections;
+import com.kin.ecosystem.core.util.ErrorUtil;
+import com.kin.ecosystem.core.util.OfferConverter;
 import java.util.HashMap;
-import java.util.List;
 
 public class OfferRepository implements OfferDataSource {
 
-    private static OfferRepository instance = null;
+	private static OfferRepository instance = null;
 
-    private final OfferDataSource.Remote remoteData;
-    private final OrderDataSource orderRepository;
+	private final OfferDataSource.Remote remoteData;
+	private final OrderDataSource orderRepository;
 
-    private HashMap<Offer, Boolean> nativeOfferMap = new HashMap<>();
-    private OfferList cachedOfferList = new OfferList();
+	//Saves offerId with a value dismissOnTap
+	private HashMap<String, Boolean> nativeOfferMap = new HashMap<>();
+	private OfferList nativeOfferList = new OfferList();
+	private OfferList cachedOfferList = new OfferList();
 
-    private ObservableData<NativeSpendOffer> nativeSpendOfferObservable = ObservableData.create();
+	private ObservableData<NativeSpendOffer> nativeSpendOfferObservable = ObservableData.create();
 
-    private OfferRepository(@NonNull OfferDataSource.Remote remoteData, @NonNull OrderDataSource orderRepository) {
-        this.remoteData = remoteData;
-        this.orderRepository = orderRepository;
-        listenToPendingOrders();
-    }
-
-    public static void init(@NonNull OfferDataSource.Remote remoteData, @NonNull OrderDataSource orderRepository) {
-        if (instance == null) {
-            synchronized (OfferRepository.class) {
-                if (instance == null) {
-                    instance = new OfferRepository(remoteData, orderRepository);
-                }
-            }
-        }
-    }
-
-    public static OfferRepository getInstance() {
-        return instance;
-    }
-
-    private void listenToPendingOrders() {
-        orderRepository.addOrderObserver(new Observer<Order>() {
-            @Override
-            public void onChanged(Order order) {
-                if(order.getStatus() == Status.PENDING) {
-                    removeFromCachedOfferList(order.getOfferId());
-                }
-            }
-        });
-    }
-
-    @Override
-    public OfferList getCachedOfferList() {
-        return getList();
-    }
-
-    @Override
-    public void getOffers(@Nullable final KinCallback<OfferList> callback) {
-        remoteData.getOffers(new Callback<OfferList, ApiException>() {
-            @Override
-            public void onResponse(OfferList response) {
-                cachedOfferList = response;
-                if (callback != null) {
-                    callback.onResponse(getList());
-                }
-            }
-
-            @Override
-            public void onFailure(ApiException e) {
-                if (callback != null) {
-                    callback.onFailure(ErrorUtil.fromApiException(e));
-                }
-            }
-
-        });
-    }
-
-    private OfferList getList() {
-        OfferList masterList = new OfferList();
-        List<Offer> list = new ArrayList<>(nativeOfferMap.keySet());
-        OfferList nativeList = new OfferList();
-        nativeList.setOffers(list);
-        masterList.addAll(nativeList);
-        masterList.addAll(cachedOfferList);
-        masterList.setPaging(cachedOfferList.getPaging());
-        return masterList;
-    }
-
-    private void removeFromCachedOfferList(String offerID) {
-        if (cachedOfferList == null) {
-            return;
-        }
-
-        Offer offer = cachedOfferList.getOfferByID(offerID);
-        cachedOfferList.remove(offer);
-    }
-
-    @Override
-    public void addNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer) {
-        nativeSpendOfferObservable.addObserver(observer);
-    }
-
-    @Override
-    public void removeNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer) {
-        nativeSpendOfferObservable.removeObserver(observer);
-    }
-
-    @Override
-    public ObservableData<NativeSpendOffer> getNativeSpendOfferObservable() {
-        return nativeSpendOfferObservable;
-    }
-
-    @Override
-    public void addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissOnTap) {
-        Offer offer2 = OfferConverter.toOffer(nativeOffer);
-        nativeOfferMap.put(offer2, dismissOnTap);
+	private OfferRepository(@NonNull OfferDataSource.Remote remoteData, @NonNull OrderDataSource orderRepository) {
+		this.remoteData = remoteData;
+		this.orderRepository = orderRepository;
+		listenToPendingOrders();
 	}
 
-    @Override
-    public void removeNativeOffer(@NonNull NativeOffer nativeOffer) {
-        Offer offer = OfferConverter.toOffer(nativeOffer);
-        nativeOfferMap.remove(offer);
-    }
+	public static void init(@NonNull OfferDataSource.Remote remoteData, @NonNull OrderDataSource orderRepository) {
+		if (instance == null) {
+			synchronized (OfferRepository.class) {
+				if (instance == null) {
+					instance = new OfferRepository(remoteData, orderRepository);
+				}
+			}
+		}
+	}
 
-    @Override
-    public boolean shouldCloseOnTap(Offer offer) {
-        return nativeOfferMap.get(offer);
-    }
+	public static OfferRepository getInstance() {
+		return instance;
+	}
+
+	private void listenToPendingOrders() {
+		orderRepository.addOrderObserver(new Observer<Order>() {
+			@Override
+			public void onChanged(Order order) {
+				if (order.getStatus() == Status.PENDING) {
+					removeFromCachedOfferList(order.getOfferId());
+				}
+			}
+		});
+	}
+
+	@Override
+	public OfferList getCachedOfferList() {
+		return getList();
+	}
+
+	@Override
+	public void getOffers(@Nullable final KinCallback<OfferList> callback) {
+		remoteData.getOffers(new Callback<OfferList, ApiException>() {
+			@Override
+			public void onResponse(OfferList response) {
+				cachedOfferList = response;
+				if (callback != null) {
+					callback.onResponse(getList());
+				}
+			}
+
+			@Override
+			public void onFailure(ApiException e) {
+				if (callback != null) {
+					callback.onFailure(ErrorUtil.fromApiException(e));
+				}
+			}
+
+		});
+	}
+
+	private OfferList getList() {
+		OfferList masterList = new OfferList();
+		masterList.addAll(nativeOfferList);
+		masterList.addAll(cachedOfferList);
+		masterList.setPaging(cachedOfferList.getPaging());
+		return masterList;
+	}
+
+	private void removeFromCachedOfferList(String offerID) {
+		if (cachedOfferList == null) {
+			return;
+		}
+
+		Offer offer = cachedOfferList.getOfferByID(offerID);
+		cachedOfferList.remove(offer);
+	}
+
+	@Override
+	public void addNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer) {
+		nativeSpendOfferObservable.addObserver(observer);
+	}
+
+	@Override
+	public void removeNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer) {
+		nativeSpendOfferObservable.removeObserver(observer);
+	}
+
+	@Override
+	public ObservableData<NativeSpendOffer> getNativeSpendOfferObservable() {
+		return nativeSpendOfferObservable;
+	}
+
+	@Override
+	public boolean addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissOnTap) {
+		String offerId = nativeOffer.getId();
+		if (offerId != null) {
+			Offer offer = OfferConverter.toOffer(nativeOffer);
+			if (offer != null) {
+				if (nativeOfferMap.containsKey(offerId)) {
+					// Update existing
+					int index = nativeOfferList.getOffers().indexOf(offer);
+					if (index >= 0) {
+						nativeOfferList.getOffers().set(index, offer);
+					} else {
+						return false;
+					}
+				} else {
+					// Add new
+					nativeOfferList.getOffers().add(0, offer);
+				}
+				nativeOfferMap.put(offerId, dismissOnTap);
+				return true;
+			}
+			return false;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean removeNativeOffer(@NonNull NativeOffer nativeOffer) {
+		String offerId = nativeOffer.getId();
+		if (offerId != null) {
+			Offer offer = OfferConverter.toOffer(nativeOffer);
+			if (offer != null) {
+				if (nativeOfferMap.containsKey(offerId)) {
+					nativeOfferList.remove(offer);
+					nativeOfferMap.remove(offerId);
+					return true;
+				}
+				return false;
+			}
+			return false;
+
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean shouldCloseOnTap(@NonNull String offerId) {
+		return nativeOfferMap.get(offerId);
+	}
 }

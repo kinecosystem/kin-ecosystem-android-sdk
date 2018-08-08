@@ -320,9 +320,7 @@ public class Offer {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+
         Offer offer = (Offer) o;
         return this.id.equals(offer.id);
     }

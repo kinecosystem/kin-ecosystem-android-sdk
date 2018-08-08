@@ -146,8 +146,9 @@ public class MainActivity extends AppCompatActivity {
 	// Use this method to remove the nativeSpendOffer you added
 	private void removeNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer) {
 		try {
-			Kin.removeNativeOffer(nativeSpendOffer);
-			showToast("Native offer removed");
+			if(Kin.removeNativeOffer(nativeSpendOffer)) {
+				showToast("Native offer removed");
+			}
 		} catch (ClientException e) {
 			e.printStackTrace();
 		}
@@ -178,8 +179,9 @@ public class MainActivity extends AppCompatActivity {
 
 	private void addNativeSpendOffer(@NonNull NativeSpendOffer nativeSpendOffer, boolean dismissMarketPlaceOnTap) {
 		try {
-			Kin.addNativeOffer(nativeSpendOffer, dismissMarketPlaceOnTap);
-			showToast("Native offer added");
+			if(Kin.addNativeOffer(nativeSpendOffer, dismissMarketPlaceOnTap)) {
+				showToast("Native offer added");
+			}
 		} catch (ClientException e) {
 			e.printStackTrace();
 			showToast("Could not add native offer");

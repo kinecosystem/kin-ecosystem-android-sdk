@@ -370,13 +370,16 @@ NativeSpendOffer nativeOffer =
     }
     ```
 
-3.	```Call Kin.addNativeOffer(…)```. 
+3.	```Call Kin.addNativeOffer(nativeSpendOffer, dismissOnTap)```. 
 
-    >**NOTE:** Each new offer is added as the first offer in Spend Offers list the Marketplace displays.
+    >**NOTE:** Each new offer is added as the first offer in Spend Offers list the Marketplace displays.            
+               Parameter dismissOnTap determine if the Marketplace need to be dissmised on tap.
+               Adding the same offer twice will update the existing one.
 
     ```
     try {
-        if (Kin.addNativeOffer(nativeSpendOffer)) {
+        boolean dismissOnTap = true
+        if (Kin.addNativeOffer(nativeSpendOffer, dismissOnTap)) {
             // Native offer added
         } else {
             // Native offer already in Kin Marketplace

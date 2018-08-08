@@ -126,12 +126,14 @@ public class OfferRepositoryTest {
 		assertEquals(nativeOffer.getId(), offerRepository.getCachedOfferList().getOffers().get(0).getId());
 
 		Offer offer = OfferConverter.toOffer(nativeOffer);
-		assertTrue(offerRepository.shouldCloseOnTap(offer));
+		assertTrue(offerRepository.shouldCloseOnTap(offer.getId()));
 
-		// Update on second time
+		// Update on second time, still the size is 1 with same offer
 		offerRepository.addNativeOffer(nativeOffer, false);
 		offer = OfferConverter.toOffer(nativeOffer);
-		assertFalse(offerRepository.shouldCloseOnTap(offer));
+		assertFalse(offerRepository.shouldCloseOnTap(offer.getId()));
+		assertEquals(1, offerRepository.getCachedOfferList().getOffers().size());
+		assertEquals(nativeOffer.getId(), offerRepository.getCachedOfferList().getOffers().get(0).getId());
 	}
 
 	@Test
@@ -148,7 +150,7 @@ public class OfferRepositoryTest {
 		assertEquals(nativeOffer.getId(), offerRepository.getCachedOfferList().getOffers().get(0).getId());
 
 		Offer offer = OfferConverter.toOffer(nativeOffer);
-		assertTrue(offerRepository.shouldCloseOnTap(offer));
+		assertTrue(offerRepository.shouldCloseOnTap(offer.getId()));
 
 		offerRepository.removeNativeOffer(nativeOffer);
 		assertEquals(0, offerRepository.getCachedOfferList().getOffers().size());
