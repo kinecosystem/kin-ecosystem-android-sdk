@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
+import com.kin.ecosystem.common.NativeOfferClicked;
 import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.model.NativeOffer;
@@ -30,7 +31,7 @@ public class OfferRepository implements OfferDataSource {
 	private OfferList nativeOfferList = new OfferList();
 	private OfferList cachedOfferList = new OfferList();
 
-	private ObservableData<NativeSpendOffer> nativeSpendOfferObservable = ObservableData.create();
+	private ObservableData<NativeOfferClicked> nativeSpendOfferObservable = ObservableData.create();
 
 	private OfferRepository(@NonNull OfferDataSource.Remote remoteData, @NonNull OrderDataSource orderRepository) {
 		this.remoteData = remoteData;
@@ -107,17 +108,17 @@ public class OfferRepository implements OfferDataSource {
 	}
 
 	@Override
-	public void addNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer) {
+	public void addNativeOfferClickedObserver(@NonNull Observer<NativeOfferClicked> observer) {
 		nativeSpendOfferObservable.addObserver(observer);
 	}
 
 	@Override
-	public void removeNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer) {
+	public void removeNativeOfferClickedObserver(@NonNull Observer<NativeOfferClicked> observer) {
 		nativeSpendOfferObservable.removeObserver(observer);
 	}
 
 	@Override
-	public ObservableData<NativeSpendOffer> getNativeSpendOfferObservable() {
+	public ObservableData<NativeOfferClicked> getNativeSpendOfferObservable() {
 		return nativeSpendOfferObservable;
 	}
 
@@ -168,7 +169,7 @@ public class OfferRepository implements OfferDataSource {
 	}
 
 	@Override
-	public boolean shouldCloseOnTap(@NonNull String offerId) {
+	public boolean shouldDismissOnTap(@NonNull String offerId) {
 		return nativeOfferMap.get(offerId);
 	}
 }

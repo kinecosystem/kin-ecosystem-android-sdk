@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.ecosystem.kin.app.model.SignInRepo;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.common.KinCallback;
+import com.kin.ecosystem.common.NativeOfferClicked;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private KinCallback<OrderConfirmation> nativeSpendOrderConfirmationCallback;
 	private KinCallback<OrderConfirmation> nativeEarnOrderConfirmationCallback;
-	private Observer<NativeSpendOffer> nativeSpendOfferClickedObserver;
+	private Observer<NativeOfferClicked> nativeSpendOfferClickedObserver;
 	private Observer<Balance> balanceObserver;
 
 	private String publicAddress;
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
 			.description("Upgrade your profile")
 			.amount(100)
 			.image("https://cdn.kinecosystem.com/thumbnails/offers/spend_offer_smplapp.png");
+	private boolean dismissOnTap = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -96,12 +98,17 @@ public class MainActivity extends AppCompatActivity {
 		findViewById(R.id.launch_marketplace).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				addNativeSpendOffer(nativeSpendOffer, getDismissOnTap());
 				openKinMarketplace();
 			}
 		});
 
-		addNativeSpendOffer(nativeSpendOffer, true);
+		addNativeSpendOffer(nativeSpendOffer, getDismissOnTap());
 		addNativeOfferClickedObserver();
+	}
+
+	private boolean getDismissOnTap() {
+		return dismissOnTap = !dismissOnTap;
 	}
 
 	@Override
@@ -162,15 +169,21 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	private Observer<NativeSpendOffer> getNativeOfferClickedObserver() {
+	private Observer<NativeOfferClicked> getNativeOfferClickedObserver() {
 		if (nativeSpendOfferClickedObserver == null) {
-			nativeSpendOfferClickedObserver = new Observer<NativeSpendOffer>() {
+			nativeSpendOfferClickedObserver = new Observer<NativeOfferClicked>() {
 				@Override
-				public void onChanged(NativeSpendOffer value) {
-					new AlertDialog.Builder(MainActivity.this)
-						.setTitle("Native Offer")
-						.setMessage("You tapped a native offer and the observer was notified.")
-						.show();
+				public void onChanged(NativeOfferClicked nativeOfferClicked) {
+					NativeSpendOffer nativeSpendOffer = (NativeSpendOffer) nativeOfferClicked.getNativeOffer();
+					if(nativeOfferClicked.isDismissed()){
+						new AlertDialog.Builder(MainActivity.this)
+							.setTitle("Native Offer (" + nativeSpendOffer.getTitle() +")")
+							.setMessage("You tapped a native offer and the observer was notified.")
+							.show();
+					} else {
+						Intent nativeOfferIntent = NativeOfferActivity.createIntent(MainActivity.this, nativeSpendOffer.getTitle());
+						startActivity(nativeOfferIntent);
+					}
 				}
 			};
 		}

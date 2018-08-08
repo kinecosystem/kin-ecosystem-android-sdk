@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.kin.ecosystem.base.BasePresenter;
+import com.kin.ecosystem.common.KinCallbackAdapter;
+import com.kin.ecosystem.common.NativeOfferClicked;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.model.NativeSpendOffer;
 import com.kin.ecosystem.core.bi.EventLogger;
@@ -14,23 +16,22 @@ import com.kin.ecosystem.core.bi.events.EarnOfferTapped;
 import com.kin.ecosystem.core.bi.events.MarketplacePageViewed;
 import com.kin.ecosystem.core.bi.events.NotEnoughKinPageViewed;
 import com.kin.ecosystem.core.bi.events.SpendOfferTapped;
-import com.kin.ecosystem.common.KinCallbackAdapter;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.offer.OfferDataSource;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
-import com.kin.ecosystem.main.INavigator;
-import com.kin.ecosystem.marketplace.view.IMarketplaceView;
 import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.Offer.ContentTypeEnum;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.core.network.model.OfferInfo;
 import com.kin.ecosystem.core.network.model.OfferList;
 import com.kin.ecosystem.core.network.model.Order;
+import com.kin.ecosystem.core.util.OfferConverter;
+import com.kin.ecosystem.main.INavigator;
+import com.kin.ecosystem.marketplace.view.IMarketplaceView;
 import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import com.kin.ecosystem.core.util.OfferConverter;
 
 public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implements IMarketplacePresenter {
 
@@ -74,7 +75,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void getCachedOffers() {
-		if(earnList == null && spendList == null) {
+		if (earnList == null && spendList == null) {
 			earnList = new ArrayList<>();
 			spendList = new ArrayList<>();
 			OfferList cachedOfferList = offerRepository.getCachedOfferList();
@@ -292,10 +293,11 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			offer = spendList.get(position);
 			sendSpendOfferTapped(offer);
 			if (offer.getContentType() == ContentTypeEnum.EXTERNAL) {
-				if(offerRepository.shouldCloseOnTap(offer.getId())) {
+				final boolean dismissOnTap = offerRepository.shouldDismissOnTap(offer.getId());
+				if (dismissOnTap) {
 					closeMarketplace();
 				}
-				nativeSpendOfferClicked(offer);
+				nativeSpendOfferClicked(offer, dismissOnTap);
 				return;
 			}
 			int balance = blockchainSource.getBalance().getAmount().intValue();
@@ -336,9 +338,13 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		eventLogger.send(SpendOfferTapped.create(amount, offer.getId(), null));
 	}
 
-	private void nativeSpendOfferClicked(Offer offer) {
+	private void nativeSpendOfferClicked(Offer offer, boolean dismissMarketplace) {
 		NativeSpendOffer nativeOffer = OfferConverter.toNativeSpendOffer(offer);
-		offerRepository.getNativeSpendOfferObservable().postValue(nativeOffer);
+		offerRepository.getNativeSpendOfferObservable().postValue(
+			new NativeOfferClicked.Builder()
+				.nativeOffer(nativeOffer)
+				.isDismissed(dismissMarketplace)
+				.build());
 	}
 
 	private void showSomethingWentWrong() {

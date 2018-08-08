@@ -9,11 +9,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.kin.ecosystem.common.KinCallback;
+import com.kin.ecosystem.common.NativeOfferClicked;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.model.NativeSpendOffer;
-import com.kin.ecosystem.core.data.offer.OfferDataSource;
-import com.kin.ecosystem.core.data.offer.OfferRepository;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.network.model.Offer;
@@ -101,15 +100,19 @@ public class OfferRepositoryTest {
 
 	@Test
 	public void addNativeOfferCallback() throws Exception {
-		Observer<NativeSpendOffer> callback = new Observer<NativeSpendOffer>() {
+		Observer<NativeOfferClicked> callback = new Observer<NativeOfferClicked>() {
 			@Override
-			public void onChanged(NativeSpendOffer nativeSpendOffer) {
-				assertEquals("5", nativeSpendOffer.getId());
+			public void onChanged(NativeOfferClicked nativeSpendOffer) {
+				assertEquals("5", nativeSpendOffer.getNativeOffer().getId());
+				assertFalse(nativeSpendOffer.isDismissed());
 			}
 		};
 
 		offerRepository.addNativeOfferClickedObserver(callback);
-		offerRepository.getNativeSpendOfferObservable().postValue(new NativeSpendOffer("5"));
+		offerRepository.getNativeSpendOfferObservable().postValue(new NativeOfferClicked.Builder()
+			.nativeOffer(new NativeSpendOffer("5"))
+			.isDismissed(false)
+			.build());
 	}
 
 	@Test
@@ -126,12 +129,12 @@ public class OfferRepositoryTest {
 		assertEquals(nativeOffer.getId(), offerRepository.getCachedOfferList().getOffers().get(0).getId());
 
 		Offer offer = OfferConverter.toOffer(nativeOffer);
-		assertTrue(offerRepository.shouldCloseOnTap(offer.getId()));
+		assertTrue(offerRepository.shouldDismissOnTap(offer.getId()));
 
 		// Update on second time, still the size is 1 with same offer
 		offerRepository.addNativeOffer(nativeOffer, false);
 		offer = OfferConverter.toOffer(nativeOffer);
-		assertFalse(offerRepository.shouldCloseOnTap(offer.getId()));
+		assertFalse(offerRepository.shouldDismissOnTap(offer.getId()));
 		assertEquals(1, offerRepository.getCachedOfferList().getOffers().size());
 		assertEquals(nativeOffer.getId(), offerRepository.getCachedOfferList().getOffers().get(0).getId());
 	}
@@ -150,7 +153,7 @@ public class OfferRepositoryTest {
 		assertEquals(nativeOffer.getId(), offerRepository.getCachedOfferList().getOffers().get(0).getId());
 
 		Offer offer = OfferConverter.toOffer(nativeOffer);
-		assertTrue(offerRepository.shouldCloseOnTap(offer.getId()));
+		assertTrue(offerRepository.shouldDismissOnTap(offer.getId()));
 
 		offerRepository.removeNativeOffer(nativeOffer);
 		assertEquals(0, offerRepository.getCachedOfferList().getOffers().size());

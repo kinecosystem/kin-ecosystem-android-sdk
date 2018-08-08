@@ -3,6 +3,7 @@ package com.kin.ecosystem.core.data.offer;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
+import com.kin.ecosystem.common.NativeOfferClicked;
 import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.model.NativeOffer;
@@ -18,17 +19,17 @@ public interface OfferDataSource {
 
 	void getOffers(KinCallback<OfferList> callback);
 
-	void addNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer);
+	void addNativeOfferClickedObserver(@NonNull Observer<NativeOfferClicked> observer);
 
-	void removeNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer);
+	void removeNativeOfferClickedObserver(@NonNull Observer<NativeOfferClicked> observer);
 
-	ObservableData<NativeSpendOffer> getNativeSpendOfferObservable();
+	ObservableData<NativeOfferClicked> getNativeSpendOfferObservable();
 
 	boolean addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissOnTap);
 
 	boolean removeNativeOffer(@NonNull NativeOffer nativeOffer);
 
-	boolean shouldCloseOnTap(@NonNull String offerId);
+	boolean shouldDismissOnTap(@NonNull String offerId);
 
 	interface Remote {
 
