@@ -337,14 +337,14 @@ You can also choose to display a banner for your custom offer in the Kin Marketp
 
 1. Create a ```NativeSpendOffer``` object as in the example below.
 
-```
-NativeSpendOffer nativeOffer =
-        new NativeSpendOffer("The offerID") // OfferId must be a UUID
-            .title("Offer Title") // Title to display with offer
-            .description("Offer Description") // Desc. to display with offer
-            .amount(1000) // Purchase amount in Kin
-            .image("Image URL"); // Image to display with offer
-```
+    ```
+    NativeSpendOffer nativeOffer =
+            new NativeSpendOffer("The offerID") // OfferId must be a UUID
+                .title("Offer Title") // Title to display with offer
+                .description("Offer Description") // Desc. to display with offer
+                .amount(1000) // Purchase amount in Kin
+                .image("Image URL"); // Image to display with offer
+    ```
 2.	Create a ```NativeOfferObserver``` object to be notified when the user clicks on your offer in the Kin Marketplace.
 
     >**NOTE:** You can remove the Observer by calling ```Kin.removeNativeOfferClickedObserver(…)```.
@@ -359,13 +359,21 @@ NativeSpendOffer nativeOffer =
             }
         }
     
-        private Observer<NativeSpendOffer> getNativeOfferClickedObserver() {
+        private Observer<NativeOfferClickEvent> getNativeOfferClickedObserver() {
             if (nativeSpendOfferClickedObserver == null) {
-                nativeSpendOfferClickedObserver = new Observer<NativeSpendOffer>() {
+                nativeSpendOfferClickedObserver = new Observer<NativeOfferClickEvent>() {
                     @Override
-                    public void onChanged(NativeSpendOffer value) {
-                        Intent nativeOfferIntent = NativeOfferActivity.createIntent(MainActivity.this, value.getTitle());
-                        startActivity(nativeOfferIntent);
+                    public void onChanged(NativeOfferClickEvent nativeOfferClickEvent) {
+                        NativeSpendOffer nativeSpendOffer = (NativeSpendOffer) nativeOfferClickEvent.getNativeOffer();
+                        if(nativeOfferClickEvent.isDismissOnTap()){
+                            new AlertDialog.Builder(MainActivity.this)
+                                .setTitle("Native Offer (" + nativeSpendOffer.getTitle() +")")
+                                .setMessage("You tapped a native offer and the observer was notified.")
+                                .show();
+                        } else {
+                            Intent nativeOfferIntent = NativeOfferActivity.createIntent(MainActivity.this, nativeSpendOffer.getTitle());
+                            startActivity(nativeOfferIntent);
+                        }
                     }
                 };
             }
@@ -373,16 +381,19 @@ NativeSpendOffer nativeOffer =
     }
     ```
 
-3.	```Call Kin.addNativeOffer(…)```. 
+3.	```Call Kin.addNativeOffer(nativeSpendOffer, dismissOnTap)```. 
 
     >**NOTE:** Each new offer is added as the first offer in Spend Offers list the Marketplace displays.
+    Parameter dismissOnTap determine if the Marketplace need to be dismissed on tap.
+    Adding the same offer twice will update the existing one.
 
     ```
     try {
-        if (Kin.addNativeOffer(nativeSpendOffer)) {
+        boolean dismissOnTap = true
+        if (Kin.addNativeOffer(nativeSpendOffer, dismissOnTap)) {
             // Native offer added
         } else {
-            // Native offer already in Kin Marketplace
+            // Could not add the offer to Kin Marketplace
         }
     } catch (ClientException error) {
         ...

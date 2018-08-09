@@ -7,14 +7,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import kin.core.KinAccount;
-import kin.core.KinClient;
-import kin.core.ServiceProvider;
 import com.kin.ecosystem.common.KinCallback;
+import com.kin.ecosystem.common.KinEnvironment;
+import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.exception.BlockchainException;
+import com.kin.ecosystem.common.exception.ClientException;
+import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.common.model.NativeSpendOffer;
+import com.kin.ecosystem.common.model.OrderConfirmation;
+import com.kin.ecosystem.common.model.WhitelistData;
 import com.kin.ecosystem.core.Configuration;
+import com.kin.ecosystem.core.Logger;
+import com.kin.ecosystem.core.accountmanager.AccountManagerImpl;
+import com.kin.ecosystem.core.accountmanager.AccountManagerLocal;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.EventLoggerImpl;
 import com.kin.ecosystem.core.bi.events.EntrypointButtonTapped;
@@ -24,28 +31,22 @@ import com.kin.ecosystem.core.data.auth.AuthRemoteData;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceLocal;
-import com.kin.ecosystem.common.model.Balance;
-import com.kin.ecosystem.common.model.OrderConfirmation;
-import com.kin.ecosystem.common.model.WhitelistData;
 import com.kin.ecosystem.core.data.offer.OfferRemoteData;
 import com.kin.ecosystem.core.data.offer.OfferRepository;
 import com.kin.ecosystem.core.data.order.OrderLocalData;
 import com.kin.ecosystem.core.data.order.OrderRemoteData;
 import com.kin.ecosystem.core.data.order.OrderRepository;
-import com.kin.ecosystem.common.exception.BlockchainException;
-import com.kin.ecosystem.common.exception.ClientException;
-import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.core.network.model.SignInData;
 import com.kin.ecosystem.core.network.model.SignInData.SignInTypeEnum;
-import com.kin.ecosystem.splash.view.SplashActivity;
-import java.util.UUID;
-import com.kin.ecosystem.common.KinEnvironment;
-import com.kin.ecosystem.core.Logger;
-import com.kin.ecosystem.core.accountmanager.AccountManagerImpl;
-import com.kin.ecosystem.core.accountmanager.AccountManagerLocal;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
+import com.kin.ecosystem.main.view.EcosystemActivity;
+import com.kin.ecosystem.splash.view.SplashActivity;
+import java.util.UUID;
+import kin.core.KinAccount;
+import kin.core.KinClient;
+import kin.core.ServiceProvider;
 
 
 public class Kin {
@@ -125,7 +126,8 @@ public class Kin {
 	}
 
 	private static void initAccountManager(@NonNull final Context context) {
-		AccountManagerImpl.init(AccountManagerLocal.getInstance(context), instance.eventLogger, AuthRepository.getInstance());
+		AccountManagerImpl
+			.init(AccountManagerLocal.getInstance(context), instance.eventLogger, AuthRepository.getInstance());
 		if (!AccountManagerImpl.getInstance().isAccountCreated()) {
 			KinAccount account = BlockchainSourceImpl.getInstance().getKinAccount();
 			if (account != null) {
@@ -314,7 +316,7 @@ public class Kin {
 	/**
 	 * Add a native offer {@link Observer} to receive a trigger when you native offers on Kin Marketplace are clicked.
 	 */
-	public static void addNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer)
+	public static void addNativeOfferClickedObserver(@NonNull Observer<NativeOfferClickEvent> observer)
 		throws ClientException {
 		checkInstanceNotNull();
 		OfferRepository.getInstance().addNativeOfferClickedObserver(observer);
@@ -323,7 +325,7 @@ public class Kin {
 	/**
 	 * Remove the callback if you no longer want to get triggered when your offer on Kin marketplace are clicked.
 	 */
-	public static void removeNativeOfferClickedObserver(@NonNull Observer<NativeSpendOffer> observer)
+	public static void removeNativeOfferClickedObserver(@NonNull Observer<NativeOfferClickEvent> observer)
 		throws ClientException {
 		checkInstanceNotNull();
 		OfferRepository.getInstance().removeNativeOfferClickedObserver(observer);
@@ -334,12 +336,14 @@ public class Kin {
 	 * The offer will be added at index 0 in the spend list.
 	 *
 	 * @param nativeSpendOffer The spend offer you want to add to the spend list.
+	 * @param dismissOnTap An indication if the sdk should close the marketplace when this offer tapped.
 	 * @return true if the offer added successfully, the list was changed.
 	 * @throws ClientException Could not add the offer to the list.
 	 */
-	public static boolean addNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer) throws ClientException {
+	public static boolean addNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer, boolean dismissOnTap)
+		throws ClientException {
 		checkInstanceNotNull();
-		return OfferRepository.getInstance().addNativeOffer(nativeSpendOffer);
+		return OfferRepository.getInstance().addNativeOffer(nativeSpendOffer, dismissOnTap);
 	}
 
 	/**

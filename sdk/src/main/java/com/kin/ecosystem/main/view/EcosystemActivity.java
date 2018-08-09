@@ -156,6 +156,11 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	}
 
 	@Override
+	public void close() {
+		finish();
+	}
+
+	@Override
 	public void attachPresenter(IEcosystemPresenter presenter) {
 		ecosystemPresenter = presenter;
 		ecosystemPresenter.onAttach(this);
