@@ -18,7 +18,7 @@ import android.widget.Toast;
 import com.ecosystem.kin.app.model.SignInRepo;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.common.KinCallback;
-import com.kin.ecosystem.common.NativeOfferClicked;
+import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private KinCallback<OrderConfirmation> nativeSpendOrderConfirmationCallback;
 	private KinCallback<OrderConfirmation> nativeEarnOrderConfirmationCallback;
-	private Observer<NativeOfferClicked> nativeSpendOfferClickedObserver;
+	private Observer<NativeOfferClickEvent> nativeSpendOfferClickedObserver;
 	private Observer<Balance> balanceObserver;
 
 	private String publicAddress;
@@ -169,13 +169,13 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	private Observer<NativeOfferClicked> getNativeOfferClickedObserver() {
+	private Observer<NativeOfferClickEvent> getNativeOfferClickedObserver() {
 		if (nativeSpendOfferClickedObserver == null) {
-			nativeSpendOfferClickedObserver = new Observer<NativeOfferClicked>() {
+			nativeSpendOfferClickedObserver = new Observer<NativeOfferClickEvent>() {
 				@Override
-				public void onChanged(NativeOfferClicked nativeOfferClicked) {
-					NativeSpendOffer nativeSpendOffer = (NativeSpendOffer) nativeOfferClicked.getNativeOffer();
-					if(nativeOfferClicked.isDismissed()){
+				public void onChanged(NativeOfferClickEvent nativeOfferClickEvent) {
+					NativeSpendOffer nativeSpendOffer = (NativeSpendOffer) nativeOfferClickEvent.getNativeOffer();
+					if(nativeOfferClickEvent.isDismissOnTap()){
 						new AlertDialog.Builder(MainActivity.this)
 							.setTitle("Native Offer (" + nativeSpendOffer.getTitle() +")")
 							.setMessage("You tapped a native offer and the observer was notified.")

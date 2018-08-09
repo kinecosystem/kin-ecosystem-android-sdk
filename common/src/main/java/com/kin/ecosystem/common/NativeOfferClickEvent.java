@@ -2,7 +2,7 @@ package com.kin.ecosystem.common;
 
 import com.kin.ecosystem.common.model.NativeOffer;
 
-public class NativeOfferClicked {
+public class NativeOfferClickEvent {
 
 	/**
 	 * The native offer that was clicked.
@@ -12,19 +12,19 @@ public class NativeOfferClicked {
 	/**
 	 * True if the marketplace was dismissed.
 	 */
-	private boolean isDismissed;
+	private boolean isDismissOnTap;
 
-	private NativeOfferClicked(NativeOffer nativeOffer, boolean isDismissed) {
+	private NativeOfferClickEvent(NativeOffer nativeOffer, boolean isDismissOnTap) {
 		this.nativeOffer = nativeOffer;
-		this.isDismissed = isDismissed;
+		this.isDismissOnTap = isDismissOnTap;
 	}
 
 	public NativeOffer getNativeOffer() {
 		return nativeOffer;
 	}
 
-	public boolean isDismissed() {
-		return isDismissed;
+	public boolean isDismissOnTap() {
+		return isDismissOnTap;
 	}
 
 	public static class Builder {
@@ -42,11 +42,11 @@ public class NativeOfferClicked {
 			return this;
 		}
 
-		public NativeOfferClicked build() {
+		public NativeOfferClickEvent build() {
 			if(nativeOffer == null) {
-				throw new IllegalArgumentException("nativeOffer can't be null");
+				throw new IllegalArgumentException("NativeOffer can't be null");
 			}
-			return new NativeOfferClicked(nativeOffer, isDismissed);
+			return new NativeOfferClickEvent(nativeOffer, isDismissed);
 		}
 
 	}

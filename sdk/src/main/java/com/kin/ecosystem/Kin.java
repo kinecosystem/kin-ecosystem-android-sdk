@@ -9,7 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.KinEnvironment;
-import com.kin.ecosystem.common.NativeOfferClicked;
+import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
@@ -316,7 +316,7 @@ public class Kin {
 	/**
 	 * Add a native offer {@link Observer} to receive a trigger when you native offers on Kin Marketplace are clicked.
 	 */
-	public static void addNativeOfferClickedObserver(@NonNull Observer<NativeOfferClicked> observer)
+	public static void addNativeOfferClickedObserver(@NonNull Observer<NativeOfferClickEvent> observer)
 		throws ClientException {
 		checkInstanceNotNull();
 		OfferRepository.getInstance().addNativeOfferClickedObserver(observer);
@@ -325,7 +325,7 @@ public class Kin {
 	/**
 	 * Remove the callback if you no longer want to get triggered when your offer on Kin marketplace are clicked.
 	 */
-	public static void removeNativeOfferClickedObserver(@NonNull Observer<NativeOfferClicked> observer)
+	public static void removeNativeOfferClickedObserver(@NonNull Observer<NativeOfferClickEvent> observer)
 		throws ClientException {
 		checkInstanceNotNull();
 		OfferRepository.getInstance().removeNativeOfferClickedObserver(observer);

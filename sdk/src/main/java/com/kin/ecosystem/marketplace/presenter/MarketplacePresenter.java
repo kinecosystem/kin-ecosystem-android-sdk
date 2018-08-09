@@ -7,7 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.common.KinCallbackAdapter;
-import com.kin.ecosystem.common.NativeOfferClicked;
+import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.model.NativeSpendOffer;
 import com.kin.ecosystem.core.bi.EventLogger;
@@ -341,7 +341,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private void nativeSpendOfferClicked(Offer offer, boolean dismissMarketplace) {
 		NativeSpendOffer nativeOffer = OfferConverter.toNativeSpendOffer(offer);
 		offerRepository.getNativeSpendOfferObservable().postValue(
-			new NativeOfferClicked.Builder()
+			new NativeOfferClickEvent.Builder()
 				.nativeOffer(nativeOffer)
 				.isDismissed(dismissMarketplace)
 				.build());

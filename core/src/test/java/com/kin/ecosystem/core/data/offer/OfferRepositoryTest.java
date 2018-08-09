@@ -2,6 +2,7 @@ package com.kin.ecosystem.core.data.offer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -9,7 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.kin.ecosystem.common.KinCallback;
-import com.kin.ecosystem.common.NativeOfferClicked;
+import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.model.NativeSpendOffer;
@@ -100,16 +101,16 @@ public class OfferRepositoryTest {
 
 	@Test
 	public void addNativeOfferCallback() throws Exception {
-		Observer<NativeOfferClicked> callback = new Observer<NativeOfferClicked>() {
+		Observer<NativeOfferClickEvent> callback = new Observer<NativeOfferClickEvent>() {
 			@Override
-			public void onChanged(NativeOfferClicked nativeSpendOffer) {
+			public void onChanged(NativeOfferClickEvent nativeSpendOffer) {
 				assertEquals("5", nativeSpendOffer.getNativeOffer().getId());
-				assertFalse(nativeSpendOffer.isDismissed());
+				assertFalse(nativeSpendOffer.isDismissOnTap());
 			}
 		};
 
 		offerRepository.addNativeOfferClickedObserver(callback);
-		offerRepository.getNativeSpendOfferObservable().postValue(new NativeOfferClicked.Builder()
+		offerRepository.getNativeSpendOfferObservable().postValue(new NativeOfferClickEvent.Builder()
 			.nativeOffer(new NativeSpendOffer("5"))
 			.isDismissed(false)
 			.build());
@@ -157,6 +158,11 @@ public class OfferRepositoryTest {
 
 		offerRepository.removeNativeOffer(nativeOffer);
 		assertEquals(0, offerRepository.getCachedOfferList().getOffers().size());
+	}
+
+	@Test
+	public void shouldDismissOnTap_WithNoExistingOfferId() {
+		assertFalse(offerRepository.shouldDismissOnTap("404"));
 	}
 
 	private OfferList getOfferList() {

@@ -359,13 +359,13 @@ You can also choose to display a banner for your custom offer in the Kin Marketp
             }
         }
     
-        private Observer<NativeOfferClicked> getNativeOfferClickedObserver() {
+        private Observer<NativeOfferClickEvent> getNativeOfferClickedObserver() {
             if (nativeSpendOfferClickedObserver == null) {
-                nativeSpendOfferClickedObserver = new Observer<NativeOfferClicked>() {
+                nativeSpendOfferClickedObserver = new Observer<NativeOfferClickEvent>() {
                     @Override
-                    public void onChanged(NativeOfferClicked nativeOfferClicked) {
-                        NativeSpendOffer nativeSpendOffer = (NativeSpendOffer) nativeOfferClicked.getNativeOffer();
-                        if(nativeOfferClicked.isDismissed()){
+                    public void onChanged(NativeOfferClickEvent nativeOfferClickEvent) {
+                        NativeSpendOffer nativeSpendOffer = (NativeSpendOffer) nativeOfferClickEvent.getNativeOffer();
+                        if(nativeOfferClickEvent.isDismissOnTap()){
                             new AlertDialog.Builder(MainActivity.this)
                                 .setTitle("Native Offer (" + nativeSpendOffer.getTitle() +")")
                                 .setMessage("You tapped a native offer and the observer was notified.")
@@ -384,7 +384,7 @@ You can also choose to display a banner for your custom offer in the Kin Marketp
 3.	```Call Kin.addNativeOffer(nativeSpendOffer, dismissOnTap)```. 
 
     >**NOTE:** Each new offer is added as the first offer in Spend Offers list the Marketplace displays.
-    Parameter dismissOnTap determine if the Marketplace need to be dissmised on tap.
+    Parameter dismissOnTap determine if the Marketplace need to be dismissed on tap.
     Adding the same offer twice will update the existing one.
 
     ```

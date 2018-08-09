@@ -4,11 +4,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
-import com.kin.ecosystem.common.NativeOfferClicked;
+import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.model.NativeOffer;
-import com.kin.ecosystem.common.model.NativeSpendOffer;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.Offer;
@@ -31,7 +30,7 @@ public class OfferRepository implements OfferDataSource {
 	private OfferList nativeOfferList = new OfferList();
 	private OfferList cachedOfferList = new OfferList();
 
-	private ObservableData<NativeOfferClicked> nativeSpendOfferObservable = ObservableData.create();
+	private ObservableData<NativeOfferClickEvent> nativeSpendOfferObservable = ObservableData.create();
 
 	private OfferRepository(@NonNull OfferDataSource.Remote remoteData, @NonNull OrderDataSource orderRepository) {
 		this.remoteData = remoteData;
@@ -108,17 +107,17 @@ public class OfferRepository implements OfferDataSource {
 	}
 
 	@Override
-	public void addNativeOfferClickedObserver(@NonNull Observer<NativeOfferClicked> observer) {
+	public void addNativeOfferClickedObserver(@NonNull Observer<NativeOfferClickEvent> observer) {
 		nativeSpendOfferObservable.addObserver(observer);
 	}
 
 	@Override
-	public void removeNativeOfferClickedObserver(@NonNull Observer<NativeOfferClicked> observer) {
+	public void removeNativeOfferClickedObserver(@NonNull Observer<NativeOfferClickEvent> observer) {
 		nativeSpendOfferObservable.removeObserver(observer);
 	}
 
 	@Override
-	public ObservableData<NativeOfferClicked> getNativeSpendOfferObservable() {
+	public ObservableData<NativeOfferClickEvent> getNativeSpendOfferObservable() {
 		return nativeSpendOfferObservable;
 	}
 
@@ -128,19 +127,16 @@ public class OfferRepository implements OfferDataSource {
 		if (offerId != null) {
 			Offer offer = OfferConverter.toOffer(nativeOffer);
 			if (offer != null) {
-				if (nativeOfferMap.containsKey(offerId)) {
-					// Update existing
-					int index = nativeOfferList.getOffers().indexOf(offer);
-					if (index >= 0) {
-						nativeOfferList.getOffers().set(index, offer);
-					} else {
-						return false;
-					}
+				nativeOfferMap.put(offerId, dismissOnTap);
+
+				// Update existing
+				int index = nativeOfferList.getOffers().indexOf(offer);
+				if (index >= 0) {
+					nativeOfferList.getOffers().set(index, offer);
 				} else {
 					// Add new
-					nativeOfferList.getOffers().add(0, offer);
+					nativeOfferList.addAtIndex(0, offer);
 				}
-				nativeOfferMap.put(offerId, dismissOnTap);
 				return true;
 			}
 			return false;
@@ -154,12 +150,8 @@ public class OfferRepository implements OfferDataSource {
 		if (offerId != null) {
 			Offer offer = OfferConverter.toOffer(nativeOffer);
 			if (offer != null) {
-				if (nativeOfferMap.containsKey(offerId)) {
-					nativeOfferList.remove(offer);
-					nativeOfferMap.remove(offerId);
-					return true;
-				}
-				return false;
+				nativeOfferMap.remove(offerId);
+				return nativeOfferList.remove(offer);
 			}
 			return false;
 
@@ -170,6 +162,7 @@ public class OfferRepository implements OfferDataSource {
 
 	@Override
 	public boolean shouldDismissOnTap(@NonNull String offerId) {
-		return nativeOfferMap.get(offerId);
+		final Boolean shouldDismissOnTap = nativeOfferMap.get(offerId);
+		return shouldDismissOnTap == null ? false : shouldDismissOnTap;
 	}
 }
