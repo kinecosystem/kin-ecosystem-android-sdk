@@ -6,10 +6,10 @@ import com.crashlytics.android.Crashlytics;
 import com.ecosystem.kin.app.model.SignInRepo;
 import com.kin.ecosystem.Environment;
 import com.kin.ecosystem.Kin;
-import com.kin.ecosystem.KinEnvironment;
-import com.kin.ecosystem.data.model.WhitelistData;
-import com.kin.ecosystem.exception.BlockchainException;
-import com.kin.ecosystem.exception.ClientException;
+import com.kin.ecosystem.common.KinEnvironment;
+import com.kin.ecosystem.common.exception.BlockchainException;
+import com.kin.ecosystem.common.exception.ClientException;
+import com.kin.ecosystem.common.model.WhitelistData;
 import io.fabric.sdk.android.Fabric;
 
 
