@@ -125,11 +125,8 @@ class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements 
 	private void submitAndSendTransaction() {
 		if (openOrder != null) {
 			isSubmitted = true;
-			final String addressee = offer.getBlockchainData().getRecipientAddress();
 			final String orderID = openOrder.getId();
-
 			submitOrder(offer.getId(), orderID);
-			sendTransaction(addressee, amount, orderID);
 		}
 	}
 
@@ -175,16 +172,19 @@ class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements 
 		blockchainSource.sendTransaction(addressee, amount, orderID, offer.getId());
 	}
 
-	private void submitOrder(String offerID, String orderID) {
+	private void submitOrder(String offerID, final String orderID) {
 		eventLogger.send(SpendOrderCompletionSubmitted.create(offerID, orderID, false));
 		orderRepository.submitOrder(offerID, null, orderID, new KinCallback<Order>() {
             @Override
             public void onResponse(Order response) {
+				final String addressee = offer.getBlockchainData().getRecipientAddress();
+				sendTransaction(addressee, amount, orderID);
 				Logger.log(new Log().withTag(TAG).put(" Submit onResponse", response));
             }
 
             @Override
             public void onFailure(KinEcosystemException exception) {
+            	showToast("Oops something went wrong...");
 				Logger.log(new Log().withTag(TAG).put(" Submit onFailure", exception));
             }
         });

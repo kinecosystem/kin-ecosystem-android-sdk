@@ -8,11 +8,11 @@ import com.kin.ecosystem.core.data.order.OrderDataSource.Remote;
 class ExternalSpendOrderCall extends CreateExternalOrderCall {
 
 	ExternalSpendOrderCall(
-		@NonNull Remote remote,
+		@NonNull OrderDataSource orderRepository,
 		@NonNull BlockchainSource blockchainSource,
 		@NonNull String orderJwt,
 		@NonNull EventLogger eventLogger,
-		@NonNull ExternalSpendOrderCallbacks externalSpendOrderCallbacks) {
-		super(remote, blockchainSource, orderJwt, eventLogger, externalSpendOrderCallbacks);
+		@NonNull ExternalOrderCallbacks externalSpendOrderCallbacks) {
+		super(orderRepository, blockchainSource, orderJwt, eventLogger, externalSpendOrderCallbacks);
 	}
 }

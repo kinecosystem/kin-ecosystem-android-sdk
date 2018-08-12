@@ -199,7 +199,7 @@ public class OrderRemoteData implements OrderDataSource.Remote {
     }
 
     @Override
-    public void getOrder(String orderID, final Callback<Order, ApiException> callback) {
+    public void getOrder(@NonNull final String orderID, final Callback<Order, ApiException> callback) {
         new GetOrderPollingCall(this, orderID, new Callback<Order, ApiException>() {
             @Override
             public void onResponse(final Order result) {
@@ -224,7 +224,7 @@ public class OrderRemoteData implements OrderDataSource.Remote {
     }
 
     @Override
-    public Order getOrderSync(String orderID) {
+    public Order getOrderSync(@NonNull final String orderID) {
         Order order = null;
         try {
             order = ordersApi.getOrder(orderID, "");

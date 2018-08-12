@@ -13,24 +13,24 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.exception.BlockchainException;
+import com.kin.ecosystem.common.exception.DataNotAvailableException;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
+import com.kin.ecosystem.common.model.Balance;
+import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.EarnOrderPaymentConfirmed;
 import com.kin.ecosystem.core.bi.events.SpendOrderCompleted;
 import com.kin.ecosystem.core.bi.events.SpendOrderFailed;
-import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
-import com.kin.ecosystem.common.model.Balance;
-import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.core.data.blockchain.Payment;
-import com.kin.ecosystem.common.exception.BlockchainException;
-import com.kin.ecosystem.common.exception.DataNotAvailableException;
-import com.kin.ecosystem.common.exception.KinEcosystemException;
-import com.kin.ecosystem.core.data.order.OrderDataSource;
-import com.kin.ecosystem.core.data.order.OrderRepository;
+import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.BlockchainData;
 import com.kin.ecosystem.core.network.model.Body;
+import com.kin.ecosystem.core.network.model.Error;
 import com.kin.ecosystem.core.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
@@ -47,8 +47,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import com.kin.ecosystem.core.network.ApiException;
-import com.kin.ecosystem.core.network.model.Error;
 import kin.ecosystem.test.base.BaseTestClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -398,7 +396,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 		}
 
 		verify(remote, never()).changeOrder(anyString(), any(Body.class), any(Callback.class));
-		verify(remote).getOrder(anyString(), getOrderCapture.capture());
+		verify(remote, times(2)).getOrder(anyString(), getOrderCapture.capture());
 		List<Callback<Order, ApiException>> getOrderCallbackList = getOrderCapture.getAllValues();
 		for (Callback<Order, ApiException> callback : getOrderCallbackList) {
 			callback.onResponse(confirmedOrder);
