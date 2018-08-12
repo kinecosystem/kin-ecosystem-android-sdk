@@ -1,9 +1,7 @@
 package com.kin.ecosystem.core.data.order;
 
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
-import com.kin.ecosystem.common.KinCallbackAdapter;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.model.Balance;
@@ -14,8 +12,6 @@ import com.kin.ecosystem.core.bi.events.SpendOrderCreationReceived;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.blockchain.Payment;
 import com.kin.ecosystem.core.network.ApiException;
-import com.kin.ecosystem.core.network.model.Body;
-import com.kin.ecosystem.core.network.model.Error;
 import com.kin.ecosystem.core.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.core.network.model.OpenOrder;
@@ -25,7 +21,6 @@ import com.kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import kin.core.TransactionId;
 import kin.core.exception.InsufficientKinException;
 
 class CreateExternalOrderCall extends Thread {

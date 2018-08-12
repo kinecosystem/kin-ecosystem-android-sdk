@@ -1,9 +1,8 @@
 package com.kin.ecosystem.core.data.order;
 
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.bi.EventLogger;
-import com.kin.ecosystem.core.data.order.OrderDataSource.Remote;
+import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 
 class ExternalEarnOrderCall extends CreateExternalOrderCall {
 

@@ -2,6 +2,7 @@ package com.kin.ecosystem.core.data.order;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.network.ApiCallback;
@@ -14,7 +15,6 @@ import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.OrderList;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
-import com.kin.ecosystem.common.Callback;
 import java.util.List;
 import java.util.Map;
 
