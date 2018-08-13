@@ -11,7 +11,7 @@ class ExternalSpendOrderCall extends CreateExternalOrderCall {
 		@NonNull BlockchainSource blockchainSource,
 		@NonNull String orderJwt,
 		@NonNull EventLogger eventLogger,
-		@NonNull ExternalOrderCallbacks externalSpendOrderCallbacks) {
+		@NonNull ExternalSpendOrderCallbacks externalSpendOrderCallbacks) {
 		super(orderRepository, blockchainSource, orderJwt, eventLogger, externalSpendOrderCallbacks);
 	}
 }
