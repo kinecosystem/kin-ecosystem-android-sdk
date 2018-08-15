@@ -113,8 +113,9 @@ class CreateExternalOrderCall extends Thread {
 			}
 
 			@Override
-			public void onFailure(KinEcosystemException error) {
+			public void onFailure(KinEcosystemException e) {
 				blockchainSource.removePaymentObserver(paymentObserver);
+				onOrderFailed(e);
 			}
 		});
 	}
@@ -192,9 +193,14 @@ class CreateExternalOrderCall extends Thread {
 	private void getOrder(String orderID) {
 		orderRepository.getOrder(orderID, new KinCallback<Order>() {
 			@Override
-			public void onResponse(Order order) {
-				externalOrderCallbacks
-					.onOrderConfirmed(((JWTBodyPaymentConfirmationResult) order.getResult()).getJwt(), order);
+			public void onResponse(final Order order) {
+				runOnMainThread(new Runnable() {
+					@Override
+					public void run() {
+						externalOrderCallbacks
+							.onOrderConfirmed(((JWTBodyPaymentConfirmationResult) order.getResult()).getJwt(), order);
+					}
+				});
 			}
 
 			@Override

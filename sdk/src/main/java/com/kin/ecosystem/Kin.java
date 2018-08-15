@@ -280,7 +280,7 @@ public class Kin {
 	 * This call might take time, due to transaction validation on the blockchain network.
 	 *
 	 * @param offerJwt Represents the offer in a JWT manner.
-	 * @param callback {@link OrderConfirmation} the result will be a failure or a succeed with a jwt confirmation.
+	 * @param callback {@link OrderConfirmation} The result will be a failure or a succeed with a jwt confirmation.
 	 */
 	public static void purchase(String offerJwt, @Nullable KinCallback<OrderConfirmation> callback)
 		throws ClientException {
@@ -292,14 +292,28 @@ public class Kin {
 	 * Allowing your users to earn Kin as a reward for native task you define.
 	 * This call might take time, due to transaction validation on the blockchain network.
 	 *
-	 * @param offerJwt the offer details represented in a JWT manner.
-	 * @param callback after validating the info and sending the payment to the user, you will receive {@link
+	 * @param offerJwt The offer details represented in a JWT manner.
+	 * @param callback After validating the info and sending the payment to the user, you will receive {@link
 	 * OrderConfirmation}, with the jwtConfirmation and you can validate the order when the order status is completed.
 	 */
 	public static void requestPayment(String offerJwt, @Nullable KinCallback<OrderConfirmation> callback)
 		throws ClientException {
 		checkInstanceNotNull();
 		OrderRepository.getInstance().requestPayment(offerJwt, callback);
+	}
+
+	/**
+	 * Allowing a user to pay to a different user for an offer defined within your app, using KIN.
+	 * This call might take time, due to transaction validation on the blockchain network.
+	 *
+	 * @param offerJwt Represents a 'Pay to user' offer in a JWT manner.
+	 * @param callback {@link OrderConfirmation} The result will be a failure or a succeed with a jwt confirmation.
+	 */
+	public static void payToUser(String offerJwt, @Nullable KinCallback<OrderConfirmation> callback)
+		throws ClientException {
+		checkInstanceNotNull();
+		//pay to user has a similar flow like purchase (spend), the only different is the expected input JWT.
+		OrderRepository.getInstance().purchase(offerJwt, callback);
 	}
 
 	/**

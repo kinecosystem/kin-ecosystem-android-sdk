@@ -113,7 +113,7 @@ The Sample App Gradle build loads the ```credential.properties``` setting and us
 
 
 1. Add the following lines to your project module's ```build.gradle``` file.
-```
+```groovy
  repositories {
      ...
      maven {
@@ -122,7 +122,7 @@ The Sample App Gradle build loads the ```credential.properties``` setting and us
  }
 ```
 2.	Add the following lines to the app module's ```build.gradle``` file.
-```
+```groovy
  dependencies {
      ...
      implementation 'com.github.kinfoundation:kin-ecosystem-android-sdk:0.1.0
@@ -131,7 +131,7 @@ The Sample App Gradle build loads the ```credential.properties``` setting and us
 ```
 >**NOTE:** The kin-ecosystem-android-sdk arr is tested for Android OS version 4.4 (API level 19) and above. 
 >* Some functionalities such as observing balance update will not be supported for lower OS version.
->* If your app support lower OS versions (minSdkVersion < 19) we recomend to only enable Kin intgartion for users with version 4.4 and above.
+>* If your app support lower OS versions (minSdkVersion < 19) we recommend to only enable Kin integration for users with version 4.4 and above.
 
 ## Common Workflows ##
 
@@ -147,7 +147,7 @@ If your app presents Kin Spend and Earn offers to your users, then each user nee
 Call ```Kin.start(…)```, passing the user’s unique ID and your chosen authentication credentials (either whitelist or JWT credentials).
 
 **Whitelist mode:**
-```
+```java
 whitelistData = new WhitelistData(<userID>, <appID>, <apiKey>); 
 try {
    // As an example we are using PLAYGROUND environment
@@ -163,7 +163,7 @@ catch (ClientException | BlockchainException e) {
 
 (See [Building the JWT Token](#BuildJWT) to learn how to build the JWT token.)
 
-```
+```java
 try {
    // As an example we are using PRODUCTION environment
    Kin.start(getApplicationContext(), jwt, Environment.getProduction());
@@ -189,7 +189,7 @@ There are 3 ways you can retrieve the user’s balance:
 
 Call ```Kin.getCachedBalance()```.
 
-```
+```java
 try {
         Balance cachedBalance = Kin.getCachedBalance();
     } catch (ClientException e) {
@@ -200,9 +200,9 @@ try {
 *To get the balance from the Kin Server (from the blockchain):*
 
 Call ```Kin.getBalance(…)```, and implement the 2 response callback functions.
-(See [BlockchainException](ADDLINK) and [ServiceException](ADDLINK) for possible errors.)
+(See [BlockchainException](common/src/main/java/com/kin/ecosystem/common/exception/BlockchainException.java) and [ServiceException](common/src/main/java/com/kin/ecosystem/common/exception/ServiceException.java) for possible errors.)
 
-```
+```java
 Kin.getBalance(new KinCallback<Balance>() {
                     @Override
                     public void onResponse(Balance balance) {
@@ -222,105 +222,105 @@ Create an ```Observer``` object and implements its ```onChanged()``` function.
 
 >**NOTES:** 
 >* The ```Observer``` object sends a first update with the last known balance, and then opens a connection to the blockchain network to receive subsequent live updates. 
->* Make sure to add balance observer only when required (for example when app UI need to show updated balance) and remove the obserever as soon as possible to avoid keeping open network connection.
+>* Make sure to add balance observer only when required (for example when app UI need to show updated balance) and remove the observer as soon as possible to avoid keeping open network connection.
 
-```
-    // Add balance observer
-    balanceObserver = new Observer<Balance>() {
-                    @Override
-                    public void onChanged(Balance value) {
-                        showToast("Balance - " + 
-                                   value.getAmount().intValue());
-                    }
-                };
-    
-    try {
-        Kin.addBalanceObserver(balanceObserver);
-    } catch (TaskFailedException e) {
-        e.printStackTrace();
-    }
-    
-    // Remove the balance observer
-    try {
-        Kin.removeBalanceObserver(balanceObserver);
-    } catch (TaskFailedException e) {
-        e.printStackTrace();
-    }
+```java
+// Add balance observer
+balanceObserver = new Observer<Balance>() {
+                @Override
+                public void onChanged(Balance value) {
+                    showToast("Balance - " + 
+                               value.getAmount().intValue());
+                }
+            };
+
+try {
+    Kin.addBalanceObserver(balanceObserver);
+} catch (TaskFailedException e) {
+    e.printStackTrace();
+}
+
+// Remove the balance observer
+try {
+    Kin.removeBalanceObserver(balanceObserver);
+} catch (TaskFailedException e) {
+    e.printStackTrace();
+}
 ```
 
 <a name="CreateCustomSpendOffer"></a>
 ### Creating a Custom Spend Offer ###
 
-A custom Spend offer allows your users to unlock unique spend opportunities that you define within your app. (Custom offers are created by your app, as opposed to [built-in offers displayed in the Kin Marketplace offer wall](#AddingToMP).) Your app displays the offer, request user approval, and then [requests payment using the Kin purcash API](#purcasheRequest).
+A custom Spend offer allows your users to unlock unique spend opportunities that you define within your app. (Custom offers are created by your app, as opposed to [built-in offers displayed in the Kin Marketplace offer wall](#AddingToMP).) Your app displays the offer, request user approval, and then [requests payment using the Kin purchase API](#purchaseRequest).
 
 *To create a custom Spend offer:*
 
 
-<a name="purcasheRequest"></a>
+<a name="purchaseRequest"></a>
 ### Requesting purchase Payment for a Custom Spend Offer ###
 
 *To request payment for a custom Spend offer:*
 
 1.	Create a JWT that represents a Spend offer signed by you, using the header and payload templates below. (See [Building the JWT Token](#BuildJWT) for more details about JWT structure).
 
-    **JWT header:**
+**JWT header:**    
 ```
-   {
-        "alg": "ES256", // Hash function
-        "typ": "JWT",
-        "kid": string" // identifier of the keypair that was used to sign the JWT. identifiers and public keys will be provided by signer authority. This enables using multiple private/public key pairs (a list of public keys and their ids need to be provided by signer authority to verifier in advanced)
-    }
+{
+    "alg": "ES256", // Hash function
+    "typ": "JWT",
+    "kid": string" // identifier of the keypair that was used to sign the JWT. identifiers and public keys will be provided by signer authority. This enables using multiple private/public key pairs (a list of public keys and their ids need to be provided by signer authority to verifier in advanced)
+}
 ```
 
-    **JWT payload:**
+**JWT payload:**
 ```
-    {
-        // common/ standard fields
-        iat: number;  // issued at - seconds from epoc
-        iss: string; // issuer 
-        exp: number; // expiration
-        sub: "spend"
-        
-       // application fields
-       offer: {
-               id: string; // offer id is decided by you (internal)
-               amount: number; // amount of kin for this offer - price
-       }
-        
-       sender: {
-              user_id: string; // optional: ID of purchasing user
-              title: string; // order title - appears in order history
-              description: string; // order desc. (in order history)
-       }
-    }
+{
+    // common/ standard fields
+    iat: number;  // issued at - seconds from epoc
+    iss: string; // issuer 
+    exp: number; // expiration
+    sub: "spend"
+    
+   // application fields
+   offer: {
+           id: string; // offer id is decided by you (internal)
+           amount: number; // amount of kin for this offer - price
+   }
+    
+   sender: {
+          user_id: string; // optional: ID of purchasing user
+          title: string; // order title - appears in order history
+          description: string; // order desc. (in order history)
+   }
+}
 ```
 2.	Call ```Kin.purchase(…)```, while passing the JWT you built and a callback function that will receive purchase confirmation.
 
-    >**NOTES:** 
-    >* The following snippet is taken from the SDK Sample App, in which the JWT is created and signed by the Android client side for presentation purposes only. Do not use this method in production! In production, the JWT must be signed by the server, with a secure private key. 
-    >* See [BlockchainException](ADDLINK) and [ServiceException](ADDLINK) for possible errors.
+>**NOTES:** 
+>* The following snippet is taken from the SDK Sample App, in which the JWT is created and signed by the Android client side for presentation purposes only. Do not use this method in production! In production, the JWT must be signed by the server, with a secure private key. 
+>* See [BlockchainException](common/src/main/java/com/kin/ecosystem/common/exception/BlockchainException.java) and [ServiceException](common/src/main/java/com/kin/ecosystem/common/exception/ServiceException.java) for possible errors.
 
-    ```
-    try {
-      Kin.purchase(offerJwt, new KinCallback<OrderConfirmation>() {
-      @Override public void onResponse(OrderConfirmation orderConfirmation) {
-      // OrderConfirmation will be called once Ecosystem received the payment transaction from user.
-      // OrderConfirmation can be kept on digital service side as a receipt proving user received his Kin.
-                    
-                    // Send confirmation JWT back to the server in order prove that the user
-                    // completed the blockchain transaction and purchase can be unlocked for this user.
-                    System.out.println("Succeed to create native spend.\n jwtConfirmation: " + orderConfirmation.getJwtConfirmation());
-                }
-    
-                @Override
-                public void onFailure(KinEcosystemException exception) {
-                    System.out.println("Failed - " + error.getMessage());
-                }
-            });
-        } catch (ClientException e) {
-            e.printStackTrace();
-      }
-    ```
+```java
+try {
+  Kin.purchase(offerJwt, new KinCallback<OrderConfirmation>() {
+  @Override public void onResponse(OrderConfirmation orderConfirmation) {
+  // OrderConfirmation will be called once Ecosystem received the payment transaction from user.
+  // OrderConfirmation can be kept on digital service side as a receipt proving user received his Kin.
+                
+                // Send confirmation JWT back to the server in order prove that the user
+                // completed the blockchain transaction and purchase can be unlocked for this user.
+                System.out.println("Succeed to create native spend.\n jwtConfirmation: " + orderConfirmation.getJwtConfirmation());
+            }
+
+            @Override
+            public void onFailure(KinEcosystemException exception) {
+                System.out.println("Failed - " + error.getMessage());
+            }
+        });
+    } catch (ClientException e) {
+        e.printStackTrace();
+  }
+```
 
 3.	Complete the purchase after you receive confirmation from the Kin Server that the funds were transferred successfully.
 
@@ -337,68 +337,68 @@ You can also choose to display a banner for your custom offer in the Kin Marketp
 
 1. Create a ```NativeSpendOffer``` object as in the example below.
 
-    ```
-    NativeSpendOffer nativeOffer =
-            new NativeSpendOffer("The offerID") // OfferId must be a UUID
-                .title("Offer Title") // Title to display with offer
-                .description("Offer Description") // Desc. to display with offer
-                .amount(1000) // Purchase amount in Kin
-                .image("Image URL"); // Image to display with offer
-    ```
+```java
+NativeSpendOffer nativeOffer =
+        new NativeSpendOffer("The offerID") // OfferId must be a UUID
+            .title("Offer Title") // Title to display with offer
+            .description("Offer Description") // Desc. to display with offer
+            .amount(1000) // Purchase amount in Kin
+            .image("Image URL"); // Image to display with offer
+```
 2.	Create a ```NativeOfferObserver``` object to be notified when the user clicks on your offer in the Kin Marketplace.
 
-    >**NOTE:** You can remove the Observer by calling ```Kin.removeNativeOfferClickedObserver(…)```.
+>**NOTE:** You can remove the Observer by calling ```Kin.removeNativeOfferClickedObserver(…)```.
 
-    ```
-    private void addNativeOfferClickedObserver() {
-    try {
-                 
-    Kin.addNativeOfferClickedObserver(getNativeOfferClickedObserver());
-            } catch (TaskFailedException e) {
-                showToast("Could not add native offer callback");
-            }
+```java
+private void addNativeOfferClickedObserver() {
+try {
+             
+Kin.addNativeOfferClickedObserver(getNativeOfferClickedObserver());
+        } catch (TaskFailedException e) {
+            showToast("Could not add native offer callback");
         }
-    
-        private Observer<NativeOfferClickEvent> getNativeOfferClickedObserver() {
-            if (nativeSpendOfferClickedObserver == null) {
-                nativeSpendOfferClickedObserver = new Observer<NativeOfferClickEvent>() {
-                    @Override
-                    public void onChanged(NativeOfferClickEvent nativeOfferClickEvent) {
-                        NativeSpendOffer nativeSpendOffer = (NativeSpendOffer) nativeOfferClickEvent.getNativeOffer();
-                        if(nativeOfferClickEvent.isDismissOnTap()){
-                            new AlertDialog.Builder(MainActivity.this)
-                                .setTitle("Native Offer (" + nativeSpendOffer.getTitle() +")")
-                                .setMessage("You tapped a native offer and the observer was notified.")
-                                .show();
-                        } else {
-                            Intent nativeOfferIntent = NativeOfferActivity.createIntent(MainActivity.this, nativeSpendOffer.getTitle());
-                            startActivity(nativeOfferIntent);
-                        }
-                    }
-                };
-            }
-            return nativeSpendOfferClickedObserver;
     }
-    ```
+
+    private Observer<NativeOfferClickEvent> getNativeOfferClickedObserver() {
+        if (nativeSpendOfferClickedObserver == null) {
+            nativeSpendOfferClickedObserver = new Observer<NativeOfferClickEvent>() {
+                @Override
+                public void onChanged(NativeOfferClickEvent nativeOfferClickEvent) {
+                    NativeSpendOffer nativeSpendOffer = (NativeSpendOffer) nativeOfferClickEvent.getNativeOffer();
+                    if(nativeOfferClickEvent.isDismissOnTap()){
+                        new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("Native Offer (" + nativeSpendOffer.getTitle() +")")
+                            .setMessage("You tapped a native offer and the observer was notified.")
+                            .show();
+                    } else {
+                        Intent nativeOfferIntent = NativeOfferActivity.createIntent(MainActivity.this, nativeSpendOffer.getTitle());
+                        startActivity(nativeOfferIntent);
+                    }
+                }
+            };
+        }
+        return nativeSpendOfferClickedObserver;
+}
+```
 
 3.	```Call Kin.addNativeOffer(nativeSpendOffer, dismissOnTap)```. 
 
-    >**NOTE:** Each new offer is added as the first offer in Spend Offers list the Marketplace displays.
-    Parameter dismissOnTap determine if the Marketplace need to be dismissed on tap.
-    Adding the same offer twice will update the existing one.
+>**NOTE:** Each new offer is added as the first offer in Spend Offers list the Marketplace displays.
+Parameter dismissOnTap determine if the Marketplace need to be dismissed on tap.
+Adding the same offer twice will update the existing one.
 
-    ```
-    try {
-        boolean dismissOnTap = true
-        if (Kin.addNativeOffer(nativeSpendOffer, dismissOnTap)) {
-            // Native offer added
-        } else {
-            // Could not add the offer to Kin Marketplace
-        }
-    } catch (ClientException error) {
-        ...
+```java
+try {
+    boolean dismissOnTap = true
+    if (Kin.addNativeOffer(nativeSpendOffer, dismissOnTap)) {
+        // Native offer added
+    } else {
+        // Could not add the offer to Kin Marketplace
     }
-    ```
+} catch (ClientException error) {
+    ...
+}
+```
 
 ### Removing a Custom Spend Offer from Kin Marketplace ###
 
@@ -406,7 +406,7 @@ You can also choose to display a banner for your custom offer in the Kin Marketp
 
 Call ```Kin.removeNativeOffer(…)```, passing the offer you want to remove.
 
-```
+```java
 try {
         if (Kin.removeNativeOffer(nativeSpendOffer)) {
              // Native offer removed
@@ -431,7 +431,7 @@ You may choose to add your custom Earn and Spend offers to the Kin Marketplace s
 
 Call ```Kin.launchMarketplace(…)```.
 
-```
+```java
 try {
          Kin.launchMarketplace(MainActivity.this);
           System.out.println("Public address : " + Kin.getPublicAddress());
@@ -446,9 +446,9 @@ In the normal flow of a transaction, you will receive an order confirmation from
 
 *To request an order confirmation:*
 
-Call ```Kin.getOrderConfirmation(…)```, while passing the order’s ID and implementing the appropriate callback functions. (See [ServiceException](ADDLINK) for possible errors.)
+Call ```Kin.getOrderConfirmation(…)```, while passing the order’s ID and implementing the appropriate callback functions. (See [ServiceException](common/src/main/java/com/kin/ecosystem/common/exception/ServiceException.java) for possible errors.)
 
-```
+```java
 try {
         Kin.getOrderConfirmation("your_offer_id", new KinCallback<OrderConfirmation>() {
                 @Override
@@ -480,62 +480,143 @@ Once the user has completed the task associated with the Earn offer, you request
 
 1.	Create a JWT that represents an Earn offer signed by you, using the header and payload templates below. (See [Building the JWT Token](#BuildJWT) for more details about JWT structure).
 
-    **JWT header:**
-    ```
-    {
-        "alg": "ES256", // Hash function
-        "typ": "JWT",
-        "kid": string" // identifier of the keypair that was used to sign the JWT. identifiers and public keys will be provided by signer authority. This enables using multiple private/public key pairs (a list of public keys and their ids need to be provided by signer authority to verifier in advanced)
-    }
-    ```
+**JWT header:**
+```
+{
+    "alg": "ES256", // Hash function
+    "typ": "JWT",
+    "kid": string" // identifier of the keypair that was used to sign the JWT. identifiers and public keys will be provided by signer authority. This enables using multiple private/public key pairs (a list of public keys and their ids need to be provided by signer authority to verifier in advanced)
+}
+```
 
-    **JWT payload:**
-    ```
-    {
-        // common/ standard fields
-        iat: number; // issued at - seconds from Epoch
-        iss: string; // issuer
-        exp: number; // expiration
-        sub: "earn"
-        
-       // application fields
-       offer: {
-               id: string; // offer id is decided by you (internal)
-               amount: number; // amount of kin for this offer - price
-       }
-       recipient: {
-              user_id: string; // user_id who will perform the order
-              title: string; // order title - appears in order history
-              description: string; // order desc. (in order history)
-       }
-    }
-    ```
+**JWT payload:**
+```
+{
+    // common/ standard fields
+    iat: number; // issued at - seconds from Epoch
+    iss: string; // issuer
+    exp: number; // expiration
+    sub: "earn"
+    
+   // application fields
+   offer: {
+           id: string; // offer id is decided by you (internal)
+           amount: number; // amount of kin for this offer - price
+   }
+   recipient: {
+          user_id: string; // user_id who will perform the order
+          title: string; // order title - appears in order history
+          description: string; // order desc. (in order history)
+   }
+}
+```
 2.	Call ```Kin.requestPayment``` (see code example below). The Ecosystem Server credits the user account (assuming the app’s account has sufficient funds).
 
-    >**NOTES:** 
-    >* The following snippet is taken from the SDK Sample App, in which the JWT is created and signed by the Android client side for presentation purposes only. Do not use this method in production! In production, the JWT must be signed by the server, with a secure private key. 
-    >* See [BlockchainException](ADDLINK) and [ServiceException](ADDLINK) for possible errors.
+>**NOTES:** 
+>* The following snippet is taken from the SDK Sample App, in which the JWT is created and signed by the Android client side for presentation purposes only. Do not use this method in production! In production, the JWT must be signed by the server, with a secure private key. 
+>* See [BlockchainException](common/src/main/java/com/kin/ecosystem/common/exception/BlockchainException.java) and [ServiceException](common/src/main/java/com/kin/ecosystem/common/exception/ServiceException.java) for possible errors.
 
-    ```
-    try {
-        Kin.requestPayment(offerJwt, new KinCallback<OrderConfirmation>() {
-            @Override
-            public void onResponse(OrderConfirmation orderConfirmation) {
-                // OrderConfirmation will be called once Ecosystem payment transaction to user completed successfully.
+```java
+try {
+    Kin.requestPayment(offerJwt, new KinCallback<OrderConfirmation>() {
+        @Override
+        public void onResponse(OrderConfirmation orderConfirmation) {
+            // OrderConfirmation will be called once Ecosystem payment transaction to user completed successfully.
+            // OrderConfirmation can be kept on digital service side as a receipt proving user received his Kin.
+            System.out.println("Succeed to create native earn.\n jwtConfirmation: " + orderConfirmation.getJwtConfirmation());
+        }
+
+        @Override
+        public void onFailure(KinEcosystemException exception) {
+            System.out.println("Failed - " + exception.getMessage());
+        }
+    });
+} 
+catch (ClientException exception) {
+    exception.printStackTrace();
+}
+```
+    
+    
+<a name="CreateCustomPayToUserOffer"></a>
+### Creating a Custom Pay To User Offer ###
+
+A custom pay to user offer allows your users to unlock unique spend opportunities that you define within your app offered by other users. 
+(Custom offers are created by your app, as opposed to [built-in offers displayed in the Kin Marketplace offer wall](#AddingToMP).) 
+Your app displays the offer, request user approval, and then [requests payment using the Kin payToUser API](#payToUserRequest).
+
+<a name="payToUserRequest"></a>
+### Requesting a Custom Pay To User Offer ###
+
+*To request Pay To User offer:*
+
+1.	Create a JWT that represents a Pay To User offer signed by you, using the header and payload templates below. (See [Building the JWT Token](#BuildJWT) for more details about JWT structure).
+
+**JWT header:**
+```
+{
+    "alg": "ES256", // Hash function
+    "typ": "JWT",
+    "kid": string" // identifier of the keypair that was used to sign the JWT. identifiers and public keys will be provided by signer authority. This enables using multiple private/public key pairs (a list of public keys and their ids need to be provided by signer authority to verifier in advanced)
+}
+```
+
+**JWT payload:**
+```
+{
+    // common fields
+    iat: number; // issued at - seconds from epoch
+    iss: string; // issuer - request origin 'app-id' provided by Kin
+    exp: number; // expiration
+    sub: string; // subject - "pay_to_user"
+
+    offer: {
+        id: string; // offer id - id is decided by kik
+        amount: number; // amount of kin for this offer - price
+    },
+    sender: {
+        user_id: string; // optional: user_id who will perform the order
+        title: string; // offer title - appears in order history
+        description: string; // offer description - appears in order history
+    },
+    recipient: {
+        user_id: string; // user_id who will receive the order
+        title: string; // offer title - appears in order history
+        description: string; // offer description - appears in order history
+    }
+}
+```
+
+2.	Call ```Kin.payToUser(…)```, while passing the JWT you built and a callback function that will receive purchase confirmation.
+
+
+> **NOTES:** 
+> * The following snippet is taken from the SDK Sample App, in which the JWT is created and signed by the Android client side for presentation purposes only. Do not use this method in production! In production, the JWT must be signed by the server, with a secure private key. 
+> * See [BlockchainException](common/src/main/java/com/kin/ecosystem/common/exception/BlockchainException.java) and [ServiceException](common/src/main/java/com/kin/ecosystem/common/exception/ServiceException.java) for possible errors.
+
+```java
+try {
+  Kin.payToUser(offerJwt, new KinCallback<OrderConfirmation>() {
+  @Override public void onResponse(OrderConfirmation orderConfirmation) {
+                // OrderConfirmation will be called once Kin received the payment transaction from user.
                 // OrderConfirmation can be kept on digital service side as a receipt proving user received his Kin.
-                System.out.println("Succeed to create native earn.\n jwtConfirmation: " + orderConfirmation.getJwtConfirmation());
+                
+                // Send confirmation JWT back to the server in order prove that the user
+                // completed the blockchain transaction and purchase can be unlocked for this user.
+                System.out.println("Succeed to create native pay to user.\n jwtConfirmation: " + orderConfirmation.getJwtConfirmation());
             }
-
+                
             @Override
             public void onFailure(KinEcosystemException exception) {
-                System.out.println("Failed - " + exception.getMessage());
+                System.out.println("Failed - " + error.getMessage());
             }
         });
-    } 
-    catch (ClientException exception) {
-        exception.printStackTrace();
-    }
-    ```
+    } catch (ClientException e) {
+        e.printStackTrace();
+  }
+```
+
+3.	Complete the pay to user offer after you receive confirmation from the Kin Server that the funds were transferred successfully.
 
 ## License ##
 
