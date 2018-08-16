@@ -59,7 +59,8 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 		eventLogger.send(OrderHistoryPageViewed.create());
 		getOrderHistoryList();
 		listenToCompletedOrders();
-		blockchainSource.getBalance(new KinCallbackAdapter<Balance>() {});
+		// Trigger to update balance, if someone paid to this user(p2p).
+		blockchainSource.getBalance(null);
 	}
 
 	private void getOrderHistoryList() {
