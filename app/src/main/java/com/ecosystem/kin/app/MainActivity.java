@@ -26,6 +26,7 @@ import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
+import com.kin.ecosystem.common.exception.ServiceException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.common.model.NativeSpendOffer;
 import com.kin.ecosystem.common.model.OrderConfirmation;
@@ -420,7 +421,11 @@ public class MainActivity extends AppCompatActivity {
 
 				@Override
 				public void onFailure(KinEcosystemException exception) {
-					showSnackbar("Failed - " + exception.getMessage(), true);
+					if (exception.getCode() == ServiceException.USER_NOT_FOUND) {
+						showSnackbar("Account not found", true);
+					} else {
+						showSnackbar("Failed - " + exception.getMessage(), true);
+					}
 					enableView(payToUserTextView, true);
 				}
 			};

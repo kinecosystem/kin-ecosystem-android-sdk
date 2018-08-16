@@ -1,20 +1,21 @@
 package com.kin.ecosystem.core.util;
 
 import android.support.annotation.Nullable;
+import com.kin.ecosystem.common.exception.BlockchainException;
+import com.kin.ecosystem.common.exception.ClientException;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
+import com.kin.ecosystem.common.exception.ServiceException;
 import com.kin.ecosystem.core.network.ApiException;
+import com.kin.ecosystem.core.network.model.Error;
 import kin.core.exception.AccountNotActivatedException;
 import kin.core.exception.AccountNotFoundException;
 import kin.core.exception.CreateAccountException;
 import kin.core.exception.InsufficientKinException;
 import kin.core.exception.TransactionFailedException;
-import com.kin.ecosystem.common.exception.BlockchainException;
-import com.kin.ecosystem.common.exception.ClientException;
-import com.kin.ecosystem.common.exception.KinEcosystemException;
-import com.kin.ecosystem.common.exception.ServiceException;
-import com.kin.ecosystem.core.network.model.Error;
 
 public class ErrorUtil {
 
+	private static final String USER_NOT_FOUND_ON_ECOSYSTEM_SERVER = "User not found";
 	private static final String THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR = "The Ecosystem server returned an error. See underlyingError for details";
 	private static final String ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR = "Ecosystem SDK encountered an unexpected error";
 	private static final String BLOCKCHAIN_ENCOUNTERED_AN_UNEXPECTED_ERROR = "Blockchain encountered an unexpected error";
@@ -40,16 +41,23 @@ public class ErrorUtil {
 				case 400:
 				case 401:
 				case 404:
+					if (apiException.getResponseBody() != null && apiException.getResponseBody().getCode() == 4046) {
+						exception = new ServiceException(ServiceException.USER_NOT_FOUND, USER_NOT_FOUND_ON_ECOSYSTEM_SERVER, apiException);
+						break;
+					}
 				case 409:
 				case 500:
-					exception = new ServiceException(ServiceException.SERVICE_ERROR, THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR,
+					exception = new ServiceException(ServiceException.SERVICE_ERROR,
+						THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR,
 						apiException);
 					break;
 				case REQUEST_TIMEOUT_CODE:
-					exception = new ServiceException(ServiceException.TIMEOUT_ERROR, THE_OPERATION_TIMED_OUT, apiException);
+					exception = new ServiceException(ServiceException.TIMEOUT_ERROR, THE_OPERATION_TIMED_OUT,
+						apiException);
 					break;
 				case ClientException.INTERNAL_INCONSISTENCY:
-					exception = new ClientException(ClientException.INTERNAL_INCONSISTENCY, THE_OPERATION_TIMED_OUT, apiException);
+					exception = new ClientException(ClientException.INTERNAL_INCONSISTENCY, THE_OPERATION_TIMED_OUT,
+						apiException);
 					break;
 				default:
 					exception = createUnknownException(apiException);
@@ -60,14 +68,14 @@ public class ErrorUtil {
 	}
 
 	private static KinEcosystemException createUnknownException(@Nullable Throwable throwable) {
-		return new KinEcosystemException(KinEcosystemException.UNKNOWN, ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR, throwable);
+		return new KinEcosystemException(KinEcosystemException.UNKNOWN, ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR,
+			throwable);
 	}
 
 	public static ApiException createOrderTimeoutException() {
 		final String errorTitle = "Time out";
 		final String errorMsg = "order timed out";
-		final int apiCode = REQUEST_TIMEOUT_CODE;
-		ApiException apiException = new ApiException(apiCode, errorTitle);
+		ApiException apiException = new ApiException(REQUEST_TIMEOUT_CODE, errorTitle);
 		apiException.setResponseBody(new Error(errorTitle, errorMsg, ServiceException.TIMEOUT_ERROR));
 		return apiException;
 	}
@@ -75,19 +83,24 @@ public class ErrorUtil {
 	public static BlockchainException getBlockchainException(Exception error) {
 		final BlockchainException exception;
 		if (error instanceof InsufficientKinException) {
-			exception = new BlockchainException(BlockchainException.INSUFFICIENT_KIN, YOU_DO_NOT_HAVE_ENOUGH_KIN, error);
+			exception = new BlockchainException(BlockchainException.INSUFFICIENT_KIN, YOU_DO_NOT_HAVE_ENOUGH_KIN,
+				error);
 		} else if (error instanceof TransactionFailedException) {
-			exception = new BlockchainException(BlockchainException.TRANSACTION_FAILED, THE_TRANSACTION_OPERATION_FAILED, error);
+			exception = new BlockchainException(BlockchainException.TRANSACTION_FAILED,
+				THE_TRANSACTION_OPERATION_FAILED, error);
 		} else if (error instanceof CreateAccountException) {
-			exception = new BlockchainException(BlockchainException.ACCOUNT_CREATION_FAILED, FAILED_TO_CREATE_A_BLOCKCHAIN_WALLET_KEYPAIR,
+			exception = new BlockchainException(BlockchainException.ACCOUNT_CREATION_FAILED,
+				FAILED_TO_CREATE_A_BLOCKCHAIN_WALLET_KEYPAIR,
 				error);
 		} else if (error instanceof AccountNotFoundException) {
-			exception = new BlockchainException(BlockchainException.ACCOUNT_NOT_FOUND, THE_REQUESTED_ACCOUNT_COULD_NOT_BE_FOUND, error);
+			exception = new BlockchainException(BlockchainException.ACCOUNT_NOT_FOUND,
+				THE_REQUESTED_ACCOUNT_COULD_NOT_BE_FOUND, error);
 		} else if (error instanceof AccountNotActivatedException) {
 			exception = new BlockchainException(BlockchainException.ACCOUNT_ACTIVATION_FAILED,
 				FAILED_TO_ACTIVATE_ON_THE_BLOCKCHAIN_NETWORK, error);
 		} else {
-			exception = new BlockchainException(KinEcosystemException.UNKNOWN, BLOCKCHAIN_ENCOUNTERED_AN_UNEXPECTED_ERROR, error);
+			exception = new BlockchainException(KinEcosystemException.UNKNOWN,
+				BLOCKCHAIN_ENCOUNTERED_AN_UNEXPECTED_ERROR, error);
 		}
 
 		return exception;
@@ -104,7 +117,8 @@ public class ErrorUtil {
 				break;
 			case ClientException.INTERNAL_INCONSISTENCY:
 			default:
-				exception = new ClientException(ClientException.INTERNAL_INCONSISTENCY, ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR,
+				exception = new ClientException(ClientException.INTERNAL_INCONSISTENCY,
+					ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR,
 					e);
 		}
 
