@@ -67,8 +67,8 @@ public class JwtUtil {
         return getBasicJWT(appID)
             .setSubject(JWT_SUBJECT_PAY_TO_USER)
             .claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject())
-            .claim(JWT_CLAIM_OBJECT_SENDER_PART, new JWTSenderPart(userID, "Tip to Oren Zakay", "tip on a code review"))
-            .claim(JWT_CLAIM_OBJECT_RECIPIENT_PART, new JWTRecipientPart(recipientUserID, "Tip from someone", "code review"))
+            .claim(JWT_CLAIM_OBJECT_SENDER_PART, new JWTSenderPart(userID, "Tip to someone", "Code review"))
+            .claim(JWT_CLAIM_OBJECT_RECIPIENT_PART, new JWTRecipientPart(recipientUserID, "Tip from someone", "Code review"))
             .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
     }
 

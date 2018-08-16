@@ -12,4 +12,9 @@
     <string name="native_earn">Native Earn</string>
     <string name="kin_marketplace_title">Kin Marketplace</string>
     <string name="pay_to_user">Pay to User</string>
+    <string name="version_name">Version: %s</string>
+    <string name="user_id">User ID: %s</string>
+    <string name="enter_the_recipient_user_id">Enter the recipient user id:</string>
+    <string name="pay">Pay</string>
+    <string name="native_offer_content_activity">Native Offer Content Activity</string>
 </resources>

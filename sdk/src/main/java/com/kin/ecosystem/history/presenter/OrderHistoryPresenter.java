@@ -5,11 +5,14 @@ import android.support.annotation.NonNull;
 import com.google.gson.Gson;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.base.BasePresenter;
+import com.kin.ecosystem.common.KinCallbackAdapter;
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.OrderHistoryItemTapped;
 import com.kin.ecosystem.core.bi.events.OrderHistoryPageViewed;
 import com.kin.ecosystem.core.bi.events.SpendRedeemPageViewed.RedeemTrigger;
+import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.network.model.Coupon;
 import com.kin.ecosystem.core.network.model.Coupon.CouponInfo;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
@@ -26,6 +29,7 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 
 	private static final int NOT_FOUND = -1;
 	private final OrderDataSource orderRepository;
+	private final BlockchainSource blockchainSource;
 	private final EventLogger eventLogger;
 
 	private List<Order> orderHistoryList = new ArrayList<>();
@@ -36,10 +40,12 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 
 	public OrderHistoryPresenter(@NonNull IOrderHistoryView view,
 		@NonNull final OrderDataSource orderRepository,
+		@NonNull final BlockchainSource blockchainSource,
 		@NonNull final EventLogger eventLogger,
 		boolean isFirstSpendOrder) {
 		this.view = view;
 		this.orderRepository = orderRepository;
+		this.blockchainSource = blockchainSource;
 		this.eventLogger = eventLogger;
 		this.isFirstSpendOrder = isFirstSpendOrder;
 		this.gson = new Gson();
@@ -53,6 +59,7 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 		eventLogger.send(OrderHistoryPageViewed.create());
 		getOrderHistoryList();
 		listenToCompletedOrders();
+		blockchainSource.getBalance(new KinCallbackAdapter<Balance>() {});
 	}
 
 	private void getOrderHistoryList() {

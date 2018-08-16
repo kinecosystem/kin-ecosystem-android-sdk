@@ -3,10 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@drawable/background_blue_gradient"
+    android:background="@color/colorPrimary"
     tools:context="com.ecosystem.kin.app.MainActivity">
 
     <ImageView
@@ -15,22 +16,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/kinecosystem_margin_large"
         android:layout_gravity="center"
-        android:src="@drawable/kinecosystem_kin_logo"
+        android:src="@drawable/kin_logo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
-
-    <TextView
-        android:id="@+id/sample_app_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/kinecosystem_block_margin"
-        android:text="@string/kin_sdk_sample_app"
-        android:textColor="@color/kinecosystem_white"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logo"/>
 
 
     <TextView
@@ -47,8 +36,8 @@
         android:maxLines="2"
         android:textColor="@color/kinecosystem_white"
         app:layout_constraintBottom_toTopOf="@+id/launch_marketplace"
-        app:layout_constraintTop_toBottomOf="@+id/sample_app_title"
-        app:layout_constraintVertical_bias="0.25"
+        app:layout_constraintTop_toBottomOf="@+id/logo"
+        app:layout_constraintVertical_bias="0.091"
         tools:text="GASDAGDFGHSDSDGDSFGKJ#$%IHSal;skdl;aksdl;askd;lksdDHASDKGSFDGJHALKHSD"/>
 
 
@@ -93,10 +82,10 @@
         android:layout_marginStart="@dimen/kinecosystem_margin_large"
         android:layout_marginEnd="@dimen/kinecosystem_margin_large"
         android:layout_gravity="bottom"
-        android:background="@drawable/button_bg_blue_rounded"
+        android:background="@drawable/button_bg_white_rounded"
         android:text="@string/kin_marketplace_title"
         android:textAllCaps="false"
-        android:textColor="@color/kinecosystem_white"
+        android:textColor="@color/colorPrimary"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/native_spend_button"
         app:layout_constraintEnd_toEndOf="parent"
@@ -108,8 +97,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/kinecosystem_block_margin"
         android:layout_marginBottom="@dimen/kinecosystem_block_margin"
-        android:layout_marginStart="@dimen/kinecosystem_margin_large"
-        android:layout_marginEnd="@dimen/kinecosystem_margin_large"
+
         android:layout_gravity="bottom"
         android:gravity="center_horizontal"
         android:text="@string/native_spend_buy_a_sticker"
@@ -125,8 +113,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/kinecosystem_block_margin"
-        android:layout_marginStart="@dimen/kinecosystem_margin_large"
-        android:layout_marginEnd="@dimen/kinecosystem_margin_large"
         android:layout_gravity="bottom"
         android:gravity="center_horizontal"
         android:text="@string/native_earn"
@@ -142,16 +128,49 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/kinecosystem_margin_large"
-        android:layout_marginStart="@dimen/kinecosystem_margin_large"
-        android:layout_marginEnd="@dimen/kinecosystem_margin_large"
         android:layout_gravity="bottom"
         android:gravity="center_horizontal"
         android:text="@string/pay_to_user"
         android:textAllCaps="false"
         android:textColor="@color/kinecosystem_white"
         android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/user_id_textview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/sample_app_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/kinecosystem_main_margin"
+        android:layout_marginRight="@dimen/kinecosystem_margin_large"
+        android:layout_gravity="bottom"
+        android:gravity="center_horizontal"
+        android:text="Version:"
+        android:textAllCaps="false"
+        android:textColor="@color/kinecosystem_white"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/user_id_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/kinecosystem_main_margin"
+        android:layout_marginLeft="@dimen/kinecosystem_margin_large"
+        android:layout_gravity="bottom"
+        android:ellipsize="marquee"
+        android:gravity="center_horizontal"
+        android:maxLength="17"
+        android:singleLine="true"
+        android:text="User ID:"
+        android:textAllCaps="false"
+        android:textColor="@color/kinecosystem_white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

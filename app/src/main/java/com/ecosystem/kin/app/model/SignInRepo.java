@@ -5,8 +5,8 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import com.ecosystem.kin.app.BuildConfig;
 import com.ecosystem.kin.app.JwtUtil;
-import java.util.UUID;
 import com.kin.ecosystem.common.model.WhitelistData;
+import java.util.UUID;
 
 public class SignInRepo {
 

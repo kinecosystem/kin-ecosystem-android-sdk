@@ -1,10 +1,15 @@
 package com.ecosystem.kin.app;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -29,8 +34,8 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
 
 	private static final String TAG = "Ecosystem - SampleApp";
-	private static final String PLAYGROUND_PAY_TO_USER_ID = "faae367e-fcac-46b9-83cd-99ef9d544dc9";
 
+	private ConstraintLayout containerLayout;
 	private TextView balanceView;
 	private TextView nativeSpendTextView;
 	private TextView nativeEarnTextView;
@@ -44,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 	private Observer<NativeOfferClickEvent> nativeSpendOfferClickedObserver;
 	private Observer<Balance> balanceObserver;
 
+	private String userID;
 	private String publicAddress;
 
 	private int randomID = new Random().nextInt((9999 - 1) + 1) + 1;
@@ -59,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		userID  = SignInRepo.getUserId(getApplicationContext());
+		containerLayout = findViewById(R.id.container);
 		balanceView = findViewById(R.id.get_balance);
 		nativeSpendTextView = findViewById(R.id.native_spend_button);
 		nativeEarnTextView = findViewById(R.id.native_earn_button);
@@ -71,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 				if (publicAddress == null) {
 					getPublicAddress();
 				} else {
-					copyToClipboard(publicAddress);
+					copyToClipboard(publicAddress, "Public address");
 				}
 			}
 		});
@@ -85,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 		nativeSpendTextView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				showToast("Native spend flow started");
+				showSnackbar("Native spend flow started", false);
 				enableView(v, false);
 				createNativeSpendOffer();
 			}
@@ -93,17 +101,37 @@ public class MainActivity extends AppCompatActivity {
 		nativeEarnTextView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				showToast("Native earn flow started");
+				showSnackbar("Native earn flow started", false);
 				enableView(v, false);
 				createNativeEarnOffer();
 			}
 		});
 		payToUserTextView.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View v) {
-				showToast("Pay to user flow started");
+			public void onClick(final View v) {
 				enableView(v, false);
-				createPayToUserOffer();
+				PayToUserDialog dialog = new PayToUserDialog(v.getContext());
+				dialog.setOnDismissListener(new OnDismissListener() {
+					@Override
+					public void onDismiss(DialogInterface dialog) {
+						PayToUserDialog myDialog = (PayToUserDialog)dialog;
+						if(myDialog.getUserId() != null) {
+							showSnackbar("Pay to user flow started", false);
+							createPayToUserOffer(myDialog.getUserId());
+						} else {
+							enableView(v, true);
+						}
+					}
+				});
+				dialog.show();
+			}
+		});
+
+		((TextView)findViewById(R.id.user_id_textview)).setText(getString(R.string.user_id, userID));
+		findViewById(R.id.user_id_textview).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				copyToClipboard(userID, "User ID");
 			}
 		});
 		findViewById(R.id.launch_marketplace).setOnClickListener(new OnClickListener() {
@@ -113,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
 				openKinMarketplace();
 			}
 		});
-
+		((TextView)findViewById(R.id.sample_app_version)).setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
 		addNativeSpendOffer(nativeSpendOffer, getDismissOnTap());
 		addNativeOfferClickedObserver();
 	}
@@ -139,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 			balanceObserver = new Observer<Balance>() {
 				@Override
 				public void onChanged(Balance value) {
-					showToast("Balance - " + value.getAmount().intValue());
+					Log.d(TAG, "Balance - " + value.getAmount().intValue());
 				}
 			};
 
@@ -165,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
 	private void removeNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer) {
 		try {
 			if(Kin.removeNativeOffer(nativeSpendOffer)) {
-				showToast("Native offer removed");
+				showSnackbar("Native offer removed", false);
 			}
 		} catch (ClientException e) {
 			e.printStackTrace();
@@ -176,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
 		try {
 			Kin.addNativeOfferClickedObserver(getNativeOfferClickedObserver());
 		} catch (ClientException e) {
-			showToast("Could not add native offer callback");
+			showSnackbar("Could not add native offer callback", true);
 		}
 	}
 
@@ -215,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
 	private void getPublicAddress() {
 		try {
 			publicAddress = Kin.getPublicAddress();
-			int blueColor = ContextCompat.getColor(getApplicationContext(), R.color.sample_app_blue);
+			int blueColor = ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark);
 			publicAddressTextArea.getBackground().setColorFilter(blueColor, Mode.SRC_ATOP);
 			showPublicAddressTextView.setText(R.string.copy_public_address);
 			publicAddressTextArea.setText(publicAddress);
@@ -225,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
 
 	}
 
-	private void copyToClipboard(CharSequence textToCopy) {
+	private void copyToClipboard(CharSequence textToCopy, String paramName) {
 		int sdk = android.os.Build.VERSION.SDK_INT;
 		if (sdk < android.os.Build.VERSION_CODES.HONEYCOMB) {
 			android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(
@@ -237,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
 			android.content.ClipData clip = android.content.ClipData.newPlainText("copied text", textToCopy);
 			clipboard.setPrimaryClip(clip);
 		}
-		Toast.makeText(this, "Copied to your clipboard", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, paramName + " copied to your clipboard", Toast.LENGTH_SHORT).show();
 	}
 
 	private void getBalance() {
@@ -287,7 +315,6 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void createNativeSpendOffer() {
-		String userID = SignInRepo.getUserId(getApplicationContext());
 		String offerJwt = JwtUtil.generateSpendOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID);
 		Log.d(TAG, "createNativeSpendOffer: " + offerJwt);
 		try {
@@ -298,7 +325,6 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void createNativeEarnOffer() {
-		String userID = SignInRepo.getUserId(getApplicationContext());
 		String offerJwt = JwtUtil.generateEarnOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID);
 		try {
 			Kin.requestPayment(offerJwt, getNativeEarnOrderConfirmationCallback());
@@ -307,9 +333,8 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	private void createPayToUserOffer() {
-		String userID = SignInRepo.getUserId(getApplicationContext());
-		String offerJwt = JwtUtil.generatePayToUserOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID, PLAYGROUND_PAY_TO_USER_ID);
+	private void createPayToUserOffer(String recipientUserID) {
+		String offerJwt = JwtUtil.generatePayToUserOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID, recipientUserID);
 		try {
 			Kin.payToUser(offerJwt, getNativePayToUserOrderConfirmationCallback());
 		} catch (ClientException e) {
@@ -326,12 +351,12 @@ public class MainActivity extends AppCompatActivity {
 				Kin.getOrderConfirmation(offerID, new KinCallback<OrderConfirmation>() {
 					@Override
 					public void onResponse(OrderConfirmation orderConfirmation) {
-						showToast("Offer: " + offerID + " Status is: " + orderConfirmation.getStatus());
+						showSnackbar("Offer: " + offerID + " Status is: " + orderConfirmation.getStatus(), false);
 					}
 
 					@Override
 					public void onFailure(KinEcosystemException exception) {
-						showToast("Failed to get OfferId: " + offerID + " status");
+						showSnackbar("Failed to get OfferId: " + offerID + " status", true);
 					}
 				});
 			} catch (ClientException e) {
@@ -346,14 +371,14 @@ public class MainActivity extends AppCompatActivity {
 				@Override
 				public void onResponse(OrderConfirmation orderConfirmation) {
 					getBalance();
-					showToast("Succeed to create native spend");
+					showSnackbar("Succeed to create native spend", false);
 					Log.d(TAG, "Jwt confirmation: \n" + orderConfirmation.getJwtConfirmation());
 					enableView(nativeSpendTextView, true);
 				}
 
 				@Override
 				public void onFailure(KinEcosystemException exception) {
-					showToast("Failed - " + exception.getMessage());
+					showSnackbar("Failed - " + exception.getMessage(), true);
 					enableView(nativeSpendTextView, true);
 				}
 			};
@@ -367,14 +392,14 @@ public class MainActivity extends AppCompatActivity {
 				@Override
 				public void onResponse(OrderConfirmation orderConfirmation) {
 					getBalance();
-					showToast("Succeed to create native earn");
+					showSnackbar("Succeed to create native earn", false);
 					Log.d(TAG, "Jwt confirmation: \n" + orderConfirmation.getJwtConfirmation());
 					enableView(nativeEarnTextView, true);
 				}
 
 				@Override
 				public void onFailure(KinEcosystemException exception) {
-					showToast("Failed - " + exception.getMessage());
+					showSnackbar("Failed - " + exception.getMessage(), true);
 					enableView(nativeEarnTextView, true);
 				}
 			};
@@ -388,14 +413,14 @@ public class MainActivity extends AppCompatActivity {
 				@Override
 				public void onResponse(OrderConfirmation orderConfirmation) {
 					getBalance();
-					showToast("Succeed to create native earn");
+					showSnackbar("Succeed to pay to user", false);
 					Log.d(TAG, "Jwt confirmation: \n" + orderConfirmation.getJwtConfirmation());
 					enableView(payToUserTextView, true);
 				}
 
 				@Override
 				public void onFailure(KinEcosystemException exception) {
-					showToast("Failed - " + exception.getMessage());
+					showSnackbar("Failed - " + exception.getMessage(), true);
 					enableView(payToUserTextView, true);
 				}
 			};
@@ -413,10 +438,21 @@ public class MainActivity extends AppCompatActivity {
 		Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 	}
 
+	private void showSnackbar(String msg, boolean isError) {
+		Snackbar snackbar = Snackbar.make(containerLayout, msg, isError ? Snackbar.LENGTH_LONG : Snackbar.LENGTH_SHORT);
+		if(isError) {
+			((TextView)snackbar.getView()
+				.findViewById(android.support.design.R.id.snackbar_text))
+				.setTextColor(Color.RED);
+		}
+		snackbar.show();
+	}
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		nativeSpendOrderConfirmationCallback = null;
+		nativeEarnOrderConfirmationCallback = null;
 		payToUserOrderConfirmationCallback = null;
 		try {
 			Kin.removeNativeOffer(nativeSpendOffer);
