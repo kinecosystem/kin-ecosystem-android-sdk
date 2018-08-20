@@ -280,7 +280,7 @@ public class Kin {
 	 * This call might take time, due to transaction validation on the blockchain network.
 	 *
 	 * @param offerJwt Represents the offer in a JWT manner.
-	 * @param callback {@link OrderConfirmation} The result will be a failure or a succeed with a jwt confirmation.
+	 * @param callback {@link OrderConfirmation} The result will be a failure or a success with a jwt confirmation.
 	 */
 	public static void purchase(String offerJwt, @Nullable KinCallback<OrderConfirmation> callback)
 		throws ClientException {
@@ -307,7 +307,7 @@ public class Kin {
 	 * This call might take time, due to transaction validation on the blockchain network.
 	 *
 	 * @param offerJwt Represents a 'Pay to user' offer in a JWT manner.
-	 * @param callback {@link OrderConfirmation} The result will be a failure or a succeed with a jwt confirmation.
+	 * @param callback {@link OrderConfirmation} The result will be a failure or a success with a jwt confirmation.
 	 */
 	public static void payToUser(String offerJwt, @Nullable KinCallback<OrderConfirmation> callback)
 		throws ClientException {

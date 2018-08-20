@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		userID  = SignInRepo.getUserId(getApplicationContext());
+		userID = SignInRepo.getUserId(getApplicationContext());
 		containerLayout = findViewById(R.id.container);
 		balanceView = findViewById(R.id.get_balance);
 		nativeSpendTextView = findViewById(R.id.native_spend_button);
@@ -115,8 +115,8 @@ public class MainActivity extends AppCompatActivity {
 				dialog.setOnDismissListener(new OnDismissListener() {
 					@Override
 					public void onDismiss(DialogInterface dialog) {
-						PayToUserDialog myDialog = (PayToUserDialog)dialog;
-						if(myDialog.getUserId() != null) {
+						PayToUserDialog myDialog = (PayToUserDialog) dialog;
+						if (myDialog.getUserId() != null) {
 							showSnackbar("Pay to user flow started", false);
 							createPayToUserOffer(myDialog.getUserId());
 						} else {
@@ -128,8 +128,9 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 
-		((TextView)findViewById(R.id.user_id_textview)).setText(getString(R.string.user_id, userID));
-		findViewById(R.id.user_id_textview).setOnClickListener(new OnClickListener() {
+		final TextView userIdTextView = findViewById(R.id.user_id_textview);
+		userIdTextView.setText(getString(R.string.user_id, userID));
+		userIdTextView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				copyToClipboard(userID, "User ID");
@@ -142,7 +143,8 @@ public class MainActivity extends AppCompatActivity {
 				openKinMarketplace();
 			}
 		});
-		((TextView)findViewById(R.id.sample_app_version)).setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
+		((TextView) findViewById(R.id.sample_app_version))
+			.setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
 		addNativeSpendOffer(nativeSpendOffer, getDismissOnTap());
 		addNativeOfferClickedObserver();
 	}
@@ -193,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
 	// Use this method to remove the nativeSpendOffer you added
 	private void removeNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer) {
 		try {
-			if(Kin.removeNativeOffer(nativeSpendOffer)) {
+			if (Kin.removeNativeOffer(nativeSpendOffer)) {
 				showSnackbar("Native offer removed", false);
 			}
 		} catch (ClientException e) {
@@ -215,13 +217,14 @@ public class MainActivity extends AppCompatActivity {
 				@Override
 				public void onChanged(NativeOfferClickEvent nativeOfferClickEvent) {
 					NativeSpendOffer nativeSpendOffer = (NativeSpendOffer) nativeOfferClickEvent.getNativeOffer();
-					if(nativeOfferClickEvent.isDismissOnTap()){
+					if (nativeOfferClickEvent.isDismissOnTap()) {
 						new AlertDialog.Builder(MainActivity.this)
-							.setTitle("Native Offer (" + nativeSpendOffer.getTitle() +")")
+							.setTitle("Native Offer (" + nativeSpendOffer.getTitle() + ")")
 							.setMessage("You tapped a native offer and the observer was notified.")
 							.show();
 					} else {
-						Intent nativeOfferIntent = NativeOfferActivity.createIntent(MainActivity.this, nativeSpendOffer.getTitle());
+						Intent nativeOfferIntent = NativeOfferActivity
+							.createIntent(MainActivity.this, nativeSpendOffer.getTitle());
 						startActivity(nativeOfferIntent);
 					}
 				}
@@ -232,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private void addNativeSpendOffer(@NonNull NativeSpendOffer nativeSpendOffer, boolean dismissMarketPlaceOnTap) {
 		try {
-			if(Kin.addNativeOffer(nativeSpendOffer, dismissMarketPlaceOnTap)) {
+			if (Kin.addNativeOffer(nativeSpendOffer, dismissMarketPlaceOnTap)) {
 				showToast("Native offer added");
 			}
 		} catch (ClientException e) {
@@ -445,8 +448,8 @@ public class MainActivity extends AppCompatActivity {
 
 	private void showSnackbar(String msg, boolean isError) {
 		Snackbar snackbar = Snackbar.make(containerLayout, msg, isError ? Snackbar.LENGTH_LONG : Snackbar.LENGTH_SHORT);
-		if(isError) {
-			((TextView)snackbar.getView()
+		if (isError) {
+			((TextView) snackbar.getView()
 				.findViewById(android.support.design.R.id.snackbar_text))
 				.setTextColor(Color.RED);
 		}
