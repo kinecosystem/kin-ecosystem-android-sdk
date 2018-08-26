@@ -101,7 +101,6 @@ public class AccountManagerImpl implements AccountManager {
 		}
 	}
 
-	@VisibleForTesting
 	private void setAccountState(@AccountState final int accountState) {
 		if (isValidState(this.accountState.getValue(), accountState)) {
 			if (accountState != ERROR) {
