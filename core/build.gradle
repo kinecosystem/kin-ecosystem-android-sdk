@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply from: '../dependencies.gradle'
 
 android {
@@ -10,19 +11,21 @@ android {
         versionCode 1
         versionName "${KIN_ECOSYSTEM_CORE_VERSION_NAME}"
     }
+
+    sourceSets {
+        test.java.srcDirs += 'src/test/kotlin'
+    }
 }
 
 dependencies {
 
     implementation project(':common')
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     api devDependencies.kinCore
     implementation devDependencies.okhttp3
     implementation devDependencies.loginInterceptor3
 
     testImplementation project(':test-base')
-    testImplementation testingDependencies.junit
-    testImplementation testingDependencies.mockito
-    testImplementation testingDependencies.robolectric
+    testCompile testingDependencies.mockitoKotlin
+    testCompile testingDependencies.robolectric
 }

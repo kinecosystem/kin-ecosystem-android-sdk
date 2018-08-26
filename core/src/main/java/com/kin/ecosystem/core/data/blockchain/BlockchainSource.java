@@ -82,6 +82,12 @@ public interface BlockchainSource {
      */
     void removePaymentObserver(Observer<Payment> observer);
 
+    /**
+     * Create trustline polling call, so it will try few time before failure.
+     * @param callback
+     */
+    void createTrustLine(@NonNull final KinCallback<Void> callback);
+
     interface Local {
 
         int getBalance();

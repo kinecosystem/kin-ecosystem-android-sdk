@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply from: '../dependencies.gradle'
 
 android {
@@ -15,5 +16,7 @@ android {
 
 dependencies {
     implementation project(':core')
-    implementation testingDependencies.junit
+    compile testingDependencies.kotlin
+    compile testingDependencies.junit
+
 }

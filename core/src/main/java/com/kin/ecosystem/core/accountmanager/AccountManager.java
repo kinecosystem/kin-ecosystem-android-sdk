@@ -25,7 +25,7 @@ public interface AccountManager {
 
 	}
 
-	void start(@NonNull final KinAccount kinAccount);
+	void start();
 
 	void retry();
 
