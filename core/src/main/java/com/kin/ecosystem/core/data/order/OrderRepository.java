@@ -111,7 +111,7 @@ public class OrderRepository implements OrderDataSource {
 	}
 
 	@Override
-	public void getOrder(@NonNull String orderID,@Nullable final KinCallback<Order> callback) {
+	public void getOrder(@NonNull String orderID, @Nullable final KinCallback<Order> callback) {
 		remoteData.getOrder(orderID, new Callback<Order, ApiException>() {
 			@Override
 			public void onResponse(Order order) {
@@ -121,7 +121,7 @@ public class OrderRepository implements OrderDataSource {
 				if (!hasMorePendingOffers()) {
 					removeCachedOpenOrderByID(order.getOrderId());
 				}
-				if(callback != null) {
+				if (callback != null) {
 					callback.onResponse(order);
 				}
 			}
@@ -129,7 +129,7 @@ public class OrderRepository implements OrderDataSource {
 			@Override
 			public void onFailure(ApiException e) {
 				decrementPendingOrdersCount();
-				if(callback != null) {
+				if (callback != null) {
 					callback.onFailure(ErrorUtil.fromApiException(e));
 				}
 			}
@@ -248,7 +248,10 @@ public class OrderRepository implements OrderDataSource {
 	private void sendSpendOrderCompleted(Order order) {
 		if (order.getOfferType() == OfferType.SPEND) {
 			if (order.getStatus() == Status.COMPLETED) {
-				eventLogger.send(SpendOrderCompleted.create(order.getOfferId(), order.getOrderId(), false));
+				double amount = (double) order.getAmount();
+				eventLogger.send(SpendOrderCompleted
+					.create(order.getOfferId(), order.getOrderId(), false,
+						SpendOrderCompleted.Origin.MARKETPLACE, amount));
 			} else {
 				String reason = "Timed out";
 				if (order.getError() != null) {
@@ -324,11 +327,13 @@ public class OrderRepository implements OrderDataSource {
 				public void onOrderConfirmed(String confirmationJwt, Order order) {
 					String offerID = "null";
 					String orderId = "null";
+					double amount = -1;
 					if (order != null) {
 						offerID = order.getOfferId();
 						orderId = order.getOrderId();
+						amount = (double) order.getAmount();
 					}
-					eventLogger.send(SpendOrderCompleted.create(offerID, orderId, true));
+					eventLogger.send(SpendOrderCompleted.create(offerID, orderId,true, SpendOrderCompleted.Origin.EXTERNAL, amount));
 
 					if (callback != null) {
 						callback.onResponse(createOrderConfirmation(confirmationJwt));
