@@ -16,7 +16,7 @@ public class Payment {
 	public static final int EARN = 0x00000001;
 	public static final int SPEND = 0x00000002;
 
-	@IntDef({EARN, SPEND})
+	@IntDef({UNKNOWN, EARN, SPEND})
 	@Retention(RetentionPolicy.SOURCE)
 	public @interface Type {
 
@@ -63,12 +63,12 @@ public class Payment {
 		this.type = type;
 	}
 
-	public Payment(String orderID, boolean isSucceed, Exception error) {
+	public Payment(String orderID, boolean isSucceed, Exception exception) {
 		this.orderID = orderID;
 		this.transactionID = null;
 		this.amount = null;
 		this.isSucceed = isSucceed;
-		this.exception = error;
+		this.exception = exception;
 	}
 
 	public String getOrderID() {

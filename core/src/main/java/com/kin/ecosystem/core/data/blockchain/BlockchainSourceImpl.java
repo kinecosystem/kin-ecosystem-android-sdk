@@ -295,8 +295,9 @@ public class BlockchainSourceImpl implements BlockchainSource {
 					final String orderID = extractOrderId(data.memo());
 					Logger.log(new Log().withTag(TAG).put("startPaymentListener onEvent: the orderId", orderID)
 						.put("with memo", data.memo()));
-					if (orderID != null) {
-						completedPayment.postValue(toPaymentObj(orderID, data));
+					final String accountPublicAddress = getPublicAddress();
+					if (orderID != null && accountPublicAddress != null) {
+						completedPayment.postValue(PaymentConverter.toPayment(data, orderID, accountPublicAddress));
 						Logger.log(new Log().withTag(TAG).put("completedPayment order id", orderID));
 					}
 					// UpdateBalance if there is no balance sse open connection.
@@ -311,11 +312,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 					}
 				}
 			});
-	}
-
-	private Payment toPaymentObj(final String orderID, PaymentInfo data) {
-		boolean isEarn = data.destinationPublicKey().equals(getPublicAddress());
-		return new Payment(orderID, data.hash().id(), data.amount(), isEarn ? Payment.EARN : Payment.SPEND);
 	}
 
 	@Override
