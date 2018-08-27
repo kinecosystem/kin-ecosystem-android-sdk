@@ -193,6 +193,7 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 				assertFalse(value.isSucceed());
 				assertEquals(orderID, value.getOrderID());
 				assertEquals(exception, value.getException());
+				assertEquals(Payment.UNKNOWN, value.getType());
 			}
 		});
 

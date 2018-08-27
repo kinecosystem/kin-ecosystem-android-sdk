@@ -6,18 +6,20 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import com.kin.ecosystem.common.KinCallback;
-import com.kin.ecosystem.common.exception.BlockchainException;
-import com.kin.ecosystem.core.Log;
-import com.kin.ecosystem.core.bi.events.KinBalanceUpdated;
-import com.kin.ecosystem.core.Logger;
+import com.kin.ecosystem.common.KinCallbackAdapter;
 import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
-import com.kin.ecosystem.common.KinCallbackAdapter;
+import com.kin.ecosystem.common.exception.BlockchainException;
+import com.kin.ecosystem.common.model.Balance;
+import com.kin.ecosystem.core.Log;
+import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.bi.EventLogger;
+import com.kin.ecosystem.core.bi.events.KinBalanceUpdated;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainFailed;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainSubmitted;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainSucceeded;
-import com.kin.ecosystem.common.model.Balance;
+import com.kin.ecosystem.core.util.ErrorUtil;
+import com.kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
 import java.math.BigDecimal;
 import kin.core.EventListener;
 import kin.core.KinAccount;
@@ -27,8 +29,6 @@ import kin.core.PaymentInfo;
 import kin.core.ResultCallback;
 import kin.core.TransactionId;
 import kin.core.exception.CreateAccountException;
-import com.kin.ecosystem.core.util.ErrorUtil;
-import com.kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
 
 public class BlockchainSourceImpl implements BlockchainSource {
 
@@ -67,7 +67,8 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	private static final int ORDER_ID_INDEX = 2;
 	private static final int MEMO_SPLIT_LENGTH = 3;
 
-	private BlockchainSourceImpl(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient, @NonNull BlockchainSource.Local local)
+	private BlockchainSourceImpl(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient,
+		@NonNull BlockchainSource.Local local)
 		throws BlockchainException {
 		this.eventLogger = eventLogger;
 		this.kinClient = kinClient;
@@ -76,7 +77,8 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		initBalance();
 	}
 
-	public static void init(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient, @NonNull BlockchainSource.Local local)
+	public static void init(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient,
+		@NonNull BlockchainSource.Local local)
 		throws BlockchainException {
 		if (instance == null) {
 			synchronized (BlockchainSourceImpl.class) {
@@ -290,11 +292,12 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			.addPaymentListener(new EventListener<PaymentInfo>() {
 				@Override
 				public void onEvent(PaymentInfo data) {
-					String orderID = extractOrderId(data.memo());
+					final String orderID = extractOrderId(data.memo());
 					Logger.log(new Log().withTag(TAG).put("startPaymentListener onEvent: the orderId", orderID)
 						.put("with memo", data.memo()));
-					if (orderID != null) {
-						completedPayment.postValue(new Payment(orderID, data.hash().id(), data.amount()));
+					final String accountPublicAddress = getPublicAddress();
+					if (orderID != null && accountPublicAddress != null) {
+						completedPayment.postValue(PaymentConverter.toPayment(data, orderID, accountPublicAddress));
 						Logger.log(new Log().withTag(TAG).put("completedPayment order id", orderID));
 					}
 					// UpdateBalance if there is no balance sse open connection.
