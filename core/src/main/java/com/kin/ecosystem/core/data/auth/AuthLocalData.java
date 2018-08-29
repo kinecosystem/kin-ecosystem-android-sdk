@@ -92,24 +92,8 @@ public class AuthLocalData implements AuthDataSource.Local {
 	}
 
 	@Override
-	public void getAppId(@NonNull final Callback<String, Void> callback) {
-		final Runnable command = new Runnable() {
-			@Override
-			public void run() {
-				final String appID = signInSharedPreferences.getString(APP_ID_KEY, null);
-				executorsUtil.mainThread().execute(new Runnable() {
-					@Override
-					public void run() {
-						if (appID != null) {
-							callback.onResponse(appID);
-						} else {
-							callback.onFailure(null);
-						}
-					}
-				});
-			}
-		};
-		executorsUtil.diskIO().execute(command);
+	public String getAppId() {
+		return signInSharedPreferences.getString(APP_ID_KEY, null);
 	}
 
 	@Override
