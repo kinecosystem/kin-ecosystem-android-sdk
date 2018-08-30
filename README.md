@@ -537,12 +537,11 @@ catch (ClientException exception) {
 }
 ```
     
-    
-<a name="CreateCustomPayToUserOffer"></a>
-### Creating a Custom Pay To User Offer ###
 
-A custom pay to user offer allows your users to unlock unique spend opportunities that you define within your app offered by other users. 
-(Custom offers are created by your app, as opposed to [built-in offers displayed in the Kin Marketplace offer wall](#AddingToMP).) 
+### Creating a Pay To User Offer ###
+
+A pay to user offer allows user generated offers with which other users can interact.
+(Offers are created by your app, as opposed to [built-in offers displayed in the Kin Marketplace offer wall](#AddingToMP).)
 Your app displays the offer, request user approval, and then [requests payment using the Kin payToUser API](#payToUserRequest).
 
 <a name="payToUserRequest"></a>

@@ -59,8 +59,6 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 		eventLogger.send(OrderHistoryPageViewed.create());
 		getOrderHistoryList();
 		listenToCompletedOrders();
-		// Trigger to update balance, if someone paid to this user(p2p).
-		blockchainSource.getBalance(null);
 	}
 
 	private void getOrderHistoryList() {

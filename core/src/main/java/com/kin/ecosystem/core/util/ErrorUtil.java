@@ -15,6 +15,7 @@ import kin.core.exception.TransactionFailedException;
 
 public class ErrorUtil {
 
+	// Error messages
 	private static final String USER_NOT_FOUND_ON_ECOSYSTEM_SERVER = "User not found";
 	private static final String THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR = "The Ecosystem server returned an error. See underlyingError for details";
 	private static final String ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR = "Ecosystem SDK encountered an unexpected error";
@@ -29,7 +30,16 @@ public class ErrorUtil {
 	private static final String BAD_OR_MISSING_PARAMETERS = "Bad or missing parameters";
 
 
-	private static final int REQUEST_TIMEOUT_CODE = 408;
+	// Server Error codes
+	public static final int ERROR_CODE_BAD_REQUEST = 400;
+	public static final int ERROR_CODE_UNAUTHORIZED = 401;
+	public static final int ERROR_CODE_NOT_FOUND = 404;
+	public static final int ERROR_CODE_REQUEST_TIMEOUT = 408;
+	public static final int ERROR_CODE_CONFLICT = 409;
+	public static final int ERROR_CODE_INTERNAL_SERVER_ERROR = 500;
+
+	public static final int ERROR_CODE_USER_NOT_FOUND = 4046;
+	public static final int ERROR_CODE_EXTERNAL_ORDER_ALREADY_COMPLETED = 4091;
 
 	public static KinEcosystemException fromApiException(ApiException apiException) {
 		KinEcosystemException exception;
@@ -38,20 +48,20 @@ public class ErrorUtil {
 		} else {
 			final int apiCode = apiException.getCode();
 			switch (apiCode) {
-				case 400:
-				case 401:
-				case 404:
-					if (apiException.getResponseBody() != null && apiException.getResponseBody().getCode() == 4046) {
+				case ERROR_CODE_BAD_REQUEST:
+				case ERROR_CODE_UNAUTHORIZED:
+				case ERROR_CODE_NOT_FOUND:
+					if (apiException.getResponseBody() != null && apiException.getResponseBody().getCode() == ERROR_CODE_USER_NOT_FOUND) {
 						exception = new ServiceException(ServiceException.USER_NOT_FOUND, USER_NOT_FOUND_ON_ECOSYSTEM_SERVER, apiException);
 						break;
 					}
-				case 409:
-				case 500:
+				case ERROR_CODE_CONFLICT:
+				case ERROR_CODE_INTERNAL_SERVER_ERROR:
 					exception = new ServiceException(ServiceException.SERVICE_ERROR,
 						THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR,
 						apiException);
 					break;
-				case REQUEST_TIMEOUT_CODE:
+				case ERROR_CODE_REQUEST_TIMEOUT:
 					exception = new ServiceException(ServiceException.TIMEOUT_ERROR, THE_OPERATION_TIMED_OUT,
 						apiException);
 					break;
@@ -75,7 +85,7 @@ public class ErrorUtil {
 	public static ApiException createOrderTimeoutException() {
 		final String errorTitle = "Time out";
 		final String errorMsg = "order timed out";
-		ApiException apiException = new ApiException(REQUEST_TIMEOUT_CODE, errorTitle);
+		ApiException apiException = new ApiException(ERROR_CODE_REQUEST_TIMEOUT, errorTitle);
 		apiException.setResponseBody(new Error(errorTitle, errorMsg, ServiceException.TIMEOUT_ERROR));
 		return apiException;
 	}

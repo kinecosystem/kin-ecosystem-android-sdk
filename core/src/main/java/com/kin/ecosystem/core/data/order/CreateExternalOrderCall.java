@@ -128,7 +128,8 @@ class CreateExternalOrderCall extends Thread {
 		if (openOrder != null && openOrder.getOfferType() != null) {
 			switch (openOrder.getOfferType()) {
 				case SPEND:
-					eventLogger.send(SpendOrderCompletionSubmitted.create(openOrder.getOfferId(), openOrder.getId(), true));
+					eventLogger
+						.send(SpendOrderCompletionSubmitted.create(openOrder.getOfferId(), openOrder.getId(), true));
 					break;
 				case EARN:
 					//TODO add event
@@ -139,7 +140,7 @@ class CreateExternalOrderCall extends Thread {
 		}
 	}
 
-	private void sendOrderCreationFailedEvent(final OpenOrder openOrder,ApiException exception) {
+	private void sendOrderCreationFailedEvent(final OpenOrder openOrder, ApiException exception) {
 		if (openOrder != null && openOrder.getOfferType() != null) {
 			switch (openOrder.getOfferType()) {
 				case SPEND:
@@ -182,7 +183,8 @@ class CreateExternalOrderCall extends Thread {
 	}
 
 	private boolean isOrderConflictError(ApiException e) {
-		return e.getCode() == 409 && e.getResponseBody().getCode() == 4091;
+		return e.getCode() == ErrorUtil.ERROR_CODE_CONFLICT
+			&& e.getResponseBody().getCode() == ErrorUtil.ERROR_CODE_EXTERNAL_ORDER_ALREADY_COMPLETED;
 	}
 
 	private boolean isPaymentOrderEquals(Payment payment, String orderId) {
