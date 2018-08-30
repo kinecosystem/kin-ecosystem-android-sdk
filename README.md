@@ -537,6 +537,10 @@ Once the user has completed the task associated with the Earn offer, you request
     }
     ```
 
+
+## Common Errors ##
+The Ecosystem API's can response with few types of error, [learn more here](docs/COMMON_ERRORS.md)
+
 ## License ##
 
 The ```kin-ecosystem-android-sdk``` library is licensed under the MIT license.
