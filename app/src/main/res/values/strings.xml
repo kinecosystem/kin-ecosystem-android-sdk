@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Kin Ecosystem - Sample App</string>
 
-    <string name="get_balance">Get Balance:</string>
+    <string name="get_balance">Get Balance</string>
     <string name="get_balance_d">Get Balance: %d</string>
     <string name="failed_to_get_balance">Failed to get balance, try again</string>
     <string name="kin_sdk_sample_app">Kin SDK Sample App</string>
@@ -11,4 +11,10 @@
     <string name="copy_public_address">Copy Public Address</string>
     <string name="native_earn">Native Earn</string>
     <string name="kin_marketplace_title">Kin Marketplace</string>
+    <string name="pay_to_user">Pay to User</string>
+    <string name="version_name">Version: %s</string>
+    <string name="user_id">User ID: %s</string>
+    <string name="enter_the_recipient_user_id">Enter the recipient user id:</string>
+    <string name="pay">Pay</string>
+    <string name="native_offer_content_activity">Native Offer Content Activity</string>
 </resources>

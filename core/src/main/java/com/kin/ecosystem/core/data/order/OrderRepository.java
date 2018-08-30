@@ -216,7 +216,7 @@ public class OrderRepository implements OrderDataSource {
 	}
 
 	private void sendEarnPaymentConfirmed(Payment payment) {
-		if (payment.isSucceed() && payment.getAmount() != null && payment.isEarn()) {
+		if (payment.isSucceed() && payment.getAmount() != null && payment.getType() == Payment.EARN) {
 			eventLogger.send(EarnOrderPaymentConfirmed.create(payment.getTransactionID(), null, payment.getOrderID()));
 		}
 	}
@@ -246,7 +246,7 @@ public class OrderRepository implements OrderDataSource {
 	}
 
 	private void sendSpendOrderCompleted(Order order) {
-		if (order.getOfferType() == OfferType.SPEND) {
+		if (order.getOfferType() == OfferType.SPEND && order.getOrigin() == Origin.MARKETPLACE) {
 			if (order.getStatus() == Status.COMPLETED) {
 				double amount = (double) order.getAmount();
 				eventLogger.send(SpendOrderCompleted
