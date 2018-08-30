@@ -19,6 +19,7 @@ import com.kin.ecosystem.common.KinCallbackAdapter;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
+import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.marketplace.view.ISpendDialog;
 import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.OfferInfo;
@@ -83,8 +84,12 @@ class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements 
 			@Override
 			public void onFailure(KinEcosystemException exception) {
 				showToast("Oops something went wrong...");
-				eventLogger
-					.send(SpendOrderCreationFailed.create(exception.getCause().getMessage(), offer.getId(), false));
+				try {
+					String errorMsg = ((ApiException) exception.getCause()).getResponseBody().getMessage();
+					eventLogger.send(SpendOrderCreationFailed.create(errorMsg, offer.getId(), false));
+				} catch (ClassCastException e) {
+					eventLogger.send(SpendOrderCreationFailed.create(exception.getMessage(), offer.getId(), false));
+				}
 			}
 		});
 	}

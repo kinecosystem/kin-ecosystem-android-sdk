@@ -57,7 +57,7 @@ public class OrderHistoryFragment extends Fragment implements IOrderHistoryView 
 	}
 
 	@Override
-	public void attachPresenter(OrderHistoryPresenter presenter) {
+	public void attachPresenter(IOrderHistoryPresenter presenter) {
 		orderHistoryPresenter = presenter;
 	}
 

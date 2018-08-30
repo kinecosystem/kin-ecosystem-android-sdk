@@ -1,6 +1,8 @@
 package com.kin.ecosystem.core.data.order;
 
 import static com.kin.ecosystem.common.exception.BlockchainException.INSUFFICIENT_KIN;
+import static com.kin.ecosystem.core.data.blockchain.Payment.EARN;
+import static com.kin.ecosystem.core.data.blockchain.Payment.SPEND;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -36,6 +38,7 @@ import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
+import com.kin.ecosystem.core.network.model.Order.Origin;
 import com.kin.ecosystem.core.network.model.Order.Status;
 import com.kin.ecosystem.core.network.model.OrderList;
 import com.kin.ecosystem.core.network.model.OrderSpendResult.TypeEnum;
@@ -204,7 +207,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 		assertEquals(order, orderRepository.getOrderWatcher().getValue());
 
 		when(payment.getAmount()).thenReturn(new BigDecimal(20));
-		when(payment.isEarn()).thenReturn(true);
+		when(payment.getType()).thenReturn(EARN);
 		paymentCapture.getValue().onChanged(payment);
 
 		verify(eventLogger).send(any(EarnOrderPaymentConfirmed.class));
@@ -227,6 +230,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 		ArgumentCaptor<Callback<Order, ApiException>> getOrderCapture = ArgumentCaptor.forClass(Callback.class);
 
 		when(order.getOfferType()).thenReturn(OfferType.SPEND);
+		when(order.getOrigin()).thenReturn(Origin.MARKETPLACE);
 
 		// Create Order
 		orderRepository.createOrder(order.getOfferId(), openOrderCallback);
@@ -245,7 +249,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 		assertEquals(order, orderRepository.getOrderWatcher().getValue());
 
 		when(payment.getAmount()).thenReturn(new BigDecimal(-20));
-		when(payment.isEarn()).thenReturn(false);
+		when(payment.getType()).thenReturn(SPEND);
 		paymentCapture.getValue().onChanged(payment);
 
 		verify(eventLogger, never()).send(any(EarnOrderPaymentConfirmed.class));
@@ -286,7 +290,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 		assertEquals(order, orderRepository.getOrderWatcher().getValue());
 
 		when(payment.getAmount()).thenReturn(new BigDecimal(-20));
-		when(payment.isEarn()).thenReturn(false);
+		when(payment.getType()).thenReturn(SPEND);
 		paymentCapture.getValue().onChanged(payment);
 
 		verify(eventLogger, never()).send(any(EarnOrderPaymentConfirmed.class));
@@ -365,7 +369,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 		ArgumentCaptor<Observer<Payment>> paymentCapture = ArgumentCaptor.forClass(Observer.class);
 		ArgumentCaptor<Callback<Order, ApiException>> getOrderCapture = ArgumentCaptor.forClass(Callback.class);
 
-		Order confirmedOrder = new Order().orderId(orderID).offerId(offerID).status(Status.COMPLETED);
+		Order confirmedOrder = new Order().orderId(orderID).offerId(offerID).status(Status.COMPLETED).amount(30);
 		confirmedOrder.setResult(
 			new JWTBodyPaymentConfirmationResult().jwt("A JWT CONFIRMATION").type(TypeEnum.PAYMENT_CONFIRMATION));
 
