@@ -1,56 +1,74 @@
-## Balance
-We support 3 different way to get balance. You will get a `Balance` object containing amount as BigDecimal.
-In case of no account was created you will get `Balance.getAmount() == 0`.
+### Getting an Account’s Balance ###
 
-1. Get last known balance / cached balance
+A user’s balance is the number of Kin units in his or her account (can also contain a fraction). You may want to retrieve the balance in response to a user request or to check whether a user has enough funding to perform a Spend request. When you request a user’s balance, you receive a ```Balance``` object in response, which contains the balance as a decimal-point number.
+
+>**NOTE:** If no account was found for the user, you will receive a balance of 0 for that user.
+
+There are 3 ways you can retrieve the user’s balance:
+
+* Get the cached balance (the last balance that was received on the client side). The cached balance is updated upon SDK initialization and for every transation. Usually, this will be the same balance as the one stored in the Kin blockchain. But in some situations it might not be current, for instance due to network connection issues.
+* Get the balance from the Kin Server (the balance stored in the Kin blockchain). This is the definitive balance value. This is an asynchronous call that requires you to implement callback functions.
+* Create an ```Observer``` object that receives notifications when the user’s balance changes.
+
+*To get the cached balance:*
+
+Call ```Kin.getCachedBalance()```.
+
 ```java
-    try {
+try {
         Balance cachedBalance = Kin.getCachedBalance();
     } catch (ClientException e) {
         e.printStackTrace();
-    }
+}
 ```
 
-2. Get confirmed balance from the blockchain network using async call.
-See [BlockchainException](../kin-ecosystem-sdk/src/main/java/com/kin/ecosystem/exception/BlockchainException.java) and [ServiceException](../kin-ecosystem-sdk/src/main/java/com/kin/ecosystem/exception/ServiceException.java) for possible errors.
+*To get the balance from the Kin Server (from the blockchain):*
+
+Call ```Kin.getBalance(…)```, and implement the 2 response callback functions.
+(See [BlockchainException](common/src/main/java/com/kin/ecosystem/common/exception/BlockchainException.java) and [ServiceException](common/src/main/java/com/kin/ecosystem/common/exception/ServiceException.java) for possible errors.)
+
 ```java
-    Kin.getBalance(new KinCallback<Balance>() {
+Kin.getBalance(new KinCallback<Balance>() {
                     @Override
                     public void onResponse(Balance balance) {
                         // Got the balance from the network
                     }
-    
+
                     @Override
                     public void onFailure(KinEcosystemException exception) {
                         // Got an error from the blockchain network
                     }
-                });
+    });
 ```
 
-3. Add an observer to get a continues balance updates.<br>
-Note: the observer first fire the last known balance, and open a live connection to the blockchain network.
-It's the developer responsibility to remove this observer in order to close the live network connection.
+*To listen continuously for balance updates:*
+
+Create an ```Observer``` object and implements its ```onChanged()``` function.
+
+>**NOTES:**
+>* The ```Observer``` object sends a first update with the last known balance, and then opens a connection to the blockchain network to receive subsequent live updates.
+>* Make sure to add balance observer only when required (for example when app UI need to show updated balance) and remove the observer as soon as possible to avoid keeping open network connection.
+
 ```java
+// Add balance observer
+balanceObserver = new Observer<Balance>() {
+                @Override
+                public void onChanged(Balance value) {
+                    showToast("Balance - " +
+                               value.getAmount().intValue());
+                }
+            };
 
-    // Add balance observer
-    balanceObserver = new Observer<Balance>() {
-                    @Override
-                    public void onChanged(Balance value) {
-                        showToast("Balance - " + value.getAmount().intValue());
-                    }
-                };
-    
-    try {
-        Kin.addBalanceObserver(balanceObserver);
-    } catch (TaskFailedException e) {
-        e.printStackTrace();
-    }
-    
-    // Remove the balance observer
-    try {
-        Kin.removeBalanceObserver(balanceObserver);
-    } catch (TaskFailedException e) {
-        e.printStackTrace();
-    }
+try {
+    Kin.addBalanceObserver(balanceObserver);
+} catch (TaskFailedException e) {
+    e.printStackTrace();
+}
 
+// Remove the balance observer
+try {
+    Kin.removeBalanceObserver(balanceObserver);
+} catch (TaskFailedException e) {
+    e.printStackTrace();
+}
 ```
