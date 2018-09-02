@@ -140,6 +140,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 
 		new OrderHistoryPresenter(orderHistoryFragment,
 			OrderRepository.getInstance(),
+			BlockchainSourceImpl.getInstance(),
 			EventLoggerImpl.getInstance(),
 			isFirstSpendOrder);
 

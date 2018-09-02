@@ -369,7 +369,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 		ArgumentCaptor<Observer<Payment>> paymentCapture = ArgumentCaptor.forClass(Observer.class);
 		ArgumentCaptor<Callback<Order, ApiException>> getOrderCapture = ArgumentCaptor.forClass(Callback.class);
 
-		Order confirmedOrder = new Order().orderId(orderID).offerId(offerID).status(Status.COMPLETED);
+		Order confirmedOrder = new Order().orderId(orderID).offerId(offerID).status(Status.COMPLETED).amount(30);
 		confirmedOrder.setResult(
 			new JWTBodyPaymentConfirmationResult().jwt("A JWT CONFIRMATION").type(TypeEnum.PAYMENT_CONFIRMATION));
 

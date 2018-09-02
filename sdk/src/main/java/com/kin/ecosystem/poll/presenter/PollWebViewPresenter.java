@@ -1,9 +1,10 @@
 package com.kin.ecosystem.poll.presenter;
 
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.base.BasePresenter;
+import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.CloseButtonOnOfferPageTapped;
 import com.kin.ecosystem.core.bi.events.EarnOrderCancelled;
@@ -16,7 +17,7 @@ import com.kin.ecosystem.core.bi.events.EarnOrderCreationRequested;
 import com.kin.ecosystem.core.bi.events.EarnOrderFailed;
 import com.kin.ecosystem.core.bi.events.EarnPageLoaded;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
-import com.kin.ecosystem.common.exception.KinEcosystemException;
+import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.poll.view.IPollWebView;
@@ -86,9 +87,12 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 
 			@Override
 			public void onFailure(KinEcosystemException exception) {
-				eventLogger.send(EarnOrderCreationFailed.create(exception.getCause().getMessage(), offerID));
-				if (view != null) {
-					showToast(exception.getMessage());
+				showToast("Oops something went wrong...");
+				try {
+					String errorMsg = ((ApiException) exception.getCause()).getResponseBody().getMessage();
+					eventLogger.send(EarnOrderCreationFailed.create(errorMsg, offerID));
+				} catch (ClassCastException e) {
+					eventLogger.send(EarnOrderCreationFailed.create(exception.getMessage(), offerID));
 				}
 				closeView();
 			}
