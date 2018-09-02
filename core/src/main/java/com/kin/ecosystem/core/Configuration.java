@@ -21,7 +21,7 @@ public class Configuration {
 	private static final String HEADER_SDK_VERSION = "X-SDK-VERSION";
 	private static final String HEADER_DEVICE_MODEL = "X-DEVICE-MODEL";
 	private static final String HEADER_DEVICE_MANUFACTURER = "X-DEVICE-MANUFACTURER";
-	private static final String HEADER_DEVICE_LANGUAGE = "X-DEVICE-LANGUAGE";
+	private static final String HEADER_DEVICE_LANGUAGE = "Accept-Language";
 	private static final String HEADER_OS = "X-OS";
 
 	private static final String BEARER = "Bearer ";
