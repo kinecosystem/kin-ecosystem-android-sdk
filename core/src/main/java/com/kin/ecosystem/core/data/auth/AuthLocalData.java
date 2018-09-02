@@ -4,11 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.SignInData;
 import com.kin.ecosystem.core.network.model.SignInData.SignInTypeEnum;
-import com.kin.ecosystem.core.util.ExecutorsUtil;
 
 
 public class AuthLocalData implements AuthDataSource.Local {
@@ -31,18 +29,16 @@ public class AuthLocalData implements AuthDataSource.Local {
 	private static final String IS_ACTIVATED_KEY = "is_activated";
 
 	private final SharedPreferences signInSharedPreferences;
-	private final ExecutorsUtil executorsUtil;
 
-	private AuthLocalData(Context context, @NonNull ExecutorsUtil executorsUtil) {
+	private AuthLocalData(Context context) {
 		this.signInSharedPreferences = context.getSharedPreferences(SIGN_IN_PREF_NAME_FILE_KEY, Context.MODE_PRIVATE);
-		this.executorsUtil = executorsUtil;
 	}
 
-	public static AuthLocalData getInstance(@NonNull Context context, @NonNull ExecutorsUtil executorsUtil) {
+	public static AuthLocalData getInstance(@NonNull Context context) {
 		if (instance == null) {
 			synchronized (AuthLocalData.class) {
 				if (instance == null) {
-					instance = new AuthLocalData(context, executorsUtil);
+					instance = new AuthLocalData(context);
 				}
 			}
 		}
@@ -52,43 +48,30 @@ public class AuthLocalData implements AuthDataSource.Local {
 
 	@Override
 	public void setSignInData(@NonNull final SignInData signInData) {
-		Runnable command = new Runnable() {
-			@Override
-			public void run() {
-				Editor editor = signInSharedPreferences.edit();
-				editor.putString(DEVICE_ID_KEY, signInData.getDeviceId());
-				editor.putString(PUBLIC_ADDRESS_KEY, signInData.getWalletAddress());
-				editor.putString(TYPE_KEY, signInData.getSignInType().getValue());
+		Editor editor = signInSharedPreferences.edit();
+		editor.putString(DEVICE_ID_KEY, signInData.getDeviceId());
+		editor.putString(PUBLIC_ADDRESS_KEY, signInData.getWalletAddress());
+		editor.putString(TYPE_KEY, signInData.getSignInType().getValue());
 
-				if (signInData.getSignInType() == SignInTypeEnum.JWT) {
-					editor.putString(JWT_KEY, signInData.getJwt());
-				} else {
-					editor.putString(USER_ID_KEY, signInData.getUserId());
-					editor.putString(APP_ID_KEY, signInData.getAppId());
-				}
-				editor.commit();
-			}
-		};
-
-		executorsUtil.diskIO().execute(command);
+		if (signInData.getSignInType() == SignInTypeEnum.JWT) {
+			editor.putString(JWT_KEY, signInData.getJwt());
+		} else {
+			editor.putString(USER_ID_KEY, signInData.getUserId());
+			editor.putString(APP_ID_KEY, signInData.getAppId());
+		}
+		editor.apply();
 	}
 
 	@Override
 	public void setAuthToken(@NonNull final AuthToken authToken) {
-		Runnable command = new Runnable() {
-			@Override
-			public void run() {
-				Editor editor = signInSharedPreferences.edit();
-				editor.putString(TOKEN_KEY, authToken.getToken());
-				editor.putString(APP_ID_KEY, authToken.getAppID());
-				editor.putString(USER_ID_KEY, authToken.getUserID());
-				editor.putString(ECOSYSTEM_USER_ID_KEY, authToken.getEcosystemUserID());
-				editor.putBoolean(IS_ACTIVATED_KEY, authToken.isActivated());
-				editor.putString(TOKEN_EXPIRATION_DATE_KEY, authToken.getExpirationDate());
-				editor.commit();
-			}
-		};
-		executorsUtil.diskIO().execute(command);
+		Editor editor = signInSharedPreferences.edit();
+		editor.putString(TOKEN_KEY, authToken.getToken());
+		editor.putString(APP_ID_KEY, authToken.getAppID());
+		editor.putString(USER_ID_KEY, authToken.getUserID());
+		editor.putString(ECOSYSTEM_USER_ID_KEY, authToken.getEcosystemUserID());
+		editor.putBoolean(IS_ACTIVATED_KEY, authToken.isActivated());
+		editor.putString(TOKEN_EXPIRATION_DATE_KEY, authToken.getExpirationDate());
+		editor.apply();
 	}
 
 	@Override
@@ -133,14 +116,8 @@ public class AuthLocalData implements AuthDataSource.Local {
 
 	@Override
 	public void activateAccount() {
-		Runnable command = new Runnable() {
-			@Override
-			public void run() {
-				Editor editor = signInSharedPreferences.edit();
-				editor.putBoolean(IS_ACTIVATED_KEY, true).commit();
-			}
-		};
-		executorsUtil.diskIO().execute(command);
+		Editor editor = signInSharedPreferences.edit();
+		editor.putBoolean(IS_ACTIVATED_KEY, true).apply();
 	}
 }
 
