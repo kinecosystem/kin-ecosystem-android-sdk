@@ -178,7 +178,7 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 
 	private void addObservers() {
 		orderRepository.addOrderObserver(orderObserver);
-		blockchainSource.addBalanceObserver(balanceObserver);
+		blockchainSource.addBalanceObserverAndStartListen(balanceObserver);
 	}
 
 	@Override

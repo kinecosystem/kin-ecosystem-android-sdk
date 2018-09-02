@@ -162,28 +162,32 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
-	public void getBalance(@NonNull final KinCallback<Balance> callback) {
+	public void getBalance(@Nullable final KinCallback<Balance> callback) {
 		account.getBalance().run(new ResultCallback<kin.core.Balance>() {
 			@Override
 			public void onResult(final kin.core.Balance balanceObj) {
 				setBalance(balanceObj);
-				mainThread.execute(new Runnable() {
-					@Override
-					public void run() {
-						callback.onResponse(balance.getValue());
-					}
-				});
+				if(callback != null) {
+					mainThread.execute(new Runnable() {
+						@Override
+						public void run() {
+							callback.onResponse(balance.getValue());
+						}
+					});
+				}
 				Logger.log(new Log().withTag(TAG).put("getBalance onResult", balanceObj.value().intValue()));
 			}
 
 			@Override
 			public void onError(final Exception e) {
-				mainThread.execute(new Runnable() {
-					@Override
-					public void run() {
-						callback.onFailure(ErrorUtil.getBlockchainException(e));
-					}
-				});
+				if(callback != null) {
+					mainThread.execute(new Runnable() {
+						@Override
+						public void run() {
+							callback.onFailure(ErrorUtil.getBlockchainException(e));
+						}
+					});
+				}
 				Logger.log(new Log().withTag(TAG).priority(Log.ERROR).put("getBalance onError", e));
 			}
 		});
