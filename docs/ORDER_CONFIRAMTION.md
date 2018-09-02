@@ -4,7 +4,7 @@ In the normal flow of a transaction, you will receive an order confirmation from
 
 *To request an order confirmation:*
 
-Call ```Kin.getOrderConfirmation(…)```, while passing the order’s ID and implementing the appropriate callback functions. (See [ServiceException](COMMON_ERRORS.md#) for possible errors.)
+Call ```Kin.getOrderConfirmation(…)```, while passing the order’s ID and implementing the appropriate callback functions. (See [ServiceException](COMMON_ERRORS.md#serviceexception---represents-an-error-communicating-with-kin-server-error-code-might-be) for possible errors.)
 
 ```java
 try {

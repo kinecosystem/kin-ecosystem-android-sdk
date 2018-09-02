@@ -1,16 +1,15 @@
 ### Creating a Custom Spend Offer ###
 
-A custom Spend offer allows your users to unlock unique spend opportunities that you define within your app. (Custom offers are created by your app, as opposed to [built-in offers displayed in the Kin Marketplace offer wall](#AddingToMP).) Your app displays the offer, request user approval, and then [requests payment using the Kin purchase API](#purchaseRequest).
+A custom Spend offer allows your users to unlock unique spend opportunities that you define within your app. (Custom offers are created by your app, as opposed to [built-in offers displayed in the Kin Marketplace offer wall](#adding-a-custom-spend-offer-to-the-kin-marketplace-offer-wall).) Your app displays the offer, request user approval, and then [requests payment using the Kin purchase API](#requesting-purchase-payment-for-a-custom-spend-offer).
 
 *To create a custom Spend offer:*
 
 
-<a name="purchaseRequest"></a>
 ### Requesting purchase Payment for a Custom Spend Offer ###
 
 *To request payment for a custom Spend offer:*
 
-1.	Create a JWT that represents a Spend offer signed by you, using the header and payload templates below. (See [Building the JWT Token](#BuildJWT) for more details about JWT structure).
+1.	Create a JWT that represents a Spend offer signed by you, using the header and payload templates below. (See [Generating the JWT Token](../README.md#generating-the-jwt-token) for more details about JWT structure).
 
 **JWT header:**
 ```
@@ -47,7 +46,7 @@ A custom Spend offer allows your users to unlock unique spend opportunities that
 
 >**NOTES:**
 >* The following snippet is taken from the SDK Sample App, in which the JWT is created and signed by the Android client side for presentation purposes only. Do not use this method in production! In production, the JWT must be signed by the server, with a secure private key.
->* See [BlockchainException](common/src/main/java/com/kin/ecosystem/common/exception/BlockchainException.java) and [ServiceException](common/src/main/java/com/kin/ecosystem/common/exception/ServiceException.java) for possible errors.
+> * See [BlockchainException](COMMON_ERRORS.md#blockchainException--Represents-an-error-originated-with-kin-blockchain-error-code-might-be) and [ServiceException](COMMON_ERRORS.md#serviceexception---represents-an-error-communicating-with-kin-server-error-code-might-be) for possible errors.
 
 ```java
 try {
@@ -73,14 +72,13 @@ try {
 
 3.	Complete the purchase after you receive confirmation from the Kin Server that the funds were transferred successfully.
 
-<a name="AddingToMP"></a>
 ### Adding a Custom Spend Offer to the Kin Marketplace Offer Wall ###
 
 The Kin Marketplace offer wall displays built-in offers, which are served by the Kin Ecosystem Server. Their purpose is to provide users with opportunities to earn initial Kin funding, which they can later spend on spend offers provided by hosting apps.
 
 You can also choose to display a banner for your custom offer in the Kin Marketplace offer wall. This serves as additional "real estate" in which to let the user know about custom offers within your app. When the user clicks on your custom Spend offer in the Kin Marketplace, your app is notified, and then it continues to manage the offer activity in its own UX flow.
 
->**NOTE:** You will need to actively launch the Kin Marketplace offer wall so your user can see the offers you added to it. See [Displaying the Kin Marketplace Offer Wall](#DisplayMPWindow) for more details.
+>**NOTE:** You will need to actively launch the Kin Marketplace offer wall so your user can see the offers you added to it. See [Displaying the Kin Marketplace Offer Wall](DISPLAY_MARKETPLACE.md) for more details.
 
 *To add a custom Spend offer to the Kin Marketplace:*
 

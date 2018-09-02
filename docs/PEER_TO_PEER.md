@@ -1,15 +1,14 @@
 ### Creating a Pay To User Offer ###
 
 A pay to user offer allows user generated offers with which other users can interact.
-(Offers are created by your app, as opposed to [built-in offers displayed in the Kin Marketplace offer wall](#AddingToMP).)
-Your app displays the offer, request user approval, and then [requests payment using the Kin payToUser API](#payToUserRequest).
+(Offers are created by your app, as opposed to [built-in offers displayed in the Kin Marketplace offer wall](NATIVE_SPEND.md#adding-a-custom-spend-offer-to-the-kin-marketplace-offer-wall).)
+Your app displays the offer, request user approval, and then [requests payment using the Kin payToUser API](#requesting-a-custom-pay-to-user-offer).
 
-<a name="payToUserRequest"></a>
 ### Requesting a Custom Pay To User Offer ###
 
 *To request Pay To User offer:*
 
-1.	Create a JWT that represents a Pay To User offer signed by you, using the header and payload templates below. (See [Building the JWT Token](#BuildJWT) for more details about JWT structure).
+1.	Create a JWT that represents a Pay To User offer signed by you, using the header and payload templates below. (See [Generating the JWT Token](../README.md#generating-the-jwt-token) for more details about JWT structure).
 
 **JWT header:**
 ```
@@ -51,7 +50,7 @@ Your app displays the offer, request user approval, and then [requests payment u
 
 > **NOTES:**
 > * The following snippet is taken from the SDK Sample App, in which the JWT is created and signed by the Android client side for presentation purposes only. Do not use this method in production! In production, the JWT must be signed by the server, with a secure private key.
-> * See [BlockchainException](common/src/main/java/com/kin/ecosystem/common/exception/BlockchainException.java) and [ServiceException](common/src/main/java/com/kin/ecosystem/common/exception/ServiceException.java) for possible errors.
+> * See [BlockchainException](COMMON_ERRORS.md#blockchainException--Represents-an-error-originated-with-kin-blockchain-error-code-might-be) and [ServiceException](COMMON_ERRORS.md#serviceexception---represents-an-error-communicating-with-kin-server-error-code-might-be) for possible errors.
 
 ```java
 try {
