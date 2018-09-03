@@ -45,7 +45,7 @@ Your app displays the offer, request user approval, and then [requests payment u
 }
 ```
 
-2.	Call ```Kin.payToUser(…)```, while passing the JWT you built and a callback function that will receive purchase confirmation.
+2.	Call `Kin.payToUser(…)`, while passing the JWT you built and a callback function that will receive purchase confirmation.
 
 
 > **NOTES:**

@@ -42,7 +42,7 @@ A custom Spend offer allows your users to unlock unique spend opportunities that
    }
 }
 ```
-2.	Call ```Kin.purchase(…)```, while passing the JWT you built and a callback function that will receive purchase confirmation.
+2.	Call `Kin.purchase(…)`, while passing the JWT you built and a callback function that will receive purchase confirmation.
 
 >**NOTES:**
 >* The following snippet is taken from the SDK Sample App, in which the JWT is created and signed by the Android client side for presentation purposes only. Do not use this method in production! In production, the JWT must be signed by the server, with a secure private key.
@@ -82,7 +82,7 @@ You can also choose to display a banner for your custom offer in the Kin Marketp
 
 *To add a custom Spend offer to the Kin Marketplace:*
 
-1. Create a ```NativeSpendOffer``` object as in the example below.
+1. Create a `NativeSpendOffer` object as in the example below.
 
 ```java
 NativeSpendOffer nativeOffer =
@@ -92,9 +92,9 @@ NativeSpendOffer nativeOffer =
             .amount(1000) // Purchase amount in Kin
             .image("Image URL"); // Image to display with offer
 ```
-2.	Create a ```NativeOfferObserver``` object to be notified when the user clicks on your offer in the Kin Marketplace.
+2.	Create a `NativeOfferObserver` object to be notified when the user clicks on your offer in the Kin Marketplace.
 
->**NOTE:** You can remove the Observer by calling ```Kin.removeNativeOfferClickedObserver(…)```.
+>**NOTE:** You can remove the Observer by calling `Kin.removeNativeOfferClickedObserver(…)`.
 
 ```java
 private void addNativeOfferClickedObserver() {
@@ -128,7 +128,7 @@ Kin.addNativeOfferClickedObserver(getNativeOfferClickedObserver());
 }
 ```
 
-3.	```Call Kin.addNativeOffer(nativeSpendOffer, dismissOnTap)```.
+3.	`Call Kin.addNativeOffer(nativeSpendOffer, dismissOnTap)`.
 
 >**NOTE:** Each new offer is added as the first offer in Spend Offers list the Marketplace displays.
 Parameter dismissOnTap determine if the Marketplace need to be dismissed on tap.
@@ -151,7 +151,7 @@ try {
 
 *To remove a custom Spend offer from the Kin Marketplace:*
 
-Call ```Kin.removeNativeOffer(…)```, passing the offer you want to remove.
+Call `Kin.removeNativeOffer(…)`, passing the offer you want to remove.
 
 ```java
 try {

@@ -8,7 +8,7 @@ You may choose to add your custom Earn and Spend offers to the Kin Marketplace s
 
 *To display the Kin Marketplace offer wall:*
 
-Call ```Kin.launchMarketplace(…)```.
+Call `Kin.launchMarketplace(…)`.
 
 ```java
 try {

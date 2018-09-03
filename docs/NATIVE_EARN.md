@@ -40,7 +40,7 @@ Once the user has completed the task associated with the Earn offer, you request
    }
 }
 ```
-2.	Call ```Kin.requestPayment``` (see code example below). The Ecosystem Server credits the user account (assuming the app’s account has sufficient funds).
+2.	Call `Kin.requestPayment` (see code example below). The Ecosystem Server credits the user account (assuming the app’s account has sufficient funds).
 
 >**NOTES:**
 >* The following snippet is taken from the SDK Sample App, in which the JWT is created and signed by the Android client side for presentation purposes only. Do not use this method in production! In production, the JWT must be signed by the server, with a secure private key.
