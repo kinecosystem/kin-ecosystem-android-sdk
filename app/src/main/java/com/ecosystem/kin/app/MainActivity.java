@@ -346,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
 						Kin.hasAccount(userId, new KinCallback<Boolean>() {
 							@Override
 							public void onResponse(Boolean hasAccount) {
-								if(hasAccount != null && hasAccount){
+								if (hasAccount != null && hasAccount) {
 									createPayToUserOffer(userId);
 								} else {
 									showSnackbar("Account not found", true);
