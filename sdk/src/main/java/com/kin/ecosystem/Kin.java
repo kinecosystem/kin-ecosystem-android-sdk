@@ -167,7 +167,7 @@ public class Kin {
 
 	private static void initAuthRepository(@NonNull final Context context, @NonNull final SignInData signInData)
 		throws ClientException {
-		AuthRepository.init(AuthLocalData.getInstance(context, instance.executorsUtil),
+		AuthRepository.init(AuthLocalData.getInstance(context),
 			AuthRemoteData.getInstance(instance.executorsUtil));
 		String deviceID = AuthRepository.getInstance().getDeviceID();
 		signInData.setDeviceId(deviceID != null ? deviceID : UUID.randomUUID().toString());
