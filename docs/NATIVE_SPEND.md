@@ -128,7 +128,7 @@ Kin.addNativeOfferClickedObserver(getNativeOfferClickedObserver());
 }
 ```
 
-3.	`Call Kin.addNativeOffer(nativeSpendOffer, dismissOnTap)`.
+3.	Call `Kin.addNativeOffer(nativeSpendOffer, dismissOnTap)`.
 
 >**NOTE:** Each new offer is added as the first offer in Spend Offers list the Marketplace displays.
 Parameter dismissOnTap determine if the Marketplace need to be dismissed on tap.
