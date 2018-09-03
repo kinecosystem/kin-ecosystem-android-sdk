@@ -64,7 +64,7 @@ public class Configuration {
 									.header(AUTHORIZATION, BEARER + authToken.getToken())
 									.build();
 								return chain.proceed(authorisedRequest);
-							} else {
+							} else { 
 								// Stop the request from being executed.
 								Logger.log(new Log().withTag("ApiClient").text("No token - response error on client"));
 								return new Response.Builder()
@@ -91,7 +91,7 @@ public class Configuration {
 		apiClient.addDefaultHeader(HEADER_SDK_VERSION, BuildConfig.VERSION_NAME);
 		apiClient.addDefaultHeader(HEADER_DEVICE_MODEL, Build.MODEL);
 		apiClient.addDefaultHeader(HEADER_DEVICE_MANUFACTURER, Build.MANUFACTURER);
-		apiClient.addDefaultHeader(HEADER_DEVICE_LANGUAGE, Locale.getDefault().getLanguage());
+		apiClient.addDefaultHeader(HEADER_DEVICE_LANGUAGE, Locale.getDefault().toString());
 	}
 
 	public static KinEnvironment getEnvironment() {
