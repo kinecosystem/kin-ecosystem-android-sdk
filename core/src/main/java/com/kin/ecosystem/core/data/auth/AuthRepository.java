@@ -78,17 +78,10 @@ public class AuthRepository implements AuthDataSource {
 
 	private void loadCachedAppIDIfNeeded() {
 		if (TextUtils.isEmpty(appId.getValue())) {
-			localData.getAppId(new Callback<String, Void>() {
-				@Override
-				public void onResponse(String appID) {
-					postAppID(appID);
-				}
-
-				@Override
-				public void onFailure(Void t) {
-					// No Data Available
-				}
-			});
+			final String localAppId = localData.getAppId();
+			if (!TextUtils.isEmpty(localAppId)){
+				postAppID(localAppId);
+			}
 		}
 	}
 

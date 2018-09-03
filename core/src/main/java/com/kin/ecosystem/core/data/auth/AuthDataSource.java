@@ -39,7 +39,7 @@ public interface AuthDataSource {
 
 		void setAuthToken(@NonNull final AuthToken authToken);
 
-		void getAppId(@NonNull final Callback<String, Void> callback);
+		String getAppId();
 
 		String getDeviceID();
 
