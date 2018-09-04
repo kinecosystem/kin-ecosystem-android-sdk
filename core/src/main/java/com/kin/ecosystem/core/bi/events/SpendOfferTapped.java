@@ -2,11 +2,13 @@
 package com.kin.ecosystem.core.bi.events;
 
 // Augmented by script
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.core.bi.Event;
 import com.kin.ecosystem.core.bi.EventsStore;
+
+import java.util.HashMap;
+import java.util.Map;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 
 /**
@@ -18,14 +20,14 @@ public class SpendOfferTapped implements Event {
     public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
-    public static SpendOfferTapped create(Double kinAmount, String offerId, String orderId) {
+    public static SpendOfferTapped create(Double kinAmount, String offerId, Origin origin) {
         return new SpendOfferTapped(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             (Client) EventsStore.client(),
             kinAmount,
             offerId,
-            orderId);
+            origin);
     }
 
     /**
@@ -89,9 +91,9 @@ public class SpendOfferTapped implements Event {
      * (Required)
      * 
      */
-    @SerializedName("order_id")
+    @SerializedName("origin")
     @Expose
-    private String orderId;
+    private Origin origin;
 
     /**
      * No args constructor for use in serialization
@@ -103,7 +105,7 @@ public class SpendOfferTapped implements Event {
     /**
      * 
      * @param common
-     * @param orderId
+     * @param origin
 
      * @param client
      * @param offerId
@@ -111,14 +113,14 @@ public class SpendOfferTapped implements Event {
 
      * @param user
      */
-    public SpendOfferTapped(Common common, User user, Client client, Double kinAmount, String offerId, String orderId) {
+    public SpendOfferTapped(Common common, User user, Client client, Double kinAmount, String offerId, Origin origin) {
         super();
         this.common = common;
         this.user = user;
         this.client = client;
         this.kinAmount = kinAmount;
         this.offerId = offerId;
-        this.orderId = orderId;
+        this.origin = origin;
     }
 
     /**
@@ -252,8 +254,8 @@ public class SpendOfferTapped implements Event {
      * (Required)
      * 
      */
-    public String getOrderId() {
-        return orderId;
+    public Origin getOrigin() {
+        return origin;
     }
 
     /**
@@ -261,8 +263,47 @@ public class SpendOfferTapped implements Event {
      * (Required)
      * 
      */
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
+    public void setOrigin(Origin origin) {
+        this.origin = origin;
+    }
+
+    public enum Origin {
+
+        @SerializedName("marketplace")
+        MARKETPLACE("marketplace"),
+        @SerializedName("external")
+        EXTERNAL("external");
+        private final String value;
+        private final static Map<String, Origin> CONSTANTS = new HashMap<String, Origin>();
+
+        static {
+            for (Origin c: values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        private Origin(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+
+        public String value() {
+            return this.value;
+        }
+
+        public static Origin fromValue(String value) {
+            Origin constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            } else {
+                return constant;
+            }
+        }
+
     }
 
 }

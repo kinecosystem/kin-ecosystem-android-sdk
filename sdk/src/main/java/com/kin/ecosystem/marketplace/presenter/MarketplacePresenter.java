@@ -16,6 +16,7 @@ import com.kin.ecosystem.core.bi.events.EarnOfferTapped;
 import com.kin.ecosystem.core.bi.events.MarketplacePageViewed;
 import com.kin.ecosystem.core.bi.events.NotEnoughKinPageViewed;
 import com.kin.ecosystem.core.bi.events.SpendOfferTapped;
+import com.kin.ecosystem.core.bi.events.SpendOfferTapped.Origin;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.offer.OfferDataSource;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
@@ -335,7 +336,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private void sendSpendOfferTapped(Offer offer) {
 		double amount = (double) offer.getAmount();
-		eventLogger.send(SpendOfferTapped.create(amount, offer.getId(), null));
+		ContentTypeEnum contentType = offer.getContentType();
+		eventLogger.send(SpendOfferTapped.create(amount, offer.getId(),
+			contentType == ContentTypeEnum.EXTERNAL ? Origin.EXTERNAL : Origin.MARKETPLACE));
 	}
 
 	private void nativeSpendOfferClicked(Offer offer, boolean dismissMarketplace) {
