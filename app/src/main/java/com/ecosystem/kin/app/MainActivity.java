@@ -334,14 +334,13 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void showPayToUserDialog(final View v) {
-		PayToUserDialog dialog = new PayToUserDialog(v.getContext());
-		dialog.setOnDismissListener(new OnDismissListener() {
+		final PayToUserDialog payToUserDialog = new PayToUserDialog(v.getContext());
+		payToUserDialog.setOnDismissListener(new OnDismissListener() {
 			@Override
 			public void onDismiss(DialogInterface dialog) {
-				PayToUserDialog myDialog = (PayToUserDialog) dialog;
-				if (myDialog.getUserId() != null) {
+				if (payToUserDialog.getUserId() != null) {
 					showSnackbar("Pay to user flow started", false);
-					final String userId = myDialog.getUserId();
+					final String userId = payToUserDialog.getUserId();
 					try {
 						Kin.hasAccount(userId, new KinCallback<Boolean>() {
 							@Override
@@ -370,7 +369,7 @@ public class MainActivity extends AppCompatActivity {
 				}
 			}
 		});
-		dialog.show();
+		payToUserDialog.show();
 	}
 
 	/**
