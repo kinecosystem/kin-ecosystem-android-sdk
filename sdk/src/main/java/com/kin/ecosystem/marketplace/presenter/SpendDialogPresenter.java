@@ -1,41 +1,42 @@
 package com.kin.ecosystem.marketplace.presenter;
 
 import android.os.Handler;
+import com.kin.ecosystem.base.BaseDialogPresenter;
 import com.kin.ecosystem.common.KinCallback;
+import com.kin.ecosystem.common.KinCallbackAdapter;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
-import com.kin.ecosystem.base.BaseDialogPresenter;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.CloseButtonOnOfferPageTapped;
 import com.kin.ecosystem.core.bi.events.ConfirmPurchaseButtonTapped;
 import com.kin.ecosystem.core.bi.events.ConfirmPurchasePageViewed;
 import com.kin.ecosystem.core.bi.events.SpendOrderCancelled;
 import com.kin.ecosystem.core.bi.events.SpendOrderCompletionSubmitted;
+import com.kin.ecosystem.core.bi.events.SpendOrderCompletionSubmitted.Origin;
 import com.kin.ecosystem.core.bi.events.SpendOrderCreationFailed;
 import com.kin.ecosystem.core.bi.events.SpendOrderCreationReceived;
 import com.kin.ecosystem.core.bi.events.SpendOrderCreationRequested;
 import com.kin.ecosystem.core.bi.events.SpendThankyouPageViewed;
-import com.kin.ecosystem.common.KinCallbackAdapter;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
-import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.network.ApiException;
-import com.kin.ecosystem.marketplace.view.ISpendDialog;
 import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.OfferInfo;
 import com.kin.ecosystem.core.network.model.OfferInfo.Confirmation;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
+import com.kin.ecosystem.marketplace.view.ISpendDialog;
 import java.math.BigDecimal;
 
 
 class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements ISpendDialogPresenter {
 
-    private static final String TAG = SpendDialogPresenter.class.getSimpleName();
+	private static final String TAG = SpendDialogPresenter.class.getSimpleName();
 
-    private final OrderDataSource orderRepository;
-    private final BlockchainSource blockchainSource;
-    private final EventLogger eventLogger;
+	private final OrderDataSource orderRepository;
+	private final BlockchainSource blockchainSource;
+	private final EventLogger eventLogger;
 
 	private final Handler handler = new Handler();
 
@@ -69,13 +70,15 @@ class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements 
 	}
 
 	private void createOrder() {
-		eventLogger.send(SpendOrderCreationRequested.create(offer.getId(), false));
+		eventLogger.send(
+			SpendOrderCreationRequested.create(offer.getId(), false, SpendOrderCreationRequested.Origin.MARKETPLACE));
 		orderRepository.createOrder(offer.getId(), new KinCallback<OpenOrder>() {
 			@Override
 			public void onResponse(OpenOrder response) {
 				openOrder = response;
 				eventLogger.send(SpendOrderCreationReceived
-					.create(offer.getId(), response != null ? response.getId() : null, false));
+					.create(offer.getId(), response != null ? response.getId() : null, false,
+						SpendOrderCreationReceived.Origin.MARKETPLACE));
 				if (isUserConfirmedPurchase && !isSubmitted) {
 					submitAndSendTransaction();
 				}
@@ -86,9 +89,11 @@ class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements 
 				showToast("Oops something went wrong...");
 				try {
 					String errorMsg = ((ApiException) exception.getCause()).getResponseBody().getMessage();
-					eventLogger.send(SpendOrderCreationFailed.create(errorMsg, offer.getId(), false));
+					eventLogger.send(SpendOrderCreationFailed
+						.create(errorMsg, offer.getId(), false, SpendOrderCreationFailed.Origin.MARKETPLACE));
 				} catch (ClassCastException e) {
-					eventLogger.send(SpendOrderCreationFailed.create(exception.getMessage(), offer.getId(), false));
+					eventLogger.send(SpendOrderCreationFailed.create(exception.getMessage(), offer.getId(), false,
+						SpendOrderCreationFailed.Origin.MARKETPLACE));
 				}
 			}
 		});
@@ -178,28 +183,28 @@ class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements 
 	}
 
 	private void submitOrder(String offerID, final String orderID) {
-		eventLogger.send(SpendOrderCompletionSubmitted.create(offerID, orderID, false));
+		eventLogger.send(SpendOrderCompletionSubmitted.create(offerID, orderID, false, Origin.MARKETPLACE));
 		orderRepository.submitOrder(offerID, null, orderID, new KinCallback<Order>() {
-            @Override
-            public void onResponse(Order response) {
+			@Override
+			public void onResponse(Order response) {
 				final String addressee = offer.getBlockchainData().getRecipientAddress();
 				sendTransaction(addressee, amount, orderID);
 				Logger.log(new Log().withTag(TAG).put(" Submit onResponse", response));
-            }
+			}
 
-            @Override
-            public void onFailure(KinEcosystemException exception) {
-            	showToast("Oops something went wrong...");
+			@Override
+			public void onFailure(KinEcosystemException exception) {
+				showToast("Oops something went wrong...");
 				Logger.log(new Log().withTag(TAG).put(" Submit onFailure", exception));
-            }
-        });
-    }
+			}
+		});
+	}
 
-    private void showToast(String msg) {
-        if (view != null) {
-            view.showToast(msg);
-        }
-    }
+	private void showToast(String msg) {
+		if (view != null) {
+			view.showToast(msg);
+		}
+	}
 
 	private String getOrderID() {
 		return openOrder != null ? openOrder.getId() : "null";

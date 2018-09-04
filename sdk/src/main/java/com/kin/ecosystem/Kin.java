@@ -165,7 +165,7 @@ public class Kin {
 
 	private static void initAuthRepository(@NonNull final Context context, @NonNull final SignInData signInData)
 		throws ClientException {
-		AuthRepository.init(AuthLocalData.getInstance(context, instance.executorsUtil),
+		AuthRepository.init(AuthLocalData.getInstance(context),
 			AuthRemoteData.getInstance(instance.executorsUtil));
 		String deviceID = AuthRepository.getInstance().getDeviceID();
 		signInData.setDeviceId(deviceID != null ? deviceID : UUID.randomUUID().toString());
@@ -312,6 +312,22 @@ public class Kin {
 		checkInstanceNotNull();
 		//pay to user has a similar flow like purchase (spend), the only different is the expected input JWT.
 		OrderRepository.getInstance().purchase(offerJwt, callback);
+	}
+
+	/**
+	 * Determine if a Kin Account is associated with the {@param userId}, on Kin Ecosystem Server.
+	 * That means you can pay to the user with {@link Kin#payToUser(String userId, KinCallback)},
+	 * otherwise the recipient user won't get the Kin.
+	 *
+	 * @param userId The user id to check
+	 * @param callback The result will be a {@link Boolean}
+	 * @throws ClientException
+	 */
+	public static void hasAccount(@NonNull String userId, @NonNull KinCallback<Boolean> callback)
+		throws ClientException {
+		checkInstanceNotNull();
+		AuthRepository.getInstance().hasAccount(userId, callback);
+
 	}
 
 	/**

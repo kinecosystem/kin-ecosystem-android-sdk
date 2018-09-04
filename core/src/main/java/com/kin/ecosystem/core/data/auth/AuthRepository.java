@@ -78,17 +78,10 @@ public class AuthRepository implements AuthDataSource {
 
 	private void loadCachedAppIDIfNeeded() {
 		if (TextUtils.isEmpty(appId.getValue())) {
-			localData.getAppId(new Callback<String, Void>() {
-				@Override
-				public void onResponse(String appID) {
-					postAppID(appID);
-				}
-
-				@Override
-				public void onFailure(Void t) {
-					// No Data Available
-				}
-			});
+			final String localAppId = localData.getAppId();
+			if (!TextUtils.isEmpty(localAppId)){
+				postAppID(localAppId);
+			}
 		}
 	}
 
@@ -129,6 +122,21 @@ public class AuthRepository implements AuthDataSource {
 			@Override
 			public void onFailure(ApiException e) {
 				callback.onFailure(ErrorUtil.fromApiException(e));
+			}
+		});
+	}
+
+	@Override
+	public void hasAccount(@NonNull String userId, @NonNull final KinCallback<Boolean> callback) {
+		remoteData.hasAccount(userId, new Callback<Boolean, ApiException>() {
+			@Override
+			public void onResponse(Boolean response) {
+				callback.onResponse(response);
+			}
+
+			@Override
+			public void onFailure(ApiException exception) {
+				callback.onFailure(ErrorUtil.fromApiException(exception));
 			}
 		});
 	}

@@ -2,9 +2,9 @@ package com.kin.ecosystem.core.data.auth;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.ObservableData;
-import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.SignInData;
@@ -31,13 +31,15 @@ public interface AuthDataSource {
 
 	void activateAccount(@NonNull final KinCallback<Void> callback);
 
+	void hasAccount(@NonNull String userId, @NonNull final KinCallback<Boolean> callback);
+
 	interface Local {
 
 		void setSignInData(@NonNull final SignInData signInData);
 
 		void setAuthToken(@NonNull final AuthToken authToken);
 
-		void getAppId(@NonNull final Callback<String, Void> callback);
+		String getAppId();
 
 		String getDeviceID();
 
@@ -62,5 +64,7 @@ public interface AuthDataSource {
 		AuthToken getAuthTokenSync();
 
 		void activateAccount(@NonNull final Callback<AuthToken, ApiException> callback);
+
+		void hasAccount(@NonNull String userId, @NonNull final Callback<Boolean, ApiException> callback);
 	}
 }
