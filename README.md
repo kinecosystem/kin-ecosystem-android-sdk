@@ -150,6 +150,8 @@ The following sections show how to implement some primary APIs using the Kin Eco
 
 * [Requesting an Order Confirmation](docs/ORDER_CONFIRMATION.md)
 
+* [Misc](docs/MISC.md)
+
 
 ## Common Errors ##
 The Ecosystem APIs can response with few types of error, [learn more here](docs/COMMON_ERRORS.md)

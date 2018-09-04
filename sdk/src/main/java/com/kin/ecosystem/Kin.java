@@ -317,6 +317,22 @@ public class Kin {
 	}
 
 	/**
+	 * Determine if a Kin Account is associated with the {@param userId}, on Kin Ecosystem Server.
+	 * That means you can pay to the user with {@link Kin#payToUser(String userId, KinCallback)},
+	 * otherwise the recipient user won't get the Kin.
+	 *
+	 * @param userId The user id to check
+	 * @param callback The result will be a {@link Boolean}
+	 * @throws ClientException
+	 */
+	public static void hasAccount(@NonNull String userId, @NonNull KinCallback<Boolean> callback)
+		throws ClientException {
+		checkInstanceNotNull();
+		AuthRepository.getInstance().hasAccount(userId, callback);
+
+	}
+
+	/**
 	 * Returns a {@link OrderConfirmation}, with the order status and a jwtConfirmation if the order is completed.
 	 *
 	 * @param offerID The offerID that this order created from

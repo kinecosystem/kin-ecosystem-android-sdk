@@ -126,6 +126,21 @@ public class AuthRepository implements AuthDataSource {
 		});
 	}
 
+	@Override
+	public void hasAccount(@NonNull String userId, @NonNull final KinCallback<Boolean> callback) {
+		remoteData.hasAccount(userId, new Callback<Boolean, ApiException>() {
+			@Override
+			public void onResponse(Boolean response) {
+				callback.onResponse(response);
+			}
+
+			@Override
+			public void onFailure(ApiException exception) {
+				callback.onFailure(ErrorUtil.fromApiException(exception));
+			}
+		});
+	}
+
 	private boolean isAuthTokenExpired(AuthToken authToken) {
 		if (authToken == null) {
 			return true;

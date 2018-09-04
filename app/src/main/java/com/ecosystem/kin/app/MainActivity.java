@@ -111,20 +111,7 @@ public class MainActivity extends AppCompatActivity {
 			@Override
 			public void onClick(final View v) {
 				enableView(v, false);
-				PayToUserDialog dialog = new PayToUserDialog(v.getContext());
-				dialog.setOnDismissListener(new OnDismissListener() {
-					@Override
-					public void onDismiss(DialogInterface dialog) {
-						PayToUserDialog myDialog = (PayToUserDialog) dialog;
-						if (myDialog.getUserId() != null) {
-							showSnackbar("Pay to user flow started", false);
-							createPayToUserOffer(myDialog.getUserId());
-						} else {
-							enableView(v, true);
-						}
-					}
-				});
-				dialog.show();
+				showPayToUserDialog(v);
 			}
 		});
 
@@ -344,6 +331,45 @@ public class MainActivity extends AppCompatActivity {
 		} catch (ClientException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void showPayToUserDialog(final View v) {
+		final PayToUserDialog payToUserDialog = new PayToUserDialog(v.getContext());
+		payToUserDialog.setOnDismissListener(new OnDismissListener() {
+			@Override
+			public void onDismiss(DialogInterface dialog) {
+				if (payToUserDialog.getUserId() != null) {
+					showSnackbar("Pay to user flow started", false);
+					final String userId = payToUserDialog.getUserId();
+					try {
+						Kin.hasAccount(userId, new KinCallback<Boolean>() {
+							@Override
+							public void onResponse(Boolean hasAccount) {
+								if (hasAccount != null && hasAccount) {
+									createPayToUserOffer(userId);
+								} else {
+									showSnackbar("Account not found", true);
+									enableView(v, true);
+								}
+							}
+
+							@Override
+							public void onFailure(KinEcosystemException exception) {
+								showSnackbar("Failed - " + exception.getMessage(), true);
+								enableView(v, true);
+							}
+						});
+					} catch (ClientException e) {
+						e.printStackTrace();
+						enableView(v, true);
+					}
+
+				} else {
+					enableView(v, true);
+				}
+			}
+		});
+		payToUserDialog.show();
 	}
 
 	/**
