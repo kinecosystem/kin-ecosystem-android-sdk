@@ -1,3 +1,4 @@
+
 package com.kin.ecosystem.core.bi.events;
 
 // Augmented by script
@@ -6,6 +7,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.core.bi.Event;
 import com.kin.ecosystem.core.bi.EventsStore;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -17,13 +20,14 @@ public class SpendOrderCreationRequested implements Event {
 	public static final String EVENT_TYPE = "business";
 
 	// Augmented by script
-	public static SpendOrderCreationRequested create(String offerId, Boolean isNative) {
+	public static SpendOrderCreationRequested create(String offerId, Boolean isNative, Origin origin) {
 		return new SpendOrderCreationRequested(
 			(Common) EventsStore.common(),
 			(User) EventsStore.user(),
 			(Client) EventsStore.client(),
 			offerId,
-			isNative);
+			isNative,
+			origin);
 	}
 
 	/**
@@ -71,6 +75,12 @@ public class SpendOrderCreationRequested implements Event {
 	@SerializedName("is_native")
 	@Expose
 	private Boolean isNative;
+	/**
+	 * (Required)
+	 */
+	@SerializedName("origin")
+	@Expose
+	private Origin origin;
 
 	/**
 	 * No args constructor for use in serialization
@@ -81,6 +91,7 @@ public class SpendOrderCreationRequested implements Event {
 	/**
 	 *
 	 * @param common
+	 * @param origin
 
 	 * @param client
 	 * @param offerId
@@ -88,13 +99,15 @@ public class SpendOrderCreationRequested implements Event {
 	 * @param user
 	 * @param isNative
 	 */
-	public SpendOrderCreationRequested(Common common, User user, Client client, String offerId, Boolean isNative) {
+	public SpendOrderCreationRequested(Common common, User user, Client client, String offerId, Boolean isNative,
+		Origin origin) {
 		super();
 		this.common = common;
 		this.user = user;
 		this.client = client;
 		this.offerId = offerId;
 		this.isNative = isNative;
+		this.origin = origin;
 	}
 
 	/**
@@ -199,6 +212,59 @@ public class SpendOrderCreationRequested implements Event {
 	 */
 	public void setIsNative(Boolean isNative) {
 		this.isNative = isNative;
+	}
+
+	/**
+	 * (Required)
+	 */
+	public Origin getOrigin() {
+		return origin;
+	}
+
+	/**
+	 * (Required)
+	 */
+	public void setOrigin(Origin origin) {
+		this.origin = origin;
+	}
+
+	public enum Origin {
+
+		@SerializedName("marketplace")
+		MARKETPLACE("marketplace"),
+		@SerializedName("external")
+		EXTERNAL("external");
+		private final String value;
+		private final static Map<String, Origin> CONSTANTS = new HashMap<String, Origin>();
+
+		static {
+			for (Origin c : values()) {
+				CONSTANTS.put(c.value, c);
+			}
+		}
+
+		private Origin(String value) {
+			this.value = value;
+		}
+
+		@Override
+		public String toString() {
+			return this.value;
+		}
+
+		public String value() {
+			return this.value;
+		}
+
+		public static Origin fromValue(String value) {
+			Origin constant = CONSTANTS.get(value);
+			if (constant == null) {
+				throw new IllegalArgumentException(value);
+			} else {
+				return constant;
+			}
+		}
+
 	}
 
 }

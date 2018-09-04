@@ -129,7 +129,8 @@ class CreateExternalOrderCall extends Thread {
 			switch (openOrder.getOfferType()) {
 				case SPEND:
 					eventLogger
-						.send(SpendOrderCompletionSubmitted.create(openOrder.getOfferId(), openOrder.getId(), true));
+						.send(SpendOrderCompletionSubmitted.create(openOrder.getOfferId(), openOrder.getId(), true,
+							SpendOrderCompletionSubmitted.Origin.EXTERNAL));
 					break;
 				case EARN:
 					//TODO add event
@@ -146,7 +147,8 @@ class CreateExternalOrderCall extends Thread {
 				case SPEND:
 					final Throwable cause = exception.getCause();
 					final String reason = cause != null ? cause.getMessage() : exception.getMessage();
-					eventLogger.send(SpendOrderCreationFailed.create(reason, openOrder.getOfferId(), true));
+					eventLogger.send(SpendOrderCreationFailed
+						.create(reason, openOrder.getOfferId(), true, SpendOrderCreationFailed.Origin.EXTERNAL));
 					break;
 				case EARN:
 					//TODO add event
@@ -162,7 +164,8 @@ class CreateExternalOrderCall extends Thread {
 			switch (openOrder.getOfferType()) {
 				case SPEND:
 					eventLogger.send(SpendOrderCreationReceived
-						.create(openOrder.getOfferId(), openOrder.getId(), true));
+						.create(openOrder.getOfferId(), openOrder.getId(), true,
+							SpendOrderCreationReceived.Origin.EXTERNAL));
 					break;
 				case EARN:
 					break;
