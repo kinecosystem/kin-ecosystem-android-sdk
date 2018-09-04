@@ -257,7 +257,8 @@ public class OrderRepository implements OrderDataSource {
 				if (order.getError() != null) {
 					reason = order.getError().getMessage();
 				}
-				eventLogger.send(SpendOrderFailed.create(reason, order.getOfferId(), order.getOrderId(), false));
+				eventLogger.send(SpendOrderFailed.create(reason, order.getOfferId(), order.getOrderId(), false,
+					SpendOrderFailed.Origin.MARKETPLACE));
 			}
 		}
 	}
@@ -312,7 +313,7 @@ public class OrderRepository implements OrderDataSource {
 
 	@Override
 	public void purchase(String offerJwt, @Nullable final KinCallback<OrderConfirmation> callback) {
-		eventLogger.send(SpendOrderCreationRequested.create("", true));
+		eventLogger.send(SpendOrderCreationRequested.create("", true, SpendOrderCreationRequested.Origin.EXTERNAL));
 		new ExternalSpendOrderCall(this, blockchainSource, offerJwt, eventLogger,
 			new ExternalSpendOrderCallbacks() {
 
@@ -333,7 +334,8 @@ public class OrderRepository implements OrderDataSource {
 						orderId = order.getOrderId();
 						amount = (double) order.getAmount();
 					}
-					eventLogger.send(SpendOrderCompleted.create(offerID, orderId,true, SpendOrderCompleted.Origin.EXTERNAL, amount));
+					eventLogger.send(SpendOrderCompleted
+						.create(offerID, orderId, true, SpendOrderCompleted.Origin.EXTERNAL, amount));
 
 					if (callback != null) {
 						callback.onResponse(createOrderConfirmation(confirmationJwt));
@@ -358,7 +360,8 @@ public class OrderRepository implements OrderDataSource {
 							reason = exception.getMessage();
 						}
 					}
-					eventLogger.send(SpendOrderFailed.create(reason, offerId, orderId, true));
+					eventLogger.send(
+						SpendOrderFailed.create(reason, offerId, orderId, true, SpendOrderFailed.Origin.EXTERNAL));
 
 					if (callback != null) {
 						callback.onFailure(exception);
