@@ -127,12 +127,10 @@ public class Kin {
 
 	private static void initAccountManager(@NonNull final Context context) {
 		AccountManagerImpl
-			.init(AccountManagerLocal.getInstance(context), instance.eventLogger, AuthRepository.getInstance());
+			.init(AccountManagerLocal.getInstance(context), instance.eventLogger, AuthRepository.getInstance(),
+				BlockchainSourceImpl.getInstance());
 		if (!AccountManagerImpl.getInstance().isAccountCreated()) {
-			KinAccount account = BlockchainSourceImpl.getInstance().getKinAccount();
-			if (account != null) {
-				AccountManagerImpl.getInstance().start(account);
-			}
+			AccountManagerImpl.getInstance().start();
 		}
 	}
 

@@ -18,6 +18,9 @@ import com.kin.ecosystem.core.bi.events.KinBalanceUpdated;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainFailed;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainSubmitted;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainSucceeded;
+import com.kin.ecosystem.core.bi.events.StellarKinTrustlineSetupFailed;
+import com.kin.ecosystem.core.bi.events.StellarKinTrustlineSetupSucceeded;
+import com.kin.ecosystem.core.data.blockchain.CreateTrustLineCall.TrustlineCallback;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
 import java.math.BigDecimal;
@@ -29,6 +32,7 @@ import kin.core.PaymentInfo;
 import kin.core.ResultCallback;
 import kin.core.TransactionId;
 import kin.core.exception.CreateAccountException;
+import kin.core.exception.OperationFailedException;
 
 public class BlockchainSourceImpl implements BlockchainSource {
 
@@ -322,6 +326,33 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	public void removePaymentObserver(Observer<Payment> observer) {
 		completedPayment.removeObserver(observer);
 		decrementPaymentCount();
+	}
+
+	@Override
+	public void createTrustLine(@NonNull final KinCallback<Void> callback) {
+		new CreateTrustLineCall(account, new TrustlineCallback() {
+			@Override
+			public void onSuccess() {
+				eventLogger.send(StellarKinTrustlineSetupSucceeded.create());
+				mainThread.execute(new Runnable() {
+					@Override
+					public void run() {
+						callback.onResponse(null);
+					}
+				});
+			}
+
+			@Override
+			public void onFailure(final OperationFailedException e) {
+				eventLogger.send(StellarKinTrustlineSetupFailed.create(e.getMessage()));
+				mainThread.execute(new Runnable() {
+					@Override
+					public void run() {
+						callback.onFailure(ErrorUtil.getBlockchainException(e));
+					}
+				});
+			}
+		}).start();
 	}
 
 	private void decrementPaymentCount() {

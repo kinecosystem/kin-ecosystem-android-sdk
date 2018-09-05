@@ -20,28 +20,34 @@ ext {
     junitVersion = '4.12'
     mockitoVersion = '2.13.0'
     robolectricVersion = '3.6.1'
+    kotlinVersion = kotlin_version
+    mokitoKotlinVersion = '2.0.0-RC1'
 
     //Testing Packages
     junitPackage = 'junit'
     mockitoPackage = 'org.mockito'
     robolectricPackage = 'org.robolectric'
+    kotlinPackage = 'org.jetbrains.kotlin'
+    mokitoKotlinPackage = 'com.nhaarman.mockitokotlin2'
 
     devDependencies = [
-            kinCore            : buildDependency(kinFoundationPackage, 'kin-core-android', kinCoreVersion),
-            appCompat_v7       : buildDependency(supportPackage, 'appcompat-v7', supportVersion),
-            recyclerView_v7    : buildDependency(supportPackage, 'recyclerview-v7', supportVersion),
-            constraintLayout   : buildDependency(constraintLayoutPackage, 'constraint-layout', constraintLayoutVersion),
-            picasso            : buildDependency(picassoPackage, 'picasso', picassoVersion),
-            gson               : buildDependency(gsonPackage, 'gson', gsonVersion),
-            okhttp3            : buildDependency(okhttp3Packace, 'okhttp', okhttp3Version),
-            loginInterceptor3  : buildDependency(okhttp3Packace, 'logging-interceptor', okhttp3Version),
-            supportAnnotations : buildDependency(supportPackage, 'support-annotations', supportVersion),
+            kinCore           : buildDependency(kinFoundationPackage, 'kin-core-android', kinCoreVersion),
+            appCompat_v7      : buildDependency(supportPackage, 'appcompat-v7', supportVersion),
+            recyclerView_v7   : buildDependency(supportPackage, 'recyclerview-v7', supportVersion),
+            constraintLayout  : buildDependency(constraintLayoutPackage, 'constraint-layout', constraintLayoutVersion),
+            picasso           : buildDependency(picassoPackage, 'picasso', picassoVersion),
+            gson              : buildDependency(gsonPackage, 'gson', gsonVersion),
+            okhttp3           : buildDependency(okhttp3Packace, 'okhttp', okhttp3Version),
+            loginInterceptor3 : buildDependency(okhttp3Packace, 'logging-interceptor', okhttp3Version),
+            supportAnnotations: buildDependency(supportPackage, 'support-annotations', supportVersion),
     ]
 
     testingDependencies = [
-            junit      : buildDependency(junitPackage, 'junit', junitVersion),
-            mockito    : buildDependency(mockitoPackage, 'mockito-core', mockitoVersion),
-            robolectric: buildDependency(robolectricPackage, 'robolectric', robolectricVersion),
+            junit       : buildDependency(junitPackage, 'junit', junitVersion),
+            mockito     : buildDependency(mockitoPackage, 'mockito-core', mockitoVersion),
+            robolectric : buildDependency(robolectricPackage, 'robolectric', robolectricVersion),
+            kotlin      : buildDependency(kotlinPackage, 'kotlin-stdlib', kotlinVersion),
+            mockitoKotlin: buildDependency(mokitoKotlinPackage, 'mockito-kotlin', mokitoKotlinVersion),
     ]
 }
 
