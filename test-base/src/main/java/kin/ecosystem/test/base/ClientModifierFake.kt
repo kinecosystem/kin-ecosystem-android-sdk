@@ -6,21 +6,12 @@ import com.kin.ecosystem.core.bi.events.ClientProxy
 
 class ClientModifierFake : ClientModifier {
 
-    private var os: String? = null
-    private var language: String? = null
-    private var carrier: String? = null
-    private var deviceId: String? = null
-    private var deviceManufacturer: String? = null
-    private var deviceModel: String? = null
-
-    init {
-        this.os = "android"
-        this.language = "english"
-        this.carrier = "test_carrier"
-        this.deviceId = "test_device_id"
-        this.deviceManufacturer = "test_manufacturer"
-        this.deviceModel = "test_device_model"
-    }
+    private var os: String = "android"
+    private var language: String = "english"
+    private var carrier: String = "test_carrier"
+    private var deviceId: String = "test_device_id"
+    private var deviceManufacturer: String = "test_manufacturer"
+    private var deviceModel: String = "test_device_model"
 
     override fun modify(mutable: ClientProxy) {
         mutable.setOs { os }

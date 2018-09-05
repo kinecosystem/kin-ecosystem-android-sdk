@@ -7,17 +7,10 @@ import java.util.UUID
 
 class CommonModifierFake : CommonModifier {
 
-    private var eventId: UUID? = null
-    private var version: String? = null
-    private var userId: String? = null
-    private var timestamp: Long = 0
-
-    init {
-        this.eventId = UUID.randomUUID()
-        this.version = "test_version"
-        this.userId = "test_user_id"
-        this.timestamp = System.currentTimeMillis()
-    }
+    private var eventId: UUID = UUID.randomUUID()
+    private var version: String = "test_version"
+    private var userId: String = "test_user_id"
+    private var timestamp: Long = System.currentTimeMillis()
 
     override fun modify(mutable: CommonProxy) {
         mutable.setEventId { eventId }

@@ -28,13 +28,13 @@ class AccountManagerImplTest : BaseTestClass() {
         on { accountState } doAnswer { REQUIRE_CREATION }
     }
 
-    private var eventLogger: EventLogger = mock()
-    private var authRepository: AuthDataSource = mock {
+    private val eventLogger: EventLogger = mock()
+    private val authRepository: AuthDataSource = mock {
         val authTokenCaptor = argumentCaptor<KinCallback<AuthToken>>()
         on { getAuthToken(authTokenCaptor.capture()) } doAnswer { authTokenCaptor.firstValue.onResponse(any()) }
     }
 
-    private var blockchainSource: BlockchainSource = mock {
+    private val blockchainSource: BlockchainSource = mock {
         val trustlineCaptor = argumentCaptor<KinCallback<Void>>()
         on { createTrustLine(trustlineCaptor.capture()) } doAnswer { trustlineCaptor.firstValue.onResponse(null) }
         on { kinAccount } doAnswer { kinAccount }
@@ -44,10 +44,9 @@ class AccountManagerImplTest : BaseTestClass() {
     private val blockchainEvents: BlockchainEvents = mock {
         on { addAccountCreationListener(any()) } doAnswer { accountCreationRegistration }
     }
-    private var kinAccount: KinAccount = mock {
+    private val kinAccount: KinAccount = mock {
         on { blockchainEvents() } doAnswer { blockchainEvents }
     }
-
 
     private lateinit var accountManager: AccountManager
 
@@ -124,11 +123,8 @@ class AccountManagerImplTest : BaseTestClass() {
             firstValue.onEvent(null)
         }
 
-
-
         assertEquals(listOf(1, 1, 2, 3, 4), stateList)
     }
-
 
     @Test
     fun `retry from the beginning`() {

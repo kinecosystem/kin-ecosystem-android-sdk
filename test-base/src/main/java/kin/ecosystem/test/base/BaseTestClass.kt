@@ -6,9 +6,9 @@ import org.junit.Before
 
 open class BaseTestClass {
 
-    protected var userModifierFake = UserModifierFake()
-    protected var commonModifierFake = CommonModifierFake()
-    protected var clientModifierFake = ClientModifierFake()
+    protected val userModifierFake = UserModifierFake()
+    protected val commonModifierFake = CommonModifierFake()
+    protected val clientModifierFake = ClientModifierFake()
 
     @Before
     @Throws(Exception::class)
