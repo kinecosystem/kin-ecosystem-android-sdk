@@ -4,19 +4,19 @@ import static com.kin.ecosystem.core.accountmanager.AccountManager.CREATION_COMP
 import static com.kin.ecosystem.core.accountmanager.AccountManager.ERROR;
 
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.core.accountmanager.AccountManager;
+import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.common.KinCallback;
+import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
-import com.kin.ecosystem.base.BasePresenter;
-import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.core.accountmanager.AccountManager;
 import com.kin.ecosystem.core.accountmanager.AccountManager.AccountState;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.BackButtonOnWelcomeScreenPageTapped;
 import com.kin.ecosystem.core.bi.events.WelcomeScreenButtonTapped;
 import com.kin.ecosystem.core.bi.events.WelcomeScreenPageViewed;
 import com.kin.ecosystem.core.data.auth.AuthDataSource;
-import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.splash.view.ISplashView;
 import java.util.Timer;
 import java.util.TimerTask;

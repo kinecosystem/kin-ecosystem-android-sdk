@@ -1,5 +1,8 @@
 package com.kin.ecosystem.poll.presenter;
 
+import static com.kin.ecosystem.poll.view.IPollWebView.ORDER_SUBMISSION_FAILED;
+import static com.kin.ecosystem.poll.view.IPollWebView.SOMETHING_WENT_WRONG;
+
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.common.KinCallback;
@@ -21,6 +24,7 @@ import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.poll.view.IPollWebView;
+import com.kin.ecosystem.poll.view.IPollWebView.Message;
 
 
 public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements IPollWebViewPresenter {
@@ -87,7 +91,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 
 			@Override
 			public void onFailure(KinEcosystemException exception) {
-				showToast("Oops something went wrong...");
+				showToast(SOMETHING_WENT_WRONG);
 				try {
 					String errorMsg = ((ApiException) exception.getCause()).getResponseBody().getMessage();
 					eventLogger.send(EarnOrderCreationFailed.create(errorMsg, offerID));
@@ -161,7 +165,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 				@Override
 				public void onFailure(KinEcosystemException exception) {
 					EarnOrderFailed.create(exception.getCause().getMessage(), offerID, orderId);
-					showToast("Order submission failed");
+					showToast(ORDER_SUBMISSION_FAILED);
 				}
 			});
 		}
@@ -195,7 +199,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 		orderRepository.getOpenOrder().addObserver(openOrderObserver);
 	}
 
-	private void showToast(final String msg) {
+	private void showToast(@Message final int msg) {
 		if (view != null) {
 			view.showToast(msg);
 		}

@@ -18,10 +18,10 @@ import android.widget.ImageView;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
-import com.kin.ecosystem.history.view.OrderHistoryRecyclerAdapter.ViewHolder;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.Order.Status;
+import com.kin.ecosystem.history.view.OrderHistoryRecyclerAdapter.ViewHolder;
 
 
 public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, ViewHolder> {
@@ -36,7 +36,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
     private static int itemHeight = NOT_INITIALIZED;
     private static int itemHalfHeight = NOT_INITIALIZED;
 
-    private static final String TRANSACTION_FAILED_MSG = "Transaction failed";
+    private static String TRANSACTION_FAILED_MSG = "";
 
     OrderHistoryRecyclerAdapter() {
         super(R.layout.kinecosystem_order_history_recycler_item);
@@ -62,6 +62,12 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
         if (itemHeight == NOT_INITIALIZED) {
             itemHeight = resources.getDimensionPixelOffset(R.dimen.kinecosystem_order_history_item_height);
             itemHalfHeight = itemHeight / 2;
+        }
+    }
+
+    private void initStrings(Context context) {
+        if(TextUtils.isEmpty(TRANSACTION_FAILED_MSG)) {
+            TRANSACTION_FAILED_MSG = context.getString(R.string.kinecosystem_transaction_failed);
         }
     }
 
@@ -95,6 +101,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
         protected void init(Context context) {
             initColors(context);
             initSizes(context);
+            initStrings(context);
         }
 
         @Override

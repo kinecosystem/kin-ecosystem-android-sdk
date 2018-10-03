@@ -2,8 +2,10 @@ package com.kin.ecosystem.marketplace.view;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BottomDialog;
 import com.kin.ecosystem.main.INavigator;
@@ -26,6 +28,24 @@ public class SpendDialog extends BottomDialog<ISpendDialogPresenter> implements 
         presenter.dialogDismissed();
     }
 
+
+    @Override
+    public void showToast(@Message final int msg) {
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getContext(), getMessageResId(msg), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private @StringRes int getMessageResId(@Message final int msg) {
+        switch (msg) {
+            default:
+            case SOMETHING_WENT_WRONG:
+                return R.string.kinecosystem_something_went_wrong;
+        }
+    }
 
     @Override
     public void showThankYouLayout(@NonNull final String title, @NonNull final String description) {

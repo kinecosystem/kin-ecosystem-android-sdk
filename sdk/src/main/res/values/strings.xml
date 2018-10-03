@@ -27,7 +27,11 @@
     <string name="kinecosystem_earn_completed">Done! %s Kin earned</string>
     <string name="kinecosystem_spend_completed">Great, your code is ready</string>
     <string name="kinecosystem_sorry_this_may_take_some_time">Sorry - this may take some time</string>
-
+    <string name="kinecosystem_copied_to_your_clipboard">Copied to your clipboard</string>
+    <string name="kinecosystem_copied_text">copied text</string>
+    <string name="kinecosystem_transaction_failed">Transaction failed</string>
+    <string name="kinecosystem_you_dont_have_enough_kin">You don\'t have enough Kin</string>
+    <string name="kinecosystem_order_submission_failed">Order submission failed</string>
 
     <!--Menu-->
     <string name="kinecosystem_info_menu">Info</string>
