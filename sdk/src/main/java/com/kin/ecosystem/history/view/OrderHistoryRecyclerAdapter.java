@@ -36,7 +36,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
     private static int itemHeight = NOT_INITIALIZED;
     private static int itemHalfHeight = NOT_INITIALIZED;
 
-    private static String TRANSACTION_FAILED_MSG = null;
+    private static String TRANSACTION_FAILED_MSG = "";
 
     OrderHistoryRecyclerAdapter() {
         super(R.layout.kinecosystem_order_history_recycler_item);
@@ -66,7 +66,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
     }
 
     private void initStrings(Context context) {
-        if(TRANSACTION_FAILED_MSG == null) {
+        if(TextUtils.isEmpty(TRANSACTION_FAILED_MSG)) {
             TRANSACTION_FAILED_MSG = context.getString(R.string.kinecosystem_transaction_failed);
         }
     }
