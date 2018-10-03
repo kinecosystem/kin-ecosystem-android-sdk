@@ -1,13 +1,25 @@
 package com.kin.ecosystem.marketplace.view;
 
+import android.support.annotation.IntDef;
 import com.kin.ecosystem.base.IBaseView;
+import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
 import com.kin.ecosystem.marketplace.presenter.MarketplacePresenter;
-import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
+
+	int NOT_ENOUGH_KIN = 0x00000001;
+	int SOMETHING_WENT_WRONG = 0x00000002;
+
+	@IntDef({NOT_ENOUGH_KIN, SOMETHING_WENT_WRONG})
+	@Retention(RetentionPolicy.SOURCE)
+	@interface Message {
+
+	}
 
 	void setSpendList(List<Offer> response);
 
@@ -17,7 +29,7 @@ public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
 
 	void showSpendDialog(ISpendDialogPresenter spendDialogPresenter);
 
-	void showToast(String msg);
+	void showToast(@Message final int msg);
 
 	void notifyEarnItemRemoved(int index);
 
@@ -26,8 +38,6 @@ public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
 	void notifySpendItemRemoved(int index);
 
 	void notifySpendItemInserted(int index);
-
-	void showSomethingWentWrong();
 
 	void updateEarnSubtitle(boolean isEmpty);
 

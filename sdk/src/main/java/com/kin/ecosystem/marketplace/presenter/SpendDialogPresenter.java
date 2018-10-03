@@ -1,5 +1,7 @@
 package com.kin.ecosystem.marketplace.presenter;
 
+import static com.kin.ecosystem.marketplace.view.ISpendDialog.SOMETHING_WENT_WRONG;
+
 import android.os.Handler;
 import com.kin.ecosystem.base.BaseDialogPresenter;
 import com.kin.ecosystem.common.KinCallback;
@@ -27,6 +29,7 @@ import com.kin.ecosystem.core.network.model.OfferInfo.Confirmation;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.marketplace.view.ISpendDialog;
+import com.kin.ecosystem.marketplace.view.ISpendDialog.Message;
 import java.math.BigDecimal;
 
 
@@ -86,7 +89,7 @@ class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements 
 
 			@Override
 			public void onFailure(KinEcosystemException exception) {
-				showToast("Oops something went wrong...");
+				showToast(SOMETHING_WENT_WRONG);
 				try {
 					String errorMsg = ((ApiException) exception.getCause()).getResponseBody().getMessage();
 					eventLogger.send(SpendOrderCreationFailed
@@ -194,13 +197,13 @@ class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements 
 
 			@Override
 			public void onFailure(KinEcosystemException exception) {
-				showToast("Oops something went wrong...");
+				showToast(SOMETHING_WENT_WRONG);
 				Logger.log(new Log().withTag(TAG).put(" Submit onFailure", exception));
 			}
 		});
 	}
 
-	private void showToast(String msg) {
+	private void showToast(@Message final int msg) {
 		if (view != null) {
 			view.showToast(msg);
 		}

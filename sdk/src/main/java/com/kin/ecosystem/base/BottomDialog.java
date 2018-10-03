@@ -22,10 +22,9 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.kin.ecosystem.R;
-import com.squareup.picasso.Picasso;
 import com.kin.ecosystem.core.util.DeviceUtils;
+import com.squareup.picasso.Picasso;
 
 public abstract class BottomDialog<T extends IBottomDialogPresenter> extends Dialog
     implements IBottomDialog<T>, OnClickListener {
@@ -38,7 +37,7 @@ public abstract class BottomDialog<T extends IBottomDialogPresenter> extends Dia
     protected ImageView closeButton;
     protected ImageView brandImage;
 
-    private Handler mainHandler = new Handler(Looper.getMainLooper());
+    protected Handler mainHandler = new Handler(Looper.getMainLooper());
 
     private static final float WIDTH_RATIO = 0.422f;
     private static final float HEIGHT_RATIO = 0.733f;
@@ -152,16 +151,6 @@ public abstract class BottomDialog<T extends IBottomDialogPresenter> extends Dia
     @Override
     public void setUpButtonText(int stringRes) {
         bottomButton.setText(stringRes);
-    }
-
-    @Override
-    public void showToast(final String msg) {
-        mainHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override

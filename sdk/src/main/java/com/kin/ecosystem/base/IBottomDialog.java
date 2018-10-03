@@ -14,7 +14,5 @@ public interface IBottomDialog<T extends IBottomDialogPresenter> extends IBaseVi
 
     void setupDescription(String descriptionText);
 
-    void setUpButtonText(@StringRes int stringRes);
-
-    void showToast(String msg);
+    void setUpButtonText(@StringRes final int stringRes);
 }

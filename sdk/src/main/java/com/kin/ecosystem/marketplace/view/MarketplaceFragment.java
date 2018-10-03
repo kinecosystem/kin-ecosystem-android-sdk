@@ -3,6 +3,7 @@ package com.kin.ecosystem.marketplace.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,11 +16,11 @@ import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.common.exception.ClientException;
+import com.kin.ecosystem.core.network.model.Offer;
+import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter;
 import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
 import com.kin.ecosystem.marketplace.presenter.MarketplacePresenter;
-import com.kin.ecosystem.core.network.model.Offer;
-import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.poll.view.PollWebViewActivity;
 import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
 import java.util.List;
@@ -130,8 +131,18 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 	}
 
 	@Override
-	public void showToast(String msg) {
-		Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+	public void showToast(@Message final int msg) {
+		Toast.makeText(getContext(), getMessageResId(msg), Toast.LENGTH_SHORT).show();
+	}
+
+	private @StringRes int getMessageResId(@Message final int msg) {
+		switch (msg) {
+			case NOT_ENOUGH_KIN:
+				return R.string.kinecosystem_you_dont_have_enough_kin;
+			case SOMETHING_WENT_WRONG:
+			default:
+				return R.string.kinecosystem_something_went_wrong;
+		}
 	}
 
 	@Override
@@ -152,11 +163,6 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 	@Override
 	public void notifySpendItemInserted(int index) {
 		spendRecyclerAdapter.itemInserted(index);
-	}
-
-	@Override
-	public void showSomethingWentWrong() {
-		showToast(getString(R.string.kinecosystem_something_went_wrong));
 	}
 
 	@Override

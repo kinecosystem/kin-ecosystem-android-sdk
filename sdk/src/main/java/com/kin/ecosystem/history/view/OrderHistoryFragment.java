@@ -13,10 +13,9 @@ import android.view.ViewGroup;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.base.BaseRecyclerAdapter.OnItemClickListener;
+import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.history.presenter.ICouponDialogPresenter;
 import com.kin.ecosystem.history.presenter.IOrderHistoryPresenter;
-import com.kin.ecosystem.history.presenter.OrderHistoryPresenter;
-import com.kin.ecosystem.core.network.model.Order;
 import java.util.List;
 
 public class OrderHistoryFragment extends Fragment implements IOrderHistoryView {

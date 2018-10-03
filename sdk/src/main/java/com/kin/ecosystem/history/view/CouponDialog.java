@@ -35,11 +35,12 @@ public class CouponDialog extends BottomDialog<ICouponDialogPresenter> implement
 
 	@Override
 	public void copyCouponCode(String couponCode) {
-		ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-		ClipData clip = ClipData.newPlainText("copied text", couponCode);
+		final Context context = getContext();
+		ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+		ClipData clip = ClipData.newPlainText(context.getString(R.string.kinecosystem_copied_text), couponCode);
 		clipboard.setPrimaryClip(clip);
 
-		Toast.makeText(getContext(), "Copied to your clipboard", Toast.LENGTH_SHORT).show();
+		Toast.makeText(getContext(), R.string.kinecosystem_copied_to_your_clipboard, Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
