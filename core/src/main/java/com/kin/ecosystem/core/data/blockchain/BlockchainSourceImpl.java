@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
+import com.kin.ecosystem.backup.BackupManager;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.KinCallbackAdapter;
 import com.kin.ecosystem.common.ObservableData;
@@ -72,7 +73,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	private static final int MEMO_SPLIT_LENGTH = 3;
 
 	private BlockchainSourceImpl(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient,
-		@NonNull BlockchainSource.Local local)
+		@NonNull BlockchainSource.Local local, @NonNull BackupManager backupManager)
 		throws BlockchainException {
 		this.eventLogger = eventLogger;
 		this.kinClient = kinClient;
@@ -82,12 +83,12 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	public static void init(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient,
-		@NonNull BlockchainSource.Local local)
+		@NonNull BlockchainSource.Local local, @NonNull BackupManager backupManager)
 		throws BlockchainException {
 		if (instance == null) {
 			synchronized (BlockchainSourceImpl.class) {
 				if (instance == null) {
-					instance = new BlockchainSourceImpl(eventLogger, kinClient, local);
+					instance = new BlockchainSourceImpl(eventLogger, kinClient, local, backupManager);
 				}
 			}
 		}
