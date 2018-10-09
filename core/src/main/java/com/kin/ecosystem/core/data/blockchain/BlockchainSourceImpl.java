@@ -46,6 +46,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private final KinClient kinClient;
 	private KinAccount account;
+	private BackupManager backupManager;
 	private ObservableData<Balance> balance = ObservableData.create(new Balance());
 	/**
 	 * Listen for {@code completedPayment} in order to be notify about completed transaction sent to
@@ -77,6 +78,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		throws BlockchainException {
 		this.eventLogger = eventLogger;
 		this.kinClient = kinClient;
+		this.backupManager = backupManager;
 		this.local = local;
 		createKinAccountIfNeeded();
 		initBalance();

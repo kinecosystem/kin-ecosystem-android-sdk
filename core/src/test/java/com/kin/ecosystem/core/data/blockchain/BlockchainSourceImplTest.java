@@ -11,6 +11,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.kin.ecosystem.backup.BackupManager;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainFailed;
@@ -56,6 +57,9 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 
 	@Mock
 	private KinClient kinClient;
+
+	@Mock
+	private BackupManager backupManager;
 
 	@Mock
 	private BlockchainSource.Local local;
@@ -110,14 +114,14 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 		Field instance = BlockchainSourceImpl.class.getDeclaredField("instance");
 		instance.setAccessible(true);
 		instance.set(null, null);
-		BlockchainSourceImpl.init(eventLogger, kinClient, local);
+		BlockchainSourceImpl.init(eventLogger, kinClient, local, backupManager);
 		blockchainSource = BlockchainSourceImpl.getInstance();
 	}
 
 	@Test
 	public void init_once_and_one_account() throws Exception {
-		BlockchainSourceImpl.init(eventLogger, kinClient, local);
-		BlockchainSourceImpl.init(eventLogger, kinClient, local);
+		BlockchainSourceImpl.init(eventLogger, kinClient, local, backupManager);
+		BlockchainSourceImpl.init(eventLogger, kinClient, local, backupManager);
 		assertEquals(blockchainSource, BlockchainSourceImpl.getInstance());
 		verify(kinClient).addAccount();
 	}
