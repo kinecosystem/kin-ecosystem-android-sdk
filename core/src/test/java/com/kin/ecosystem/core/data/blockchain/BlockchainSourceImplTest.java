@@ -55,9 +55,6 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 	private KinClient kinClient;
 
 	@Mock
-	private BackupManager backupManager;
-
-	@Mock
 	private BlockchainSource.Local local;
 
 	@Mock
@@ -110,14 +107,14 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 		Field instance = BlockchainSourceImpl.class.getDeclaredField("instance");
 		instance.setAccessible(true);
 		instance.set(null, null);
-		BlockchainSourceImpl.init(eventLogger, kinClient, local, backupManager);
+		BlockchainSourceImpl.init(eventLogger, kinClient, local);
 		blockchainSource = BlockchainSourceImpl.getInstance();
 	}
 
 	@Test
 	public void init_once_and_one_account() throws Exception {
-		BlockchainSourceImpl.init(eventLogger, kinClient, local, backupManager);
-		BlockchainSourceImpl.init(eventLogger, kinClient, local, backupManager);
+		BlockchainSourceImpl.init(eventLogger, kinClient, local);
+		BlockchainSourceImpl.init(eventLogger, kinClient, local);
 		assertEquals(blockchainSource, BlockchainSourceImpl.getInstance());
 		verify(kinClient).addAccount();
 	}
