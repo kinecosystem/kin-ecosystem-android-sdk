@@ -2,7 +2,6 @@ package com.kin.ecosystem.backup;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 class Launcher {
 
@@ -12,13 +11,11 @@ class Launcher {
 		this.activity = activity;
 	}
 
-	public void backupFlow(@NonNull final KeyStoreProvider keyStoreProvider, @NonNull final Callback callback,
-		@Nullable final BackupEvents events) {
-		//TODO start backup flow
+	public void backupFlow(@NonNull final KeyStoreProvider keyStoreProvider) {
+		//TODO start backup flow, should do startActivityForResult
 	}
 
-	public void restoreFlow(@NonNull final KeyStoreProvider keyStoreProvider, @NonNull final Callback callback,
-		@Nullable final RestoreEvents events) {
-		//TODO start restore flow
+	public void restoreFlow(@NonNull final KeyStoreProvider keyStoreProvider) {
+		//TODO start restore flow, should do startActivityForResult
 	}
 }

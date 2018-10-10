@@ -6,7 +6,7 @@ public interface KeyStoreProvider {
 	void exportAccount(String password) throws Exception;
 
 	//TODO we need to define exception
-	void importAccount(String password) throws Exception;
+	int importAccount(String password) throws Exception;
 
 	//TODO we need to define exceptions
 	void validatePassword(String password) throws Exception;

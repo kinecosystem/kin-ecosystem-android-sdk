@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
-import com.kin.ecosystem.backup.BackupManager;
+import com.kin.ecosystem.backup.KeyStoreProvider;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.KinCallbackAdapter;
 import com.kin.ecosystem.common.ObservableData;
@@ -46,7 +46,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private final KinClient kinClient;
 	private KinAccount account;
-	private BackupManager backupManager;
 	private ObservableData<Balance> balance = ObservableData.create(new Balance());
 	/**
 	 * Listen for {@code completedPayment} in order to be notify about completed transaction sent to
@@ -74,23 +73,22 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	private static final int MEMO_SPLIT_LENGTH = 3;
 
 	private BlockchainSourceImpl(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient,
-		@NonNull BlockchainSource.Local local, @NonNull BackupManager backupManager)
+		@NonNull BlockchainSource.Local local)
 		throws BlockchainException {
 		this.eventLogger = eventLogger;
 		this.kinClient = kinClient;
-		this.backupManager = backupManager;
 		this.local = local;
 		createKinAccountIfNeeded();
 		initBalance();
 	}
 
 	public static void init(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient,
-		@NonNull BlockchainSource.Local local, @NonNull BackupManager backupManager)
+		@NonNull BlockchainSource.Local local)
 		throws BlockchainException {
 		if (instance == null) {
 			synchronized (BlockchainSourceImpl.class) {
 				if (instance == null) {
-					instance = new BlockchainSourceImpl(eventLogger, kinClient, local, backupManager);
+					instance = new BlockchainSourceImpl(eventLogger, kinClient, local);
 				}
 			}
 		}
@@ -356,6 +354,11 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				});
 			}
 		}).start();
+	}
+
+	@Override
+	public KeyStoreProvider getKeyStoreProvider() {
+		return new KeyStoreProviderImpl();
 	}
 
 	private void decrementPaymentCount() {

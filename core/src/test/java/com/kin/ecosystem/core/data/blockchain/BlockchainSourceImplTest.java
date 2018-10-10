@@ -11,15 +11,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.kin.ecosystem.backup.BackupManager;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainFailed;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainSucceeded;
 import com.kin.ecosystem.common.model.Balance;
-import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
-import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
-import com.kin.ecosystem.core.data.blockchain.Payment;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import kin.core.BlockchainEvents;

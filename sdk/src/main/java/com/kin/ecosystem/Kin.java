@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.kin.ecosystem.backup.BackupProvider;
+import com.kin.ecosystem.backup.BackupManager;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.KinEnvironment;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
@@ -160,8 +160,7 @@ public class Kin {
 				return Configuration.getEnvironment().getIssuer();
 			}
 		}, KIN_ECOSYSTEM_STORE_PREFIX_KEY);
-		BlockchainSourceImpl.init(instance.eventLogger, kinClient, BlockchainSourceLocal.getInstance(context),
-			BackupProvider.create());
+		BlockchainSourceImpl.init(instance.eventLogger, kinClient, BlockchainSourceLocal.getInstance(context));
 	}
 
 	private static void initAuthRepository(@NonNull final Context context, @NonNull final SignInData signInData)

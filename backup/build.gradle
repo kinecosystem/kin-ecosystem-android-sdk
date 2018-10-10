@@ -15,4 +15,5 @@ android {
 dependencies {
 
     implementation devDependencies.supportAnnotations
+    implementation devDependencies.appCompat_v7
 }

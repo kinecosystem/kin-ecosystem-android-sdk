@@ -1,15 +1,51 @@
 package com.kin.ecosystem.backup;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
-public interface BackupManager {
+public final class BackupManager {
 
-	void backupFlow(@NonNull final Activity activity, @NonNull final KeyStoreProvider keyStoreProvider,
-		@NonNull final Callback callback, @Nullable final BackupEvents events);
+	private static volatile KeyStoreProvider keyStoreProvider;
+	private final CallbackManager callbackManager;
 
-	void restoreFlow(@NonNull final Activity activity, @NonNull final KeyStoreProvider keyStoreProvider,
-		@NonNull final Callback callback, @Nullable final RestoreEvents events);
+	private BackupManager(@NonNull final Context context, @NonNull final KeyStoreProvider keyStoreProvider) {
+		BackupManager.keyStoreProvider = keyStoreProvider;
+		final Context applicationContext = context.getApplicationContext();
+		this.callbackManager = new CallbackManager(
+			new EventDispatcherImpl(new BroadcastManagerImpl(applicationContext)));
+	}
 
+	protected static KeyStoreProvider getKeyStoreProvider() {
+		return keyStoreProvider;
+	}
+
+	public void backupFlow(@NonNull final Activity activity) {
+		new Launcher(activity).backupFlow(keyStoreProvider);
+	}
+
+	public void restoreFlow(@NonNull final Activity activity) {
+		new Launcher(activity).restoreFlow(keyStoreProvider);
+	}
+
+	public void registerBackupCallback(@NonNull final BackupCallback backupCallback) {
+		this.callbackManager.setBackupCallback(backupCallback);
+	}
+
+	public void registerBackupEvents(@NonNull final BackupEvents backupEvents) {
+		this.callbackManager.setBackupEvents(backupEvents);
+	}
+
+	public void registerRestoreCallback(@NonNull final RestoreCallback restoreCallback) {
+		this.callbackManager.setRestoreCallback(restoreCallback);
+	}
+
+	public void registerRestoreEvents(@NonNull final RestoreEvents restoreEvents) {
+		this.callbackManager.setRestoreEvents(restoreEvents);
+	}
+
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		this.callbackManager.onActivityResult(requestCode, resultCode, data);
+	}
 }
