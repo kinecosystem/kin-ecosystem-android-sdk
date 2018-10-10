@@ -8,6 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 
 public interface EventDispatcher {
 
+
 	@IntDef({BACKUP_EVENTS, RESTORE_EVENTS})
 	@Retention(RetentionPolicy.SOURCE)
 	public @interface EventType {
@@ -26,4 +27,5 @@ public interface EventDispatcher {
 
 	void sendEvent(@EventType final int eventType, @NonNull final String eventName);
 
+	void unregister();
 }

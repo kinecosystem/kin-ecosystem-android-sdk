@@ -49,6 +49,12 @@ class CallbackManager {
 		this.eventDispatcher.setRestoreEvents(restoreEvents);
 	}
 
+	public void unregisterCallbacksAndEvents() {
+		this.eventDispatcher.unregister();
+		this.backupCallback = null;
+		this.restoreCallback = null;
+	}
+
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == REQ_CODE_BACKUP) {
 			handleBackupResult(resultCode, data);

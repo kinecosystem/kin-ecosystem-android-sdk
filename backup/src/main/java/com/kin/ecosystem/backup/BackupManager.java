@@ -45,6 +45,10 @@ public final class BackupManager {
 		this.callbackManager.setRestoreEvents(restoreEvents);
 	}
 
+	public void unregisterCallbacksAndEvents() {
+		this.callbackManager.unregisterCallbacksAndEvents();
+	}
+
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		this.callbackManager.onActivityResult(requestCode, resultCode, data);
 	}

@@ -14,6 +14,7 @@ class EventDispatcherImpl implements EventDispatcher {
 
 	private @NonNull
 	final BroadcastManager broadcastManager;
+	private Listener broadcastListener;
 
 	public EventDispatcherImpl(@NonNull final BroadcastManager broadcastManager) {
 		this.broadcastManager = broadcastManager;
@@ -43,13 +44,24 @@ class EventDispatcherImpl implements EventDispatcher {
 		broadcastManager.sendEvent(data);
 	}
 
+	@Override
+	public void unregister() {
+		if (broadcastListener != null) {
+			broadcastManager.unregister();
+		}
+	}
+
 	private void registerBroadcastListener() {
-		broadcastManager.register(new Listener() {
-			@Override
-			public void onReceive(Intent data) {
-				parseData(data);
-			}
-		});
+		if (broadcastListener != null) {
+			broadcastListener = new Listener() {
+				@Override
+				public void onReceive(Intent data) {
+					parseData(data);
+
+				}
+			};
+			broadcastManager.register(broadcastListener);
+		}
 	}
 
 	private void parseData(Intent data) {
