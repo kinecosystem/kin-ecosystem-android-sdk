@@ -9,10 +9,10 @@ import com.kin.ecosystem.backup.exception.BackupException;
 
 class CallbackManager {
 
-	private @Nullable
-	BackupCallback backupCallback;
-	private @Nullable
-	RestoreCallback restoreCallback;
+	@Nullable
+	private BackupCallback backupCallback;
+	@Nullable
+	private RestoreCallback restoreCallback;
 
 	private final EventDispatcher eventDispatcher;
 
@@ -29,7 +29,7 @@ class CallbackManager {
 	private static final String EXTRA_KEY_ERROR_CODE = "EXTRA_KEY_ERROR_CODE";
 	private static final String EXTRA_KEY_IMPORTED_ACCOUNT_INDEX = "EXTRA_KEY_IMPORTED_ACCOUNT_INDEX";
 
-	public CallbackManager(@NonNull final EventDispatcher eventDispatcher) {
+	CallbackManager(@NonNull final EventDispatcher eventDispatcher) {
 		this.eventDispatcher = eventDispatcher;
 	}
 

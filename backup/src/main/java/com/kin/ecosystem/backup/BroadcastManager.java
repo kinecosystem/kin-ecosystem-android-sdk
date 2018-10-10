@@ -3,7 +3,7 @@ package com.kin.ecosystem.backup;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
-public interface BroadcastManager {
+interface BroadcastManager {
 
 	interface Listener {
 

@@ -10,7 +10,7 @@ public final class BackupManager {
 	private static volatile KeyStoreProvider keyStoreProvider;
 	private final CallbackManager callbackManager;
 
-	private BackupManager(@NonNull final Context context, @NonNull final KeyStoreProvider keyStoreProvider) {
+	public BackupManager(@NonNull final Context context, @NonNull final KeyStoreProvider keyStoreProvider) {
 		BackupManager.keyStoreProvider = keyStoreProvider;
 		final Context applicationContext = context.getApplicationContext();
 		this.callbackManager = new CallbackManager(

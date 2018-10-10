@@ -7,16 +7,16 @@ import com.kin.ecosystem.backup.BroadcastManager.Listener;
 
 class EventDispatcherImpl implements EventDispatcher {
 
-	private @Nullable
-	BackupEvents backupEvents;
-	private @Nullable
-	RestoreEvents restoreEvents;
+	@Nullable
+	private BackupEvents backupEvents;
+	@Nullable
+	private RestoreEvents restoreEvents;
 
-	private @NonNull
-	final BroadcastManager broadcastManager;
+	@NonNull
+	private final BroadcastManager broadcastManager;
 	private Listener broadcastListener;
 
-	public EventDispatcherImpl(@NonNull final BroadcastManager broadcastManager) {
+	EventDispatcherImpl(@NonNull final BroadcastManager broadcastManager) {
 		this.broadcastManager = broadcastManager;
 	}
 
