@@ -1,13 +1,13 @@
 package com.kin.ecosystem.backup;
 
+import android.support.annotation.NonNull;
+import com.kin.ecosystem.backup.exception.BackupException;
+
 public interface KeyStoreProvider {
 
-	//TODO we need to define exception
-	void exportAccount(String password) throws Exception;
+	String exportAccount(@NonNull final String password) throws BackupException;
 
-	//TODO we need to define exception
-	int importAccount(String password) throws Exception;
+	int importAccount(@NonNull final String keyStore, @NonNull final String password) throws BackupException;
 
-	//TODO we need to define exceptions
-	void validatePassword(String password) throws Exception;
+	boolean validatePassword(@NonNull final String password);
 }
