@@ -84,6 +84,10 @@ class CallbackManager {
 					int code = data.getIntExtra(EXTRA_KEY_ERROR_CODE, 0);
 					restoreCallback.onFailure(new BackupException(code, errorMessage));
 					break;
+				default:
+					restoreCallback.onFailure(
+						new BackupException(CODE_UNEXPECTED, "Unexpected error - unknown result code " + resultCode));
+					break;
 			}
 		}
 	}
@@ -101,6 +105,10 @@ class CallbackManager {
 					String errorMessage = data.getStringExtra(EXTRA_KEY_ERROR_MESSAGE);
 					int code = data.getIntExtra(EXTRA_KEY_ERROR_CODE, 0);
 					backupCallback.onFailure(new BackupException(code, errorMessage));
+					break;
+				default:
+					backupCallback.onFailure(
+						new BackupException(CODE_UNEXPECTED, "Unexpected error - unknown result code " + resultCode));
 					break;
 			}
 		}
