@@ -23,10 +23,12 @@ public class KeyStoreProviderImpl implements KeyStoreProvider {
 	private final KinClient kinClient;
 	@Nullable
 	private final KinAccount kinAccount;
+	private Pattern pattern;
 
 	KeyStoreProviderImpl(@NonNull final KinClient kinClient, @NonNull final KinAccount kinAccount) {
 		this.kinClient = kinClient;
 		this.kinAccount = kinAccount;
+		this.pattern = Pattern.compile("^(?=.*\\d)(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}\\[\\]])(?!.*[^a-zA-Z0-9!@#$%^&*()_+{}\\[\\]])(.{9,})$");
 	}
 
 	@Override
@@ -73,8 +75,6 @@ public class KeyStoreProviderImpl implements KeyStoreProvider {
 	@Override
 	public boolean validatePassword(@NonNull final String password) {
 		Validator.checkNotNull(password, "password");
-		Pattern pattern = Pattern
-			.compile("^(?=.*\\d)(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}\\[\\]])(?!.*[^a-zA-Z0-9!@#$%^&*()_+{}\\[\\]])(.{9,})$");
 		return pattern.matcher(password).matches();
 	}
 }
