@@ -358,7 +358,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	@Override
 	public KeyStoreProvider getKeyStoreProvider() {
-		return new KeyStoreProviderImpl();
+		return new KeyStoreProviderImpl(kinClient, account);
 	}
 
 	private void decrementPaymentCount() {

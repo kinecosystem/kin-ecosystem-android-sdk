@@ -24,7 +24,7 @@ public class KeyStoreProviderImpl implements KeyStoreProvider {
 	@Nullable
 	private final KinAccount kinAccount;
 
-	public KeyStoreProviderImpl(@NonNull final KinClient kinClient, @NonNull final KinAccount kinAccount) {
+	KeyStoreProviderImpl(@NonNull final KinClient kinClient, @NonNull final KinAccount kinAccount) {
 		this.kinClient = kinClient;
 		this.kinAccount = kinAccount;
 	}
