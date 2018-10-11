@@ -73,7 +73,8 @@ public class KeyStoreProviderImpl implements KeyStoreProvider {
 	@Override
 	public boolean validatePassword(@NonNull final String password) {
 		Validator.checkNotNull(password, "password");
-		Pattern pattern = Pattern.compile("^(?=.*\\d)(?=.*[A-Z])(?=.*[@#!])(?!.*[^a-zA-Z0-9@#!])(.{9,})$");
+		Pattern pattern = Pattern
+			.compile("^(?=.*\\d)(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}\\[\\]])(?!.*[^a-zA-Z0-9!@#$%^&*()_+{}\\[\\]])(.{9,})$");
 		return pattern.matcher(password).matches();
 	}
 }
