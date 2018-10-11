@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import com.kin.ecosystem.backup.KeyStoreProvider;
 import com.kin.ecosystem.backup.exception.BackupException;
 import com.kin.ecosystem.core.util.Validator;
+import java.util.regex.Pattern;
 import kin.core.KinAccount;
 import kin.core.KinClient;
 import kin.core.exception.CorruptedDataException;
@@ -72,7 +73,7 @@ public class KeyStoreProviderImpl implements KeyStoreProvider {
 	@Override
 	public boolean validatePassword(@NonNull final String password) {
 		Validator.checkNotNull(password, "password");
-		// 9 characters min, 1 upper case, 1 special character, 1 digit.
-		return true;
+		Pattern pattern = Pattern.compile("^(?=.*\\d)(?=.*[A-Z])(?=.*[@#!])(?!.*[^a-zA-Z0-9@#!])(.{9,})$");
+		return pattern.matcher(password).matches();
 	}
 }
