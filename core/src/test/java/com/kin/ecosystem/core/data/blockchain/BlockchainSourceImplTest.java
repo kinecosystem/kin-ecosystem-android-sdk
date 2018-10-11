@@ -2,6 +2,7 @@ package com.kin.ecosystem.core.data.blockchain;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.ArgumentMatchers.any;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.kin.ecosystem.backup.KeyStoreProvider;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainFailed;
@@ -250,5 +252,10 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 		assertEquals(value, balance.getAmount());
 		verify(local).setBalance(value.intValue());
 
+	}
+
+	@Test
+	public void get_KeyStoreProvider_is_not_null() {
+		assertNotNull(blockchainSource.getKeyStoreProvider());
 	}
 }
