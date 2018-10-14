@@ -16,7 +16,14 @@ public interface QRBarcodeGenerator {
 
 	class QRBarcodeGeneratorException extends Exception {
 
-		public QRBarcodeGeneratorException(String msg, Throwable throwable) {
+		QRBarcodeGeneratorException(String msg, Throwable throwable) {
+			super(msg, throwable);
+		}
+	}
+
+	class QRNotFoundInImageException extends QRBarcodeGeneratorException {
+
+		QRNotFoundInImageException(String msg, Throwable throwable) {
 			super(msg, throwable);
 		}
 	}

@@ -39,7 +39,7 @@ class QRBarcodeGeneratorImpl implements QRBarcodeGenerator {
 			Bitmap bitmap = bitMatrixToBitmap(bitMatrix);
 			return fileUriHandler.saveFile(bitmap);
 		} catch (IOException | WriterException e) {
-			throw new QRBarcodeGeneratorException("cannot generate a QR, see underline error.", e);
+			throw new QRBarcodeGeneratorException("Cannot generate a QR, caused by : " + e.getMessage(), e);
 		}
 	}
 
@@ -74,8 +74,10 @@ class QRBarcodeGeneratorImpl implements QRBarcodeGenerator {
 		Result result;
 		try {
 			result = reader.decode(binaryBitmap);
-		} catch (NotFoundException | ChecksumException | FormatException e) {
-			throw new QRBarcodeGeneratorException("cannot decode a QR, see underline error.", e);
+		} catch (ChecksumException | FormatException e) {
+			throw new QRBarcodeGeneratorException("Cannot decode a QR, caused by :" + e.getMessage(), e);
+		} catch (NotFoundException e) {
+			throw new QRNotFoundInImageException("Cannot find a QR code in given image.", e);
 		}
 		return result.getText();
 	}

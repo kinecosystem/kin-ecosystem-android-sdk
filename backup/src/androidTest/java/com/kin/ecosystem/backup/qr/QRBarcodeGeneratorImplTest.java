@@ -2,13 +2,12 @@ package com.kin.ecosystem.backup.qr;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.backup.qr.QRBarcodeGenerator.QRBarcodeGeneratorException;
+import com.kin.ecosystem.backup.qr.QRBarcodeGenerator.QRNotFoundInImageException;
 import java.io.IOException;
 import java.util.HashMap;
 import org.junit.Before;
@@ -18,6 +17,18 @@ import org.junit.rules.ExpectedException;
 import org.mockito.MockitoAnnotations;
 
 public class QRBarcodeGeneratorImplTest {
+
+	private static final String TEST_DATA = "{\n"
+		+ "  \"pkey\": \"GCJS54LFY5H5UXSAKLWP3GXCNKAZZLRAPO45B6PLAAINRVKJSWZGZAF4\",\n"
+		+ "  \"seed\": \"cb60a6afa2427194f4fbdc19969dd2b34677e2cae5108d34f51970a43f47eacf36520ebe26c34064ab6d1cd29e9e8c362685651a81f0ce0525dd728028b7956e037545ec223b72d8\",\n"
+		+ "  \"salt\": \"f16fa85a112efdd00eb0134239f53c37\"\n"
+		+ "}";
+
+	private static final String EXPECTED_TEXT_QR_IMAGE = "{\n"
+		+ "  \"pkey\": \"GCJS54LFY5H5UXSAKLWP3GXCNKAZZLRAPO45B6PLAAINRVKJSWZGZAF4\",\n"
+		+ "  \"seed\": \"c71d8965df716fb0a6edb53b5f4215f9f5b29552aef761e44b0d3fd9a26eb8fae3001e5be27e1d0df1f3baf72b2ddea38075cd0783d14e842c555d1b7264211546503fab7b647b09\",\n"
+		+ "  \"salt\": \"ad1b920b16e4f7b519ac5117af77069d\"\n"
+		+ "}";
 
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
@@ -55,34 +66,31 @@ public class QRBarcodeGeneratorImplTest {
 	@Test
 	public void generate_success() throws Exception {
 		Uri uri = qrBarcodeGenerator
-			.generate("SC76EXP6QIVRASGA4EUCXQAOGJTQUATEI64AA5ZUULUKBOLIKJF46TL6");
+			.generate(TEST_DATA);
 		assertNotNull(uri);
 		assertNotNull(fakeQRFileHandler.loadFile(uri));
 	}
 
 	@Test
 	public void decodeQR_success() throws Exception {
-		Bitmap bitmap = TestUtils.loadBitmapFromResource(this.getClass(), "test_qr.png");
+		Bitmap bitmap = TestUtils.loadBitmapFromResource(this.getClass(), "qr_test.png");
 		String decodedQR = qrBarcodeGenerator.decodeQR(bitmap);
-		assertThat(decodedQR, equalTo("SDUMNNJHYTSGBENQLL6LQF6CZUU64V7RALXFQENR22NK7M3GPWSDCZU6"));
+		assertThat(decodedQR, equalTo(EXPECTED_TEXT_QR_IMAGE));
 	}
 
 	@Test
-	public void decodeQR_error() throws Exception {
-		expectedEx.expect(QRBarcodeGeneratorException.class);
-		expectedEx.expectCause(isA(IllegalStateException.class));
-		//empty bitmap
+	public void decodeQR_EmptyImage_NotFoundException() throws Exception {
+		expectedEx.expect(QRNotFoundInImageException.class);
 		Bitmap bitmap = Bitmap.createBitmap(300, 300, Bitmap.Config.ARGB_8888);
-		String decodedQR = qrBarcodeGenerator.decodeQR(bitmap);
+		qrBarcodeGenerator.decodeQR(bitmap);
 	}
 
 	@Test
 	public void generateAndDecode_success() throws Exception {
-		String data = "SDFMH6MW6JTIUHIVU3UABZF7I7GFWMYXWMQEJQNFIBF4ZVWBSCKMDYQL";
-		Uri uri = qrBarcodeGenerator.generate(data);
+		Uri uri = qrBarcodeGenerator.generate(TEST_DATA);
 		Bitmap bitmap = fakeQRFileHandler.loadFile(uri);
 		String decodedQR = qrBarcodeGenerator.decodeQR(bitmap);
-		assertThat(decodedQR, equalTo(data));
+		assertThat(decodedQR, equalTo(TEST_DATA));
 	}
 
 }
