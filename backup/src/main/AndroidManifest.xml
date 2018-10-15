@@ -3,7 +3,7 @@
 
     <application>
         <provider
-            android:authorities="${applicationId}"
+            android:authorities="com.kin.ecosystem.backup"
             android:exported="false"
             android:grantUriPermissions="true"
             android:name="android.support.v4.content.FileProvider">

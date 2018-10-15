@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
-import com.kin.ecosystem.backup.BuildConfig;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
@@ -17,6 +16,7 @@ import java.io.IOException;
 
 public class QRFileUriHandlerImpl implements QRFileUriHandler {
 
+	private static final String RELATIVE_PATH_FILENAME_QR_IMAGE = "/qr_codes/backup_qr.png";
 	private final Context context;
 
 	public QRFileUriHandlerImpl(@NonNull Context context) {
@@ -40,15 +40,33 @@ public class QRFileUriHandlerImpl implements QRFileUriHandler {
 	@NonNull
 	@Override
 	public Uri saveFile(@NonNull Bitmap bitmap) throws IOException {
-		String filepath = context.getFilesDir().getAbsolutePath() + "qr_codes/backup_qr.png";
-		File file = new File(filepath);
+		File file = getOrCreateSaveFile();
 		FileOutputStream stream = new FileOutputStream(file);
 		bitmap.compress(Bitmap.CompressFormat.PNG, 90, stream);
 		stream.close();
 		return FileProvider.getUriForFile(
 			context,
-			BuildConfig.APPLICATION_ID,
+			"com.kin.ecosystem.backup",
 			file);
+	}
+
+	@NonNull
+	private File getOrCreateSaveFile() throws IOException {
+		String filepath = context.getFilesDir().getAbsolutePath() + RELATIVE_PATH_FILENAME_QR_IMAGE;
+		File file = new File(filepath);
+		if (!file.exists()) {
+			if (!file.getParentFile().exists()) {
+				boolean dirCreated = file.getParentFile().mkdir();
+				if (!dirCreated) {
+					throw new IOException("Cannot create folder at target location.");
+				}
+			}
+			boolean fileCreated = file.createNewFile();
+			if (!fileCreated) {
+				throw new IOException("Cannot create file at target location.");
+			}
+		}
+		return file;
 	}
 
 	@NonNull
