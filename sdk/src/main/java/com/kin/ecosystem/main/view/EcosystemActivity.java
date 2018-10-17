@@ -211,6 +211,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	public void navigateToSettings() {
 		Intent settingsIntent = new Intent(this, SettingsActivity.class);
 		startActivity(settingsIntent);
+		overridePendingTransition(R.anim.kinecosystem_slide_in_right, R.anim.kinecosystem_slide_out_left);
 	}
 
 	@Override

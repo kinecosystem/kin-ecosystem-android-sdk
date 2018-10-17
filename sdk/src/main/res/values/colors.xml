@@ -2,10 +2,11 @@
 <resources>
     <color name="kinecosystem_bluePrimary">#047CFC</color>
     <color name="kinecosystem_bluePrimaryDark">#0365ce</color>
-    <color name="kinecosystem_hot_blue">#0000ff</color>
+    <color name="kinecosystem_blue_h">#0000ff</color>
 
     <color name="kinecosystem_title">#5C6786</color>
-    <color name="kinecosystem_subtitle">#7884A5</color>
+    <color name="kinecosystem_subtitle">@color/kinecosystem_gray_dark</color>
+
 
     <color name="kinecosystem_white">#fff</color>
 
@@ -14,6 +15,7 @@
     <color name="kinecosystem_gray">#CFD0D4</color>
     <color name="kinecosystem_gray_light">#d7dce9</color>
     <color name="kinecosystem_gray_darker">#aaa</color>
+    <color name="kinecosystem_gray_dark">#7884a5</color>
 
     <color name="kinecosystem_transparent">#00000000</color>
 

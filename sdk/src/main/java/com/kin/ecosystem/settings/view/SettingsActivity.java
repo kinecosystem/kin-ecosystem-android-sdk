@@ -88,6 +88,7 @@ public class SettingsActivity extends BaseToolbarActivity implements ISettingsVi
 	@Override
 	public void navigateBack() {
 		onBackPressed();
+		overridePendingTransition(0, R.anim.kinecosystem_slide_out_right);
 	}
 
 	@Override
@@ -124,6 +125,8 @@ public class SettingsActivity extends BaseToolbarActivity implements ISettingsVi
 		switch (color) {
 			case BLUE:
 				return R.color.kinecosystem_hot_blue;
+			case GRAY:
+				return R.color.kinecosystem_gray_dark;
 			default:
 				return -1;
 		}

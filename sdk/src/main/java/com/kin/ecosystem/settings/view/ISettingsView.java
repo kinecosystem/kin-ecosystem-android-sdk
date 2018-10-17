@@ -18,9 +18,9 @@ public interface ISettingsView extends IBaseView<ISettingsPresenter> {
 	}
 
 	int BLUE = 0x00000001;
-	int GREY = 0x00000002;
+	int GRAY = 0x00000002;
 
-	@IntDef({BLUE, GREY})
+	@IntDef({BLUE, GRAY})
 	@Retention(RetentionPolicy.SOURCE)
 	@interface IconColor {
 

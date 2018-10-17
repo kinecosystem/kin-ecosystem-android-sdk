@@ -1,7 +1,7 @@
 package com.kin.ecosystem.settings.presenter;
 
 import static com.kin.ecosystem.settings.view.ISettingsView.BLUE;
-import static com.kin.ecosystem.settings.view.ISettingsView.GREY;
+import static com.kin.ecosystem.settings.view.ISettingsView.GRAY;
 import static com.kin.ecosystem.settings.view.ISettingsView.ITEM_BACKUP;
 
 import android.content.Intent;
@@ -72,7 +72,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 
 	private void updateBalanceSettingsIcon() {
 		if (!settingsDataSource.isBackedUp()) {
-			changeIconColor(ITEM_BACKUP, GREY);
+			changeIconColor(ITEM_BACKUP, GRAY);
 			if (currentBalance.getAmount().compareTo(BigDecimal.ZERO) == 1) {
 				changeTouchIndicator(ITEM_BACKUP, true);
 			}
