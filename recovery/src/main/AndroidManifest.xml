@@ -1,0 +1,26 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.kin.ecosystem.recovery">
+
+    <application>
+        <provider
+            android:authorities="com.kin.ecosystem.recovery"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:name="android.support.v4.content.FileProvider">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider_paths"/>
+
+        </provider>
+
+        <activity
+            android:label="@string/kinrecovery_restore"
+            android:name="com.kin.ecosystem.recovery.restore.view.RestoreActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/kinrecoveryNoActionBar"/>
+
+    </application>
+</manifest>
+
+

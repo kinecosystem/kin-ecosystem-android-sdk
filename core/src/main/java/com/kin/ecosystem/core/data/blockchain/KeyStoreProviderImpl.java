@@ -1,15 +1,15 @@
 package com.kin.ecosystem.core.data.blockchain;
 
-import static com.kin.ecosystem.backup.exception.BackupException.CODE_BACKUP_FAILED;
-import static com.kin.ecosystem.backup.exception.BackupException.CODE_RESTORE_FAILED;
-import static com.kin.ecosystem.backup.exception.BackupException.CODE_RESTORE_INVALID_KEYSTORE_FORMAT;
-import static com.kin.ecosystem.backup.exception.BackupException.CODE_UNEXPECTED;
+import static com.kin.ecosystem.recovery.exception.BackupException.CODE_BACKUP_FAILED;
+import static com.kin.ecosystem.recovery.exception.BackupException.CODE_RESTORE_FAILED;
+import static com.kin.ecosystem.recovery.exception.BackupException.CODE_RESTORE_INVALID_KEYSTORE_FORMAT;
+import static com.kin.ecosystem.recovery.exception.BackupException.CODE_UNEXPECTED;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.kin.ecosystem.backup.KeyStoreProvider;
-import com.kin.ecosystem.backup.exception.BackupException;
 import com.kin.ecosystem.core.util.Validator;
+import com.kin.ecosystem.recovery.KeyStoreProvider;
+import com.kin.ecosystem.recovery.exception.BackupException;
 import java.util.regex.Pattern;
 import kin.core.KinAccount;
 import kin.core.KinClient;

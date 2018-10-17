@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="kinrecovery_button_corners_radius">25dp</dimen>
+    <dimen name="kinrecovery_button_dash_width">2dp</dimen>
+
+</resources>

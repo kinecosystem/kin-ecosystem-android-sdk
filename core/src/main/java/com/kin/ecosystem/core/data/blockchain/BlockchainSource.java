@@ -2,10 +2,10 @@ package com.kin.ecosystem.core.data.blockchain;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.kin.ecosystem.backup.KeyStoreProvider;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.model.Balance;
+import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
 import kin.core.KinAccount;
 

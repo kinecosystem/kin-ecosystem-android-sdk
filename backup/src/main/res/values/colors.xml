@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <color name="kinbackup_bluePrimary">#0000ff</color>
-    <color name="kinbackup_bluePrimaryDark">#0365ce</color>
-    <color name="kinbackup_white">#ffffff</color>
-</resources>

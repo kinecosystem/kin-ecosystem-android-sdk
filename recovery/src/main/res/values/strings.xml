@@ -1,0 +1,7 @@
+<resources>
+
+    <string name="kinrecovery_upload_qr_title">Import your Kin</string>
+    <string name="kinrecovery_upload_qr_description">All you need is to upload\nthe QR code we provided you</string>
+    <string name="kinrecovery_upload_qr_btn">Upload your QR code</string>
+    <string name="kinrecovery_restore">Restore</string>
+</resources>
