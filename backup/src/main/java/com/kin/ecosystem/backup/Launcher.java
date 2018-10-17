@@ -1,7 +1,9 @@
 package com.kin.ecosystem.backup;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import com.kin.ecosystem.backup.restore.view.RestoreActivity;
 
 class Launcher {
 
@@ -11,11 +13,11 @@ class Launcher {
 		this.activity = activity;
 	}
 
-	public void backupFlow(@NonNull final KeyStoreProvider keyStoreProvider) {
+	void backupFlow(@NonNull final KeyStoreProvider keyStoreProvider) {
 		//TODO start backup flow, should do startActivityForResult
 	}
 
-	public void restoreFlow(@NonNull final KeyStoreProvider keyStoreProvider) {
-		//TODO start restore flow, should do startActivityForResult
+	void restoreFlow(@NonNull final KeyStoreProvider keyStoreProvider) {
+		activity.startActivity(new Intent(activity, RestoreActivity.class));
 	}
 }

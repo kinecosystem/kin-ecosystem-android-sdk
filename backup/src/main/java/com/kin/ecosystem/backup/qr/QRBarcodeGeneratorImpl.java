@@ -20,14 +20,15 @@ import com.google.zxing.Result;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
+import com.kin.ecosystem.backup.utils.Logger;
 import java.io.IOException;
 
-class QRBarcodeGeneratorImpl implements QRBarcodeGenerator {
+public class QRBarcodeGeneratorImpl implements QRBarcodeGenerator {
 
 	private static final int QR_PIXELS = 600;
 	private final QRFileUriHandler fileUriHandler;
 
-	QRBarcodeGeneratorImpl(QRFileUriHandler fileUriHandler) {
+	public QRBarcodeGeneratorImpl(QRFileUriHandler fileUriHandler) {
 		this.fileUriHandler = fileUriHandler;
 	}
 
@@ -38,8 +39,12 @@ class QRBarcodeGeneratorImpl implements QRBarcodeGenerator {
 			BitMatrix bitMatrix = new MultiFormatWriter().encode(text, BarcodeFormat.QR_CODE, QR_PIXELS, QR_PIXELS);
 			Bitmap bitmap = bitMatrixToBitmap(bitMatrix);
 			return fileUriHandler.saveFile(bitmap);
-		} catch (IOException | WriterException e) {
+		} catch (WriterException e) {
+			Logger.e("decodeQR failed. ", e);
 			throw new QRBarcodeGeneratorException("Cannot generate a QR, caused by : " + e.getMessage(), e);
+		} catch (IOException e) {
+			Logger.e("decodeQR failed. ", e);
+			throw new QRFileHandlingException("Cannot load QR file, caused by :" + e.getMessage(), e);
 		}
 	}
 
@@ -61,24 +66,29 @@ class QRBarcodeGeneratorImpl implements QRBarcodeGenerator {
 
 	@NonNull
 	@Override
-	public String decodeQR(@NonNull Bitmap bitmap) throws QRBarcodeGeneratorException {
-		int width = bitmap.getWidth();
-		int height = bitmap.getHeight();
-		int[] pixels = new int[width * height];
-		bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-
-		RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
-		BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source));
-
-		Reader reader = new MultiFormatReader();
-		Result result;
+	public String decodeQR(@NonNull Uri uri) throws QRBarcodeGeneratorException {
 		try {
-			result = reader.decode(binaryBitmap);
+			Bitmap bitmap = fileUriHandler.loadFile(uri);
+			int width = bitmap.getWidth();
+			int height = bitmap.getHeight();
+			int[] pixels = new int[width * height];
+			bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+
+			RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
+			BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source));
+
+			Reader reader = new MultiFormatReader();
+			Result result = reader.decode(binaryBitmap);
+			return result.getText();
+		} catch (IOException e) {
+			Logger.e("decodeQR failed. ", e);
+			throw new QRFileHandlingException("Cannot load QR file, caused by :" + e.getMessage(), e);
 		} catch (ChecksumException | FormatException e) {
+			Logger.e("decodeQR failed. ", e);
 			throw new QRBarcodeGeneratorException("Cannot decode a QR, caused by :" + e.getMessage(), e);
 		} catch (NotFoundException e) {
+			Logger.e("decodeQR failed. ", e);
 			throw new QRNotFoundInImageException("Cannot find a QR code in given image.", e);
 		}
-		return result.getText();
 	}
 }

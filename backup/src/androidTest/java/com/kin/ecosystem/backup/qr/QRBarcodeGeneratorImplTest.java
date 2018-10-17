@@ -74,7 +74,8 @@ public class QRBarcodeGeneratorImplTest {
 	@Test
 	public void decodeQR_success() throws Exception {
 		Bitmap bitmap = TestUtils.loadBitmapFromResource(this.getClass(), "qr_test.png");
-		String decodedQR = qrBarcodeGenerator.decodeQR(bitmap);
+		Uri uri = fakeQRFileHandler.saveFile(bitmap);
+		String decodedQR = qrBarcodeGenerator.decodeQR(uri);
 		assertThat(decodedQR, equalTo(EXPECTED_TEXT_QR_IMAGE));
 	}
 
@@ -82,14 +83,14 @@ public class QRBarcodeGeneratorImplTest {
 	public void decodeQR_EmptyImage_NotFoundException() throws Exception {
 		expectedEx.expect(QRNotFoundInImageException.class);
 		Bitmap bitmap = Bitmap.createBitmap(300, 300, Bitmap.Config.ARGB_8888);
-		qrBarcodeGenerator.decodeQR(bitmap);
+		Uri uri = fakeQRFileHandler.saveFile(bitmap);
+		qrBarcodeGenerator.decodeQR(uri);
 	}
 
 	@Test
 	public void generateAndDecode_success() throws Exception {
 		Uri uri = qrBarcodeGenerator.generate(TEST_DATA);
-		Bitmap bitmap = fakeQRFileHandler.loadFile(uri);
-		String decodedQR = qrBarcodeGenerator.decodeQR(bitmap);
+		String decodedQR = qrBarcodeGenerator.decodeQR(uri);
 		assertThat(decodedQR, equalTo(TEST_DATA));
 	}
 

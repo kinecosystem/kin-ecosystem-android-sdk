@@ -2,7 +2,7 @@ ext {
 
     //Version
     kinCoreVersion = '3907369a9c'
-    constraintLayoutVersion = '1.0.2'
+    constraintLayoutVersion = '1.1.2'
     supportVersion = '26.1.0'
     picassoVersion = '2.71828'
     okhttp3Version = '3.9.1'

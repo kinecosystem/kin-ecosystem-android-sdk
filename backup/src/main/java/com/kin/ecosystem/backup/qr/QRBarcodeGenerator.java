@@ -1,7 +1,6 @@
 package com.kin.ecosystem.backup.qr;
 
 
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
@@ -12,7 +11,7 @@ public interface QRBarcodeGenerator {
 	Uri generate(@NonNull String text) throws QRBarcodeGeneratorException;
 
 	@NonNull
-	String decodeQR(@NonNull Bitmap bitmap) throws QRBarcodeGeneratorException;
+	String decodeQR(@NonNull Uri uri) throws QRBarcodeGeneratorException;
 
 	class QRBarcodeGeneratorException extends Exception {
 
@@ -24,6 +23,13 @@ public interface QRBarcodeGenerator {
 	class QRNotFoundInImageException extends QRBarcodeGeneratorException {
 
 		QRNotFoundInImageException(String msg, Throwable throwable) {
+			super(msg, throwable);
+		}
+	}
+
+	class QRFileHandlingException extends QRBarcodeGeneratorException {
+
+		QRFileHandlingException(String msg, Throwable throwable) {
 			super(msg, throwable);
 		}
 	}

@@ -13,6 +13,13 @@
                 android:resource="@xml/file_provider_paths"/>
 
         </provider>
+
+        <activity
+            android:label="@string/kin_backup_restore"
+            android:name=".restore.view.RestoreActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/KinBackupNoActionBar"/>
+
     </application>
 </manifest>
 

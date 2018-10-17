@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import java.io.IOException;
 
-public interface QRFileUriHandler {
+interface QRFileUriHandler {
 
 	@NonNull
 	Bitmap loadFile(@NonNull Uri uri) throws IOException;
