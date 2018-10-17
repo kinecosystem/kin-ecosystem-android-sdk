@@ -115,7 +115,7 @@ public class BalanceView extends ConstraintLayout implements IBalanceView {
 	private void initColors() {
 		blueColor = ContextCompat.getColor(getContext(), R.color.kinecosystem_bluePrimary);
 		orangeColor = ContextCompat.getColor(getContext(), R.color.kinecosystem_orange);
-		redColor = ContextCompat.getColor(getContext(), R.color.kinecosystem_red);
+		redColor = ContextCompat.getColor(getContext(), R.color.kinecosystem_light_red);
 		subTitleColor = ContextCompat.getColor(getContext(), R.color.kinecosystem_subtitle);
 	}
 

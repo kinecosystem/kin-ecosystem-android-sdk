@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <include layout="@layout/kinecosystem_toolbar_layout"/>
+
+    <com.kin.ecosystem.settings.view.SettingsItem
+        android:id="@+id/keep_your_kin_safe"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/kinecosystem_settings_item_height"
+        app:kinecosystem_src="@drawable/kinecosystem_grey_backup_icon"
+        app:kinecosysem_text="@string/kinecosystem_keep_your_kin_safe"/>
+
+    <include layout="@layout/kinecosystem_separator_line"/>
+
+    <com.kin.ecosystem.settings.view.SettingsItem
+        android:id="@+id/restore_prev_wallet"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/kinecosystem_settings_item_height"
+        app:kinecosystem_src="@drawable/kinecosystem_grey_restore_icon"
+        app:kinecosystem_indicatorVisibility="false"
+        app:kinecosysem_text="@string/kinecosystem_restore_previous_wallet"/>
+
+    <include layout="@layout/kinecosystem_separator_line"/>
+
+</LinearLayout>

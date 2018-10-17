@@ -9,19 +9,36 @@ import static com.kin.ecosystem.main.Title.ORDER_HISTORY_TITLE;
 
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.base.BasePresenter;
+import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.model.Balance;
+import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
+import com.kin.ecosystem.core.data.settings.SettingsDataSource;
 import com.kin.ecosystem.main.INavigator;
 import com.kin.ecosystem.main.ScreenId;
 import com.kin.ecosystem.main.Title;
 import com.kin.ecosystem.main.view.IEcosystemView;
+import java.math.BigDecimal;
 
 public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements IEcosystemPresenter {
 
-	private @ScreenId int visibleScreen = NONE;
+	private @ScreenId
+	int visibleScreen = NONE;
 	private final INavigator navigator;
+	private final SettingsDataSource settingsDataSource;
+	private final BlockchainSource blockchainSource;
 
-	public EcosystemPresenter(@NonNull IEcosystemView view, @NonNull INavigator navigator) {
+	private Observer<Balance> balanceObserver;
+	private Balance currentBalance;
+
+	public EcosystemPresenter(@NonNull IEcosystemView view, @NonNull SettingsDataSource settingsDataSource,
+		@NonNull final BlockchainSource blockchainSource,
+		@NonNull INavigator navigator) {
 		this.view = view;
+		this.settingsDataSource = settingsDataSource;
+		this.blockchainSource = blockchainSource;
 		this.navigator = navigator;
+		this.currentBalance = blockchainSource.getBalance();
+
 		this.view.attachPresenter(this);
 	}
 
@@ -31,6 +48,40 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 		if (this.view != null && visibleScreen != MARKETPLACE) {
 			navigator.navigateToMarketplace();
 		}
+		addBalanceObserver();
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		removeBalanceObserver();
+	}
+
+	private void addBalanceObserver() {
+		balanceObserver = new Observer<Balance>() {
+			@Override
+			public void onChanged(Balance value) {
+				currentBalance = value;
+				updateMenuSettingsIcon();
+			}
+		};
+		blockchainSource.addBalanceObserver(balanceObserver);
+	}
+
+	private void updateMenuSettingsIcon() {
+		if (!settingsDataSource.isBackedUp()) {
+			if (currentBalance.getAmount().compareTo(BigDecimal.ZERO) == 1) {
+				changeMenuTouchIndicator(true);
+			} else {
+				changeMenuTouchIndicator(false);
+			}
+		} else {
+			changeMenuTouchIndicator(false);
+		}
+	}
+
+	private void removeBalanceObserver() {
+		blockchainSource.removeBalanceObserver(balanceObserver);
 	}
 
 	@Override
@@ -64,5 +115,21 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 		if (view != null) {
 			view.updateTitle(title);
 		}
+	}
+
+	private void changeMenuTouchIndicator(final boolean isVisible) {
+		if (view != null) {
+			view.showMenuTouchIndicator(isVisible);
+		}
+	}
+
+	@Override
+	public void settingsMenuClicked() {
+		navigator.navigateToSettings();
+	}
+
+	@Override
+	public void onMenuInitialized() {
+		updateMenuSettingsIcon();
 	}
 }
