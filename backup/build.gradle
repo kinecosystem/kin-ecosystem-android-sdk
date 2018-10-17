@@ -9,6 +9,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "${KIN_ECOSYSTEM_BACKUP_VERSION_NAME}"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 }
 
@@ -16,4 +17,13 @@ dependencies {
 
     implementation devDependencies.supportAnnotations
     implementation devDependencies.appCompat_v7
+    implementation 'com.google.zxing:core:3.3.3'
+    androidTestImplementation testingDependencies.junit
+    androidTestImplementation testingDependencies.mockitoAndroid
+    androidTestImplementation testingDependencies.androidTestRunner
+    androidTestImplementation testingDependencies.hamcrest
+    testImplementation testingDependencies.junit
+    testImplementation testingDependencies.mockito
+    testImplementation testingDependencies.robolectric
+    testImplementation testingDependencies.hamcrest
 }
