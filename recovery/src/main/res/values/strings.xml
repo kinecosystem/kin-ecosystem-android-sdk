@@ -4,4 +4,8 @@
     <string name="kinrecovery_upload_qr_description">All you need is to upload\nthe QR code we provided you</string>
     <string name="kinrecovery_upload_qr_btn">Upload your QR code</string>
     <string name="kinrecovery_restore">Restore</string>
+    <string name="kinrecovery_restore_consent_title">Are you sure you want to restore your previous balance?</string>
+    <string name="kinrecovery_consent_message">Restoring your old balance will replace your current Kin balance.</string>
+    <string name="kinrecovery_loading_file_error">Error Loading QR File</string>
+    <string name="kinrecoevery_error_decoding_QR">Error Processing QR File</string>
 </resources>

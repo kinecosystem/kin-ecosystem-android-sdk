@@ -18,7 +18,7 @@
             android:label="@string/kinrecovery_restore"
             android:name="com.kin.ecosystem.recovery.restore.view.RestoreActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/kinrecoveryNoActionBar"/>
+            android:theme="@style/KinrecoveryNoActionBar"/>
 
     </application>
 </manifest>

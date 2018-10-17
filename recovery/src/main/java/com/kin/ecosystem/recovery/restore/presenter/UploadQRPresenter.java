@@ -10,4 +10,6 @@ public interface UploadQRPresenter extends BasePresenter<UploadQRView> {
 	void uploadClicked();
 
 	void onActivityResult(int requestCode, int resultCode, Intent data);
+
+	void onConsent();
 }

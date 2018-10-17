@@ -26,6 +26,11 @@ public class UploadQRPresenterImpl extends BasePresenterImpl<UploadQRView> imple
 
 	@Override
 	public void uploadClicked() {
+		getView().showConsentDialog();
+	}
+
+	@Override
+	public void onConsent() {
 		fileRequester.requestImageFile();
 	}
 
@@ -47,7 +52,7 @@ public class UploadQRPresenterImpl extends BasePresenterImpl<UploadQRView> imple
 	private void loadEncryptedKeyStore(Uri fileUri) {
 		try {
 			String encryptedKeyStore = qrBarcodeGenerator.decodeQR(fileUri);
-
+			parentPresenter.nextStep();
 		} catch (QRFileHandlingException e) {
 			Logger.e("loadEncryptedKeyStore - loading file failed.", e);
 			view.showErrorLoadingFileDialog();

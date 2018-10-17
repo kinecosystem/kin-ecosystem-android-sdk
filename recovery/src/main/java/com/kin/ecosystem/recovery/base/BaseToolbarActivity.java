@@ -35,10 +35,11 @@ public abstract class BaseToolbarActivity extends AppCompatActivity {
 	}
 
 	public void setToolbarTitle(@StringRes int titleRes) {
+		topToolBar = findViewById(R.id.toolbar);
 		if (titleRes != EMPTY_TITLE) {
-			topToolBar.setTitle(titleRes);
+			getSupportActionBar().setTitle(titleRes);
 		} else {
-			topToolBar.setTitle("");
+			getSupportActionBar().setTitle("");
 		}
 	}
 

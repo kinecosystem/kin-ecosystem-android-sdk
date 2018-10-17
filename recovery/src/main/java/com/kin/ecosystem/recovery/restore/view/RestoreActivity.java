@@ -21,7 +21,7 @@ public class RestoreActivity extends BaseToolbarActivity implements RestoreView 
 
 	@Override
 	protected int getContentLayout() {
-		return R.layout.kinrecovery_restore_activity;
+		return R.layout.kinrecovery_activity_restore;
 	}
 
 	@Override
@@ -51,4 +51,5 @@ public class RestoreActivity extends BaseToolbarActivity implements RestoreView 
 	public void onBackPressed() {
 		presenter.previousStep();
 	}
+
 }

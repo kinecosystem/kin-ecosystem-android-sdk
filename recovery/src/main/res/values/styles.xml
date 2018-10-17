@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="kinrecoveryNoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="KinrecoveryNoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/kinrecovery_bluePrimary</item>
         <item name="colorPrimaryDark">@color/kinrecovery_bluePrimaryDark</item>
         <item name="windowActionBar">false</item>
@@ -9,15 +9,25 @@
         <item name="android:windowBackground">@color/kinrecovery_white</item>
     </style>
 
-    <style name="kinrecoveryToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+    <style name="KinrecoveryToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
         <!-- Enable clicking icons to trigger a ripple effect -->
         <item name="selectableItemBackground">?android:selectableItemBackground</item>
         <item name="selectableItemBackgroundBorderless">?android:selectableItemBackground</item>
 
     </style>
     <!-- This configures the styles for the title within the Toolbar  -->
-    <style name="kinrecoveryToolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+    <style name="KinrecoveryToolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
+
+    <style name="KinrecoveryAlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="buttonBarNegativeButtonStyle">@style/KinrecoveryDialogButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/KinrecoveryDialogButtonStyle</item>
+    </style>
+
+    <style name="KinrecoveryDialogButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/kinrecovery_bluePrimary</item>
+    </style>
+
 </resources>
