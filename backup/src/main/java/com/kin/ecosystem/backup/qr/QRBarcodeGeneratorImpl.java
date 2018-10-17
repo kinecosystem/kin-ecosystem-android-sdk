@@ -9,18 +9,17 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
-import com.google.zxing.ChecksumException;
-import com.google.zxing.FormatException;
+import com.google.zxing.DecodeHintType;
 import com.google.zxing.MultiFormatReader;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.RGBLuminanceSource;
-import com.google.zxing.Reader;
 import com.google.zxing.Result;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import java.io.IOException;
+import java.util.Collections;
 
 class QRBarcodeGeneratorImpl implements QRBarcodeGenerator {
 
@@ -70,12 +69,12 @@ class QRBarcodeGeneratorImpl implements QRBarcodeGenerator {
 		RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
 		BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source));
 
-		Reader reader = new MultiFormatReader();
+		MultiFormatReader reader = new MultiFormatReader();
+		reader.setHints(Collections.singletonMap(DecodeHintType.POSSIBLE_FORMATS,
+			Collections.singleton(BarcodeFormat.QR_CODE)));
 		Result result;
 		try {
 			result = reader.decode(binaryBitmap);
-		} catch (ChecksumException | FormatException e) {
-			throw new QRBarcodeGeneratorException("Cannot decode a QR, caused by :" + e.getMessage(), e);
 		} catch (NotFoundException e) {
 			throw new QRNotFoundInImageException("Cannot find a QR code in given image.", e);
 		}
