@@ -21,7 +21,7 @@ public class AuthToken {
 	@SerializedName("token")
 	private String token = null;
 	@SerializedName("activated")
-	private Boolean activated = false;
+	private Boolean activated = true;
 	@SerializedName("expiration_date")
 	private String expirationDate = null;
 	@SerializedName("app_id")
@@ -34,10 +34,9 @@ public class AuthToken {
 	public AuthToken() {
 	}
 
-	public AuthToken(String token, Boolean activated, String expirationDate, String appID, String userID,
+	public AuthToken(String token, String expirationDate, String appID, String userID,
 		String ecosystemUserID) {
 		this.token = token;
-		this.activated = activated;
 		this.expirationDate = expirationDate;
 		this.appID = appID;
 		this.userID = userID;

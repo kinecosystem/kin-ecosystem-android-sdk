@@ -45,7 +45,7 @@ public class SplashActivity extends AppCompatActivity implements ISplashView {
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.kinecosystem_activity_splash);
-		attachPresenter(new SplashPresenter(AccountManagerImpl.getInstance(), AuthRepository.getInstance(),
+		attachPresenter(new SplashPresenter(AccountManagerImpl.getInstance(),
 			EventLoggerImpl.getInstance(), new Timer()));
 		initViews();
 		initAnimations();

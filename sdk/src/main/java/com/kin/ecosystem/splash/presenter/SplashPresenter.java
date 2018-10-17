@@ -30,7 +30,6 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 	private static final int TIME_OUT_DURATION = 20;
 
 	private final AccountManager accountManager;
-	private final AuthDataSource authRepository;
 	private final EventLogger eventLogger;
 	private final Timer timer;
 
@@ -43,13 +42,11 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 				cancelTimeoutTask();
 
 				if (value == CREATION_COMPLETED) {
-					isAccountCreated = true;
 					navigateToMarketplace();
 				} else {
 					Logger.log(new Log().withTag(TAG).text("accountStateObserver -> showTryAgainLater"));
 					showTryAgainLater();
 					stopLoading(true);
-					shouldShowError = false;
 				}
 			}
 		}
@@ -58,16 +55,11 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 	private TimerTask timeOutTask;
 
 	private boolean animationEnded = false;
-	private boolean isAccountActivated = false;
-	private boolean isAccountCreated = false;
-	private boolean shouldShowError = true;
 
 	public SplashPresenter(@NonNull AccountManager accountManager,
-		@NonNull final AuthDataSource authRepository,
 		@NonNull EventLogger eventLogger,
 		@NonNull Timer timer) {
 		this.accountManager = accountManager;
-		this.authRepository = authRepository;
 		this.eventLogger = eventLogger;
 		this.timer = timer;
 	}
@@ -93,11 +85,8 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 	@Override
 	public void getStartedClicked() {
 		eventLogger.send(WelcomeScreenButtonTapped.create());
-		shouldShowError = true;
-		isAccountActivated = authRepository.isActivated();
 		animateLoading();
 		Logger.log(new Log().withTag(TAG).text("getStartedClicked")
-			.put("isActivate", isAccountCreated)
 			.put("accountState", accountManager.getAccountState()));
 
 		if (!accountManager.isAccountCreated()) {
@@ -109,13 +98,8 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 				Logger.log(new Log().withTag(TAG).text("accountManager -> retry"));
 				accountManager.retry();
 			}
-
 		} else {
-			isAccountCreated = true;
-		}
-
-		if (!isAccountActivated) {
-			activateAccount();
+			navigateToMarketplace();
 		}
 	}
 
@@ -127,7 +111,6 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 				stopLoading(true);
 				showTryAgainLater();
 				removeAccountStateObserver();
-				shouldShowError = false;
 			}
 		};
 	}
@@ -147,15 +130,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 	}
 
 	private void showTryAgainLater() {
-		if(shouldShowError) {
 			showToast(TRY_AGAIN);
-		}
-	}
-
-	private void showSomethingWentWrong() {
-		if(shouldShowError) {
-			showToast(SOMETHING_WENT_WRONG);
-		}
 	}
 
 	private void animateLoading() {
@@ -164,25 +139,6 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 		}
 	}
 
-	private void activateAccount() {
-		authRepository.activateAccount(new KinCallback<Void>() {
-			@Override
-			public void onResponse(Void response) {
-				Logger.log(new Log().withTag(TAG).text("Activate account response"));
-				isAccountActivated = true;
-				navigateToMarketplace();
-			}
-
-			@Override
-			public void onFailure(KinEcosystemException exception) {
-				Logger.log(new Log().withTag(TAG).put("Activate account fail", exception));
-				cancelTimeoutTask();
-				showSomethingWentWrong();
-				stopLoading(true);
-				shouldShowError = false;
-			}
-		});
-	}
 
 	private void stopLoading(boolean reset) {
 		if (view != null) {
@@ -197,7 +153,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 	}
 
 	private void navigateToMarketplace() {
-		if (animationEnded && isAccountActivated && isAccountCreated) {
+		if (accountManager.isAccountCreated() && animationEnded) {
 			if (view != null) {
 				Logger.log(new Log().withTag(TAG).text("navigateToMarketPlace"));
 				view.navigateToMarketPlace();

@@ -104,27 +104,6 @@ public class AuthRepository implements AuthDataSource {
 		}
 	}
 
-	@Override
-	public boolean isActivated() {
-		return localData.isActivated();
-	}
-
-	@Override
-	public void activateAccount(@NonNull final KinCallback<Void> callback) {
-		remoteData.activateAccount(new Callback<AuthToken, ApiException>() {
-			@Override
-			public void onResponse(AuthToken response) {
-				localData.activateAccount();
-				setAuthToken(response);
-				callback.onResponse(null);
-			}
-
-			@Override
-			public void onFailure(ApiException e) {
-				callback.onFailure(ErrorUtil.fromApiException(e));
-			}
-		});
-	}
 
 	@Override
 	public void hasAccount(@NonNull String userId, @NonNull final KinCallback<Boolean> callback) {

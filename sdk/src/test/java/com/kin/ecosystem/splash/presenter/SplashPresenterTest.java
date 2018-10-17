@@ -41,9 +41,6 @@ public class SplashPresenterTest extends BaseTestClass {
 	private AccountManager accountManager;
 
 	@Mock
-	private AuthDataSource authRepository;
-
-	@Mock
 	private EventLogger eventLogger;
 
 	@Mock
@@ -52,16 +49,13 @@ public class SplashPresenterTest extends BaseTestClass {
 	@Mock
 	private ISplashView splashView;
 
-	@Captor
-	private ArgumentCaptor<KinCallback<Void>> activateCapture;
-
 	private SplashPresenter splashPresenter;
 
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 		MockitoAnnotations.initMocks(this);
-		splashPresenter = new SplashPresenter(accountManager, authRepository, eventLogger, timer);
+		splashPresenter = new SplashPresenter(accountManager, eventLogger, timer);
 		splashPresenter.onAttach(splashView);
 		assertNotNull(splashPresenter.getView());
 		verify(eventLogger).send(any(WelcomeScreenPageViewed.class));
@@ -78,9 +72,6 @@ public class SplashPresenterTest extends BaseTestClass {
 		when(accountManager.isAccountCreated()).thenReturn(true);
 		splashPresenter.getStartedClicked();
 		verify(eventLogger).send(any(WelcomeScreenButtonTapped.class));
-		verify(authRepository).activateAccount(activateCapture.capture());
-
-		activateCapture.getValue().onResponse(null);
 		verify(splashView, times(0)).navigateToMarketPlace();
 		verify(splashView, times(1)).animateLoading();
 
@@ -88,44 +79,12 @@ public class SplashPresenterTest extends BaseTestClass {
 		verify(splashView, times(1)).navigateToMarketPlace();
 	}
 
-	@Test
-	public void getStartedClicked_AccountCreated_CallbackSuccessNavigateMP() {
-		when(accountManager.isAccountCreated()).thenReturn(true);
-		splashPresenter.getStartedClicked();
-		verify(authRepository).activateAccount(activateCapture.capture());
-		verify(splashView, times(1)).animateLoading();
-
-		splashPresenter.onAnimationEnded();
-		verify(splashView, times(0)).navigateToMarketPlace();
-
-		activateCapture.getValue().onResponse(null);
-		verify(splashView, times(1)).navigateToMarketPlace();
-	}
 
 	@Test
-	public void getStartedClicked_AccountCreated_CallbackFailed_Reset() {
-		when(accountManager.isAccountCreated()).thenReturn(true);
-		splashPresenter.getStartedClicked();
-		verify(authRepository).activateAccount(activateCapture.capture());
-
-		splashPresenter.onAnimationEnded();
-		activateCapture.getValue().onFailure(null);
-
-		verify(splashView, times(1)).animateLoading();
-		verify(splashView, times(0)).navigateToMarketPlace();
-
-		verify(splashView, times(1)).showToast(ISplashPresenter.SOMETHING_WENT_WRONG);
-		verify(splashView, times(1)).stopLoading(true);
-	}
-
-	@Test
-	public void getStartedClicked_AccountNotCreated_NotNavigateToMP() {
+	public void getStartedClicked__AnimationEnded_AccountNotCreated_NotNavigateToMP() {
 		when(accountManager.isAccountCreated()).thenReturn(false);
 		splashPresenter.getStartedClicked();
-
-		verify(authRepository).activateAccount(activateCapture.capture());
 		splashPresenter.onAnimationEnded();
-		activateCapture.getValue().onResponse(null);
 
 		verify(splashView, times(0)).navigateToMarketPlace();
 	}
@@ -138,13 +97,10 @@ public class SplashPresenterTest extends BaseTestClass {
 
 		splashPresenter.getStartedClicked();
 		verify(timer).schedule(timeoutTask.capture(), anyLong());
-		verify(authRepository).activateAccount(activateCapture.capture());
 		verify(accountManager).addAccountStateObserver(accountStateObserver.capture());
 		verify(splashView, times(1)).animateLoading();
 
 		splashPresenter.onAnimationEnded();
-		activateCapture.getValue().onResponse(null);
-
 		timeoutTask.getValue().run();
 		verify(splashView).stopLoading(true);
 		verify(splashView).showToast(ISplashPresenter.TRY_AGAIN);
@@ -160,18 +116,39 @@ public class SplashPresenterTest extends BaseTestClass {
 
 		splashPresenter.getStartedClicked();
 		verify(timer).schedule(timeoutTask.capture(), anyLong());
-		verify(authRepository).activateAccount(activateCapture.capture());
 		verify(accountManager).addAccountStateObserver(accountStateObserver.capture());
 		verify(splashView, times(1)).animateLoading();
 
 		splashPresenter.onAnimationEnded();
-		activateCapture.getValue().onResponse(null);
 		verify(splashView, times(0)).navigateToMarketPlace();
 
+		when(accountManager.isAccountCreated()).thenReturn(true);
 		accountStateObserver.getValue().onChanged(CREATION_COMPLETED);
+
 		verify(accountManager).removeAccountStateObserver(accountStateObserver.getValue());
 		verify(timer, times(2)).purge();
-		verify(splashView).navigateToMarketPlace();
+		verify(splashView, times(1)).navigateToMarketPlace();
+	}
+
+	@Test
+	public void getStartedClicked_AccountNotCreated_ObserverOnChange_AccountCreated_NavigateToMP_AnimationEnded() {
+		ArgumentCaptor<TimerTask> timeoutTask = ArgumentCaptor.forClass(TimerTask.class);
+		ArgumentCaptor<Observer<Integer>> accountStateObserver = ArgumentCaptor.forClass(Observer.class);
+		when(accountManager.isAccountCreated()).thenReturn(false);
+
+		splashPresenter.getStartedClicked();
+		verify(timer).schedule(timeoutTask.capture(), anyLong());
+		verify(accountManager).addAccountStateObserver(accountStateObserver.capture());
+		verify(splashView, times(1)).animateLoading();
+		when(accountManager.isAccountCreated()).thenReturn(true);
+		accountStateObserver.getValue().onChanged(CREATION_COMPLETED);
+
+		verify(accountManager).removeAccountStateObserver(accountStateObserver.getValue());
+		verify(timer, times(2)).purge();
+		verify(splashView, times(0)).navigateToMarketPlace();
+
+		splashPresenter.onAnimationEnded();
+		verify(splashView, times(1)).navigateToMarketPlace();
 	}
 
 	@Test
@@ -183,8 +160,6 @@ public class SplashPresenterTest extends BaseTestClass {
 
 		verify(accountManager).addAccountStateObserver(any(Observer.class));
 		verify(accountManager).retry();
-
-		verify(authRepository).activateAccount(activateCapture.capture());
 		verify(splashView, times(1)).animateLoading();
 	}
 
@@ -195,12 +170,10 @@ public class SplashPresenterTest extends BaseTestClass {
 
 		splashPresenter.getStartedClicked();
 		verify(timer).schedule(any(TimerTask.class), anyLong());
-		verify(authRepository).activateAccount(activateCapture.capture());
 		verify(accountManager).addAccountStateObserver(accountStateObserver.capture());
 		verify(splashView, times(1)).animateLoading();
 
 		splashPresenter.onAnimationEnded();
-		activateCapture.getValue().onResponse(null);
 		verify(splashView, times(0)).navigateToMarketPlace();
 
 		accountStateObserver.getValue().onChanged(ERROR);
