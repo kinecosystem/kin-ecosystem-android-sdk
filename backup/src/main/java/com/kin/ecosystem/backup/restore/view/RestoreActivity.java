@@ -4,8 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.backup.R;
 import com.kin.ecosystem.backup.base.BaseToolbarActivity;
-import com.kin.ecosystem.backup.restore.presentation.RestorePresenter;
-import com.kin.ecosystem.backup.restore.presentation.RestorePresenterImpl;
+import com.kin.ecosystem.backup.restore.presenter.RestorePresenter;
+import com.kin.ecosystem.backup.restore.presenter.RestorePresenterImpl;
 
 public class RestoreActivity extends BaseToolbarActivity implements RestoreView {
 

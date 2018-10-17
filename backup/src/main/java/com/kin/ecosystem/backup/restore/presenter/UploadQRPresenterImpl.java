@@ -1,4 +1,4 @@
-package com.kin.ecosystem.backup.restore.presentation;
+package com.kin.ecosystem.backup.restore.presenter;
 
 
 import android.content.Intent;
@@ -7,7 +7,7 @@ import com.kin.ecosystem.backup.base.BasePresenterImpl;
 import com.kin.ecosystem.backup.qr.QRBarcodeGenerator;
 import com.kin.ecosystem.backup.qr.QRBarcodeGenerator.QRBarcodeGeneratorException;
 import com.kin.ecosystem.backup.qr.QRBarcodeGenerator.QRFileHandlingException;
-import com.kin.ecosystem.backup.restore.presentation.FileSharingHelper.RequestFileResult;
+import com.kin.ecosystem.backup.restore.presenter.FileSharingHelper.RequestFileResult;
 import com.kin.ecosystem.backup.restore.view.UploadQRView;
 import com.kin.ecosystem.backup.utils.Logger;
 
@@ -47,6 +47,7 @@ public class UploadQRPresenterImpl extends BasePresenterImpl<UploadQRView> imple
 	private void loadEncryptedKeyStore(Uri fileUri) {
 		try {
 			String encryptedKeyStore = qrBarcodeGenerator.decodeQR(fileUri);
+
 		} catch (QRFileHandlingException e) {
 			Logger.e("loadEncryptedKeyStore - loading file failed.", e);
 			view.showErrorLoadingFileDialog();

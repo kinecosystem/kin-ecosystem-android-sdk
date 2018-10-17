@@ -14,8 +14,8 @@ import com.kin.ecosystem.backup.R;
 import com.kin.ecosystem.backup.base.BaseToolbarActivity;
 import com.kin.ecosystem.backup.qr.QRBarcodeGeneratorImpl;
 import com.kin.ecosystem.backup.qr.QRFileUriHandlerImpl;
-import com.kin.ecosystem.backup.restore.presentation.FileSharingHelper;
-import com.kin.ecosystem.backup.restore.presentation.UploadQRPresenterImpl;
+import com.kin.ecosystem.backup.restore.presenter.FileSharingHelper;
+import com.kin.ecosystem.backup.restore.presenter.UploadQRPresenterImpl;
 
 
 public class UploadQRFragment extends Fragment implements UploadQRView {
