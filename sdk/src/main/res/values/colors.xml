@@ -2,7 +2,7 @@
 <resources>
     <color name="kinecosystem_bluePrimary">#047CFC</color>
     <color name="kinecosystem_bluePrimaryDark">#0365ce</color>
-    <color name="kinecosystem_blue_h">#0000ff</color>
+    <color name="kinecosystem_hot_blue">#0000ff</color>
 
     <color name="kinecosystem_title">#5C6786</color>
     <color name="kinecosystem_subtitle">@color/kinecosystem_gray_dark</color>
