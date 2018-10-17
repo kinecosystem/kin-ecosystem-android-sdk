@@ -1,7 +1,7 @@
 <resources>
 
-    <string name="kin_backup_upload_qr_title">Import your Kin</string>
-    <string name="kin_backup_upload_qr_description">All you need is to upload\nthe QR code we provided you</string>
-    <string name="kin_backup_upload_qr_btn">Upload your QR code</string>
-    <string name="kin_backup_restore">Restore</string>
+    <string name="kinbackup_upload_qr_title">Import your Kin</string>
+    <string name="kinbackup_upload_qr_description">All you need is to upload\nthe QR code we provided you</string>
+    <string name="kinbackup_upload_qr_btn">Upload your QR code</string>
+    <string name="kinbackup_restore">Restore</string>
 </resources>

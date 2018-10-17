@@ -30,7 +30,7 @@ public class UploadQRFragment extends Fragment implements UploadQRView {
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
 		@Nullable Bundle savedInstanceState) {
-		View root = inflater.inflate(R.layout.kin_backup_upload_qr_fragment, container, false);
+		View root = inflater.inflate(R.layout.kinbackup_upload_qr_fragment, container, false);
 
 		injectPresenter();
 		presenter.onAttach(this);
@@ -49,8 +49,8 @@ public class UploadQRFragment extends Fragment implements UploadQRView {
 
 	private void initToolbar() {
 		BaseToolbarActivity toolbarActivity = (BaseToolbarActivity) getActivity();
-		toolbarActivity.setNavigationIcon(R.drawable.kin_backup_ic_back);
-		toolbarActivity.setToolbarColor(R.color.kin_backup_bluePrimary);
+		toolbarActivity.setNavigationIcon(R.drawable.kinbackup_ic_back);
+		toolbarActivity.setToolbarColor(R.color.kinbackup_bluePrimary);
 		toolbarActivity.setToolbarTitle(EMPTY_TITLE);
 		toolbarActivity.setNavigationClickListener(new OnClickListener() {
 			@Override

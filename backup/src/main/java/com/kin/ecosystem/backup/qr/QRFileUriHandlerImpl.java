@@ -16,7 +16,8 @@ import java.io.IOException;
 
 public class QRFileUriHandlerImpl implements QRFileUriHandler {
 
-	private static final String RELATIVE_PATH_FILENAME_QR_IMAGE = "/qr_codes/backup_qr.png";
+	private static final String RELATIVE_PATH_FILENAME_QR_IMAGE = "/kinbackup_qr_codes/backup_qr.png";
+	private static final String AUTHORITY = "com.kin.ecosystem.backup";
 	private final Context context;
 
 	public QRFileUriHandlerImpl(@NonNull Context context) {
@@ -46,7 +47,7 @@ public class QRFileUriHandlerImpl implements QRFileUriHandler {
 		stream.close();
 		return FileProvider.getUriForFile(
 			context,
-			"com.kin.ecosystem.backup",
+			AUTHORITY,
 			file);
 	}
 
@@ -69,13 +70,4 @@ public class QRFileUriHandlerImpl implements QRFileUriHandler {
 		return file;
 	}
 
-	@NonNull
-	public Intent getShareableIntent(@NonNull Uri uri) {
-		Intent intent = new Intent(Intent.ACTION_VIEW);
-		intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-		intent.setAction(Intent.ACTION_SEND);
-		intent.putExtra(Intent.EXTRA_STREAM, uri);
-		intent.setType("image/*");
-		return intent;
-	}
 }

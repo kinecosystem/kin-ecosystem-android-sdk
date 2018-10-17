@@ -2,11 +2,11 @@
 <resources>
 
     <style name="KinBackupNoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/kin_backup_bluePrimary</item>
-        <item name="colorPrimaryDark">@color/kin_backup_bluePrimaryDark</item>
+        <item name="colorPrimary">@color/kinbackup_bluePrimary</item>
+        <item name="colorPrimaryDark">@color/kinbackup_bluePrimaryDark</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:windowBackground">@color/kin_backup_white</item>
+        <item name="android:windowBackground">@color/kinbackup_white</item>
     </style>
 
     <style name="KinBackupToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">

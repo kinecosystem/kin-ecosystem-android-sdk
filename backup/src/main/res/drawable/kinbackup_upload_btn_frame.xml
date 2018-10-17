@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <solid android:color="@color/kinbackup_bluePrimary"/>
+    <stroke
+        android:width="@dimen/kinbackup_button_dash_width"
+        android:color="@color/kinbackup_white"/>
+    <corners android:radius="@dimen/kinbackup_button_corners_radius"/>
+</shape>

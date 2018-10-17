@@ -21,7 +21,7 @@ public class RestoreActivity extends BaseToolbarActivity implements RestoreView 
 
 	@Override
 	protected int getContentLayout() {
-		return R.layout.kin_backup_restore_activity;
+		return R.layout.kinbackup_restore_activity;
 	}
 
 	@Override

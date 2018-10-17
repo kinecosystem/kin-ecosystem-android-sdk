@@ -4,6 +4,7 @@ package com.kin.ecosystem.backup.restore.presentation;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 public class FileSharingHelper {
 
@@ -33,6 +34,16 @@ public class FileSharingHelper {
 		} else {
 			return new RequestFileResult(REQUEST_RESULT_FAILED, null);
 		}
+	}
+
+	@NonNull
+	public Intent getShareableIntent(@NonNull Uri uri) {
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+		intent.setAction(Intent.ACTION_SEND);
+		intent.putExtra(Intent.EXTRA_STREAM, uri);
+		intent.setType("image/*");
+		return intent;
 	}
 
 	static class RequestFileResult {

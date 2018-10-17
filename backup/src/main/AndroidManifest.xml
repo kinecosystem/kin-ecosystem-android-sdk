@@ -15,7 +15,7 @@
         </provider>
 
         <activity
-            android:label="@string/kin_backup_restore"
+            android:label="@string/kinbackup_restore"
             android:name=".restore.view.RestoreActivity"
             android:screenOrientation="portrait"
             android:theme="@style/KinBackupNoActionBar"/>

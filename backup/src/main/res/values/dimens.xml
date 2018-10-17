@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="kin_backup_button_corners_radius">25dp</dimen>
-    <dimen name="kin_backup_button_dash_width">2dp</dimen>
+    <dimen name="kinbackup_button_corners_radius">25dp</dimen>
+    <dimen name="kinbackup_button_dash_width">2dp</dimen>
 
 </resources>
