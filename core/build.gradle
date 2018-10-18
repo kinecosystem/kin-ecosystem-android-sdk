@@ -20,7 +20,6 @@ android {
 dependencies {
 
     implementation project(':common')
-    api project(':backup')
 
     api devDependencies.kinCore
     implementation devDependencies.okhttp3
