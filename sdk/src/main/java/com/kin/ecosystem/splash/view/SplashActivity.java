@@ -20,7 +20,6 @@ import android.widget.Toast;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.core.accountmanager.AccountManagerImpl;
 import com.kin.ecosystem.core.bi.EventLoggerImpl;
-import com.kin.ecosystem.core.data.auth.AuthRepository;
 import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.splash.presenter.ISplashPresenter;
 import com.kin.ecosystem.splash.presenter.ISplashPresenter.Message;

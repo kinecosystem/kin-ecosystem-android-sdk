@@ -109,8 +109,8 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 			public void run() {
 				Logger.log(new Log().withTag(TAG).text("Account creation time out"));
 				stopLoading(true);
-				showTryAgainLater();
 				removeAccountStateObserver();
+				showTryAgainLater();
 			}
 		};
 	}

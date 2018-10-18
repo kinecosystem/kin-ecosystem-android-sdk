@@ -73,15 +73,15 @@ public class SplashPresenterTest extends BaseTestClass {
 		splashPresenter.getStartedClicked();
 		verify(eventLogger).send(any(WelcomeScreenButtonTapped.class));
 		verify(splashView, times(0)).navigateToMarketPlace();
-		verify(splashView, times(1)).animateLoading();
+		verify(splashView).animateLoading();
 
 		splashPresenter.onAnimationEnded();
-		verify(splashView, times(1)).navigateToMarketPlace();
+		verify(splashView).navigateToMarketPlace();
 	}
 
 
 	@Test
-	public void getStartedClicked__AnimationEnded_AccountNotCreated_NotNavigateToMP() {
+	public void getStartedClicked_AnimationEnded_AccountNotCreated_NotNavigateToMP() {
 		when(accountManager.isAccountCreated()).thenReturn(false);
 		splashPresenter.getStartedClicked();
 		splashPresenter.onAnimationEnded();
@@ -98,7 +98,7 @@ public class SplashPresenterTest extends BaseTestClass {
 		splashPresenter.getStartedClicked();
 		verify(timer).schedule(timeoutTask.capture(), anyLong());
 		verify(accountManager).addAccountStateObserver(accountStateObserver.capture());
-		verify(splashView, times(1)).animateLoading();
+		verify(splashView).animateLoading();
 
 		splashPresenter.onAnimationEnded();
 		timeoutTask.getValue().run();
@@ -117,7 +117,7 @@ public class SplashPresenterTest extends BaseTestClass {
 		splashPresenter.getStartedClicked();
 		verify(timer).schedule(timeoutTask.capture(), anyLong());
 		verify(accountManager).addAccountStateObserver(accountStateObserver.capture());
-		verify(splashView, times(1)).animateLoading();
+		verify(splashView).animateLoading();
 
 		splashPresenter.onAnimationEnded();
 		verify(splashView, times(0)).navigateToMarketPlace();
@@ -127,7 +127,7 @@ public class SplashPresenterTest extends BaseTestClass {
 
 		verify(accountManager).removeAccountStateObserver(accountStateObserver.getValue());
 		verify(timer, times(2)).purge();
-		verify(splashView, times(1)).navigateToMarketPlace();
+		verify(splashView).navigateToMarketPlace();
 	}
 
 	@Test
@@ -139,7 +139,7 @@ public class SplashPresenterTest extends BaseTestClass {
 		splashPresenter.getStartedClicked();
 		verify(timer).schedule(timeoutTask.capture(), anyLong());
 		verify(accountManager).addAccountStateObserver(accountStateObserver.capture());
-		verify(splashView, times(1)).animateLoading();
+		verify(splashView).animateLoading();
 		when(accountManager.isAccountCreated()).thenReturn(true);
 		accountStateObserver.getValue().onChanged(CREATION_COMPLETED);
 
@@ -148,7 +148,7 @@ public class SplashPresenterTest extends BaseTestClass {
 		verify(splashView, times(0)).navigateToMarketPlace();
 
 		splashPresenter.onAnimationEnded();
-		verify(splashView, times(1)).navigateToMarketPlace();
+		verify(splashView).navigateToMarketPlace();
 	}
 
 	@Test
@@ -160,7 +160,7 @@ public class SplashPresenterTest extends BaseTestClass {
 
 		verify(accountManager).addAccountStateObserver(any(Observer.class));
 		verify(accountManager).retry();
-		verify(splashView, times(1)).animateLoading();
+		verify(splashView).animateLoading();
 	}
 
 	@Test
@@ -171,7 +171,7 @@ public class SplashPresenterTest extends BaseTestClass {
 		splashPresenter.getStartedClicked();
 		verify(timer).schedule(any(TimerTask.class), anyLong());
 		verify(accountManager).addAccountStateObserver(accountStateObserver.capture());
-		verify(splashView, times(1)).animateLoading();
+		verify(splashView).animateLoading();
 
 		splashPresenter.onAnimationEnded();
 		verify(splashView, times(0)).navigateToMarketPlace();
@@ -187,6 +187,6 @@ public class SplashPresenterTest extends BaseTestClass {
 	public void backButtonPressed_NavigateBack() {
 		splashPresenter.backButtonPressed();
 		verify(eventLogger).send(any(BackButtonOnWelcomeScreenPageTapped.class));
-		verify(splashView, times(1)).navigateBack();
+		verify(splashView).navigateBack();
 	}
 }
