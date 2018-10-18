@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.kin.ecosystem.backup.BackupManager;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.KinEnvironment;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
@@ -204,9 +203,8 @@ public class Kin {
 	public static void launchMarketplace(@NonNull final Activity activity) throws ClientException {
 		checkInstanceNotNull();
 		instance.eventLogger.send(EntrypointButtonTapped.create());
-		boolean isActivated = AuthRepository.getInstance().isActivated();
 		boolean isAccountCreated = AccountManagerImpl.getInstance().isAccountCreated();
-		if (isActivated && isAccountCreated) {
+		if (isAccountCreated) {
 			navigateToMarketplace(activity);
 		} else {
 			navigateToSplash(activity);

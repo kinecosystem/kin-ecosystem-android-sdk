@@ -27,10 +27,6 @@ public interface AuthDataSource {
 
 	AuthToken getAuthTokenSync();
 
-	boolean isActivated();
-
-	void activateAccount(@NonNull final KinCallback<Void> callback);
-
 	void hasAccount(@NonNull String userId, @NonNull final KinCallback<Boolean> callback);
 
 	interface Local {
@@ -48,11 +44,6 @@ public interface AuthDataSource {
 		String getEcosystemUserID();
 
 		AuthToken getAuthTokenSync();
-
-		boolean isActivated();
-
-		void activateAccount();
-
 	}
 
 	interface Remote {
@@ -62,8 +53,6 @@ public interface AuthDataSource {
 		void getAuthToken(@NonNull final Callback<AuthToken, ApiException> callback);
 
 		AuthToken getAuthTokenSync();
-
-		void activateAccount(@NonNull final Callback<AuthToken, ApiException> callback);
 
 		void hasAccount(@NonNull String userId, @NonNull final Callback<Boolean, ApiException> callback);
 	}
