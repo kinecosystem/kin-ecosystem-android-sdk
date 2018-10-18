@@ -2,7 +2,6 @@ package com.kin.ecosystem.core.data.blockchain;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.kin.ecosystem.backup.KeyStoreProvider;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.model.Balance;
@@ -88,12 +87,6 @@ public interface BlockchainSource {
      * @param callback
      */
     void createTrustLine(@NonNull final KinCallback<Void> callback);
-
-    /**
-     * Creates the {@link KeyStoreProvider} to use in backup and restore flow.
-     * @return {@link KeyStoreProvider}
-     */
-    KeyStoreProvider getKeyStoreProvider();
 
     interface Local {
 
