@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="kinrecovery_upload_qr_icon_margin_top">52dp</dimen>
+    <dimen name="kinrecovery_upload_content_title_text_size">22sp</dimen>
+    <dimen name="kinrecovery_upload_content_text_size">12sp</dimen>
+    <dimen name="kinrecovery_upload_btn_frame_height">50dp</dimen>
+    <dimen name="kinrecovery_upload_btn_frame_margin_bottom">35dp</dimen>
+    <dimen name="kinrecovery_upload_btn_frame_margin_sides">30dp</dimen>
+    <dimen name="kinrecovery_button_corners_radius">25dp</dimen>
+    <dimen name="kinrecovery_button_dash_width">2dp</dimen>
+    <dimen name="kinrestore_upload_qr_icon_size">84dp</dimen>
+    <dimen name="kinrecovery_upload_content_title_margin_top">38dp</dimen>
+    <dimen name="kinrecovery_upload_content_margin_top">14dp</dimen>
+    <dimen name="kinrecovery_upload_btn_text_size">16sp</dimen>
+    <dimen name="kinrecovery_upload_btn_icon_width">18dp</dimen>
+    <dimen name="kinrecovery_upload_btn_icon_height">22dp</dimen>
+    <dimen name="kinrecovery_upload_btn_margin_end">15dp</dimen>
+
+</resources>
