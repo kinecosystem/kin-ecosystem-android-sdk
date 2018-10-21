@@ -11,4 +11,5 @@
     <string name="kinrecovery_password_restore_title">Enter Your Password</string>
     <string name="kinrecovery_password_recovery_content">Great, we’re almost there!\nPlease enter your password</string>
     <string name="kinrecovery_done">Done</string>
+    <string name="kinrecovery_enter_password">Enter Password</string>
 </resources>
