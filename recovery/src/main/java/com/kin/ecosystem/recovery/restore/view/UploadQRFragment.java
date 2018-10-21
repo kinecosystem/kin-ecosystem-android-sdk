@@ -21,6 +21,7 @@ import com.kin.ecosystem.recovery.qr.QRFileUriHandlerImpl;
 import com.kin.ecosystem.recovery.restore.presenter.FileSharingHelper;
 import com.kin.ecosystem.recovery.restore.presenter.UploadQRPresenter;
 import com.kin.ecosystem.recovery.restore.presenter.UploadQRPresenterImpl;
+import com.kin.ecosystem.recovery.utils.ViewUtils;
 
 
 public class UploadQRFragment extends Fragment implements UploadQRView {
@@ -45,23 +46,20 @@ public class UploadQRFragment extends Fragment implements UploadQRView {
 		return root;
 	}
 
-	private void initViews(View root) {
-		Group btnUploadGroup = root.findViewById(R.id.upload_btn_group);
-		int refIds[] = btnUploadGroup.getReferencedIds();
-		for (int id : refIds) {
-			root.findViewById(id).setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					presenter.uploadClicked();
-				}
-			});
-		}
-	}
-
 	private void injectPresenter() {
 		presenter = new UploadQRPresenterImpl(((RestoreActivity) getActivity()).getPresenter(),
 			new FileSharingHelper(this),
 			new QRBarcodeGeneratorImpl(new QRFileUriHandlerImpl(getContext())));
+	}
+
+	private void initViews(View root) {
+		Group btnUploadGroup = root.findViewById(R.id.upload_btn_group);
+		ViewUtils.registerToGroupOnClickListener(btnUploadGroup, root, new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				presenter.uploadClicked();
+			}
+		});
 	}
 
 	private void initToolbar() {

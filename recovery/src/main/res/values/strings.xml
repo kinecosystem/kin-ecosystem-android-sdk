@@ -8,4 +8,7 @@
     <string name="kinrecovery_consent_message">Restoring your old balance will replace your current Kin balance.</string>
     <string name="kinrecovery_loading_file_error">Error Loading QR File</string>
     <string name="kinrecoevery_error_decoding_QR">Error Processing QR File</string>
+    <string name="kinrecovery_password_restore_title">Enter Your Password</string>
+    <string name="kinrecovery_password_recovery_content">Great, we’re almost there!\nPlease enter your password</string>
+    <string name="kinrecovery_done">Done</string>
 </resources>
