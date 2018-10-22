@@ -75,6 +75,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 			changeIconColor(ITEM_BACKUP, GRAY);
 			if (currentBalance.getAmount().compareTo(BigDecimal.ZERO) == 1) {
 				changeTouchIndicator(ITEM_BACKUP, true);
+				removeBalanceObserver();
 			} else {
 				addBalanceObserver();
 				changeTouchIndicator(ITEM_BACKUP, false);

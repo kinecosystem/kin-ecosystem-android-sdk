@@ -72,6 +72,7 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 		if (!settingsDataSource.isBackedUp()) {
 			if (currentBalance.getAmount().compareTo(BigDecimal.ZERO) == 1) {
 				changeMenuTouchIndicator(true);
+				removeBalanceObserver();
 			} else {
 				addBalanceObserver();
 				changeMenuTouchIndicator(false);
