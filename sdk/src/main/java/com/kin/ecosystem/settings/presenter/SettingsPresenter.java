@@ -86,7 +86,9 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 	}
 
 	private void removeBalanceObserver() {
-		blockchainSource.removeBalanceObserver(balanceObserver);
+		if (balanceObserver != null) {
+			blockchainSource.removeBalanceObserver(balanceObserver);
+		}
 	}
 
 	@Override
