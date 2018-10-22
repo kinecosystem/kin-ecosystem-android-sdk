@@ -15,12 +15,12 @@ public interface BackupEvents {
     void onBackupPopupPageViewed();
     void onBackupPopupButtonTapped();
     void onBackupPopupLaterButtonTapped();
-    void onRstoreUploadQrCodePageViewed();
-    void onRstoreUploadQrCodeBackButtonTapped();
-    void onRstoreUploadQrCodeButtonTapped();
-    void onRstoreAreYouSureOkButtonTapped();
-    void onRstoreAreYouSureCancelButtonTapped();
-    void onRstorePasswordEntryPageViewed();
-    void onRstorePasswordEntryBackButtonTapped();
-    void onRstorePasswordDoneButtonTapped();
+    void onRestoreUploadQrCodePageViewed();
+    void onRestoreUploadQrCodeBackButtonTapped();
+    void onRestoreUploadQrCodeButtonTapped();
+    void onRestoreAreYouSureOkButtonTapped();
+    void onRestoreAreYouSureCancelButtonTapped();
+    void onRestorePasswordEntryPageViewed();
+    void onRestorePasswordEntryBackButtonTapped();
+    void onRestorePasswordDoneButtonTapped();
 }
