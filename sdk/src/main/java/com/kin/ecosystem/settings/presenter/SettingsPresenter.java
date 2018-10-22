@@ -50,7 +50,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 	@Override
 	public void onAttach(ISettingsView view) {
 		super.onAttach(view);
-		addBalanceObserver();
+		updateSettingsIcon();
 	}
 
 	@Override
@@ -64,17 +64,20 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 			@Override
 			public void onChanged(Balance value) {
 				currentBalance = value;
-				updateBalanceSettingsIcon();
+				updateSettingsIcon();
 			}
 		};
 		blockchainSource.addBalanceObserver(balanceObserver);
 	}
 
-	private void updateBalanceSettingsIcon() {
+	private void updateSettingsIcon() {
 		if (!settingsDataSource.isBackedUp()) {
 			changeIconColor(ITEM_BACKUP, GRAY);
 			if (currentBalance.getAmount().compareTo(BigDecimal.ZERO) == 1) {
 				changeTouchIndicator(ITEM_BACKUP, true);
+			} else {
+				addBalanceObserver();
+				changeTouchIndicator(ITEM_BACKUP, false);
 			}
 		} else {
 			changeIconColor(ITEM_BACKUP, BLUE);
@@ -155,7 +158,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 
 	private void onBackupSuccess() {
 		settingsDataSource.setIsBackedUp(true);
-		updateBalanceSettingsIcon();
+		updateSettingsIcon();
 	}
 
 	private void changeTouchIndicator(@Item final int item, final boolean isVisible) {

@@ -118,7 +118,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	@Override
 	public void showMenuTouchIndicator(boolean isVisible) {
 		if (menu != null) {
-			final MenuItem settingsItem = this.menu.findItem(R.id.menu_settings);
+			final MenuItem settingsItem = menu.findItem(R.id.menu_settings);
 			if (settingsItem != null) {
 				LayerDrawable icon = (LayerDrawable) settingsItem.getIcon();
 				Drawable touchIndicator = icon.findDrawableByLayerId(R.id.ic_info_dot);

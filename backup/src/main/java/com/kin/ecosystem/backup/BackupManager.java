@@ -12,6 +12,7 @@ public final class BackupManager {
 	private Activity activity;
 
 	public BackupManager(@NonNull final Activity activity, @NonNull final KeyStoreProvider keyStoreProvider) {
+		Validator.checkNotNull(activity, "activity");
 		BackupManager.keyStoreProvider = keyStoreProvider;
 		this.activity = activity;
 		final Context applicationContext = activity.getApplicationContext();
@@ -32,18 +33,22 @@ public final class BackupManager {
 	}
 
 	public void registerBackupCallback(@NonNull final BackupCallback backupCallback) {
+		Validator.checkNotNull(backupCallback, "backupCallback");
 		this.callbackManager.setBackupCallback(backupCallback);
 	}
 
 	public void registerBackupEvents(@NonNull final BackupEvents backupEvents) {
+		Validator.checkNotNull(backupEvents, "backupEvents");
 		this.callbackManager.setBackupEvents(backupEvents);
 	}
 
 	public void registerRestoreCallback(@NonNull final RestoreCallback restoreCallback) {
+		Validator.checkNotNull(restoreCallback, "restoreCallback");
 		this.callbackManager.setRestoreCallback(restoreCallback);
 	}
 
 	public void registerRestoreEvents(@NonNull final RestoreEvents restoreEvents) {
+		Validator.checkNotNull(restoreEvents, "restoreEvents");
 		this.callbackManager.setRestoreEvents(restoreEvents);
 	}
 

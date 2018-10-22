@@ -48,7 +48,6 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 		if (this.view != null && visibleScreen != MARKETPLACE) {
 			navigator.navigateToMarketplace();
 		}
-		addBalanceObserver();
 	}
 
 	@Override
@@ -58,6 +57,7 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 	}
 
 	private void addBalanceObserver() {
+		removeBalanceObserver();
 		balanceObserver = new Observer<Balance>() {
 			@Override
 			public void onChanged(Balance value) {
@@ -73,6 +73,7 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 			if (currentBalance.getAmount().compareTo(BigDecimal.ZERO) == 1) {
 				changeMenuTouchIndicator(true);
 			} else {
+				addBalanceObserver();
 				changeMenuTouchIndicator(false);
 			}
 		} else {
@@ -81,7 +82,10 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 	}
 
 	private void removeBalanceObserver() {
-		blockchainSource.removeBalanceObserver(balanceObserver);
+		if (balanceObserver != null) {
+			blockchainSource.removeBalanceObserver(balanceObserver);
+			balanceObserver = null;
+		}
 	}
 
 	@Override
