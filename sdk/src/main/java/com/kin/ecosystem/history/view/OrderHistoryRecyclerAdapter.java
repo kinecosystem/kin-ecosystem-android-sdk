@@ -47,7 +47,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
             colorBlue = ContextCompat.getColor(context, R.color.kinecosystem_bluePrimary);
         }
         if (colorRed == NOT_INITIALIZED) {
-            colorRed = ContextCompat.getColor(context, R.color.kinecosystem_red);
+            colorRed = ContextCompat.getColor(context, R.color.kinecosystem_light_red);
         }
         if (colorGrayLight == NOT_INITIALIZED) {
             colorGrayLight = ContextCompat.getColor(context, R.color.kinecosystem_gray_light);

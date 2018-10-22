@@ -9,4 +9,6 @@ public interface IEcosystemView extends IBaseView<IEcosystemPresenter> {
 	void updateTitle(@Title final int title);
 
 	void navigateBack();
+
+	void showMenuTouchIndicator(boolean isVisible);
 }
