@@ -7,12 +7,12 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import com.kin.ecosystem.R;
-import com.kin.ecosystem.backup.BackupManager;
 import com.kin.ecosystem.base.BaseToolbarActivity;
 import com.kin.ecosystem.core.bi.EventLoggerImpl;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceImpl;
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceLocal;
+import com.kin.ecosystem.recovery.BackupManager;
 import com.kin.ecosystem.settings.presenter.ISettingsPresenter;
 import com.kin.ecosystem.settings.presenter.SettingsPresenter;
 

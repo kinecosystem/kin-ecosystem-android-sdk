@@ -1,4 +1,4 @@
-package com.kin.ecosystem.backup;
+package com.kin.ecosystem.recovery;
 
 public class Validator {
 
