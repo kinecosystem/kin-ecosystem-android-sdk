@@ -64,16 +64,22 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 			@Override
 			public void onChanged(Balance value) {
 				currentBalance = value;
-				updateSettingsIcon();
+				if(isGreaterThenZero(value)) {
+					updateSettingsIcon();
+				}
 			}
 		};
 		blockchainSource.addBalanceObserver(balanceObserver);
 	}
 
+	private boolean isGreaterThenZero(Balance value) {
+		return value.getAmount().compareTo(BigDecimal.ZERO) == 1;
+	}
+
 	private void updateSettingsIcon() {
 		if (!settingsDataSource.isBackedUp()) {
 			changeIconColor(ITEM_BACKUP, GRAY);
-			if (currentBalance.getAmount().compareTo(BigDecimal.ZERO) == 1) {
+			if (isGreaterThenZero(currentBalance)) {
 				changeTouchIndicator(ITEM_BACKUP, true);
 				removeBalanceObserver();
 			} else {

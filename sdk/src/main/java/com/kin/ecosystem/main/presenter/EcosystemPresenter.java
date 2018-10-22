@@ -62,15 +62,21 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 			@Override
 			public void onChanged(Balance value) {
 				currentBalance = value;
-				updateMenuSettingsIcon();
+				if (isGreaterThenZero(value)) {
+					updateMenuSettingsIcon();
+				}
 			}
 		};
 		blockchainSource.addBalanceObserver(balanceObserver);
 	}
 
+	private boolean isGreaterThenZero(Balance value) {
+		return value.getAmount().compareTo(BigDecimal.ZERO) == 1;
+	}
+
 	private void updateMenuSettingsIcon() {
 		if (!settingsDataSource.isBackedUp()) {
-			if (currentBalance.getAmount().compareTo(BigDecimal.ZERO) == 1) {
+			if (isGreaterThenZero(currentBalance)) {
 				changeMenuTouchIndicator(true);
 				removeBalanceObserver();
 			} else {

@@ -53,7 +53,6 @@ public final class BackupManager {
 	}
 
 	public void release() {
-		this.activity = null;
 		this.callbackManager.unregisterCallbacksAndEvents();
 	}
 
