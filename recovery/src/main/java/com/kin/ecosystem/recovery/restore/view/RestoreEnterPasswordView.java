@@ -3,13 +3,15 @@ package com.kin.ecosystem.recovery.restore.view;
 
 import com.kin.ecosystem.recovery.base.BaseView;
 
-public interface PasswordRestoreView extends BaseView {
+public interface RestoreEnterPasswordView extends BaseView {
 
 	void openKeyboard();
 
-	void enableDone();
+	void enableDoneButton();
 
-	void revealRestoreSucceed();
+	void disableDoneButton();
 
 	void decodeError();
+
+	void invalidQrError();
 }

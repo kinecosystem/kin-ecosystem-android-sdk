@@ -3,7 +3,6 @@ package com.kin.ecosystem.recovery.restore.presenter;
 
 import android.content.Intent;
 import android.net.Uri;
-import com.kin.ecosystem.recovery.base.BasePresenterImpl;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator.QRBarcodeGeneratorException;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator.QRFileHandlingException;
@@ -11,15 +10,13 @@ import com.kin.ecosystem.recovery.restore.presenter.FileSharingHelper.RequestFil
 import com.kin.ecosystem.recovery.restore.view.UploadQRView;
 import com.kin.ecosystem.recovery.utils.Logger;
 
-public class UploadQRPresenterImpl extends BasePresenterImpl<UploadQRView> implements UploadQRPresenter {
+public class UploadQRPresenterImpl extends BaseChildPresenterImpl<UploadQRView> implements UploadQRPresenter {
 
-	private final RestorePresenter parentPresenter;
 	private final FileSharingHelper fileRequester;
 	private final QRBarcodeGenerator qrBarcodeGenerator;
 
-	public UploadQRPresenterImpl(RestorePresenter restorePresenter, FileSharingHelper fileRequester,
+	public UploadQRPresenterImpl(FileSharingHelper fileRequester,
 		QRBarcodeGenerator qrBarcodeGenerator) {
-		this.parentPresenter = restorePresenter;
 		this.fileRequester = fileRequester;
 		this.qrBarcodeGenerator = qrBarcodeGenerator;
 	}
@@ -52,7 +49,7 @@ public class UploadQRPresenterImpl extends BasePresenterImpl<UploadQRView> imple
 	private void loadEncryptedKeyStore(Uri fileUri) {
 		try {
 			String encryptedKeyStore = qrBarcodeGenerator.decodeQR(fileUri);
-			parentPresenter.nextStep();
+			getParentPresenter().nextStep(encryptedKeyStore);
 		} catch (QRFileHandlingException e) {
 			Logger.e("loadEncryptedKeyStore - loading file failed.", e);
 			view.showErrorLoadingFileDialog();
@@ -64,6 +61,6 @@ public class UploadQRPresenterImpl extends BasePresenterImpl<UploadQRView> imple
 
 	@Override
 	public void onBackClicked() {
-		parentPresenter.previousStep();
+		getParentPresenter().previousStep();
 	}
 }

@@ -17,7 +17,7 @@ public final class BackupManager {
 			new EventDispatcherImpl(new BroadcastManagerImpl(applicationContext)));
 	}
 
-	protected static KeyStoreProvider getKeyStoreProvider() {
+	public static KeyStoreProvider getKeyStoreProvider() {
 		return keyStoreProvider;
 	}
 

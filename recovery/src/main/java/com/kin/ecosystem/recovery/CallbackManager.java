@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.recovery.exception.BackupException;
 
-class CallbackManager {
+public class CallbackManager {
 
 	@Nullable
 	private BackupCallback backupCallback;

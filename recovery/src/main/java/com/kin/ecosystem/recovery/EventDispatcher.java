@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-interface EventDispatcher {
+public interface EventDispatcher {
 
 
 	@IntDef({BACKUP_EVENTS, RESTORE_EVENTS})

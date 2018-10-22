@@ -8,5 +8,7 @@ public interface RestorePresenter extends BasePresenter<RestoreView> {
 
 	void nextStep();
 
+	void nextStep(Object data);
+
 	void previousStep();
 }

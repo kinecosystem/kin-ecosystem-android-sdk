@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.recovery.BroadcastManager.Listener;
 
-class EventDispatcherImpl implements EventDispatcher {
+public class EventDispatcherImpl implements EventDispatcher {
 
 	@Nullable
 	private BackupEvents backupEvents;

@@ -2,6 +2,7 @@ package com.kin.ecosystem.recovery.restore.view;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import com.kin.ecosystem.recovery.R;
 import com.kin.ecosystem.recovery.base.BaseToolbarActivity;
 import com.kin.ecosystem.recovery.restore.presenter.RestorePresenter;
@@ -26,16 +27,43 @@ public class RestoreActivity extends BaseToolbarActivity implements RestoreView 
 
 	@Override
 	public void navigateToUpload() {
-		UploadQRFragment uploadFragment = (UploadQRFragment) getSupportFragmentManager()
+		UploadQRFragment fragment = (UploadQRFragment) getSupportFragmentManager()
 			.findFragmentByTag(UploadQRFragment.class.getSimpleName());
 
-		if (uploadFragment == null) {
-			uploadFragment = UploadQRFragment.newInstance();
+		if (fragment == null) {
+			fragment = UploadQRFragment.newInstance();
+		}
+		replaceFragment(fragment);
+	}
+
+	private void replaceFragment(Fragment fragment) {
+		getSupportFragmentManager().beginTransaction()
+			.replace(R.id.fragment_frame, fragment)
+			.commit();
+	}
+
+	@Override
+	public void navigateToEnterPassword(String keystoreData) {
+		RestoreEnterPasswordFragment fragment = (RestoreEnterPasswordFragment) getSupportFragmentManager()
+			.findFragmentByTag(UploadQRFragment.class.getSimpleName());
+
+		if (fragment == null) {
+			fragment = RestoreEnterPasswordFragment.newInstance(keystoreData);
 		}
 
-		getSupportFragmentManager().beginTransaction()
-			.replace(R.id.fragment_frame, uploadFragment)
-			.commit();
+		replaceFragment(fragment);
+	}
+
+	@Override
+	public void navigateToRestoreCompleted(Integer accountIndex) {
+		RestoreCompletedFragment fragment = (RestoreCompletedFragment) getSupportFragmentManager()
+			.findFragmentByTag(UploadQRFragment.class.getSimpleName());
+
+		if (fragment == null) {
+			fragment = RestoreCompletedFragment.newInstance(accountIndex);
+		}
+
+		replaceFragment(fragment);
 	}
 
 	@Override

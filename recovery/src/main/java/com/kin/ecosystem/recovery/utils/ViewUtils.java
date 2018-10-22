@@ -12,4 +12,11 @@ public class ViewUtils {
 			root.findViewById(id).setOnClickListener(listener);
 		}
 	}
+
+	public static void setGroupEnable(Group group, View root, boolean enable) {
+		int refIds[] = group.getReferencedIds();
+		for (int id : refIds) {
+			root.findViewById(id).setEnabled(enable);
+		}
+	}
 }

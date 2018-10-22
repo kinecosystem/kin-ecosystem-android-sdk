@@ -39,7 +39,7 @@ public class UploadQRFragment extends Fragment implements UploadQRView {
 		View root = inflater.inflate(R.layout.kinrecovery_fragment_upload_qr, container, false);
 
 		injectPresenter();
-		presenter.onAttach(this);
+		presenter.onAttach(this, ((RestoreActivity) getActivity()).getPresenter());
 
 		initToolbar();
 		initViews(root);
@@ -47,13 +47,13 @@ public class UploadQRFragment extends Fragment implements UploadQRView {
 	}
 
 	private void injectPresenter() {
-		presenter = new UploadQRPresenterImpl(((RestoreActivity) getActivity()).getPresenter(),
+		presenter = new UploadQRPresenterImpl(
 			new FileSharingHelper(this),
 			new QRBarcodeGeneratorImpl(new QRFileUriHandlerImpl(getContext())));
 	}
 
 	private void initViews(View root) {
-		Group btnUploadGroup = root.findViewById(R.id.upload_btn_group);
+		Group btnUploadGroup = root.findViewById(R.id.btn_group);
 		ViewUtils.registerToGroupOnClickListener(btnUploadGroup, root, new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {

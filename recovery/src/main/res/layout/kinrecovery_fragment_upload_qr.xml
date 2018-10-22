@@ -9,7 +9,7 @@
 
     <ImageView
         android:id="@+id/qr_icon"
-        android:layout_width="@dimen/kinrestore_upload_qr_icon_size"
+        android:layout_width="@dimen/kinrecovery_upload_qr_icon_size"
         android:layout_height="11dp"
         android:layout_marginTop="@dimen/kinrecovery_upload_qr_icon_margin_top"
         android:src="@drawable/kinrecovery_white_qr_code"
@@ -48,7 +48,7 @@
         />
 
     <android.support.constraint.Group
-        android:id="@+id/upload_btn_group"
+        android:id="@+id/btn_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="visible"
@@ -58,11 +58,11 @@
     <View
         android:id="@+id/upload_btn_frame"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/kinrecovery_upload_btn_frame_height"
+        android:layout_height="@dimen/kinrecovery_btn_frame_height"
         android:layout_marginBottom="@dimen/kinrecovery_upload_btn_frame_margin_bottom"
         android:layout_marginStart="@dimen/kinrecovery_btn_frame_margin_sides"
         android:layout_marginEnd="@dimen/kinrecovery_btn_frame_margin_sides"
-        android:background="@drawable/kinrecovery_upload_btn_frame"
+        android:background="@drawable/kinrecovery_btn_frame"
         android:text="@string/kinrecovery_upload_qr_btn"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
