@@ -20,7 +20,7 @@ public class SpendOrderCompleted implements Event {
     public static final String EVENT_TYPE = "business";
 
     // Augmented by script
-    public static SpendOrderCompleted create(String offerId, String orderId, Boolean isNative, Origin origin, Double kinAmount) {
+    public static SpendOrderCompleted create(String offerId, String orderId, Boolean isNative, SpendOrderCompleted.Origin origin, Double kinAmount) {
         return new SpendOrderCompleted(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
@@ -103,7 +103,7 @@ public class SpendOrderCompleted implements Event {
      */
     @SerializedName("origin")
     @Expose
-    private Origin origin;
+    private SpendOrderCompleted.Origin origin;
     /**
      * 
      * (Required)
@@ -133,7 +133,7 @@ public class SpendOrderCompleted implements Event {
      * @param user
      * @param isNative
      */
-    public SpendOrderCompleted(Common common, User user, Client client, String offerId, String orderId, Boolean isNative, Origin origin, Double kinAmount) {
+    public SpendOrderCompleted(Common common, User user, Client client, String offerId, String orderId, Boolean isNative, SpendOrderCompleted.Origin origin, Double kinAmount) {
         super();
         this.common = common;
         this.user = user;
@@ -294,7 +294,7 @@ public class SpendOrderCompleted implements Event {
      * (Required)
      * 
      */
-    public Origin getOrigin() {
+    public SpendOrderCompleted.Origin getOrigin() {
         return origin;
     }
 
@@ -303,7 +303,7 @@ public class SpendOrderCompleted implements Event {
      * (Required)
      * 
      */
-    public void setOrigin(Origin origin) {
+    public void setOrigin(SpendOrderCompleted.Origin origin) {
         this.origin = origin;
     }
 
@@ -332,10 +332,10 @@ public class SpendOrderCompleted implements Event {
         @SerializedName("external")
         EXTERNAL("external");
         private final String value;
-        private final static Map<String, Origin> CONSTANTS = new HashMap<String, Origin>();
+        private final static Map<String, SpendOrderCompleted.Origin> CONSTANTS = new HashMap<String, SpendOrderCompleted.Origin>();
 
         static {
-            for (Origin c: values()) {
+            for (SpendOrderCompleted.Origin c: values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
@@ -353,8 +353,8 @@ public class SpendOrderCompleted implements Event {
             return this.value;
         }
 
-        public static Origin fromValue(String value) {
-            Origin constant = CONSTANTS.get(value);
+        public static SpendOrderCompleted.Origin fromValue(String value) {
+            SpendOrderCompleted.Origin constant = CONSTANTS.get(value);
             if (constant == null) {
                 throw new IllegalArgumentException(value);
             } else {

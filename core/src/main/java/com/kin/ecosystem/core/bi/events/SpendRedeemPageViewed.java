@@ -2,13 +2,13 @@
 package com.kin.ecosystem.core.bi.events;
 
 // Augmented by script
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.core.bi.Event;
 import com.kin.ecosystem.core.bi.EventsStore;
+
 import java.util.HashMap;
 import java.util.Map;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 
 /**
@@ -20,7 +20,7 @@ public class SpendRedeemPageViewed implements Event {
     public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
-    public static SpendRedeemPageViewed create(RedeemTrigger redeemTrigger, Double kinAmount, String offerId, String orderId) {
+    public static SpendRedeemPageViewed create(SpendRedeemPageViewed.RedeemTrigger redeemTrigger, Double kinAmount, String offerId, String orderId) {
         return new SpendRedeemPageViewed(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
@@ -78,7 +78,7 @@ public class SpendRedeemPageViewed implements Event {
      */
     @SerializedName("redeem_trigger")
     @Expose
-    private RedeemTrigger redeemTrigger;
+    private SpendRedeemPageViewed.RedeemTrigger redeemTrigger;
     /**
      * 
      * (Required)
@@ -123,7 +123,7 @@ public class SpendRedeemPageViewed implements Event {
 
      * @param user
      */
-    public SpendRedeemPageViewed(Common common, User user, Client client, RedeemTrigger redeemTrigger, Double kinAmount, String offerId, String orderId) {
+    public SpendRedeemPageViewed(Common common, User user, Client client, SpendRedeemPageViewed.RedeemTrigger redeemTrigger, Double kinAmount, String offerId, String orderId) {
         super();
         this.common = common;
         this.user = user;
@@ -229,7 +229,7 @@ public class SpendRedeemPageViewed implements Event {
      * (Required)
      * 
      */
-    public RedeemTrigger getRedeemTrigger() {
+    public SpendRedeemPageViewed.RedeemTrigger getRedeemTrigger() {
         return redeemTrigger;
     }
 
@@ -238,7 +238,7 @@ public class SpendRedeemPageViewed implements Event {
      * (Required)
      * 
      */
-    public void setRedeemTrigger(RedeemTrigger redeemTrigger) {
+    public void setRedeemTrigger(SpendRedeemPageViewed.RedeemTrigger redeemTrigger) {
         this.redeemTrigger = redeemTrigger;
     }
 
@@ -303,10 +303,10 @@ public class SpendRedeemPageViewed implements Event {
         @SerializedName("system_init")
         SYSTEM_INIT("system_init");
         private final String value;
-        private final static Map<String, RedeemTrigger> CONSTANTS = new HashMap<String, RedeemTrigger>();
+        private final static Map<String, SpendRedeemPageViewed.RedeemTrigger> CONSTANTS = new HashMap<String, SpendRedeemPageViewed.RedeemTrigger>();
 
         static {
-            for (RedeemTrigger c: values()) {
+            for (SpendRedeemPageViewed.RedeemTrigger c: values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
@@ -324,8 +324,8 @@ public class SpendRedeemPageViewed implements Event {
             return this.value;
         }
 
-        public static RedeemTrigger fromValue(String value) {
-            RedeemTrigger constant = CONSTANTS.get(value);
+        public static SpendRedeemPageViewed.RedeemTrigger fromValue(String value) {
+            SpendRedeemPageViewed.RedeemTrigger constant = CONSTANTS.get(value);
             if (constant == null) {
                 throw new IllegalArgumentException(value);
             } else {
