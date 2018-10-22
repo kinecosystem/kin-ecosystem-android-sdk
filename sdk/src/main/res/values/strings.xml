@@ -2,6 +2,7 @@
     <!--Activity Name-->
     <string name="kinecosystem_kin_marketplace">Kin Marketplace (Beta)</string>
     <string name="kinecosystem_transaction_history">Transaction History</string>
+    <string name="kinecosystem_settings">Settings</string>
 
     <!--Button-->
     <string name="kinecosystem_more">MORE</string>
@@ -32,9 +33,8 @@
     <string name="kinecosystem_transaction_failed">Transaction failed</string>
     <string name="kinecosystem_you_dont_have_enough_kin">You don\'t have enough Kin</string>
     <string name="kinecosystem_order_submission_failed">Order submission failed</string>
-
-    <!--Menu-->
-    <string name="kinecosystem_info_menu">Info</string>
+    <string name="kinecosystem_keep_your_kin_safe">Keep your Kin Safe</string>
+    <string name="kinecosystem_restore_previous_wallet">Restore previous wallet</string>
 
 
 </resources>

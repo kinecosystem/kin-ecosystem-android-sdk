@@ -1,7 +1,6 @@
 package com.kin.ecosystem.core.accountmanager;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;

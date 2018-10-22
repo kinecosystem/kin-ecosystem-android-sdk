@@ -2,10 +2,9 @@ package com.kin.ecosystem.core.accountmanager;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import com.kin.ecosystem.common.Observer;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import kin.core.KinAccount;
-import com.kin.ecosystem.common.Observer;
 
 public interface AccountManager {
 
