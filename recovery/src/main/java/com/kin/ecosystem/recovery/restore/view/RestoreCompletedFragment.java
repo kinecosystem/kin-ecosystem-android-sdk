@@ -21,9 +21,11 @@ public class RestoreCompletedFragment extends Fragment implements RestoreComplet
 
 	public static RestoreCompletedFragment newInstance(Integer accountIndex) {
 		RestoreCompletedFragment fragment = new RestoreCompletedFragment();
-		Bundle bundle = new Bundle();
-		bundle.putInt(BUNDLE_KEY_ACCOUNT_ID, accountIndex);
-		fragment.setArguments(bundle);
+		if (accountIndex != -1) {
+			Bundle bundle = new Bundle();
+			bundle.putInt(BUNDLE_KEY_ACCOUNT_ID, accountIndex);
+			fragment.setArguments(bundle);
+		}
 		return fragment;
 	}
 

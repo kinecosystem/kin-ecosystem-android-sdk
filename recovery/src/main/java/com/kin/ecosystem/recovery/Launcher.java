@@ -3,6 +3,7 @@ package com.kin.ecosystem.recovery;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import com.kin.ecosystem.recovery.events.CallbackManager;
 import com.kin.ecosystem.recovery.restore.view.RestoreActivity;
 
 class Launcher {
@@ -18,6 +19,6 @@ class Launcher {
 	}
 
 	void restoreFlow(@NonNull final KeyStoreProvider keyStoreProvider) {
-		activity.startActivity(new Intent(activity, RestoreActivity.class));
+		activity.startActivityForResult(new Intent(activity, RestoreActivity.class), CallbackManager.REQ_CODE_RESTORE);
 	}
 }

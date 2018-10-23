@@ -1,9 +1,11 @@
 package com.kin.ecosystem.recovery;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import com.kin.ecosystem.recovery.events.BroadcastManagerImpl;
+import com.kin.ecosystem.recovery.events.CallbackManager;
+import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
 
 public final class BackupManager {
 
@@ -15,9 +17,8 @@ public final class BackupManager {
 		Validator.checkNotNull(activity, "activity");
 		BackupManager.keyStoreProvider = keyStoreProvider;
 		this.activity = activity;
-		final Context applicationContext = activity.getApplicationContext();
 		this.callbackManager = new CallbackManager(
-			new EventDispatcherImpl(new BroadcastManagerImpl(applicationContext)));
+			new EventDispatcherImpl(new BroadcastManagerImpl(activity)));
 	}
 
 	public static KeyStoreProvider getKeyStoreProvider() {

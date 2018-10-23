@@ -14,6 +14,7 @@
     <string name="kinrecovery_enter_password">Enter Password</string>
     <string name="kinrecovery_thank_you">Thank You!</string>
     <string name="kinrecovert_restore_completed_title">Your Kin balance is updated</string>
-    <string name="kinrecovery_restore_password_error">Password does not match QR code.  Please try again.</string>
-    <string name="kinrecovery_restore_invalid_qr">Invalid QR, please retry upload.</string>
+    <string name="kinrecovery_restore_password_error">Password does not match QR code.\nPlease try again.</string>
+    <string name="kinrecovery_restore_invalid_qr">Oops, we didn\'t recognized this QR code.\nPlease upload again.</string>
+
 </resources>

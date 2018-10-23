@@ -9,7 +9,12 @@ public interface RestoreView extends BaseView {
 
 	void navigateToEnterPassword(String keystoreData);
 
+	void navigateToEnterPassword();
+
 	void navigateToRestoreCompleted(Integer data);
 
+	void navigateToRestoreCompleted();
+
 	void close();
+
 }

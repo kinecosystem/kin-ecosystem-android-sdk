@@ -1,5 +1,6 @@
-package com.kin.ecosystem.recovery;
+package com.kin.ecosystem.recovery.events;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -7,17 +8,17 @@ import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 
-class BroadcastManagerImpl implements BroadcastManager {
+public class BroadcastManagerImpl implements BroadcastManager {
 
-	private final Context context;
+	private final Activity activity;
 	private Listener listener;
 
 	private BroadcastReceiver receiver;
 
 	private static final String ACTION_EVENTS_BACKUP = "ACTION_EVENTS_BACKUP";
 
-	BroadcastManagerImpl(Context context) {
-		this.context = context;
+	public BroadcastManagerImpl(@NonNull Activity activity) {
+		this.activity = activity;
 	}
 
 	@Override
@@ -29,19 +30,24 @@ class BroadcastManagerImpl implements BroadcastManager {
 				BroadcastManagerImpl.this.listener.onReceive(data);
 			}
 		};
-		LocalBroadcastManager.getInstance(context).registerReceiver(receiver, new IntentFilter(ACTION_EVENTS_BACKUP));
+		LocalBroadcastManager.getInstance(activity).registerReceiver(receiver, new IntentFilter(ACTION_EVENTS_BACKUP));
 	}
 
 	@Override
 	public void unregister() {
 		if (receiver != null) {
-			LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
+			LocalBroadcastManager.getInstance(activity).unregisterReceiver(receiver);
 		}
 	}
 
 	@Override
 	public void sendEvent(Intent data) {
 		data.setAction(ACTION_EVENTS_BACKUP);
-		LocalBroadcastManager.getInstance(context).sendBroadcast(data);
+		LocalBroadcastManager.getInstance(activity).sendBroadcast(data);
+	}
+
+	@Override
+	public void sendCallback(int resultCode, Intent data) {
+		activity.setResult(resultCode, data);
 	}
 }
