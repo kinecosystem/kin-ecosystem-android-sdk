@@ -62,7 +62,7 @@ public class RestoreCompletedFragment extends Fragment implements RestoreComplet
 		BaseToolbarActivity toolbarActivity = (BaseToolbarActivity) getActivity();
 		toolbarActivity.setNavigationIcon(R.drawable.kinrecovery_ic_back_black);
 		toolbarActivity.setToolbarColor(R.color.kinrecovery_white);
-		toolbarActivity.setToolbarTitle(R.string.kinrecovert_restore_completed_title);
+		toolbarActivity.setToolbarTitle(R.string.kinrecovery_restore_completed_title);
 		toolbarActivity.setNavigationClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

@@ -18,16 +18,16 @@ public class CallbackManager {
 
 
 	// Request Code
-	private static final int REQ_CODE_BACKUP = 9000;
-	private static final int REQ_CODE_RESTORE = 9001;
+	static final int REQ_CODE_BACKUP = 9000;
+	static final int REQ_CODE_RESTORE = 9001;
 
 	// Result Code
-	private static final int RES_CODE_SUCCESS = 5000;
-	private static final int RES_CODE_CANCEL = 5001;
-	private static final int RES_CODE_FAILED = 5002;
-	private static final String EXTRA_KEY_ERROR_MESSAGE = "EXTRA_KEY_ERROR_MESSAGE";
-	private static final String EXTRA_KEY_ERROR_CODE = "EXTRA_KEY_ERROR_CODE";
-	private static final String EXTRA_KEY_IMPORTED_ACCOUNT_INDEX = "EXTRA_KEY_IMPORTED_ACCOUNT_INDEX";
+	static final int RES_CODE_SUCCESS = 5000;
+	static final int RES_CODE_CANCEL = 5001;
+	static final int RES_CODE_FAILED = 5002;
+	static final String EXTRA_KEY_ERROR_MESSAGE = "EXTRA_KEY_ERROR_MESSAGE";
+	static final String EXTRA_KEY_ERROR_CODE = "EXTRA_KEY_ERROR_CODE";
+	static final String EXTRA_KEY_IMPORTED_ACCOUNT_INDEX = "EXTRA_KEY_IMPORTED_ACCOUNT_INDEX";
 
 	CallbackManager(@NonNull final EventDispatcher eventDispatcher) {
 		this.eventDispatcher = eventDispatcher;

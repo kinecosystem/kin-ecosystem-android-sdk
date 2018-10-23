@@ -199,7 +199,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 			.setCustomAnimations(
 				R.anim.kinecosystem_slide_in_right,
 				R.anim.kinecosystem_slide_out_left,
-				R.anim.kinecosystem_slide_in_left,
+				R.anim.kinrecovery_slide_in_left,
 				R.anim.kinecosystem_slide_out_right)
 			.replace(R.id.fragment_frame, orderHistoryFragment, ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG)
 			.addToBackStack(null).commit();

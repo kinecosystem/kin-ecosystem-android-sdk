@@ -62,7 +62,7 @@
         android:layout_marginBottom="@dimen/kinrecovery_upload_btn_frame_margin_bottom"
         android:layout_marginStart="@dimen/kinrecovery_btn_frame_margin_sides"
         android:layout_marginEnd="@dimen/kinrecovery_btn_frame_margin_sides"
-        android:background="@drawable/kinrecovery_btn_frame"
+        android:background="@drawable/kinrecovery_btn_rounded_blue_stroke_white"
         android:text="@string/kinrecovery_upload_qr_btn"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
