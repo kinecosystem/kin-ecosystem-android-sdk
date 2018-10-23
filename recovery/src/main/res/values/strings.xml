@@ -1,20 +1,36 @@
 <resources>
 
+    <!--Activity Name-->
+    <string name="kinrecovery_restore">Restore</string>
+    <string name="kinrecovery_backup">Backup</string>
+
+    <string name="kinrecovery_steps_format">%d/%d</string>
+
+    <!--Sentences-->
     <string name="kinrecovery_upload_qr_title">Import your Kin</string>
     <string name="kinrecovery_upload_qr_description">All you need is to upload\nthe QR code we provided you</string>
     <string name="kinrecovery_upload_qr_btn">Upload your QR code</string>
-    <string name="kinrecovery_restore">Restore</string>
     <string name="kinrecovery_restore_consent_title">Are you sure you want to restore your previous balance?</string>
     <string name="kinrecovery_consent_message">Restoring your old balance will replace your current Kin balance.</string>
-    <string name="kinrecovery_loading_file_error">Error Loading QR File</string>
-    <string name="kinrecoevery_error_decoding_QR">Error Processing QR File</string>
     <string name="kinrecovery_password_restore_title">Enter Your Password</string>
     <string name="kinrecovery_password_recovery_content">Great, we’re almost there!\nPlease enter your password</string>
     <string name="kinrecovery_done">Done</string>
-    <string name="kinrecovery_enter_password">Enter Password</string>
     <string name="kinrecovery_thank_you">Thank You!</string>
-    <string name="kinrecovert_restore_completed_title">Your Kin balance is updated</string>
+    <string name="kinrecovery_restore_completed_title">Your Kin balance is updated</string>
+    <string name="kinrecovery_enter_password">Enter Password</string>
+
+    <!--Errors-->
+    <string name="kinrecovery_loading_file_error">Error Loading QR File</string>
+    <string name="kinrecovery_error_decoding_QR">Error Processing QR File</string>
     <string name="kinrecovery_restore_password_error">Password does not match QR code.\nPlease try again.</string>
     <string name="kinrecovery_restore_invalid_qr">Oops, we didn\'t recognized this QR code.\nPlease upload again.</string>
 
+    <!--Backup Strings-->
+    <string name="kinrecovery_backup_description">Backing up your current balance will allow\nyou to recover it in case you switch phones,\n delete the app or clear your data.</string>
+    <string name="kinrecovery_keep_your_kin_safe">Keep your Kin Safe</string>
+    <string name="kinrecovery_let_s_go">Let\'s Go</string>
+    <string name="kinrecovery_create_password_description">Create a strong password to backup your Kin\nPassword must include the following:\n(9 character, 1 upper case, 1 special character \"#,!,@\", 1 digit)</string>
+    <string name="kinrecovery_confirm_password">Confirm Password</string>
+    <string name="kinrecovery_next">Next</string>
+    <string name="Kinrecovery_i_understand_password_description">I understand this password is required to restore\nmy Kin and it can\'t be recovered if lost.</string>
 </resources>

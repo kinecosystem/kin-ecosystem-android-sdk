@@ -93,7 +93,7 @@ public class UploadQRFragment extends Fragment implements UploadQRView {
 
 	@Override
 	public void showErrorDecodingQRDialog() {
-		Toast.makeText(getContext(), R.string.kinrecoevery_error_decoding_QR, Toast.LENGTH_SHORT).show();
+		Toast.makeText(getContext(), R.string.kinrecovery_error_decoding_QR, Toast.LENGTH_SHORT).show();
 	}
 
 	@Override

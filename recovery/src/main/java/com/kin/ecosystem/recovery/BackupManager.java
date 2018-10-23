@@ -26,11 +26,11 @@ public final class BackupManager {
 	}
 
 	public void backupFlow() {
-		new Launcher(activity).backupFlow(keyStoreProvider);
+		new Launcher(activity).backupFlow();
 	}
 
 	public void restoreFlow() {
-		new Launcher(activity).restoreFlow(keyStoreProvider);
+		new Launcher(activity).restoreFlow();
 	}
 
 	public void registerBackupCallback(@NonNull final BackupCallback backupCallback) {
