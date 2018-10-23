@@ -67,13 +67,13 @@ public class RestorePresenterImpl extends BasePresenterImpl<RestoreView> impleme
 				getView().close();
 				break;
 			case STEP_ENTER_PASSWORD:
-				getView().navigateToUpload();
+				getView().navigateBack();
 				break;
 			case STEP_RESTORE_COMPLETED:
-				getView().navigateToEnterPassword();
+				getView().navigateBack();
 				break;
 			case STEP_FINISH:
-				getView().navigateToRestoreCompleted();
+				getView().navigateBack();
 				break;
 		}
 		currentStep--;
