@@ -2,316 +2,366 @@
 package com.kin.ecosystem.core.bi.events;
 
 // Augmented by script
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.core.bi.Event;
 import com.kin.ecosystem.core.bi.EventsStore;
+
 import java.util.HashMap;
 import java.util.Map;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 
 /**
  * Spend order fails
+ * 
  */
 public class SpendOrderFailed implements Event {
+    public static final String EVENT_NAME = "spend_order_failed";
+    public static final String EVENT_TYPE = "log";
 
-	public static final String EVENT_NAME = "spend_order_failed";
-	public static final String EVENT_TYPE = "log";
+    // Augmented by script
+    public static SpendOrderFailed create(String errorReason, String offerId, String orderId, Boolean isNative, SpendOrderFailed.Origin origin) {
+        return new SpendOrderFailed(
+            (Common) EventsStore.common(),
+            (User) EventsStore.user(),
+            (Client) EventsStore.client(),
+            errorReason,
+            offerId,
+            orderId,
+            isNative,
+            origin);
+    }
 
-	// Augmented by script
-	public static SpendOrderFailed create(String errorReason, String offerId, String orderId, Boolean isNative,
-		Origin origin) {
-		return new SpendOrderFailed(
-			(Common) EventsStore.common(),
-			(User) EventsStore.user(),
-			(Client) EventsStore.client(),
-			errorReason,
-			offerId,
-			orderId,
-			isNative,
-			origin);
-	}
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_name")
+    @Expose
+    private String eventName = EVENT_NAME;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("event_type")
+    @Expose
+    private String eventType = EVENT_TYPE;
+    /**
+     * common properties for all events
+     * (Required)
+     * 
+     */
+    @SerializedName("common")
+    @Expose
+    private Common common;
+    /**
+     * common user properties
+     * (Required)
+     * 
+     */
+    @SerializedName("user")
+    @Expose
+    private User user;
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    @SerializedName("client")
+    @Expose
+    private Client client;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("error_reason")
+    @Expose
+    private String errorReason;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("offer_id")
+    @Expose
+    private String offerId;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("order_id")
+    @Expose
+    private String orderId;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("is_native")
+    @Expose
+    private Boolean isNative;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("origin")
+    @Expose
+    private SpendOrderFailed.Origin origin;
 
-	/**
-	 * (Required)
-	 */
-	@SerializedName("event_name")
-	@Expose
-	private String eventName = EVENT_NAME;
-	/**
-	 * (Required)
-	 */
-	@SerializedName("event_type")
-	@Expose
-	private String eventType = EVENT_TYPE;
-	/**
-	 * common properties for all events
-	 * (Required)
-	 */
-	@SerializedName("common")
-	@Expose
-	private Common common;
-	/**
-	 * common user properties
-	 * (Required)
-	 */
-	@SerializedName("user")
-	@Expose
-	private User user;
-	/**
-	 * common properties for all client events
-	 * (Required)
-	 */
-	@SerializedName("client")
-	@Expose
-	private Client client;
-	/**
-	 * (Required)
-	 */
-	@SerializedName("error_reason")
-	@Expose
-	private String errorReason;
-	/**
-	 * (Required)
-	 */
-	@SerializedName("offer_id")
-	@Expose
-	private String offerId;
-	/**
-	 * (Required)
-	 */
-	@SerializedName("order_id")
-	@Expose
-	private String orderId;
-	/**
-	 * (Required)
-	 */
-	@SerializedName("is_native")
-	@Expose
-	private Boolean isNative;
-	/**
-	 * (Required)
-	 */
-	@SerializedName("origin")
-	@Expose
-	private Origin origin;
+    /**
+     * No args constructor for use in serialization
+     * 
+     */
+    public SpendOrderFailed() {
+    }
 
-	/**
-	 * No args constructor for use in serialization
-	 */
-	public SpendOrderFailed() {
-	}
+    /**
+     * 
+     * @param common
+     * @param orderId
+     * @param errorReason
+     * @param origin
 
-	/**
-	 *
-	 * @param common
-	 * @param orderId
-	 * @param errorReason
-	 * @param origin
+     * @param client
+     * @param offerId
 
-	 * @param client
-	 * @param offerId
+     * @param user
+     * @param isNative
+     */
+    public SpendOrderFailed(Common common, User user, Client client, String errorReason, String offerId, String orderId, Boolean isNative, SpendOrderFailed.Origin origin) {
+        super();
+        this.common = common;
+        this.user = user;
+        this.client = client;
+        this.errorReason = errorReason;
+        this.offerId = offerId;
+        this.orderId = orderId;
+        this.isNative = isNative;
+        this.origin = origin;
+    }
 
-	 * @param user
-	 * @param isNative
-	 */
-	public SpendOrderFailed(Common common, User user, Client client, String errorReason, String offerId, String orderId,
-		Boolean isNative, Origin origin) {
-		super();
-		this.common = common;
-		this.user = user;
-		this.client = client;
-		this.errorReason = errorReason;
-		this.offerId = offerId;
-		this.orderId = orderId;
-		this.isNative = isNative;
-		this.origin = origin;
-	}
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventName() {
+        return eventName;
+    }
 
-	/**
-	 * (Required)
-	 */
-	public String getEventName() {
-		return eventName;
-	}
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
+    }
 
-	/**
-	 * (Required)
-	 */
-	public void setEventName(String eventName) {
-		this.eventName = eventName;
-	}
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getEventType() {
+        return eventType;
+    }
 
-	/**
-	 * (Required)
-	 */
-	public String getEventType() {
-		return eventType;
-	}
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
+    }
 
-	/**
-	 * (Required)
-	 */
-	public void setEventType(String eventType) {
-		this.eventType = eventType;
-	}
+    /**
+     * common properties for all events
+     * (Required)
+     * 
+     */
+    public Common getCommon() {
+        return common;
+    }
 
-	/**
-	 * common properties for all events
-	 * (Required)
-	 */
-	public Common getCommon() {
-		return common;
-	}
+    /**
+     * common properties for all events
+     * (Required)
+     * 
+     */
+    public void setCommon(Common common) {
+        this.common = common;
+    }
 
-	/**
-	 * common properties for all events
-	 * (Required)
-	 */
-	public void setCommon(Common common) {
-		this.common = common;
-	}
+    /**
+     * common user properties
+     * (Required)
+     * 
+     */
+    public User getUser() {
+        return user;
+    }
 
-	/**
-	 * common user properties
-	 * (Required)
-	 */
-	public User getUser() {
-		return user;
-	}
+    /**
+     * common user properties
+     * (Required)
+     * 
+     */
+    public void setUser(User user) {
+        this.user = user;
+    }
 
-	/**
-	 * common user properties
-	 * (Required)
-	 */
-	public void setUser(User user) {
-		this.user = user;
-	}
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    public Client getClient() {
+        return client;
+    }
 
-	/**
-	 * common properties for all client events
-	 * (Required)
-	 */
-	public Client getClient() {
-		return client;
-	}
+    /**
+     * common properties for all client events
+     * (Required)
+     * 
+     */
+    public void setClient(Client client) {
+        this.client = client;
+    }
 
-	/**
-	 * common properties for all client events
-	 * (Required)
-	 */
-	public void setClient(Client client) {
-		this.client = client;
-	}
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getErrorReason() {
+        return errorReason;
+    }
 
-	/**
-	 * (Required)
-	 */
-	public String getErrorReason() {
-		return errorReason;
-	}
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setErrorReason(String errorReason) {
+        this.errorReason = errorReason;
+    }
 
-	/**
-	 * (Required)
-	 */
-	public void setErrorReason(String errorReason) {
-		this.errorReason = errorReason;
-	}
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getOfferId() {
+        return offerId;
+    }
 
-	/**
-	 * (Required)
-	 */
-	public String getOfferId() {
-		return offerId;
-	}
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setOfferId(String offerId) {
+        this.offerId = offerId;
+    }
 
-	/**
-	 * (Required)
-	 */
-	public void setOfferId(String offerId) {
-		this.offerId = offerId;
-	}
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getOrderId() {
+        return orderId;
+    }
 
-	/**
-	 * (Required)
-	 */
-	public String getOrderId() {
-		return orderId;
-	}
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
 
-	/**
-	 * (Required)
-	 */
-	public void setOrderId(String orderId) {
-		this.orderId = orderId;
-	}
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public Boolean getIsNative() {
+        return isNative;
+    }
 
-	/**
-	 * (Required)
-	 */
-	public Boolean getIsNative() {
-		return isNative;
-	}
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setIsNative(Boolean isNative) {
+        this.isNative = isNative;
+    }
 
-	/**
-	 * (Required)
-	 */
-	public void setIsNative(Boolean isNative) {
-		this.isNative = isNative;
-	}
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public SpendOrderFailed.Origin getOrigin() {
+        return origin;
+    }
 
-	/**
-	 * (Required)
-	 */
-	public Origin getOrigin() {
-		return origin;
-	}
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setOrigin(SpendOrderFailed.Origin origin) {
+        this.origin = origin;
+    }
 
-	/**
-	 * (Required)
-	 */
-	public void setOrigin(Origin origin) {
-		this.origin = origin;
-	}
+    public enum Origin {
 
-	public enum Origin {
+        @SerializedName("marketplace")
+        MARKETPLACE("marketplace"),
+        @SerializedName("external")
+        EXTERNAL("external");
+        private final String value;
+        private final static Map<String, SpendOrderFailed.Origin> CONSTANTS = new HashMap<String, SpendOrderFailed.Origin>();
 
-		@SerializedName("marketplace")
-		MARKETPLACE("marketplace"),
-		@SerializedName("external")
-		EXTERNAL("external");
-		private final String value;
-		private final static Map<String, Origin> CONSTANTS = new HashMap<String, Origin>();
+        static {
+            for (SpendOrderFailed.Origin c: values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
 
-		static {
-			for (Origin c : values()) {
-				CONSTANTS.put(c.value, c);
-			}
-		}
+        private Origin(String value) {
+            this.value = value;
+        }
 
-		private Origin(String value) {
-			this.value = value;
-		}
+        @Override
+        public String toString() {
+            return this.value;
+        }
 
-		@Override
-		public String toString() {
-			return this.value;
-		}
+        public String value() {
+            return this.value;
+        }
 
-		public String value() {
-			return this.value;
-		}
+        public static SpendOrderFailed.Origin fromValue(String value) {
+            SpendOrderFailed.Origin constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            } else {
+                return constant;
+            }
+        }
 
-		public static Origin fromValue(String value) {
-			Origin constant = CONSTANTS.get(value);
-			if (constant == null) {
-				throw new IllegalArgumentException(value);
-			} else {
-				return constant;
-			}
-		}
-
-	}
+    }
 
 }
