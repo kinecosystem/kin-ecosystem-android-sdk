@@ -22,6 +22,7 @@ import com.kin.ecosystem.core.bi.events.SpendOfferTapped;
 import com.kin.ecosystem.core.bi.events.SpendOfferTapped.Origin;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.offer.OfferDataSource;
+import com.kin.ecosystem.core.data.offer.OfferListUtil;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
 import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.Offer.ContentTypeEnum;
@@ -85,7 +86,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			spendList = new ArrayList<>();
 			OfferList cachedOfferList = offerRepository.getCachedOfferList();
 			if (cachedOfferList != null && cachedOfferList.getOffers() != null) {
-				splitOffersByType(cachedOfferList.getOffers(), this.earnList, this.spendList);
+				OfferListUtil.splitOffersByType(cachedOfferList.getOffers(), this.earnList, this.spendList);
 			}
 		}
 		setOfferLists();
@@ -207,7 +208,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			List<Offer> newEarnOffers = new ArrayList<>();
 			List<Offer> newSpendOffers = new ArrayList<>();
 
-			splitOffersByType(offerList.getOffers(), newEarnOffers, newSpendOffers);
+			OfferListUtil.splitOffersByType(offerList.getOffers(), newEarnOffers, newSpendOffers);
 			syncList(newEarnOffers, earnList, OfferType.EARN);
 			syncList(newSpendOffers, spendList, OfferType.SPEND);
 		}
@@ -267,16 +268,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private boolean isSpend(OfferType offerType) {
 		return offerType == OfferType.SPEND;
-	}
-
-	private void splitOffersByType(List<Offer> list, List<Offer> earnList, List<Offer> spendList) {
-		for (Offer offer : list) {
-			if (offer.getOfferType() == OfferType.EARN) {
-				earnList.add(offer);
-			} else {
-				spendList.add(offer);
-			}
-		}
 	}
 
 	@Override

@@ -2,7 +2,6 @@ package com.kin.ecosystem.core.data.offer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -13,7 +12,9 @@ import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.Callback;
-import com.kin.ecosystem.common.model.NativeSpendOffer;
+import com.kin.ecosystem.common.model.NativeOffer;
+import com.kin.ecosystem.common.model.NativeOffer.OfferType;
+import com.kin.ecosystem.common.model.NativeOfferBuilder;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.network.model.Offer;
@@ -22,6 +23,7 @@ import com.kin.ecosystem.core.network.model.Paging;
 import com.kin.ecosystem.core.network.model.PagingCursors;
 import com.kin.ecosystem.core.util.OfferConverter;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import com.kin.ecosystem.core.network.ApiException;
 import org.junit.Before;
@@ -103,27 +105,31 @@ public class OfferRepositoryTest {
 	public void addNativeOfferCallback() throws Exception {
 		Observer<NativeOfferClickEvent> callback = new Observer<NativeOfferClickEvent>() {
 			@Override
-			public void onChanged(NativeOfferClickEvent nativeSpendOffer) {
-				assertEquals("5", nativeSpendOffer.getNativeOffer().getId());
-				assertFalse(nativeSpendOffer.isDismissOnTap());
+			public void onChanged(NativeOfferClickEvent nativeOffer) {
+				assertEquals("5", nativeOffer.getNativeOffer().getId());
+				assertFalse(nativeOffer.isDismissOnTap());
 			}
 		};
 
 		offerRepository.addNativeOfferClickedObserver(callback);
 		offerRepository.getNativeSpendOfferObservable().postValue(new NativeOfferClickEvent.Builder()
-			.nativeOffer(new NativeSpendOffer("5"))
+			.nativeOffer(new NativeOffer("5"))
 			.isDismissed(false)
 			.build());
 	}
 
 	@Test
-	public void addNativeOffer() throws Exception {
-		NativeSpendOffer nativeOffer =
-			new NativeSpendOffer("1")
+	public void addNativeSpendOffer() throws Exception {
+
+		List<Offer> newEarnOffers = new ArrayList<>();
+		List<Offer> newSpendOffers = new ArrayList<>();
+		NativeOffer nativeOffer =
+			new NativeOfferBuilder("1")
+				.offerType(OfferType.SPEND)
 				.title("Native offer title")
 				.description("Native offer desc")
 				.amount(1000)
-				.image("Native offer image");
+				.image("Native offer image").build();
 
 		offerRepository.addNativeOffer(nativeOffer, true);
 		assertEquals(1, offerRepository.getCachedOfferList().getOffers().size());
@@ -138,16 +144,55 @@ public class OfferRepositoryTest {
 		assertFalse(offerRepository.shouldDismissOnTap(offer.getId()));
 		assertEquals(1, offerRepository.getCachedOfferList().getOffers().size());
 		assertEquals(nativeOffer.getId(), offerRepository.getCachedOfferList().getOffers().get(0).getId());
+		OfferListUtil.splitOffersByType(offerRepository.getCachedOfferList().getOffers(), newEarnOffers, newSpendOffers);
+		assertEquals(1, newSpendOffers.size());
+		assertEquals(0, newEarnOffers.size());
 	}
 
+
 	@Test
-	public void removeNativeOffer() throws Exception {
-		NativeSpendOffer nativeOffer =
-			new NativeSpendOffer("1")
+	public void addNativeEarnOffer() throws Exception {
+
+		List<Offer> newEarnOffers = new ArrayList<>();
+		List<Offer> newSpendOffers = new ArrayList<>();
+		NativeOffer nativeOffer =
+			new NativeOfferBuilder("2")
+				.offerType(OfferType.EARN)
 				.title("Native offer title")
 				.description("Native offer desc")
 				.amount(1000)
-				.image("Native offer image");
+				.image("Native offer image").build();
+
+		offerRepository.addNativeOffer(nativeOffer, true);
+		assertEquals(1, offerRepository.getCachedOfferList().getOffers().size());
+		assertEquals(nativeOffer.getId(), offerRepository.getCachedOfferList().getOffers().get(0).getId());
+
+		Offer offer = OfferConverter.toOffer(nativeOffer);
+		assertTrue(offerRepository.shouldDismissOnTap(offer.getId()));
+
+		// Update on second time, still the size is 1 with same offer
+		offerRepository.addNativeOffer(nativeOffer, false);
+		offer = OfferConverter.toOffer(nativeOffer);
+		assertFalse(offerRepository.shouldDismissOnTap(offer.getId()));
+		assertEquals(1, offerRepository.getCachedOfferList().getOffers().size());
+		assertEquals(nativeOffer.getId(), offerRepository.getCachedOfferList().getOffers().get(0).getId());
+		OfferListUtil.splitOffersByType(offerRepository.getCachedOfferList().getOffers(), newEarnOffers, newSpendOffers);
+		assertEquals(0, newSpendOffers.size());
+		assertEquals(1, newEarnOffers.size());
+	}
+
+
+
+	@Test
+	public void removeNativeSpendOffer() throws Exception {
+		NativeOffer nativeOffer =
+			new NativeOfferBuilder("1")
+				.offerType(OfferType.SPEND)
+				.title("Native offer title")
+				.description("Native offer desc")
+				.amount(1000)
+				.image("Native offer image")
+				.build();
 
 		offerRepository.addNativeOffer(nativeOffer, true);
 		assertEquals(1, offerRepository.getCachedOfferList().getOffers().size());
