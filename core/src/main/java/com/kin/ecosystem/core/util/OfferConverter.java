@@ -3,7 +3,7 @@ package com.kin.ecosystem.core.util;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.common.model.NativeOffer;
-import com.kin.ecosystem.common.model.NativeSpendOffer;
+import com.kin.ecosystem.common.model.NativeOfferBuilder;
 import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.Offer.ContentTypeEnum;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
@@ -32,15 +32,14 @@ public class OfferConverter {
 		}
 	}
 
-	public static NativeSpendOffer toNativeSpendOffer(Offer offer) {
-		if(offer.getOfferType() == OfferType.SPEND) {
-			return new NativeSpendOffer(offer.getId())
-				.title(offer.getTitle())
-				.description(offer.getDescription())
-				.amount(offer.getAmount())
-				.image(offer.getImage());
-		} else {
-			return null;
-		}
+	public static NativeOffer toNativeOffer(@NonNull Offer offer) {
+		NativeOffer.OfferType offerType =
+			(offer.getOfferType() == OfferType.EARN) ? NativeOffer.OfferType.EARN : NativeOffer.OfferType.SPEND;
+		return new NativeOfferBuilder(offer.getId())
+			.offerType(offerType)
+			.title(offer.getTitle())
+			.description(offer.getDescription())
+			.amount(offer.getAmount())
+			.image(offer.getImage()).build();
 	}
 }

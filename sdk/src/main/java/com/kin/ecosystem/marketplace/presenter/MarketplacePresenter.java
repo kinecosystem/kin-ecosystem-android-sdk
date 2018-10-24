@@ -12,7 +12,7 @@ import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.common.KinCallbackAdapter;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.Observer;
-import com.kin.ecosystem.common.model.NativeSpendOffer;
+import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.BackButtonOnMarketplacePageTapped;
 import com.kin.ecosystem.core.bi.events.EarnOfferTapped;
@@ -285,6 +285,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		if (offerType == OfferType.EARN) {
 			offer = earnList.get(position);
 			sendEranOfferTapped(offer);
+			if (onExternalItemClicked(offer)) {
+				return;
+			}
 			if (this.view != null) {
 				PollBundle pollBundle = new PollBundle()
 					.setJsonData(offer.getContent())
@@ -297,12 +300,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		} else {
 			offer = spendList.get(position);
 			sendSpendOfferTapped(offer);
-			if (offer.getContentType() == ContentTypeEnum.EXTERNAL) {
-				final boolean dismissOnTap = offerRepository.shouldDismissOnTap(offer.getId());
-				if (dismissOnTap) {
-					closeMarketplace();
-				}
-				nativeSpendOfferClicked(offer, dismissOnTap);
+			if (onExternalItemClicked(offer)) {
 				return;
 			}
 			int balance = blockchainSource.getBalance().getAmount().intValue();
@@ -321,6 +319,18 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 				showSomethingWentWrong();
 			}
 		}
+	}
+
+	private boolean onExternalItemClicked(Offer offer) {
+		if (offer != null && offer.getContentType() == ContentTypeEnum.EXTERNAL) {
+			final boolean dismissOnTap = offerRepository.shouldDismissOnTap(offer.getId());
+			if (dismissOnTap) {
+				closeMarketplace();
+			}
+			nativeSpendOfferClicked(offer, dismissOnTap);
+			return true;
+		}
+		return false;
 	}
 
 	private void closeMarketplace() {
@@ -346,7 +356,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void nativeSpendOfferClicked(Offer offer, boolean dismissMarketplace) {
-		NativeSpendOffer nativeOffer = OfferConverter.toNativeSpendOffer(offer);
+		NativeOffer nativeOffer = OfferConverter.toNativeOffer(offer);
 		offerRepository.getNativeSpendOfferObservable().postValue(
 			new NativeOfferClickEvent.Builder()
 				.nativeOffer(nativeOffer)
