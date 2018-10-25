@@ -17,6 +17,7 @@ import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.common.model.NativeSpendOffer;
 import com.kin.ecosystem.common.model.OrderConfirmation;
+import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.common.model.WhitelistData;
 import com.kin.ecosystem.core.Configuration;
 import com.kin.ecosystem.core.Logger;
@@ -38,6 +39,7 @@ import com.kin.ecosystem.core.data.order.OrderRemoteData;
 import com.kin.ecosystem.core.data.order.OrderRepository;
 import com.kin.ecosystem.core.network.model.SignInData;
 import com.kin.ecosystem.core.network.model.SignInData.SignInTypeEnum;
+import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
@@ -326,6 +328,20 @@ public class Kin {
 		checkInstanceNotNull();
 		AuthRepository.getInstance().hasAccount(userId, callback);
 
+	}
+
+	/**
+	 * Determine if a Kin Account is associated with the {@param userId}, on Kin Ecosystem Server.
+	 * That means you can pay to the user with {@link Kin#payToUser(String userId, KinCallback)},
+	 * otherwise the recipient user won't get the Kin.
+	 *
+	 * @param callback The result will be a {@link Boolean}
+	 * @throws ClientException
+	 */
+	public static void userStats(@NonNull KinCallback<UserStats> callback)
+		throws ClientException {
+		checkInstanceNotNull();
+		AuthRepository.getInstance().userStats(callback);
 	}
 
 	/**
