@@ -6,6 +6,7 @@ import com.kin.ecosystem.core.network.ApiCallback;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.api.AuthApi;
 import com.kin.ecosystem.core.network.model.SignInData;
+import com.kin.ecosystem.core.network.model.UserProfile;
 import java.util.List;
 import java.util.Map;
 import com.kin.ecosystem.common.Callback;
@@ -143,4 +144,50 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 			});
 		}
 	}
+
+	@Override
+	public void userProfile(@NonNull final Callback<UserProfile, ApiException> callback) {
+		try {
+			authApi.userProfileAsync("", new ApiCallback<UserProfile>() {
+				@Override
+				public void onFailure(final ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+					executorsUtil.mainThread().execute(new Runnable() {
+						@Override
+						public void run() {
+							callback.onFailure(e);
+						}
+					});
+				}
+
+				@Override
+				public void onSuccess(final UserProfile result, int statusCode, Map<String, List<String>> responseHeaders) {
+					executorsUtil.mainThread().execute(new Runnable() {
+						@Override
+						public void run() {
+							callback.onResponse(result);
+						}
+					});
+
+				}
+
+				@Override
+				public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
+
+				}
+
+				@Override
+				public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+
+				}
+			});
+		} catch (final ApiException e){
+			executorsUtil.mainThread().execute(new Runnable() {
+				@Override
+				public void run() {
+					callback.onFailure(e);
+				}
+			});
+		}
+	}
+
 }
