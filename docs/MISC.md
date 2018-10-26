@@ -25,3 +25,28 @@ try {
     e.printStackTrace();
 }
 ```
+
+### User's Order History Stats ###
+
+This API provides user's stats which include information such number of Earn/Spend orders completed by the user or last earn/spend dates.
+UserStats information could be used for re-engaging users, provide specific experience for users who never earn before etc.
+
+```
+try {
+    Kin.userStats(new KinCallback<UserStats>() {
+        @Override
+        public void onResponse(UserStats response) {
+            if (response.getEarnCount() == 0) {
+                //show first time user UI
+            }
+        }
+
+        @Override
+        public void onFailure(KinEcosystemException exception) {
+            //handle onFailure
+        }
+    });
+} catch (ClientException e) {
+    //handle ClientException
+}
+```

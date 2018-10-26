@@ -331,11 +331,9 @@ public class Kin {
 	}
 
 	/**
-	 * Determine if a Kin Account is associated with the {@param userId}, on Kin Ecosystem Server.
-	 * That means you can pay to the user with {@link Kin#payToUser(String userId, KinCallback)},
-	 * otherwise the recipient user won't get the Kin.
-	 *
-	 * @param callback The result will be a {@link Boolean}
+	 * Get user's stats which include history information such as number of Earn/Spend orders completed by the user or last earn/spend dates.
+	 * This information could be used for re-engaging users, provide specific experience for users who never earn before etc.
+	 * @param callback The result will be a {@link UserStats}
 	 * @throws ClientException
 	 */
 	public static void userStats(@NonNull KinCallback<UserStats> callback)

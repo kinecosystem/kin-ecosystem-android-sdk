@@ -157,26 +157,22 @@ public class MainActivity extends AppCompatActivity {
 					StringBuilder userStats = new StringBuilder();
 					userStats.append("Earns: ").append(response.getEarnCount()).append(", ").append("last Earn date: ")
 						.append(response.getLastEarnDate()).append(", ").append("Spends: ")
-						.append(response.getSpendCount()).append(", ").append("last spend date: ").append(response.getLastSpendDate());
+						.append(response.getSpendCount()).append(", ").append("last spend date: ")
+						.append(response.getLastSpendDate());
 					showToast(userStats.toString());
 					enableView(v, true);
-
 				}
 
 				@Override
 				public void onFailure(KinEcosystemException exception) {
-					showSnackbar("onFailure", true);
+					showSnackbar("onFailure on Kin.userStats: " + exception.getMessage(), true);
 					enableView(v, true);
-
-
 				}
 			});
 		} catch (ClientException e) {
-			showSnackbar("Could not gettestUserStatus", true);
+			showSnackbar("ClientException on Kin.userStats: " + e.getMessage(), true);
 			enableView(v, true);
-
 		}
-
 	}
 
 	private boolean getDismissOnTap() {
