@@ -127,9 +127,9 @@ public class AuthRepository implements AuthDataSource {
 		remoteData.userProfile(new Callback<UserProfile, ApiException>() {
 			@Override
 			public void onResponse(UserProfile response) {
-				UserStats userStats= new UserStats();
+				UserStats userStats = new UserStats();
 				com.kin.ecosystem.core.network.model.UserStats userNetworkrStats = response.getStats();
-				if(userNetworkrStats!= null){
+				if (userNetworkrStats != null) {
 					userStats.setEarnCount(userNetworkrStats.getEarnCount().intValue());
 					userStats.setLastEarnDate(userNetworkrStats.getLastEarnDate());
 					userStats.setSpendCount(userNetworkrStats.getSpendCount().intValue());

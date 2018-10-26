@@ -2,8 +2,6 @@ package com.kin.ecosystem.core.data.auth;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.kin.ecosystem.common.KinCallback;
-import com.kin.ecosystem.core.data.auth.AuthDataSource.Remote;
 import com.kin.ecosystem.core.network.ApiCallback;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.api.AuthApi;
@@ -15,7 +13,7 @@ import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
 
-public class AuthRemoteData implements Remote {
+public class AuthRemoteData implements AuthDataSource.Remote {
 
 	/**
 	 * This is new api client to be different from oder apis without access token interceptor.
