@@ -1,7 +1,7 @@
 package com.kin.ecosystem.core.bi.events;
 
-import java.util.UUID;
 import com.kin.ecosystem.core.bi.EventsStore;
+import java.util.UUID;
 
 public class CommonProxy implements CommonInterface {
     public Common snapshot() {
@@ -13,7 +13,7 @@ public class CommonProxy implements CommonInterface {
             this.getTimestamp());
     }
 
-    private String schemaVersion;
+    private String schemaVersion = "1";
     private EventsStore.DynamicValue<String> dynamicSchemaVersion;
     public String getSchemaVersion() {
         return this.schemaVersion != null ? this.schemaVersion : this.dynamicSchemaVersion.get();
