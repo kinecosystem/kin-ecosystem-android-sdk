@@ -3,16 +3,16 @@ package com.kin.ecosystem.core.data.auth;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.ObservableData;
-import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.core.network.ApiException;
+import com.kin.ecosystem.core.network.model.AuthToken;
+import com.kin.ecosystem.core.network.model.SignInData;
 import com.kin.ecosystem.core.util.DateUtil;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import java.util.Calendar;
 import java.util.Date;
-import com.kin.ecosystem.core.network.model.AuthToken;
-import com.kin.ecosystem.core.network.model.SignInData;
 
 public class AuthRepository implements AuthDataSource {
 
@@ -56,6 +56,12 @@ public class AuthRepository implements AuthDataSource {
 	}
 
 	@Override
+	public void updateWalletAddress(String address) {
+		cachedSignInData.setWalletAddress(address);
+		setSignInData(cachedSignInData);
+	}
+
+	@Override
 	public ObservableData<String> getAppID() {
 		loadCachedAppIDIfNeeded();
 		return appId;
@@ -79,7 +85,7 @@ public class AuthRepository implements AuthDataSource {
 	private void loadCachedAppIDIfNeeded() {
 		if (TextUtils.isEmpty(appId.getValue())) {
 			final String localAppId = localData.getAppId();
-			if (!TextUtils.isEmpty(localAppId)){
+			if (!TextUtils.isEmpty(localAppId)) {
 				postAppID(localAppId);
 			}
 		}

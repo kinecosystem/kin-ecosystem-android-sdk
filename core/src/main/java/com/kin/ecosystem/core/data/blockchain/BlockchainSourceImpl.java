@@ -48,8 +48,8 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	private KinAccount account;
 	private ObservableData<Balance> balance = ObservableData.create(new Balance());
 	/**
-	 * Listen for {@code completedPayment} in order to be notify about completed transaction sent to
-	 * the blockchain, it could failed or succeed.
+	 * Listen for {@code completedPayment} in order to be notify about completed transaction sent to the blockchain, it
+	 * could failed or succeed.
 	 */
 	private ObservableData<Payment> completedPayment = ObservableData.create();
 	private final Object paymentObserversLock = new Object();
@@ -99,13 +99,18 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	private void createKinAccountIfNeeded() throws BlockchainException {
-		account = kinClient.getAccount(0);
-		if (account == null) {
+		int accountIndex = local.getAccountIndex();
+		if (kinClient.hasAccount()) {
+			account = kinClient.getAccount(accountIndex);
+		} else {
 			try {
 				account = kinClient.addAccount();
 			} catch (CreateAccountException e) {
 				throw ErrorUtil.getBlockchainException(e);
 			}
+		}
+		if (account == null) {
+			throw ErrorUtil.createAccountCannotLoadedExcpetion(accountIndex);
 		}
 	}
 
@@ -172,7 +177,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			@Override
 			public void onResult(final kin.core.Balance balanceObj) {
 				setBalance(balanceObj);
-				if(callback != null) {
+				if (callback != null) {
 					mainThread.execute(new Runnable() {
 						@Override
 						public void run() {
@@ -185,7 +190,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 			@Override
 			public void onError(final Exception e) {
-				if(callback != null) {
+				if (callback != null) {
 					mainThread.execute(new Runnable() {
 						@Override
 						public void run() {
@@ -359,6 +364,17 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	public KeyStoreProvider getKeyStoreProvider() {
 		return new KeyStoreProviderImpl(kinClient, account);
+	}
+
+	@Override
+	public void updateActiveAccount(int accountIndex) throws BlockchainException {
+		local.setAccountIndex(accountIndex);
+		createKinAccountIfNeeded();
+
+		balanceRegistration.remove();
+		startBalanceListener();
+		//trigger balance update
+		getBalance(null);
 	}
 
 	private void decrementPaymentCount() {

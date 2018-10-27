@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
@@ -167,13 +168,26 @@ public class AccountManagerImpl implements AccountManager {
 		}
 	}
 
+	@Override
+	public void switchAccount(int accountIndex) throws BlockchainException {
+		Logger.log(new Log().withTag(TAG).put("switchAccount", "start"));
+		//switch to the new KinAccount
+		blockchainSource.updateActiveAccount(accountIndex);
+		//update sign in data with new wallet address
+		authRepository.updateWalletAddress(blockchainSource.getPublicAddress());
+		//force REQUIRE_CREATION account state, in order to trigger re-sign to server for updating the new wallet address
+		setAccountState(REQUIRE_CREATION);
+	}
+
 	private void removeAccountCreationRegistration() {
 		accountCreationRegistration.remove();
 		accountCreationRegistration = null;
 	}
 
 	private boolean isValidState(int currentState, int newState) {
-		return newState == ERROR || currentState == ERROR || newState >= currentState;
+		return newState == ERROR || currentState == ERROR || newState >= currentState
+			//allow recreating an account in case of switching account after restore
+			|| (currentState == CREATION_COMPLETED && newState == REQUIRE_CREATION);
 	}
 
 }

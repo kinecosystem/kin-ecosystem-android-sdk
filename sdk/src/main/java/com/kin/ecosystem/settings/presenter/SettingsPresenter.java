@@ -8,7 +8,11 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.model.Balance;
+import com.kin.ecosystem.core.Log;
+import com.kin.ecosystem.core.Logger;
+import com.kin.ecosystem.core.accountmanager.AccountManager;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.RecoveryBackupEvents;
 import com.kin.ecosystem.core.bi.RecoveryRestoreEvents;
@@ -24,22 +28,25 @@ import java.math.BigDecimal;
 
 public class SettingsPresenter extends BasePresenter<ISettingsView> implements ISettingsPresenter {
 
+	private static final String TAG = SettingsPresenter.class.getSimpleName();
 	private final BackupManager backupManager;
 	private final SettingsDataSource settingsDataSource;
 	private final BlockchainSource blockchainSource;
 	private final EventLogger eventLogger;
+	private final AccountManager accountManager;
 
 	private Observer<Balance> balanceObserver;
 	private Balance currentBalance;
 
 	public SettingsPresenter(@NonNull final ISettingsView view, @NonNull final SettingsDataSource settingsDataSource,
 		@NonNull final BlockchainSource blockchainSource, @NonNull final BackupManager backupManager,
-		@NonNull final EventLogger eventLogger) {
+		@NonNull final EventLogger eventLogger, AccountManager accountManager) {
 		this.view = view;
 		this.backupManager = backupManager;
 		this.settingsDataSource = settingsDataSource;
 		this.blockchainSource = blockchainSource;
 		this.eventLogger = eventLogger;
+		this.accountManager = accountManager;
 		this.currentBalance = blockchainSource.getBalance();
 		registerToCallbacks();
 		registerToEvents();
@@ -145,13 +152,19 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 
 		backupManager.registerRestoreCallback(new RestoreCallback() {
 			@Override
-			public void onSuccess(int index) {
-
+			public void onSuccess(int accountIndex) {
+				Logger.log(new Log().withTag(TAG).put("RestoreCallback", "onSuccess"));
+				try {
+					accountManager.switchAccount(accountIndex);
+				} catch (BlockchainException e) {
+					//TODO handle error
+					e.printStackTrace();
+				}
 			}
 
 			@Override
 			public void onCancel() {
-
+				Logger.log(new Log().withTag(TAG).put("RestoreCallback", "onCancel"));
 			}
 
 			@Override

@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseToolbarActivity;
+import com.kin.ecosystem.core.accountmanager.AccountManagerImpl;
 import com.kin.ecosystem.core.bi.EventLoggerImpl;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceImpl;
@@ -61,7 +62,7 @@ public class SettingsActivity extends BaseToolbarActivity implements ISettingsVi
 			new SettingsDataSourceImpl(new SettingsDataSourceLocal(getApplicationContext())),
 			BlockchainSourceImpl.getInstance(),
 			new BackupManager(this, BlockchainSourceImpl.getInstance().getKeyStoreProvider()),
-			EventLoggerImpl.getInstance());
+			EventLoggerImpl.getInstance(), AccountManagerImpl.getInstance());
 	}
 
 	@Override

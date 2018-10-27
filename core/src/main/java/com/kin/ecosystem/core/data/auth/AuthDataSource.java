@@ -13,6 +13,8 @@ public interface AuthDataSource {
 
 	void setSignInData(@NonNull final SignInData signInData);
 
+	void updateWalletAddress(String address);
+
 	ObservableData<String> getAppID();
 
 	String getDeviceID();

@@ -1,5 +1,6 @@
 package com.kin.ecosystem.core.util;
 
+import android.annotation.SuppressLint;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
@@ -28,6 +29,7 @@ public class ErrorUtil {
 	private static final String FAILED_TO_ACTIVATE_ON_THE_BLOCKCHAIN_NETWORK = "A Wallet was created locally, but failed to activate on the blockchain network";
 	private static final String ECOSYSTEM_SDK_IS_NOT_STARTED = "Operation not permitted: Ecosystem SDK is not started";
 	private static final String BAD_OR_MISSING_PARAMETERS = "Bad or missing parameters";
+	private static final String FAILED_TO_LOAD_ACCOUNT_ON_INDEX = "Failed to load blockchain wallet on index %d";
 
 
 	// Server Error codes
@@ -51,8 +53,10 @@ public class ErrorUtil {
 				case ERROR_CODE_BAD_REQUEST:
 				case ERROR_CODE_UNAUTHORIZED:
 				case ERROR_CODE_NOT_FOUND:
-					if (apiException.getResponseBody() != null && apiException.getResponseBody().getCode() == ERROR_CODE_USER_NOT_FOUND) {
-						exception = new ServiceException(ServiceException.USER_NOT_FOUND, USER_NOT_FOUND_ON_ECOSYSTEM_SERVER, apiException);
+					if (apiException.getResponseBody() != null
+						&& apiException.getResponseBody().getCode() == ERROR_CODE_USER_NOT_FOUND) {
+						exception = new ServiceException(ServiceException.USER_NOT_FOUND,
+							USER_NOT_FOUND_ON_ECOSYSTEM_SERVER, apiException);
 						break;
 					}
 				case ERROR_CODE_CONFLICT:
@@ -114,6 +118,12 @@ public class ErrorUtil {
 		}
 
 		return exception;
+	}
+
+	@SuppressLint("DefaultLocale")
+	public static BlockchainException createAccountCannotLoadedExcpetion(int accountIndex) {
+		return new BlockchainException(BlockchainException.ACCOUNT_LOADING_FAILED,
+			String.format(FAILED_TO_LOAD_ACCOUNT_ON_INDEX, accountIndex), null);
 	}
 
 	public static ClientException getClientException(final int code, @Nullable Exception e) {
