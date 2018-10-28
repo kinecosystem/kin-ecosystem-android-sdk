@@ -137,12 +137,12 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 	@Override
 	public void decodeError() {
 		contentText.setText(R.string.kinrecovery_restore_password_error);
-		contentText.setTextColor(ContextCompat.getColor(getContext(), R.color.kinrecovery_error));
+		contentText.setTextColor(ContextCompat.getColor(getContext(), R.color.kinrecovery_red));
 	}
 
 	@Override
 	public void invalidQrError() {
 		contentText.setText(R.string.kinrecovery_restore_invalid_qr);
-		contentText.setTextColor(ContextCompat.getColor(getContext(), R.color.kinrecovery_error));
+		contentText.setTextColor(ContextCompat.getColor(getContext(), R.color.kinrecovery_red));
 	}
 }

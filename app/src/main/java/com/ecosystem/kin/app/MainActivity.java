@@ -134,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
 			.setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
 		addNativeSpendOffer(nativeSpendOffer, getDismissOnTap());
 		addNativeOfferClickedObserver();
+		openKinMarketplace();
 	}
 
 	private boolean getDismissOnTap() {

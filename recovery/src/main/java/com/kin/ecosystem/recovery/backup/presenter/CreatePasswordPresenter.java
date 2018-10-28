@@ -5,4 +5,11 @@ import com.kin.ecosystem.recovery.base.BasePresenter;
 
 public interface CreatePasswordPresenter extends BasePresenter<CreatePasswordView> {
 
+	void enterPasswordChanged(String password);
+
+	void confirmPasswordChanged(String mainPassword, String confirmPassword);
+
+	void iUnderstandChecked(boolean isChecked);
+
+	void nextButtonClicked(String password);
 }

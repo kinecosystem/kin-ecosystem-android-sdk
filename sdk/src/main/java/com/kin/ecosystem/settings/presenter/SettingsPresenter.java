@@ -51,6 +51,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 	public void onAttach(ISettingsView view) {
 		super.onAttach(view);
 		updateSettingsIcon();
+		backupClicked();
 	}
 
 	@Override

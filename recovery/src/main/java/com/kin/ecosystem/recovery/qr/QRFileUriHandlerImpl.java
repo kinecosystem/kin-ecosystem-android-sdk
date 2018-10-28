@@ -16,7 +16,7 @@ import java.io.IOException;
 public class QRFileUriHandlerImpl implements QRFileUriHandler {
 
 	private static final String RELATIVE_PATH_FILENAME_QR_IMAGE = "/kinrecovery_qr_codes/backup_qr.png";
-	private static final String AUTHORITY = "com.kin.ecosystem.backup";
+	private static final String AUTHORITY = "com.kin.ecosystem.recovery";
 	private final Context context;
 
 	public QRFileUriHandlerImpl(@NonNull Context context) {

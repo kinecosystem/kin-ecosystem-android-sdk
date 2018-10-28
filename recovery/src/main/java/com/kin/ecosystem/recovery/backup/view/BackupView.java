@@ -8,9 +8,11 @@ public interface BackupView extends BaseView {
 
 	void moveToSetPasswordPage();
 
-	void moveToSaveAndSharePage();
+	void moveToSaveAndSharePage(String key);
 
 	void backButtonClicked();
+
+	void moveToWellDonePage();
 
 	void close();
 }

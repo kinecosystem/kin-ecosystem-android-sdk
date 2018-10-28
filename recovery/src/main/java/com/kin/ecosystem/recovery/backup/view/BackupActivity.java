@@ -71,18 +71,57 @@ public class BackupActivity extends BaseToolbarActivity implements BackupView {
 	}
 
 	@Override
-	public void moveToSaveAndSharePage() {
-		//TODO create save and share page
+	public void moveToSaveAndSharePage(String key) {
+		setStep(2, 2);
+		SaveAndShareFragment backupFragment = (SaveAndShareFragment) getSupportFragmentManager()
+			.findFragmentByTag(SaveAndShareFragment.class.getSimpleName());
+
+		if (backupFragment == null) {
+			backupFragment = SaveAndShareFragment.newInstance(backupPresenter, key);
+		}
+
+		getSupportFragmentManager().beginTransaction()
+			.setCustomAnimations(
+				R.anim.kinrecovery_slide_in_right,
+				R.anim.kinrecovery_slide_out_left,
+				R.anim.kinrecovery_slide_in_left,
+				R.anim.kinrecovery_slide_out_right)
+			.replace(R.id.fragment_frame, backupFragment)
+			.addToBackStack(null)
+			.commit();
+
 	}
 
 	@Override
-	public void backButtonClicked() {
-		//TODO handle steps
-		onBackPressed();
+	public void moveToWellDonePage() {
+		setToolbarColorWithAnim(R.color.kinrecovery_bluePrimary, 500);
+		setNavigationIcon(R.drawable.kinrecovery_close_icon);
+		setToolbarTitle(EMPTY_TITLE);
+		clearSteps();
+		WellDoneBackupFragment backupFragment = (WellDoneBackupFragment) getSupportFragmentManager()
+			.findFragmentByTag(WellDoneBackupFragment.class.getSimpleName());
+
+		if (backupFragment == null) {
+			backupFragment = WellDoneBackupFragment.newInstance(backupPresenter);
+		}
+
+		getSupportFragmentManager().beginTransaction()
+			.setCustomAnimations(
+				R.anim.kinrecovery_slide_in_right,
+				R.anim.kinrecovery_slide_out_left,
+				R.anim.kinrecovery_slide_in_left,
+				R.anim.kinrecovery_slide_out_right)
+			.replace(R.id.fragment_frame, backupFragment)
+			.commit();
 	}
 
 	@Override
 	public void close() {
 		finish();
+	}
+
+	@Override
+	public void backButtonClicked() {
+		backupPresenter.onBackClicked();
 	}
 }
