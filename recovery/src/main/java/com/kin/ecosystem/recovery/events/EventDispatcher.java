@@ -1,8 +1,11 @@
-package com.kin.ecosystem.recovery;
+package com.kin.ecosystem.recovery.events;
 
+import android.content.Intent;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.kin.ecosystem.recovery.BackupEvents;
+import com.kin.ecosystem.recovery.RestoreEvents;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -26,6 +29,8 @@ public interface EventDispatcher {
 	void setRestoreEvents(@Nullable RestoreEvents restoreEvents);
 
 	void sendEvent(@EventType final int eventType, @NonNull final String eventName);
+
+	void sendCallback(int resultCode, Intent data);
 
 	void unregister();
 }

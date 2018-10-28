@@ -10,7 +10,7 @@
     <ImageView
         android:id="@+id/qr_icon"
         android:layout_width="@dimen/kinrecovery_upload_qr_icon_size"
-        android:layout_height="11dp"
+        android:layout_height="@dimen/kinrecovery_upload_qr_icon_size"
         android:layout_marginTop="@dimen/kinrecovery_upload_qr_icon_margin_top"
         android:src="@drawable/kinrecovery_white_qr_code"
         app:layout_constraintEnd_toEndOf="parent"

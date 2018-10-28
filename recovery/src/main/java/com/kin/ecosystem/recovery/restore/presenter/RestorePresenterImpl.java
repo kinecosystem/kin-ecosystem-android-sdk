@@ -1,7 +1,9 @@
 package com.kin.ecosystem.recovery.restore.presenter;
 
 
+import android.content.Intent;
 import com.kin.ecosystem.recovery.base.BasePresenterImpl;
+import com.kin.ecosystem.recovery.events.CallbackManager;
 import com.kin.ecosystem.recovery.restore.view.RestoreView;
 
 public class RestorePresenterImpl extends BasePresenterImpl<RestoreView> implements RestorePresenter {
@@ -13,6 +15,12 @@ public class RestorePresenterImpl extends BasePresenterImpl<RestoreView> impleme
 	private static final int STEP_FINISH = 4;
 
 	private int currentStep = 0;
+
+	private final CallbackManager callbackManager;
+
+	public RestorePresenterImpl(CallbackManager callbackManager) {
+		this.callbackManager = callbackManager;
+	}
 
 	@Override
 	public void onAttach(RestoreView view) {
@@ -45,7 +53,7 @@ public class RestorePresenterImpl extends BasePresenterImpl<RestoreView> impleme
 				getView().navigateToRestoreCompleted((Integer) data);
 				break;
 			case STEP_FINISH:
-				//CallbackManager callbackManager = new CallbackManager(new EventDispatcherImpl())
+				callbackManager.sendRestoreSuccessResult((Integer) data);
 				getView().close();
 				break;
 		}
@@ -55,10 +63,25 @@ public class RestorePresenterImpl extends BasePresenterImpl<RestoreView> impleme
 	public void previousStep() {
 		switch (currentStep) {
 			case STEP_UPLOAD:
+				callbackManager.sendRestoreCancelledResult();
 				getView().close();
+				break;
+			case STEP_ENTER_PASSWORD:
+				getView().navigateBack();
+				break;
+			case STEP_RESTORE_COMPLETED:
+				getView().navigateBack();
+				break;
+			case STEP_FINISH:
+				getView().navigateBack();
 				break;
 		}
 		currentStep--;
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		callbackManager.onActivityResult(requestCode, resultCode, data);
 	}
 
 }

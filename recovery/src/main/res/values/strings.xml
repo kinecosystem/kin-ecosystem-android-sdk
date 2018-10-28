@@ -22,11 +22,10 @@
     <!--Errors-->
     <string name="kinrecovery_loading_file_error">Error Loading QR File</string>
     <string name="kinrecovery_error_decoding_QR">Error Processing QR File</string>
-    <string name="kinrecovery_restore_password_error">Password does not match QR code.  Please try again.</string>
-    <string name="kinrecovery_restore_invalid_qr">Invalid QR, please retry upload.</string>
+    <string name="kinrecovery_restore_password_error">Password does not match QR code.\nPlease try again.</string>
+    <string name="kinrecovery_restore_invalid_qr">Oops, we didn\'t recognized this QR code.\nPlease upload again.</string>
     <string name="kinrecovery_password_does_not_meet_req_above">Password doesn\'t meet the requirements above</string>
     <string name="kinrecovery_password_does_not_match">Password doesn\'t match</string>
-
 
     <!--Backup Strings-->
     <string name="kinrecovery_backup_description">Backing up your current balance will allow\nyou to recover it in case you switch phones,\n delete the app or clear your data.</string>

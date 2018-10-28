@@ -1,10 +1,14 @@
-package com.kin.ecosystem.recovery;
+package com.kin.ecosystem.recovery.events;
 
 import static com.kin.ecosystem.recovery.exception.BackupException.CODE_UNEXPECTED;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.kin.ecosystem.recovery.BackupCallback;
+import com.kin.ecosystem.recovery.BackupEvents;
+import com.kin.ecosystem.recovery.RestoreCallback;
+import com.kin.ecosystem.recovery.RestoreEvents;
 import com.kin.ecosystem.recovery.exception.BackupException;
 
 public class CallbackManager {
@@ -16,10 +20,9 @@ public class CallbackManager {
 
 	private final EventDispatcher eventDispatcher;
 
-
 	// Request Code
-	static final int REQ_CODE_BACKUP = 9000;
-	static final int REQ_CODE_RESTORE = 9001;
+	public static final int REQ_CODE_BACKUP = 9000;
+	public static final int REQ_CODE_RESTORE = 9001;
 
 	// Result Code
 	static final int RES_CODE_SUCCESS = 5000;
@@ -29,7 +32,7 @@ public class CallbackManager {
 	static final String EXTRA_KEY_ERROR_CODE = "EXTRA_KEY_ERROR_CODE";
 	static final String EXTRA_KEY_IMPORTED_ACCOUNT_INDEX = "EXTRA_KEY_IMPORTED_ACCOUNT_INDEX";
 
-	CallbackManager(@NonNull final EventDispatcher eventDispatcher) {
+	public CallbackManager(@NonNull final EventDispatcher eventDispatcher) {
 		this.eventDispatcher = eventDispatcher;
 	}
 
@@ -61,6 +64,16 @@ public class CallbackManager {
 		} else if (requestCode == REQ_CODE_RESTORE) {
 			handleRestoreResult(resultCode, data);
 		}
+	}
+
+	public void sendRestoreSuccessResult(int accountIndex) {
+		Intent intent = new Intent();
+		intent.putExtra(EXTRA_KEY_IMPORTED_ACCOUNT_INDEX, accountIndex);
+		eventDispatcher.sendCallback(RES_CODE_SUCCESS, intent);
+	}
+
+	public void sendRestoreCancelledResult() {
+		eventDispatcher.sendCallback(RES_CODE_CANCEL, null);
 	}
 
 	private void handleRestoreResult(int resultCode, Intent data) {

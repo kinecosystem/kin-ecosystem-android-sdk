@@ -10,13 +10,13 @@ import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.core.bi.EventLogger;
+import com.kin.ecosystem.core.bi.RecoveryBackupEvents;
+import com.kin.ecosystem.core.bi.RecoveryRestoreEvents;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.settings.SettingsDataSource;
 import com.kin.ecosystem.recovery.BackupCallback;
-import com.kin.ecosystem.recovery.BackupEvents;
 import com.kin.ecosystem.recovery.BackupManager;
 import com.kin.ecosystem.recovery.RestoreCallback;
-import com.kin.ecosystem.recovery.RestoreEvents;
 import com.kin.ecosystem.settings.view.ISettingsView;
 import com.kin.ecosystem.settings.view.ISettingsView.IconColor;
 import com.kin.ecosystem.settings.view.ISettingsView.Item;
@@ -65,7 +65,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 			@Override
 			public void onChanged(Balance value) {
 				currentBalance = value;
-				if(isGreaterThenZero(value)) {
+				if (isGreaterThenZero(value)) {
 					updateSettingsIcon();
 				}
 			}
@@ -122,12 +122,8 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 	}
 
 	private void registerToEvents() {
-		backupManager.registerBackupEvents(new BackupEvents() {
-			//TODO add event handling
-		});
-		backupManager.registerRestoreEvents(new RestoreEvents() {
-			//TODO add event handling
-		});
+		backupManager.registerBackupEvents(new RecoveryBackupEvents(eventLogger));
+		backupManager.registerRestoreEvents(new RecoveryRestoreEvents(eventLogger));
 	}
 
 	private void registerToCallbacks() {

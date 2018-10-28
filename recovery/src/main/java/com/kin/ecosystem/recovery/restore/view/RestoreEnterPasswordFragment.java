@@ -31,12 +31,15 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 	private View root;
 	private Group doneBtn;
 	private TextView contentText;
+	private EditText password;
 
 	public static RestoreEnterPasswordFragment newInstance(String keystoreData) {
 		RestoreEnterPasswordFragment fragment = new RestoreEnterPasswordFragment();
-		Bundle bundle = new Bundle();
-		bundle.putString(BUNDLE_KEY_KEYSTORE, keystoreData);
-		fragment.setArguments(bundle);
+		if (keystoreData != null) {
+			Bundle bundle = new Bundle();
+			bundle.putString(BUNDLE_KEY_KEYSTORE, keystoreData);
+			fragment.setArguments(bundle);
+		}
 		return fragment;
 	}
 
@@ -88,7 +91,7 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 
 	private void initViews(View root) {
 		this.root = root;
-		final EditText password = root.findViewById(R.id.kinrecovery_password_edit);
+		password = root.findViewById(R.id.kinrecovery_password_edit);
 		contentText = root.findViewById(R.id.kinrecovery_password_recovery_text);
 		doneBtn = root.findViewById(R.id.btn_group);
 		ViewUtils.setGroupEnable(doneBtn, root, false);
@@ -120,7 +123,7 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 		InputMethodManager inputMethodManager = (InputMethodManager) getContext()
 			.getSystemService(Activity.INPUT_METHOD_SERVICE);
 		if (inputMethodManager != null) {
-			inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+			inputMethodManager.showSoftInput(password, InputMethodManager.HIDE_IMPLICIT_ONLY);
 		}
 	}
 

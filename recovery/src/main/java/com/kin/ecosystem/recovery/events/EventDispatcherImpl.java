@@ -1,9 +1,11 @@
-package com.kin.ecosystem.recovery;
+package com.kin.ecosystem.recovery.events;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.kin.ecosystem.recovery.BroadcastManager.Listener;
+import com.kin.ecosystem.recovery.BackupEvents;
+import com.kin.ecosystem.recovery.RestoreEvents;
+import com.kin.ecosystem.recovery.events.BroadcastManager.Listener;
 
 public class EventDispatcherImpl implements EventDispatcher {
 
@@ -16,7 +18,7 @@ public class EventDispatcherImpl implements EventDispatcher {
 	private final BroadcastManager broadcastManager;
 	private Listener broadcastListener;
 
-	EventDispatcherImpl(@NonNull final BroadcastManager broadcastManager) {
+	public EventDispatcherImpl(@NonNull final BroadcastManager broadcastManager) {
 		this.broadcastManager = broadcastManager;
 	}
 
@@ -42,6 +44,11 @@ public class EventDispatcherImpl implements EventDispatcher {
 		data.putExtra(EXTRA_KEY_EVENT_TYPE, eventType);
 		data.putExtra(EXTRA_KEY_EVENT_NAME, eventName);
 		broadcastManager.sendEvent(data);
+	}
+
+	@Override
+	public void sendCallback(int resultCode, Intent data) {
+		broadcastManager.sendCallback(resultCode, data);
 	}
 
 	@Override

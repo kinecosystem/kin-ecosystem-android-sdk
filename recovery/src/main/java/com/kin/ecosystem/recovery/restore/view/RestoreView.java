@@ -11,5 +11,8 @@ public interface RestoreView extends BaseView {
 
 	void navigateToRestoreCompleted(Integer data);
 
+	void navigateBack();
+
 	void close();
+
 }

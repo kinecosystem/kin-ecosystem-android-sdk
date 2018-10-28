@@ -20,7 +20,7 @@ public class SpendOfferTapped implements Event {
     public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
-    public static SpendOfferTapped create(Double kinAmount, String offerId, Origin origin) {
+    public static SpendOfferTapped create(Double kinAmount, String offerId, SpendOfferTapped.Origin origin) {
         return new SpendOfferTapped(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
@@ -93,7 +93,7 @@ public class SpendOfferTapped implements Event {
      */
     @SerializedName("origin")
     @Expose
-    private Origin origin;
+    private SpendOfferTapped.Origin origin;
 
     /**
      * No args constructor for use in serialization
@@ -113,7 +113,7 @@ public class SpendOfferTapped implements Event {
 
      * @param user
      */
-    public SpendOfferTapped(Common common, User user, Client client, Double kinAmount, String offerId, Origin origin) {
+    public SpendOfferTapped(Common common, User user, Client client, Double kinAmount, String offerId, SpendOfferTapped.Origin origin) {
         super();
         this.common = common;
         this.user = user;
@@ -254,7 +254,7 @@ public class SpendOfferTapped implements Event {
      * (Required)
      * 
      */
-    public Origin getOrigin() {
+    public SpendOfferTapped.Origin getOrigin() {
         return origin;
     }
 
@@ -263,7 +263,7 @@ public class SpendOfferTapped implements Event {
      * (Required)
      * 
      */
-    public void setOrigin(Origin origin) {
+    public void setOrigin(SpendOfferTapped.Origin origin) {
         this.origin = origin;
     }
 
@@ -274,10 +274,10 @@ public class SpendOfferTapped implements Event {
         @SerializedName("external")
         EXTERNAL("external");
         private final String value;
-        private final static Map<String, Origin> CONSTANTS = new HashMap<String, Origin>();
+        private final static Map<String, SpendOfferTapped.Origin> CONSTANTS = new HashMap<String, SpendOfferTapped.Origin>();
 
         static {
-            for (Origin c: values()) {
+            for (SpendOfferTapped.Origin c: values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
@@ -295,8 +295,8 @@ public class SpendOfferTapped implements Event {
             return this.value;
         }
 
-        public static Origin fromValue(String value) {
-            Origin constant = CONSTANTS.get(value);
+        public static SpendOfferTapped.Origin fromValue(String value) {
+            SpendOfferTapped.Origin constant = CONSTANTS.get(value);
             if (constant == null) {
                 throw new IllegalArgumentException(value);
             } else {

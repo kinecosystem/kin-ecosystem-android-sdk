@@ -1,7 +1,8 @@
 package com.kin.ecosystem.recovery;
 
-import static com.kin.ecosystem.recovery.CallbackManager.REQ_CODE_BACKUP;
-import static com.kin.ecosystem.recovery.CallbackManager.REQ_CODE_RESTORE;
+
+import static com.kin.ecosystem.recovery.events.CallbackManager.REQ_CODE_BACKUP;
+import static com.kin.ecosystem.recovery.events.CallbackManager.REQ_CODE_RESTORE;
 
 import android.app.Activity;
 import android.content.Intent;
