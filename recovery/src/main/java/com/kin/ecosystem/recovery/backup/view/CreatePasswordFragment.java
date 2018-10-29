@@ -1,9 +1,12 @@
 package com.kin.ecosystem.recovery.backup.view;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog.Builder;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,24 +22,25 @@ import com.kin.ecosystem.recovery.R;
 import com.kin.ecosystem.recovery.backup.presenter.CreatePasswordPresenter;
 import com.kin.ecosystem.recovery.backup.presenter.CreatePasswordPresenterImpl;
 import com.kin.ecosystem.recovery.backup.view.TextWatcherAdapter.TextChangeListener;
+import com.kin.ecosystem.recovery.base.KeyboardHandler;
 import com.kin.ecosystem.recovery.widget.PasswordEditText;
 
 public class CreatePasswordFragment extends Fragment implements CreatePasswordView {
 
-	public static CreatePasswordFragment newInstance(@NonNull final BackupNextStepListener nextStepListener) {
+	public static CreatePasswordFragment newInstance(@NonNull final BackupNextStepListener nextStepListener, @NonNull final KeyboardHandler keyboardHandler) {
 		CreatePasswordFragment fragment = new CreatePasswordFragment();
 		fragment.setNextStepListener(nextStepListener);
+		fragment.setKeyboardHandler(keyboardHandler);
 		return fragment;
 	}
 
 	private BackupNextStepListener nextStepListener;
+	private KeyboardHandler keyboardHandler;
 	private CreatePasswordPresenter createPasswordPresenter;
 
 	private PasswordEditText enterPassEditText;
 	private PasswordEditText confirmPassEditText;
-	private CheckBox iUnderstandCheckbox;
 	private Button nextButton;
-
 
 	@Nullable
 	@Override
@@ -50,19 +54,42 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 		return root;
 	}
 
+	@Override
+	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		final CheckBox iUnderstandCheckbox = view.findViewById(R.id.understand_checkbox);
+		iUnderstandCheckbox.setChecked(false);
+	}
+
 	private void initViews(View root) {
 		enterPassEditText = root.findViewById(R.id.enter_pass_edittext);
 		confirmPassEditText = root.findViewById(R.id.confirm_pass_edittext);
-		iUnderstandCheckbox = root.findViewById(R.id.understand_checkbox);
 		nextButton = root.findViewById(R.id.next_button);
 
-		setEnterPasswordTextChangeListener();
-		setConfirmPasswordTextChangeListener();
-		setCheckedListener();
+		initEnterPasswordText();
+		initConfirmPassword();
 		setNextButtonListener();
 
-		enterPassEditText.setText("qwer1234Q!");
-		confirmPassEditText.setText("qwer1234Q!");
+		final CheckBox iUnderstandCheckbox = root.findViewById(R.id.understand_checkbox);
+		iUnderstandCheckbox.post(new Runnable() {
+			@Override
+			public void run() {
+				iUnderstandCheckbox.setChecked(false);
+			}
+		});
+		iUnderstandCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				createPasswordPresenter.iUnderstandChecked(isChecked);
+			}
+		});
+
+		root.findViewById(R.id.understand_description).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				iUnderstandCheckbox.performClick();
+			}
+		});
 	}
 
 	private void setNextButtonListener() {
@@ -74,25 +101,18 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 		});
 	}
 
-	private void setCheckedListener() {
-		iUnderstandCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				createPasswordPresenter.iUnderstandChecked(isChecked);
-			}
-		});
-	}
-
-	private void setEnterPasswordTextChangeListener() {
+	private void initEnterPasswordText() {
 		enterPassEditText.addTextChangedListener(new TextWatcherAdapter(new TextChangeListener() {
 			@Override
 			public void afterTextChanged(Editable editable) {
-				createPasswordPresenter.enterPasswordChanged(editable.toString());
+				createPasswordPresenter.enterPasswordChanged(editable.toString(), confirmPassEditText.getText());
 			}
 		}));
+		enterPassEditText.setFrameBackgroundColor(R.color.kinrecovery_gray);
+		openKeyboard(enterPassEditText);
 	}
 
-	private void setConfirmPasswordTextChangeListener() {
+	private void initConfirmPassword() {
 		confirmPassEditText.addTextChangedListener(new TextWatcherAdapter(new TextChangeListener() {
 			@Override
 			public void afterTextChanged(Editable editable) {
@@ -100,10 +120,36 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 					editable.toString());
 			}
 		}));
+		confirmPassEditText.setFrameBackgroundColor(R.color.kinrecovery_gray);
 	}
 
 	private void setNextStepListener(@NonNull final BackupNextStepListener nextStepListener) {
 		this.nextStepListener = nextStepListener;
+	}
+
+	private void setKeyboardHandler(KeyboardHandler keyboardHandler) {
+		this.keyboardHandler = keyboardHandler;
+	}
+
+	private void openKeyboard(View view){
+		keyboardHandler.openKeyboard(view);
+	}
+
+	@Override
+	public void closeKeyboard() {
+		keyboardHandler.closeKeyboard();
+	}
+
+	@Override
+	public void resetEnterPasswordField() {
+		enterPassEditText.setFrameBackgroundColor(R.color.kinrecovery_gray);
+		enterPassEditText.removeError();
+	}
+
+	@Override
+	public void resetConfirmPasswordField() {
+		confirmPassEditText.setFrameBackgroundColor(R.color.kinrecovery_gray);
+		confirmPassEditText.removeError();
 	}
 
 	@Override
@@ -134,6 +180,7 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 		nextButton.setClickable(true);
 	}
 
+
 	@Override
 	public void disableNextButton() {
 		nextButton.setEnabled(false);
@@ -142,6 +189,17 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 
 	@Override
 	public void showBackupFailed() {
-		Toast.makeText(getContext(), "Backup Failed", Toast.LENGTH_SHORT).show();
+		new Builder(getActivity(), R.style.KinrecoveryAlertDialogTheme)
+			.setTitle(R.string.kinrecovery_something_went_wrong_title)
+			.setMessage(R.string.kinrecovery_we_had_some_issues_to_create_backup)
+			.setPositiveButton(R.string.kinrecovery_try_again, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					createPasswordPresenter.onRetryClicked(enterPassEditText.getText());
+				}
+			})
+			.setNegativeButton(R.string.kinrecovery_cancel, null)
+			.create()
+			.show();
 	}
 }

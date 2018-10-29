@@ -13,4 +13,10 @@ public interface CreatePasswordView extends BaseView {
 	void disableNextButton();
 
 	void showBackupFailed();
+
+	void closeKeyboard();
+
+	void resetEnterPasswordField();
+
+	void resetConfirmPasswordField();
 }

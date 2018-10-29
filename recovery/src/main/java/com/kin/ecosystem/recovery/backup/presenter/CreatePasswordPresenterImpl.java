@@ -33,36 +33,54 @@ public class CreatePasswordPresenterImpl extends BasePresenterImpl<CreatePasswor
 	}
 
 	@Override
-	public void enterPasswordChanged(String password) {
+	public void enterPasswordChanged(String password, String confirmPassword) {
 		if (keyStoreProvider.validatePassword(password)) {
 			isPasswordRulesOK = true;
 			if (view != null) {
 				view.setEnterPasswordIsCorrect(true);
 			}
-
+			checkConfirmPassword(password, confirmPassword);
 		} else {
 			isPasswordRulesOK = false;
-			if (view != null) {
-				view.setEnterPasswordIsCorrect(false);
+			if (password.length() == 0) {
+				if (view != null) {
+					view.resetEnterPasswordField();
+					view.resetConfirmPasswordField();
+				}
+			} else {
+				if (view != null) {
+					view.setEnterPasswordIsCorrect(false);
+				}
+				checkConfirmPassword(password, confirmPassword);
 			}
-
 		}
 		checkAllCompleted();
 	}
 
-	@Override
-	public void confirmPasswordChanged(String mainPassword, String confirmPassword) {
-		if (mainPassword.equals(confirmPassword)) {
-			isPasswordsMatches = true;
-			if (view != null) {
-				view.setConfirmPasswordIsCorrect(true);
+	private void checkConfirmPassword(String password, String confirmPassword) {
+		if (password.length() > 0 && confirmPassword.length() > 0) {
+			if (password.equals(confirmPassword)) {
+				isPasswordsMatches = true;
+				if (view != null) {
+					view.setConfirmPasswordIsCorrect(true);
+					view.closeKeyboard();
+				}
+			} else {
+				isPasswordsMatches = false;
+				if (view != null) {
+					view.setConfirmPasswordIsCorrect(false);
+				}
 			}
 		} else {
-			isPasswordsMatches = false;
 			if (view != null) {
-				view.setConfirmPasswordIsCorrect(false);
+				view.resetConfirmPasswordField();
 			}
 		}
+	}
+
+	@Override
+	public void confirmPasswordChanged(String mainPassword, String confirmPassword) {
+		checkConfirmPassword(mainPassword, confirmPassword);
 		checkAllCompleted();
 	}
 
@@ -74,6 +92,10 @@ public class CreatePasswordPresenterImpl extends BasePresenterImpl<CreatePasswor
 
 	@Override
 	public void nextButtonClicked(String password) {
+		exportAccount(password);
+	}
+
+	private void exportAccount(String password) {
 		try {
 			final String key = keyStoreProvider.exportAccount(password);
 			final Bundle data = new Bundle();
@@ -84,6 +106,11 @@ public class CreatePasswordPresenterImpl extends BasePresenterImpl<CreatePasswor
 				view.showBackupFailed();
 			}
 		}
+	}
+
+	@Override
+	public void onRetryClicked(String password) {
+		exportAccount(password);
 	}
 
 	private void checkAllCompleted() {

@@ -28,7 +28,7 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 		try {
 			this.qrURI = this.qrBarcodeGenerator.generate(key);
 		} catch (QRBarcodeGeneratorException e) {
-			//TODO could not generate the QR
+			couldNotLoadQRImage();
 		}
 	}
 
@@ -60,6 +60,14 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 	public void sendQREmailClicked() {
 		if (qrURI != null && view != null) {
 			view.showSendIntent(qrURI);
+			view.showIHaveSavedCheckBox();
+		}
+	}
+
+	@Override
+	public void couldNotLoadQRImage() {
+		if (view != null) {
+			view.showErrorTryAgainLater();
 		}
 	}
 }

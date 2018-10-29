@@ -84,6 +84,7 @@
         android:layout_height="wrap_content"
         android:textColorHighlight="@color/kinrecovery_bluePrimary"
         android:theme="@style/KinrecoveryCheckBox"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/send_email_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.3"
@@ -96,6 +97,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/kinrecovery_i_ve_saved_my_qr"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/i_saved_my_qr_checkbox"
         app:layout_constraintStart_toEndOf="@id/i_saved_my_qr_checkbox"
         app:layout_constraintTop_toTopOf="@id/i_saved_my_qr_checkbox"/>

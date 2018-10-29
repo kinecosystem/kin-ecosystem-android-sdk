@@ -5,11 +5,19 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.recovery.backup.view.BackupView;
 import com.kin.ecosystem.recovery.base.BasePresenterImpl;
+import com.kin.ecosystem.recovery.events.CallbackManager;
 
 public class BackupPresenterImpl extends BasePresenterImpl<BackupView> implements BackupPresenter {
 
 	private @Step
 	int step = STEP_START;
+	private final CallbackManager callbackManager;
+	private boolean isBackupSucceed = false;
+
+
+	public BackupPresenterImpl(CallbackManager callbackManager) {
+		this.callbackManager = callbackManager;
+	}
 
 	@Override
 	public void onAttach(BackupView view) {
@@ -23,7 +31,11 @@ public class BackupPresenterImpl extends BasePresenterImpl<BackupView> implement
 			setStep(STEP_CLOSE, null);
 		} else {
 			if (view != null) {
-				view.backButtonClicked();
+				if(!isBackupSucceed && step == STEP_CREATE_PASSWORD) {
+					callbackManager.sendCancelledResult();
+				}
+				step--;
+				view.onBackButtonClicked();
 			}
 		}
 	}
@@ -37,13 +49,15 @@ public class BackupPresenterImpl extends BasePresenterImpl<BackupView> implement
 					view.startBackupFlow();
 					break;
 				case STEP_CREATE_PASSWORD:
-					view.moveToSetPasswordPage();
+					view.moveToCreatePasswordPage();
 					break;
 				case STEP_SAVE_AND_SHARE:
 					if (data != null) {
 						final String key = data.getString(KEY_ACCOUNT_KEY, null);
 						view.moveToSaveAndSharePage(key);
 					}
+					isBackupSucceed = true;
+					callbackManager.sendBackupSuccessResult();
 					break;
 				case STEP_WELL_DONE:
 					view.moveToWellDonePage();

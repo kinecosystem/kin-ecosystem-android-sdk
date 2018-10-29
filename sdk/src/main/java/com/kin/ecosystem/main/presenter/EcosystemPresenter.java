@@ -46,9 +46,13 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 	public void onAttach(IEcosystemView view) {
 		super.onAttach(view);
 		if (this.view != null && visibleScreen != MARKETPLACE) {
-//			navigator.navigateToMarketplace();
-			navigator.navigateToSettings();
+			navigator.navigateToMarketplace();
 		}
+	}
+
+	@Override
+	public void onStart() {
+		updateMenuSettingsIcon();
 	}
 
 	@Override

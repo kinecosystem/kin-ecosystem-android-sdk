@@ -95,6 +95,12 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	}
 
 	@Override
+	protected void onStart() {
+		super.onStart();
+		ecosystemPresenter.onStart();
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.kinecosystem_menu_marketplace, menu);

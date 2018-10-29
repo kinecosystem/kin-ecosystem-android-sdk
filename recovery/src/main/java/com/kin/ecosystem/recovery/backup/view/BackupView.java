@@ -1,16 +1,17 @@
 package com.kin.ecosystem.recovery.backup.view;
 
 import com.kin.ecosystem.recovery.base.BaseView;
+import com.kin.ecosystem.recovery.base.KeyboardHandler;
 
-public interface BackupView extends BaseView {
+public interface BackupView extends BaseView, KeyboardHandler {
 
 	void startBackupFlow();
 
-	void moveToSetPasswordPage();
+	void moveToCreatePasswordPage();
 
 	void moveToSaveAndSharePage(String key);
 
-	void backButtonClicked();
+	void onBackButtonClicked();
 
 	void moveToWellDonePage();
 

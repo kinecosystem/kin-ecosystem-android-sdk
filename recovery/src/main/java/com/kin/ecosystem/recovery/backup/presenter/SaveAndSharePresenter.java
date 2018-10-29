@@ -8,4 +8,6 @@ public interface SaveAndSharePresenter extends BasePresenter<SaveAndShareView> {
 	void iHaveSavedChecked(boolean isChecked);
 
 	void sendQREmailClicked();
+
+	void couldNotLoadQRImage();
 }

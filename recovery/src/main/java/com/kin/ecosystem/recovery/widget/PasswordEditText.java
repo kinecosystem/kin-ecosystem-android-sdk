@@ -144,6 +144,9 @@ public class PasswordEditText extends LinearLayout {
 							} else {
 								return false;
 							}
+						} else {
+							setInputAsPasswordDots();
+							return true;
 						}
 					}
 				}
@@ -178,6 +181,7 @@ public class PasswordEditText extends LinearLayout {
 		passwordField.setInputType(passInputType);
 		passwordField.setTransformationMethod(LargePasswordDotsTransformationMethod.getInstance());
 		passwordField.setTypeface(Typeface.SANS_SERIF);
+		passwordField.setSelection(passwordField.getText().length());
 	}
 
 	private void setInputAsVisibleChars() {
@@ -243,8 +247,4 @@ public class PasswordEditText extends LinearLayout {
 		}
 	}
 
-
-	public void setText(String text) {
-		passwordField.setText(text);
-	}
 }

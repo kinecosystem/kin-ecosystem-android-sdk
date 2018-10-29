@@ -1,5 +1,6 @@
 package com.kin.ecosystem.recovery.backup.view;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -8,15 +9,16 @@ import android.provider.MediaStore.Images.Media;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog.Builder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
+import android.widget.TextView;
 import com.kin.ecosystem.recovery.R;
 import com.kin.ecosystem.recovery.backup.presenter.SaveAndSharePresenter;
 import com.kin.ecosystem.recovery.backup.presenter.SaveAndSharePresenterImpl;
@@ -46,8 +48,8 @@ public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 	private SaveAndSharePresenter saveAndSharePresenter;
 
 	private CheckBox iHaveSavedCheckbox;
+	private TextView iHaveSavedText;
 	private ImageView qrImageView;
-	private Button sendEmailButton;
 
 	@Nullable
 	@Override
@@ -65,8 +67,8 @@ public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 
 	private void initViews(View root) {
 		iHaveSavedCheckbox = root.findViewById(R.id.i_saved_my_qr_checkbox);
+		iHaveSavedText = root.findViewById(R.id.i_saved_my_qr_text);
 		qrImageView = root.findViewById(R.id.qr_image);
-		sendEmailButton = root.findViewById(R.id.send_email_button);
 
 		iHaveSavedCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
@@ -74,14 +76,36 @@ public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 				saveAndSharePresenter.iHaveSavedChecked(isChecked);
 			}
 		});
+		iHaveSavedText.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				iHaveSavedCheckbox.performClick();
+			}
+		});
 
-		sendEmailButton.setOnClickListener(new OnClickListener() {
+		root.findViewById(R.id.send_email_button).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				saveAndSharePresenter.sendQREmailClicked();
 			}
 		});
 
+	}
+
+	@Override
+	public void showIHaveSavedCheckBox() {
+		iHaveSavedCheckbox.setVisibility(View.VISIBLE);
+		iHaveSavedText.setVisibility(View.VISIBLE);
+	}
+
+	@Override
+	public void showErrorTryAgainLater() {
+		new Builder(getActivity(), R.style.KinrecoveryAlertDialogTheme)
+			.setTitle(R.string.kinrecovery_something_went_wrong_title)
+			.setMessage(R.string.kinrecovery_could_not_load_the_qr_please_try_again_later)
+			.setNegativeButton(R.string.kinrecovery_cancel, null)
+			.create()
+			.show();
 	}
 
 	private void setNextStepListener(@NonNull final BackupNextStepListener nextStepListener) {
@@ -95,7 +119,7 @@ public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 			qrBitmap = Media.getBitmap(getContext().getContentResolver(), qrURI);
 			qrImageView.setImageBitmap(qrBitmap);
 		} catch (IOException e) {
-			//TODO show error
+			saveAndSharePresenter.couldNotLoadQRImage();
 		}
 	}
 

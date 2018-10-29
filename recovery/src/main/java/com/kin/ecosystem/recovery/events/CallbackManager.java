@@ -72,7 +72,11 @@ public class CallbackManager {
 		eventDispatcher.sendCallback(RES_CODE_SUCCESS, intent);
 	}
 
-	public void sendRestoreCancelledResult() {
+	public void sendBackupSuccessResult() {
+		eventDispatcher.sendCallback(RES_CODE_SUCCESS, null);
+	}
+
+	public void sendCancelledResult() {
 		eventDispatcher.sendCallback(RES_CODE_CANCEL, null);
 	}
 
