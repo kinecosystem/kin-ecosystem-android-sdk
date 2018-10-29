@@ -129,25 +129,27 @@ public class PasswordEditText extends LinearLayout {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (isRevealIconVisible) {
-					if (event.getAction() == MotionEvent.ACTION_DOWN) {
-						if (isInRevealIconBounds(event)) {
-							setInputAsVisibleChars();
-							return true;
-						} else {
+					switch (event.getAction()) {
+						case MotionEvent.ACTION_DOWN:
+							if (isInRevealIconBounds(event)) {
+								setInputAsVisibleChars();
+								return true;
+							}
 							return false;
-						}
-					} else {
-						if (event.getAction() == MotionEvent.ACTION_UP) {
+						case MotionEvent.ACTION_UP:
 							if (isInRevealIconBounds(event)) {
 								setInputAsPasswordDots();
 								return true;
-							} else {
-								return false;
 							}
-						} else {
-							setInputAsPasswordDots();
-							return true;
-						}
+							return false;
+						case MotionEvent.ACTION_MOVE:
+							if (!isInRevealIconBounds(event)) {
+								setInputAsPasswordDots();
+								return true;
+							}
+							return false;
+						default:
+							return false;
 					}
 				}
 				return false;
@@ -192,7 +194,7 @@ public class PasswordEditText extends LinearLayout {
 	}
 
 	public void setFrameBackgroundColor(@ColorRes final int colorRes) {
-		GradientDrawable background = (GradientDrawable)passwordField.getBackground();
+		GradientDrawable background = (GradientDrawable) passwordField.getBackground();
 		if (background != null) {
 			final int color = ContextCompat.getColor(getContext(), colorRes);
 			background.setStroke(strokeWidth, color);
