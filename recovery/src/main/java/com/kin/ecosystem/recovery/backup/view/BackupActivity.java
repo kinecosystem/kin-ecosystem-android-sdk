@@ -31,14 +31,14 @@ public class BackupActivity extends BaseToolbarActivity implements BackupView {
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		backupPresenter = new BackupPresenterImpl(new CallbackManager(new EventDispatcherImpl(new BroadcastManagerImpl(this))));
+		backupPresenter.onAttach(this);
 		setNavigationClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				backupPresenter.onBackClicked();
 			}
 		});
-		backupPresenter = new BackupPresenterImpl(new CallbackManager(new EventDispatcherImpl(new BroadcastManagerImpl(this))));
-		backupPresenter.onAttach(this);
 	}
 
 	@Override
