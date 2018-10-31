@@ -7,8 +7,9 @@ import static com.kin.ecosystem.settings.view.ISettingsView.ITEM_BACKUP;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.base.BasePresenter;
+import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
-import com.kin.ecosystem.common.exception.BlockchainException;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
@@ -154,12 +155,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 			@Override
 			public void onSuccess(int accountIndex) {
 				Logger.log(new Log().withTag(TAG).put("RestoreCallback", "onSuccess"));
-				try {
-					accountManager.switchAccount(accountIndex);
-				} catch (BlockchainException e) {
-					//TODO handle error
-					e.printStackTrace();
-				}
+				switchAccount(accountIndex);
 			}
 
 			@Override
@@ -172,6 +168,26 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 
 			}
 		});
+	}
+
+	private void switchAccount(int accountIndex) {
+		accountManager.switchAccount(accountIndex, new KinCallback<Boolean>() {
+			@Override
+			public void onResponse(Boolean response) {
+				//do nothing succeed
+			}
+
+			@Override
+			public void onFailure(KinEcosystemException exception) {
+				showCouldNotImportAccountError();
+			}
+		});
+	}
+
+	private void showCouldNotImportAccountError() {
+		if (view != null) {
+			view.showCouldNotImportAccount();
+		}
 	}
 
 	private void onBackupSuccess() {

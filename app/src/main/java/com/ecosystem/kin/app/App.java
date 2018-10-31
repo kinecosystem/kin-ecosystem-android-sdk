@@ -22,7 +22,7 @@ public class App extends Application {
 
         Fabric.with(this, new Crashlytics());
 
-		KinEnvironment environment = Environment.getPlayground();
+		KinEnvironment environment = Environment.getBeta();
 
         if (BuildConfig.IS_JWT_REGISTRATION) {
             /**

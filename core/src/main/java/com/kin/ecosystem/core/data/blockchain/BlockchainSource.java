@@ -69,6 +69,11 @@ public interface BlockchainSource {
 	String getPublicAddress();
 
 	/**
+	 * @return the public address of the account with {@param accountIndex}
+	 */
+	String getPublicAddress(final int accountIndex);
+
+	/**
 	 * Add {@link Payment} completed observer.
 	 */
 	void addPaymentObservable(Observer<Payment> observer);

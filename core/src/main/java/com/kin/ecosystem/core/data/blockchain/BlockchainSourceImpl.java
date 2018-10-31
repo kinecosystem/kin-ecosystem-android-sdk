@@ -287,6 +287,13 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
+	@Nullable
+	public String getPublicAddress(final int accountIndex) {
+		KinAccount account = kinClient.getAccount(accountIndex);
+		return account != null ? account.getPublicAddress() : null;
+	}
+
+	@Override
 	public void addPaymentObservable(Observer<Payment> observer) {
 		completedPayment.addObserver(observer);
 		incrementPaymentCount();

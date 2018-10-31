@@ -32,4 +32,6 @@ public interface ISettingsView extends IBaseView<ISettingsPresenter> {
 	void setIconColor(@Item final int item, @IconColor final int color);
 
 	void changeTouchIndicatorVisibility(@Item final int item, boolean isVisible);
+
+	void showCouldNotImportAccount();
 }

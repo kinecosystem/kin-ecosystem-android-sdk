@@ -9,6 +9,7 @@ import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.SignInData;
+import com.kin.ecosystem.core.network.model.UserProperties;
 import com.kin.ecosystem.core.util.DateUtil;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import java.util.Calendar;
@@ -56,9 +57,21 @@ public class AuthRepository implements AuthDataSource {
 	}
 
 	@Override
-	public void updateWalletAddress(String address) {
-		cachedSignInData.setWalletAddress(address);
-		setSignInData(cachedSignInData);
+	public void updateWalletAddress(final String address, @NonNull final KinCallback<Boolean> callback) {
+		final UserProperties userProperties = new UserProperties().walletAddress(address);
+		remoteData.updateWalletAddress(userProperties, new Callback<Void, ApiException>() {
+			@Override
+			public void onResponse(Void response) {
+				cachedSignInData.setWalletAddress(address);
+				setSignInData(cachedSignInData);
+				callback.onResponse(true);
+			}
+
+			@Override
+			public void onFailure(ApiException exception) {
+				callback.onFailure(ErrorUtil.fromApiException(exception));
+			}
+		});
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package com.kin.ecosystem.core.accountmanager;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
 import java.lang.annotation.Retention;
@@ -29,7 +30,7 @@ public interface AccountManager {
 
 	void retry();
 
-	void switchAccount(int accountIndex) throws BlockchainException;
+	void switchAccount(int accountIndex, @NonNull final KinCallback<Boolean> callback);
 
 	@AccountState
 	int getAccountState();

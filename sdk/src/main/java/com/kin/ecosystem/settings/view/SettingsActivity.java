@@ -6,6 +6,7 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseToolbarActivity;
 import com.kin.ecosystem.core.accountmanager.AccountManagerImpl;
@@ -109,6 +110,11 @@ public class SettingsActivity extends BaseToolbarActivity implements ISettingsVi
 		if (settingsItem != null) {
 			settingsItem.setTouchIndicatorVisibility(isVisible);
 		}
+	}
+
+	@Override
+	public void showCouldNotImportAccount() {
+		Toast.makeText(this, R.string.kinecosystem_could_not_restore_the_wallet, Toast.LENGTH_SHORT).show();
 	}
 
 	private SettingsItem getSettingsItem(@Item final int item) {
