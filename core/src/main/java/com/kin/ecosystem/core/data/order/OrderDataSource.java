@@ -24,9 +24,15 @@ public interface OrderDataSource {
     void submitOrder(@NonNull final String offerID, @Nullable String content, @NonNull String orderID,
         final KinCallback<Order> callback);
 
+    void cancelOrderSync(@NonNull final String orderID);
+
     void cancelOrder(@NonNull final String offerID, @NonNull final String orderID, final KinCallback<Void> callback);
 
     ObservableData<OpenOrder> getOpenOrder();
+
+    void getOrder(@NonNull final String orderID,@Nullable final KinCallback<Order> callback);
+
+    OpenOrder createExternalOrderSync(@NonNull final String orderJwt) throws ApiException;
 
     void purchase(String offerJwt, @Nullable final KinCallback<OrderConfirmation> callback);
 
@@ -61,9 +67,9 @@ public interface OrderDataSource {
 
         void cancelOrderSync(@NonNull final String orderID);
 
-        void getOrder(String orderID, Callback<Order, ApiException> callback);
+        void getOrder(@NonNull final String orderID, Callback<Order, ApiException> callback);
 
-        Order getOrderSync(String orderID);
+        Order getOrderSync(@NonNull final String orderID);
 
         OpenOrder createExternalOrderSync(String orderJwt) throws ApiException;
 

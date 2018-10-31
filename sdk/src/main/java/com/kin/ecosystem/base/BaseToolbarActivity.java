@@ -1,6 +1,5 @@
 package com.kin.ecosystem.base;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;

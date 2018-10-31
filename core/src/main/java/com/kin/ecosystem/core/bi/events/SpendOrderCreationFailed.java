@@ -1,3 +1,4 @@
+
 package com.kin.ecosystem.core.bi.events;
 
 // Augmented by script
@@ -6,6 +7,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.core.bi.Event;
 import com.kin.ecosystem.core.bi.EventsStore;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -17,14 +20,15 @@ public class SpendOrderCreationFailed implements Event {
 	public static final String EVENT_TYPE = "log";
 
 	// Augmented by script
-	public static SpendOrderCreationFailed create(String errorReason, String offerId, Boolean isNative) {
+	public static SpendOrderCreationFailed create(String errorReason, String offerId, Boolean isNative, Origin origin) {
 		return new SpendOrderCreationFailed(
 			(Common) EventsStore.common(),
 			(User) EventsStore.user(),
 			(Client) EventsStore.client(),
 			errorReason,
 			offerId,
-			isNative);
+			isNative,
+			origin);
 	}
 
 	/**
@@ -78,6 +82,12 @@ public class SpendOrderCreationFailed implements Event {
 	@SerializedName("is_native")
 	@Expose
 	private Boolean isNative;
+	/**
+	 * (Required)
+	 */
+	@SerializedName("origin")
+	@Expose
+	private Origin origin;
 
 	/**
 	 * No args constructor for use in serialization
@@ -89,6 +99,7 @@ public class SpendOrderCreationFailed implements Event {
 	 *
 	 * @param common
 	 * @param errorReason
+	 * @param origin
 
 	 * @param client
 	 * @param offerId
@@ -97,7 +108,7 @@ public class SpendOrderCreationFailed implements Event {
 	 * @param isNative
 	 */
 	public SpendOrderCreationFailed(Common common, User user, Client client, String errorReason, String offerId,
-		Boolean isNative) {
+		Boolean isNative, Origin origin) {
 		super();
 		this.common = common;
 		this.user = user;
@@ -105,6 +116,7 @@ public class SpendOrderCreationFailed implements Event {
 		this.errorReason = errorReason;
 		this.offerId = offerId;
 		this.isNative = isNative;
+		this.origin = origin;
 	}
 
 	/**
@@ -223,6 +235,59 @@ public class SpendOrderCreationFailed implements Event {
 	 */
 	public void setIsNative(Boolean isNative) {
 		this.isNative = isNative;
+	}
+
+	/**
+	 * (Required)
+	 */
+	public Origin getOrigin() {
+		return origin;
+	}
+
+	/**
+	 * (Required)
+	 */
+	public void setOrigin(Origin origin) {
+		this.origin = origin;
+	}
+
+	public enum Origin {
+
+		@SerializedName("marketplace")
+		MARKETPLACE("marketplace"),
+		@SerializedName("external")
+		EXTERNAL("external");
+		private final String value;
+		private final static Map<String, Origin> CONSTANTS = new HashMap<String, Origin>();
+
+		static {
+			for (Origin c : values()) {
+				CONSTANTS.put(c.value, c);
+			}
+		}
+
+		private Origin(String value) {
+			this.value = value;
+		}
+
+		@Override
+		public String toString() {
+			return this.value;
+		}
+
+		public String value() {
+			return this.value;
+		}
+
+		public static Origin fromValue(String value) {
+			Origin constant = CONSTANTS.get(value);
+			if (constant == null) {
+				throw new IllegalArgumentException(value);
+			} else {
+				return constant;
+			}
+		}
+
 	}
 
 }

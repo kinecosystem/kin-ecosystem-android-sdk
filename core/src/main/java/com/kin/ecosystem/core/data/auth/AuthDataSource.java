@@ -2,12 +2,14 @@ package com.kin.ecosystem.core.data.auth;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.ObservableData;
-import com.kin.ecosystem.common.Callback;
+import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.SignInData;
+import com.kin.ecosystem.core.network.model.UserProfile;
 
 public interface AuthDataSource {
 
@@ -27,9 +29,9 @@ public interface AuthDataSource {
 
 	AuthToken getAuthTokenSync();
 
-	boolean isActivated();
+	void hasAccount(@NonNull String userId, @NonNull final KinCallback<Boolean> callback);
 
-	void activateAccount(@NonNull final KinCallback<Void> callback);
+	void userStats(@NonNull final KinCallback<UserStats> callback);
 
 	interface Local {
 
@@ -37,7 +39,7 @@ public interface AuthDataSource {
 
 		void setAuthToken(@NonNull final AuthToken authToken);
 
-		void getAppId(@NonNull final Callback<String, Void> callback);
+		String getAppId();
 
 		String getDeviceID();
 
@@ -46,11 +48,6 @@ public interface AuthDataSource {
 		String getEcosystemUserID();
 
 		AuthToken getAuthTokenSync();
-
-		boolean isActivated();
-
-		void activateAccount();
-
 	}
 
 	interface Remote {
@@ -61,6 +58,9 @@ public interface AuthDataSource {
 
 		AuthToken getAuthTokenSync();
 
-		void activateAccount(@NonNull final Callback<AuthToken, ApiException> callback);
+		void hasAccount(@NonNull String userId, @NonNull final Callback<Boolean, ApiException> callback);
+
+		void userProfile(@NonNull final Callback<UserProfile, ApiException> callback) ;
+
 	}
 }

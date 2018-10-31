@@ -39,7 +39,7 @@ public interface BlockchainSource {
      * Get balance from network
      * @param callback
      */
-    void getBalance(@NonNull final KinCallback<Balance> callback);
+    void getBalance(@Nullable final KinCallback<Balance> callback);
 
     /**
      * Add balance observer in order to start receive balance updates
@@ -81,6 +81,12 @@ public interface BlockchainSource {
      * @param observer
      */
     void removePaymentObserver(Observer<Payment> observer);
+
+    /**
+     * Create trustline polling call, so it will try few time before failure.
+     * @param callback
+     */
+    void createTrustLine(@NonNull final KinCallback<Void> callback);
 
     interface Local {
 

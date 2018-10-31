@@ -85,7 +85,7 @@ public class BalancePresenterTest extends BaseTestClass {
 
 		balancePresenter.onAttach(balanceView);
 		verify(balanceView).setWelcomeSubtitle();
-		verify(blockchainSource).addBalanceObserver(balanceObserverCaptor.capture());
+		verify(blockchainSource).addBalanceObserverAndStartListen(balanceObserverCaptor.capture());
 		verify(orderRepository).addOrderObserver(orderObserverCaptor.capture());
 	}
 

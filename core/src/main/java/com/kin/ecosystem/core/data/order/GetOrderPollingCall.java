@@ -4,9 +4,9 @@ import android.support.annotation.NonNull;
 import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.core.network.ApiException;
-import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.Order.Status;
+import com.kin.ecosystem.core.util.ErrorUtil;
 
 class GetOrderPollingCall extends Thread {
 

@@ -2,6 +2,7 @@ package com.kin.ecosystem.core.data.order;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.network.ApiCallback;
@@ -14,7 +15,6 @@ import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.OrderList;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
-import com.kin.ecosystem.common.Callback;
 import java.util.List;
 import java.util.Map;
 
@@ -199,7 +199,7 @@ public class OrderRemoteData implements OrderDataSource.Remote {
     }
 
     @Override
-    public void getOrder(String orderID, final Callback<Order, ApiException> callback) {
+    public void getOrder(@NonNull final String orderID, final Callback<Order, ApiException> callback) {
         new GetOrderPollingCall(this, orderID, new Callback<Order, ApiException>() {
             @Override
             public void onResponse(final Order result) {
@@ -224,7 +224,7 @@ public class OrderRemoteData implements OrderDataSource.Remote {
     }
 
     @Override
-    public Order getOrderSync(String orderID) {
+    public Order getOrderSync(@NonNull final String orderID) {
         Order order = null;
         try {
             order = ordersApi.getOrder(orderID, "");

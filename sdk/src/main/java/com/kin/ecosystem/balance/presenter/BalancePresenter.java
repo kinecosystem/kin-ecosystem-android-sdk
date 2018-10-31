@@ -8,15 +8,15 @@ import android.support.annotation.NonNull;
 import com.kin.ecosystem.balance.view.IBalanceView;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.BalanceTapped;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
-import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
-import com.kin.ecosystem.main.ScreenId;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.Order.Origin;
+import com.kin.ecosystem.main.ScreenId;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -178,7 +178,7 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 
 	private void addObservers() {
 		orderRepository.addOrderObserver(orderObserver);
-		blockchainSource.addBalanceObserver(balanceObserver);
+		blockchainSource.addBalanceObserverAndStartListen(balanceObserver);
 	}
 
 	@Override

@@ -6,7 +6,9 @@ import android.text.TextUtils;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Callback;
+import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.core.network.ApiException;
+import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.util.DateUtil;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import java.util.Calendar;
@@ -78,17 +80,10 @@ public class AuthRepository implements AuthDataSource {
 
 	private void loadCachedAppIDIfNeeded() {
 		if (TextUtils.isEmpty(appId.getValue())) {
-			localData.getAppId(new Callback<String, Void>() {
-				@Override
-				public void onResponse(String appID) {
-					postAppID(appID);
-				}
-
-				@Override
-				public void onFailure(Void t) {
-					// No Data Available
-				}
-			});
+			final String localAppId = localData.getAppId();
+			if (!TextUtils.isEmpty(localAppId)){
+				postAppID(localAppId);
+			}
 		}
 	}
 
@@ -111,24 +106,42 @@ public class AuthRepository implements AuthDataSource {
 		}
 	}
 
-	@Override
-	public boolean isActivated() {
-		return localData.isActivated();
-	}
 
 	@Override
-	public void activateAccount(@NonNull final KinCallback<Void> callback) {
-		remoteData.activateAccount(new Callback<AuthToken, ApiException>() {
+	public void hasAccount(@NonNull String userId, @NonNull final KinCallback<Boolean> callback) {
+		remoteData.hasAccount(userId, new Callback<Boolean, ApiException>() {
 			@Override
-			public void onResponse(AuthToken response) {
-				localData.activateAccount();
-				setAuthToken(response);
-				callback.onResponse(null);
+			public void onResponse(Boolean response) {
+				callback.onResponse(response);
 			}
 
 			@Override
-			public void onFailure(ApiException e) {
-				callback.onFailure(ErrorUtil.fromApiException(e));
+			public void onFailure(ApiException exception) {
+				callback.onFailure(ErrorUtil.fromApiException(exception));
+			}
+		});
+	}
+
+	@Override
+	public void userStats(@NonNull final KinCallback<UserStats> callback) {
+		remoteData.userProfile(new Callback<UserProfile, ApiException>() {
+			@Override
+			public void onResponse(UserProfile response) {
+				UserStats userStats = new UserStats();
+				com.kin.ecosystem.core.network.model.UserStats userNetworkrStats = response.getStats();
+				if (userNetworkrStats != null) {
+					userStats.setEarnCount(userNetworkrStats.getEarnCount().intValue());
+					userStats.setLastEarnDate(userNetworkrStats.getLastEarnDate());
+					userStats.setSpendCount(userNetworkrStats.getSpendCount().intValue());
+					userStats.setLastSpendDate(userNetworkrStats.getLastSpendDate());
+				}
+
+				callback.onResponse(userStats);
+			}
+
+			@Override
+			public void onFailure(ApiException exception) {
+				callback.onFailure(ErrorUtil.fromApiException(exception));
 			}
 		});
 	}

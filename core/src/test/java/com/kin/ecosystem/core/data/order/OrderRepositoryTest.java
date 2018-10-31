@@ -1,6 +1,8 @@
 package com.kin.ecosystem.core.data.order;
 
 import static com.kin.ecosystem.common.exception.BlockchainException.INSUFFICIENT_KIN;
+import static com.kin.ecosystem.core.data.blockchain.Payment.EARN;
+import static com.kin.ecosystem.core.data.blockchain.Payment.SPEND;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -13,29 +15,30 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.exception.BlockchainException;
+import com.kin.ecosystem.common.exception.DataNotAvailableException;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
+import com.kin.ecosystem.common.model.Balance;
+import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.EarnOrderPaymentConfirmed;
 import com.kin.ecosystem.core.bi.events.SpendOrderCompleted;
 import com.kin.ecosystem.core.bi.events.SpendOrderFailed;
-import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
-import com.kin.ecosystem.common.model.Balance;
-import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.core.data.blockchain.Payment;
-import com.kin.ecosystem.common.exception.BlockchainException;
-import com.kin.ecosystem.common.exception.DataNotAvailableException;
-import com.kin.ecosystem.common.exception.KinEcosystemException;
-import com.kin.ecosystem.core.data.order.OrderDataSource;
-import com.kin.ecosystem.core.data.order.OrderRepository;
+import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.BlockchainData;
 import com.kin.ecosystem.core.network.model.Body;
+import com.kin.ecosystem.core.network.model.Error;
 import com.kin.ecosystem.core.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
+import com.kin.ecosystem.core.network.model.Order.Origin;
 import com.kin.ecosystem.core.network.model.Order.Status;
 import com.kin.ecosystem.core.network.model.OrderList;
 import com.kin.ecosystem.core.network.model.OrderSpendResult.TypeEnum;
@@ -47,8 +50,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import com.kin.ecosystem.core.network.ApiException;
-import com.kin.ecosystem.core.network.model.Error;
 import kin.ecosystem.test.base.BaseTestClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -206,7 +207,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 		assertEquals(order, orderRepository.getOrderWatcher().getValue());
 
 		when(payment.getAmount()).thenReturn(new BigDecimal(20));
-		when(payment.isEarn()).thenReturn(true);
+		when(payment.getType()).thenReturn(EARN);
 		paymentCapture.getValue().onChanged(payment);
 
 		verify(eventLogger).send(any(EarnOrderPaymentConfirmed.class));
@@ -229,6 +230,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 		ArgumentCaptor<Callback<Order, ApiException>> getOrderCapture = ArgumentCaptor.forClass(Callback.class);
 
 		when(order.getOfferType()).thenReturn(OfferType.SPEND);
+		when(order.getOrigin()).thenReturn(Origin.MARKETPLACE);
 
 		// Create Order
 		orderRepository.createOrder(order.getOfferId(), openOrderCallback);
@@ -247,7 +249,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 		assertEquals(order, orderRepository.getOrderWatcher().getValue());
 
 		when(payment.getAmount()).thenReturn(new BigDecimal(-20));
-		when(payment.isEarn()).thenReturn(false);
+		when(payment.getType()).thenReturn(SPEND);
 		paymentCapture.getValue().onChanged(payment);
 
 		verify(eventLogger, never()).send(any(EarnOrderPaymentConfirmed.class));
@@ -288,7 +290,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 		assertEquals(order, orderRepository.getOrderWatcher().getValue());
 
 		when(payment.getAmount()).thenReturn(new BigDecimal(-20));
-		when(payment.isEarn()).thenReturn(false);
+		when(payment.getType()).thenReturn(SPEND);
 		paymentCapture.getValue().onChanged(payment);
 
 		verify(eventLogger, never()).send(any(EarnOrderPaymentConfirmed.class));
@@ -367,7 +369,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 		ArgumentCaptor<Observer<Payment>> paymentCapture = ArgumentCaptor.forClass(Observer.class);
 		ArgumentCaptor<Callback<Order, ApiException>> getOrderCapture = ArgumentCaptor.forClass(Callback.class);
 
-		Order confirmedOrder = new Order().orderId(orderID).offerId(offerID).status(Status.COMPLETED);
+		Order confirmedOrder = new Order().orderId(orderID).offerId(offerID).status(Status.COMPLETED).amount(30);
 		confirmedOrder.setResult(
 			new JWTBodyPaymentConfirmationResult().jwt("A JWT CONFIRMATION").type(TypeEnum.PAYMENT_CONFIRMATION));
 
@@ -398,7 +400,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 		}
 
 		verify(remote, never()).changeOrder(anyString(), any(Body.class), any(Callback.class));
-		verify(remote).getOrder(anyString(), getOrderCapture.capture());
+		verify(remote, times(2)).getOrder(anyString(), getOrderCapture.capture());
 		List<Callback<Order, ApiException>> getOrderCallbackList = getOrderCapture.getAllValues();
 		for (Callback<Order, ApiException> callback : getOrderCallbackList) {
 			callback.onResponse(confirmedOrder);

@@ -1,6 +1,9 @@
 package com.kin.ecosystem.marketplace.presenter;
 
 
+import static com.kin.ecosystem.marketplace.view.IMarketplaceView.NOT_ENOUGH_KIN;
+import static com.kin.ecosystem.marketplace.view.IMarketplaceView.SOMETHING_WENT_WRONG;
+
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.google.gson.Gson;
@@ -16,6 +19,7 @@ import com.kin.ecosystem.core.bi.events.EarnOfferTapped;
 import com.kin.ecosystem.core.bi.events.MarketplacePageViewed;
 import com.kin.ecosystem.core.bi.events.NotEnoughKinPageViewed;
 import com.kin.ecosystem.core.bi.events.SpendOfferTapped;
+import com.kin.ecosystem.core.bi.events.SpendOfferTapped.Origin;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.offer.OfferDataSource;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
@@ -28,6 +32,7 @@ import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.util.OfferConverter;
 import com.kin.ecosystem.main.INavigator;
 import com.kin.ecosystem.marketplace.view.IMarketplaceView;
+import com.kin.ecosystem.marketplace.view.IMarketplaceView.Message;
 import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -305,7 +310,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 			if (balance < amount.intValue()) {
 				eventLogger.send(NotEnoughKinPageViewed.create());
-				showToast("You don't have enough Kin");
+				showToast(NOT_ENOUGH_KIN);
 				return;
 			}
 
@@ -335,7 +340,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private void sendSpendOfferTapped(Offer offer) {
 		double amount = (double) offer.getAmount();
-		eventLogger.send(SpendOfferTapped.create(amount, offer.getId(), null));
+		ContentTypeEnum contentType = offer.getContentType();
+		eventLogger.send(SpendOfferTapped.create(amount, offer.getId(),
+			contentType == ContentTypeEnum.EXTERNAL ? Origin.EXTERNAL : Origin.MARKETPLACE));
 	}
 
 	private void nativeSpendOfferClicked(Offer offer, boolean dismissMarketplace) {
@@ -348,9 +355,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void showSomethingWentWrong() {
-		if (view != null) {
-			view.showSomethingWentWrong();
-		}
+		showToast(SOMETHING_WENT_WRONG);
 	}
 
 	@Override
@@ -387,7 +392,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		}
 	}
 
-	private void showToast(String msg) {
+	private void showToast(@Message final int msg) {
 		if (view != null) {
 			view.showToast(msg);
 		}

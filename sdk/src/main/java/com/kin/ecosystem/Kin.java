@@ -17,6 +17,7 @@ import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.common.model.NativeSpendOffer;
 import com.kin.ecosystem.common.model.OrderConfirmation;
+import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.common.model.WhitelistData;
 import com.kin.ecosystem.core.Configuration;
 import com.kin.ecosystem.core.Logger;
@@ -38,13 +39,13 @@ import com.kin.ecosystem.core.data.order.OrderRemoteData;
 import com.kin.ecosystem.core.data.order.OrderRepository;
 import com.kin.ecosystem.core.network.model.SignInData;
 import com.kin.ecosystem.core.network.model.SignInData.SignInTypeEnum;
+import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
 import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.splash.view.SplashActivity;
 import java.util.UUID;
-import kin.core.KinAccount;
 import kin.core.KinClient;
 import kin.core.ServiceProvider;
 
@@ -127,12 +128,10 @@ public class Kin {
 
 	private static void initAccountManager(@NonNull final Context context) {
 		AccountManagerImpl
-			.init(AccountManagerLocal.getInstance(context), instance.eventLogger, AuthRepository.getInstance());
+			.init(AccountManagerLocal.getInstance(context), instance.eventLogger, AuthRepository.getInstance(),
+				BlockchainSourceImpl.getInstance());
 		if (!AccountManagerImpl.getInstance().isAccountCreated()) {
-			KinAccount account = BlockchainSourceImpl.getInstance().getKinAccount();
-			if (account != null) {
-				AccountManagerImpl.getInstance().start(account);
-			}
+			AccountManagerImpl.getInstance().start();
 		}
 	}
 
@@ -167,7 +166,7 @@ public class Kin {
 
 	private static void initAuthRepository(@NonNull final Context context, @NonNull final SignInData signInData)
 		throws ClientException {
-		AuthRepository.init(AuthLocalData.getInstance(context, instance.executorsUtil),
+		AuthRepository.init(AuthLocalData.getInstance(context),
 			AuthRemoteData.getInstance(instance.executorsUtil));
 		String deviceID = AuthRepository.getInstance().getDeviceID();
 		signInData.setDeviceId(deviceID != null ? deviceID : UUID.randomUUID().toString());
@@ -206,9 +205,8 @@ public class Kin {
 	public static void launchMarketplace(@NonNull final Activity activity) throws ClientException {
 		checkInstanceNotNull();
 		instance.eventLogger.send(EntrypointButtonTapped.create());
-		boolean isActivated = AuthRepository.getInstance().isActivated();
 		boolean isAccountCreated = AccountManagerImpl.getInstance().isAccountCreated();
-		if (isActivated && isAccountCreated) {
+		if (isAccountCreated) {
 			navigateToMarketplace(activity);
 		} else {
 			navigateToSplash(activity);
@@ -280,7 +278,7 @@ public class Kin {
 	 * This call might take time, due to transaction validation on the blockchain network.
 	 *
 	 * @param offerJwt Represents the offer in a JWT manner.
-	 * @param callback {@link OrderConfirmation} the result will be a failure or a succeed with a jwt confirmation.
+	 * @param callback {@link OrderConfirmation} The result will be a failure or a success with a jwt confirmation.
 	 */
 	public static void purchase(String offerJwt, @Nullable KinCallback<OrderConfirmation> callback)
 		throws ClientException {
@@ -292,14 +290,56 @@ public class Kin {
 	 * Allowing your users to earn Kin as a reward for native task you define.
 	 * This call might take time, due to transaction validation on the blockchain network.
 	 *
-	 * @param offerJwt the offer details represented in a JWT manner.
-	 * @param callback after validating the info and sending the payment to the user, you will receive {@link
+	 * @param offerJwt The offer details represented in a JWT manner.
+	 * @param callback After validating the info and sending the payment to the user, you will receive {@link
 	 * OrderConfirmation}, with the jwtConfirmation and you can validate the order when the order status is completed.
 	 */
 	public static void requestPayment(String offerJwt, @Nullable KinCallback<OrderConfirmation> callback)
 		throws ClientException {
 		checkInstanceNotNull();
 		OrderRepository.getInstance().requestPayment(offerJwt, callback);
+	}
+
+	/**
+	 * Allowing a user to pay to a different user for an offer defined within your app, using KIN.
+	 * This call might take time, due to transaction validation on the blockchain network.
+	 *
+	 * @param offerJwt Represents a 'Pay to user' offer in a JWT manner.
+	 * @param callback {@link OrderConfirmation} The result will be a failure or a success with a jwt confirmation.
+	 */
+	public static void payToUser(String offerJwt, @Nullable KinCallback<OrderConfirmation> callback)
+		throws ClientException {
+		checkInstanceNotNull();
+		//pay to user has a similar flow like purchase (spend), the only different is the expected input JWT.
+		OrderRepository.getInstance().purchase(offerJwt, callback);
+	}
+
+	/**
+	 * Determine if a Kin Account is associated with the {@param userId}, on Kin Ecosystem Server.
+	 * That means you can pay to the user with {@link Kin#payToUser(String userId, KinCallback)},
+	 * otherwise the recipient user won't get the Kin.
+	 *
+	 * @param userId The user id to check
+	 * @param callback The result will be a {@link Boolean}
+	 * @throws ClientException
+	 */
+	public static void hasAccount(@NonNull String userId, @NonNull KinCallback<Boolean> callback)
+		throws ClientException {
+		checkInstanceNotNull();
+		AuthRepository.getInstance().hasAccount(userId, callback);
+
+	}
+
+	/**
+	 * Get user's stats which include history information such as number of Earn/Spend orders completed by the user or last earn/spend dates.
+	 * This information could be used for re-engaging users, provide specific experience for users who never earn before etc.
+	 * @param callback The result will be a {@link UserStats}
+	 * @throws ClientException
+	 */
+	public static void userStats(@NonNull KinCallback<UserStats> callback)
+		throws ClientException {
+		checkInstanceNotNull();
+		AuthRepository.getInstance().userStats(callback);
 	}
 
 	/**

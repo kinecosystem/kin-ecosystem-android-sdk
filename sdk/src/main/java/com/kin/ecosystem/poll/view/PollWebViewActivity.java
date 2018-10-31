@@ -6,18 +6,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseToolbarActivity;
+import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.core.bi.EventLoggerImpl;
 import com.kin.ecosystem.core.data.order.OrderRepository;
-import com.kin.ecosystem.common.exception.ClientException;
+import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.poll.presenter.IPollWebViewPresenter;
 import com.kin.ecosystem.poll.presenter.PollWebViewPresenter;
 import com.kin.ecosystem.web.EcosystemWebView;
-import com.kin.ecosystem.core.util.ErrorUtil;
 
 public class PollWebViewActivity extends BaseToolbarActivity implements IPollWebView {
 
@@ -88,13 +89,23 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
 	}
 
 	@Override
-	public void showToast(final String msg) {
+	public void showToast(@Message final int msg) {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				Toast.makeText(PollWebViewActivity.this, msg, Toast.LENGTH_SHORT).show();
+				Toast.makeText(PollWebViewActivity.this, getMessageResId(msg), Toast.LENGTH_SHORT).show();
 			}
 		});
+	}
+
+	private @StringRes int getMessageResId(@Message final int msg) {
+		switch (msg) {
+			case ORDER_SUBMISSION_FAILED:
+				return R.string.kinecosystem_order_submission_failed;
+			default:
+			case SOMETHING_WENT_WRONG:
+				return R.string.kinecosystem_something_went_wrong;
+		}
 	}
 
 	@Override

@@ -10,8 +10,8 @@ import com.kin.ecosystem.core.bi.events.SpendRedeemPageViewed;
 import com.kin.ecosystem.core.bi.events.SpendRedeemPageViewed.RedeemTrigger;
 import com.kin.ecosystem.core.network.model.Coupon;
 import com.kin.ecosystem.core.network.model.Coupon.CouponInfo;
-import com.kin.ecosystem.history.view.ICouponDialog;
 import com.kin.ecosystem.core.network.model.Order;
+import com.kin.ecosystem.history.view.ICouponDialog;
 
 public class CouponDialogPresenter extends BaseDialogPresenter<ICouponDialog> implements ICouponDialogPresenter {
 

@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
-import com.kin.ecosystem.common.KinCallbackAdapter;
 import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
@@ -18,7 +17,6 @@ import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.EarnOrderPaymentConfirmed;
 import com.kin.ecosystem.core.bi.events.SpendOrderCompleted;
-import com.kin.ecosystem.core.bi.events.SpendOrderCompletionSubmitted;
 import com.kin.ecosystem.core.bi.events.SpendOrderCreationRequested;
 import com.kin.ecosystem.core.bi.events.SpendOrderFailed;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
@@ -113,6 +111,32 @@ public class OrderRepository implements OrderDataSource {
 	}
 
 	@Override
+	public void getOrder(@NonNull String orderID, @Nullable final KinCallback<Order> callback) {
+		remoteData.getOrder(orderID, new Callback<Order, ApiException>() {
+			@Override
+			public void onResponse(Order order) {
+				decrementPendingOrdersCount();
+				getOrderWatcher().postValue(order);
+				sendSpendOrderCompleted(order);
+				if (!hasMorePendingOffers()) {
+					removeCachedOpenOrderByID(order.getOrderId());
+				}
+				if (callback != null) {
+					callback.onResponse(order);
+				}
+			}
+
+			@Override
+			public void onFailure(ApiException e) {
+				decrementPendingOrdersCount();
+				if (callback != null) {
+					callback.onFailure(ErrorUtil.fromApiException(e));
+				}
+			}
+		});
+	}
+
+	@Override
 	public void createOrder(@NonNull final String offerID, @Nullable final KinCallback<OpenOrder> callback) {
 		remoteData.createOrder(offerID, new Callback<OpenOrder, ApiException>() {
 			@Override
@@ -158,22 +182,30 @@ public class OrderRepository implements OrderDataSource {
 		});
 	}
 
+	@Override
+	public void cancelOrderSync(@NonNull String orderID) {
+		removeCachedOpenOrderByID(orderID);
+		remoteData.cancelOrderSync(orderID);
+	}
+
 	private void listenForCompletedPayment() {
 		synchronized (paymentObserversLock) {
 			if (paymentObserverCount == 0) {
 				paymentObserver = new Observer<Payment>() {
 					@Override
 					public void onChanged(Payment payment) {
-						if(!payment.isSucceed()) {
-							BlockchainException blockchainException = ErrorUtil.getBlockchainException(payment.getException());
-							final Error error = new Error("Transaction failed", blockchainException.getMessage(), blockchainException.getCode());
+						if (!payment.isSucceed()) {
+							BlockchainException blockchainException = ErrorUtil
+								.getBlockchainException(payment.getException());
+							final Error error = new Error("Transaction failed", blockchainException.getMessage(),
+								blockchainException.getCode());
 							final Body body = new Body().error(error);
 							changeOrder(payment.getOrderID(), body, null);
 						}
 
 						sendEarnPaymentConfirmed(payment);
 						decrementPaymentObserverCount();
-						getOrder(payment.getOrderID());
+						getOrder(payment.getOrderID(), null);
 					}
 				};
 				blockchainSource.addPaymentObservable(paymentObserver);
@@ -184,7 +216,7 @@ public class OrderRepository implements OrderDataSource {
 	}
 
 	private void sendEarnPaymentConfirmed(Payment payment) {
-		if (payment.isSucceed() && payment.getAmount() != null && payment.isEarn()) {
+		if (payment.isSucceed() && payment.getAmount() != null && payment.getType() == Payment.EARN) {
 			eventLogger.send(EarnOrderPaymentConfirmed.create(payment.getTransactionID(), null, payment.getOrderID()));
 		}
 	}
@@ -202,25 +234,6 @@ public class OrderRepository implements OrderDataSource {
 		}
 	}
 
-	private void getOrder(final String orderID) {
-		remoteData.getOrder(orderID, new Callback<Order, ApiException>() {
-			@Override
-			public void onResponse(Order order) {
-				decrementPendingOrdersCount();
-				getOrderWatcher().postValue(order);
-				sendSpendOrderCompleted(order);
-				if (!hasMorePendingOffers()) {
-					removeCachedOpenOrderByID(order.getOrderId());
-				}
-			}
-
-			@Override
-			public void onFailure(ApiException t) {
-				decrementPendingOrdersCount();
-			}
-		});
-	}
-
 	private void decrementPendingOrdersCount() {
 		if (hasMorePendingOffers()) {
 			pendingOrdersCount.decrementAndGet();
@@ -233,15 +246,19 @@ public class OrderRepository implements OrderDataSource {
 	}
 
 	private void sendSpendOrderCompleted(Order order) {
-		if (order.getOfferType() == OfferType.SPEND) {
+		if (order.getOfferType() == OfferType.SPEND && order.getOrigin() == Origin.MARKETPLACE) {
 			if (order.getStatus() == Status.COMPLETED) {
-				eventLogger.send(SpendOrderCompleted.create(order.getOfferId(), order.getOrderId(), false));
+				double amount = (double) order.getAmount();
+				eventLogger.send(SpendOrderCompleted
+					.create(order.getOfferId(), order.getOrderId(), false,
+						SpendOrderCompleted.Origin.MARKETPLACE, amount));
 			} else {
 				String reason = "Timed out";
 				if (order.getError() != null) {
 					reason = order.getError().getMessage();
 				}
-				eventLogger.send(SpendOrderFailed.create(reason, order.getOfferId(), order.getOrderId(), false));
+				eventLogger.send(SpendOrderFailed.create(reason, order.getOfferId(), order.getOrderId(), false,
+					SpendOrderFailed.Origin.MARKETPLACE));
 			}
 		}
 	}
@@ -288,26 +305,17 @@ public class OrderRepository implements OrderDataSource {
 	}
 
 	@Override
-	public void purchase(String offerJwt, @Nullable final KinCallback<OrderConfirmation> callback) {
-		eventLogger.send(SpendOrderCreationRequested.create("", true));
-		new ExternalSpendOrderCall(remoteData, blockchainSource, offerJwt, eventLogger,
-			new ExternalSpendOrderCallbacks() {
-				@Override
-				public void onOrderCreated(OpenOrder openOrder) {
-					cachedOpenOrder.postValue(openOrder);
-				}
+	public OpenOrder createExternalOrderSync(@NonNull final String orderJwt) throws ApiException {
+		OpenOrder openOrder = remoteData.createExternalOrderSync(orderJwt);
+		cachedOpenOrder.postValue(openOrder);
+		return openOrder;
+	}
 
-				@Override
-				public void onTransactionSent(final OpenOrder openOrder) {
-					submitOrder(openOrder.getOfferId(), null, openOrder.getId(), new KinCallbackAdapter<Order>() {
-						@Override
-						public void onFailure(KinEcosystemException exception) {
-							handleOnFailure(exception, openOrder.getOfferId(), openOrder.getId());
-						}
-					});
-					eventLogger
-						.send(SpendOrderCompletionSubmitted.create(openOrder.getOfferId(), openOrder.getId(), true));
-				}
+	@Override
+	public void purchase(String offerJwt, @Nullable final KinCallback<OrderConfirmation> callback) {
+		eventLogger.send(SpendOrderCreationRequested.create("", true, SpendOrderCreationRequested.Origin.EXTERNAL));
+		new ExternalSpendOrderCall(this, blockchainSource, offerJwt, eventLogger,
+			new ExternalSpendOrderCallbacks() {
 
 				@Override
 				public void onTransactionFailed(final OpenOrder openOrder, final KinEcosystemException exception) {
@@ -320,11 +328,14 @@ public class OrderRepository implements OrderDataSource {
 				public void onOrderConfirmed(String confirmationJwt, Order order) {
 					String offerID = "null";
 					String orderId = "null";
+					double amount = -1;
 					if (order != null) {
 						offerID = order.getOfferId();
 						orderId = order.getOrderId();
+						amount = (double) order.getAmount();
 					}
-					eventLogger.send(SpendOrderCompleted.create(offerID, orderId, true));
+					eventLogger.send(SpendOrderCompleted
+						.create(offerID, orderId, true, SpendOrderCompleted.Origin.EXTERNAL, amount));
 
 					if (callback != null) {
 						callback.onResponse(createOrderConfirmation(confirmationJwt));
@@ -349,7 +360,8 @@ public class OrderRepository implements OrderDataSource {
 							reason = exception.getMessage();
 						}
 					}
-					eventLogger.send(SpendOrderFailed.create(reason, offerId, orderId, true));
+					eventLogger.send(
+						SpendOrderFailed.create(reason, offerId, orderId, true, SpendOrderFailed.Origin.EXTERNAL));
 
 					if (callback != null) {
 						callback.onFailure(exception);
@@ -388,18 +400,7 @@ public class OrderRepository implements OrderDataSource {
 
 	@Override
 	public void requestPayment(String offerJwt, final KinCallback<OrderConfirmation> callback) {
-		new ExternalEarnOrderCall(remoteData, blockchainSource, offerJwt, eventLogger, new ExternalOrderCallbacks() {
-			@Override
-			public void onOrderCreated(OpenOrder openOrder) {
-				cachedOpenOrder.postValue(openOrder);
-				submitOrder(openOrder.getOfferId(), null, openOrder.getId(), new KinCallbackAdapter<Order>() {
-					@Override
-					public void onFailure(KinEcosystemException exception) {
-						handleOnFailure(exception);
-					}
-				});
-			}
-
+		new ExternalEarnOrderCall(this, blockchainSource, offerJwt, eventLogger, new ExternalOrderCallbacks() {
 			@Override
 			public void onOrderConfirmed(String confirmationJwt, Order order) {
 				if (callback != null) {

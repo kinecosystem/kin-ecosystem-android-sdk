@@ -1,0 +1,40 @@
+<resources>
+    <!--Activity Name-->
+    <string name="kinecosystem_kin_marketplace">Kin Marketplace (Beta)</string>
+    <string name="kinecosystem_transaction_history">Histórico de Transação</string>
+
+    <!--Button-->
+    <string name="kinecosystem_more">MAIS</string>
+    <string name="kinecosystem_spend">Pagar</string>
+    <string name="kinecosystem_earn">Adquirir</string>
+    <string name="kinecosystem_let_s_get_started">Vamos começar!</string>
+    <string name="kinecosystem_confirm">Confirmar</string>
+    <string name="kinecosystem_copy_code">Copiar código</string>
+
+    <!--Sentence-->
+    <string name="kinecosystem_kin_balance">Saldo do Kin</string>
+    <string name="kinecosystem_complete_tasks_and_earn_kin">Conclua as tarefas e ganhe KIN</string>
+    <string name="kinecosystem_use_your_kin_to_enjoy_stuff_you_like">Uso seu KIN para desfrutar das coisas que você gosta</string>
+    <string name="kinecosystem_empty_tomorrow_more_opportunities">Consulte amanhã para mais oportunidades</string>
+    <string name="kinecosystem_welcome_to_kin">Bem-vindo ao Kin!</string>
+    <string name="kinecosystem_welcome_kin_info">O Kin coloca você no centro de sua vida digital\n, permitindo que você seja reconhecido e recompensado pelo tempo, energia, ideias, opiniões \ne criatividade que você compartilha online.</string>
+    <string name="kinecosystem_digging_for_gems">Buscando talentos…</string>
+    <string name="kinecosystem_welcome_to_kin_marketplace">Bem-vindo ao Kin Marketplace</string>
+    <string name="kinecosystem_something_went_wrong">Algo deu errado…</string>
+    <string name="kinecosystem_try_again_later">Tente novamente mais tarde</string>
+    <string name="kinecosystem_earn_pending">Obrigado! %s Kin estão a caminho</string>
+    <string name="kinecosystem_spend_pending">Obrigado! Estamos gerando seu código…</string>
+    <string name="kinecosystem_earn_completed">Feito! %s Kin adquiridos</string>
+    <string name="kinecosystem_spend_completed">Ótimo, seu código está pronto</string>
+    <string name="kinecosystem_sorry_this_may_take_some_time">Desculpe - isso pode levar algum tempo</string>
+    <string name="kinecosystem_copied_to_your_clipboard">Copiado para a área de transferência</string>
+    <string name="kinecosystem_copied_text">texto copiado</string>
+    <string name="kinecosystem_transaction_failed">A transação falhou</string>
+    <string name="kinecosystem_you_dont_have_enough_kin">Você não tem suficiente Kin</string>
+    <string name="kinecosystem_order_submission_failed">A submissão do pedido falhou</string>
+
+    <!--Menu-->
+    <string name="kinecosystem_info_menu">Informações</string>
+
+
+</resources>
