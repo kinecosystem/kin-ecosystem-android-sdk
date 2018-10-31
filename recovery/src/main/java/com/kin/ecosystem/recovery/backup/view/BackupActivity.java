@@ -41,6 +41,7 @@ public class BackupActivity extends BaseToolbarActivity implements BackupView {
 		backupPresenter.onAttach(this);
 	}
 
+	@Override
 	public void startBackupFlow() {
 		setToolbarColor(R.color.kinrecovery_bluePrimary);
 		setNavigationIcon(R.drawable.kinrecovery_ic_back);
