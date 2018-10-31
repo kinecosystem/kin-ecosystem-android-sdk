@@ -2,5 +2,6 @@
 <resources>
     <declare-styleable name="KinRecoveryPasswordEditText" >
         <attr format="boolean" name="kinrecovery_show_reveal_icon"/>
+        <attr format="string" name="kinrecovery_hint"/>
     </declare-styleable>
 </resources>

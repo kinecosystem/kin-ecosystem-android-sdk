@@ -46,6 +46,11 @@
         <item name="android:textColor">@color/kinrecovery_gray</item>
     </style>
 
+    <style name="KinrecoveryTitleSmall" parent="KinrecoveryTitleBase">
+        <item name="android:textColor">@color/kinrecovery_gray</item>
+        <item name="android:textSize">@dimen/kinrecovery_small_size</item>
+    </style>
+
     <style name="KinrecoveryTitleLarge" parent="KinrecoveryTitleBase">
         <item name="android:textSize">@dimen/kinrecovery_large_size</item>
     </style>
@@ -59,9 +64,9 @@
         <item name="android:textColor">@color/kinrecovery_bluePrimary</item>
     </style>
 
-    <style name="KinrecoveryCheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
-        <item name="colorAccent">@color/kinrecovery_gray</item>
-        <item name="android:colorPressedHighlight">@color/kinrecovery_bluePrimary</item>
+    <style name="KinrecoveryCheckBox" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@color/kinrecovery_gray</item>
+        <item name="colorControlActivated">@color/kinrecovery_bluePrimary</item>
     </style>
         
 </resources>

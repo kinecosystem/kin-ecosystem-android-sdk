@@ -15,13 +15,13 @@ public class BackupInfoPresenterImpl extends BasePresenterImpl<BaseView> impleme
 
 	@Override
 	public void onBackClicked() {
-		backupNextStepListener.setStep(BackupNextStepListener.STEP_CLOSE);
+		backupNextStepListener.setStep(BackupNextStepListener.STEP_CLOSE, null);
 	}
 
 	@Override
 	public void letsGoButtonClicked() {
-		if(view != null) {
-			backupNextStepListener.setStep(BackupNextStepListener.STEP_FIRST);
+		if (view != null) {
+			backupNextStepListener.setStep(BackupNextStepListener.STEP_CREATE_PASSWORD, null);
 		}
 	}
 }

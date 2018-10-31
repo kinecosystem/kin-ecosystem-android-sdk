@@ -15,4 +15,6 @@ public interface IEcosystemPresenter extends IBasePresenter<IEcosystemView> {
 	void settingsMenuClicked();
 
 	void onMenuInitialized();
+
+	void onStart();
 }

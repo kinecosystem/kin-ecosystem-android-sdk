@@ -48,6 +48,7 @@
     <dimen name="kinrecovery_edittext_corners_radius">20dp</dimen>
 
     <!--Text Size-->
+    <dimen name="kinrecovery_small_size">12sp</dimen>
     <dimen name="kinrecovery_regular_size">14sp</dimen>
     <dimen name="kinrecovery_medium_size">18sp</dimen>
     <dimen name="kinrecovery_large_size">22sp</dimen>

@@ -63,7 +63,7 @@ public class RestorePresenterImpl extends BasePresenterImpl<RestoreView> impleme
 	public void previousStep() {
 		switch (currentStep) {
 			case STEP_UPLOAD:
-				callbackManager.sendRestoreCancelledResult();
+				callbackManager.sendCancelledResult();
 				getView().close();
 				break;
 			case STEP_ENTER_PASSWORD:
