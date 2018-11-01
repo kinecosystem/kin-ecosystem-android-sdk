@@ -20,7 +20,6 @@ import android.widget.Toast;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.core.accountmanager.AccountManagerImpl;
 import com.kin.ecosystem.core.bi.EventLoggerImpl;
-import com.kin.ecosystem.core.data.auth.AuthRepository;
 import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.splash.presenter.ISplashPresenter;
 import com.kin.ecosystem.splash.presenter.ISplashPresenter.Message;
@@ -45,7 +44,7 @@ public class SplashActivity extends AppCompatActivity implements ISplashView {
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.kinecosystem_activity_splash);
-		attachPresenter(new SplashPresenter(AccountManagerImpl.getInstance(), AuthRepository.getInstance(),
+		attachPresenter(new SplashPresenter(AccountManagerImpl.getInstance(),
 			EventLoggerImpl.getInstance(), new Timer()));
 		initViews();
 		initAnimations();

@@ -123,14 +123,31 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
+
     <TextView
         android:id="@+id/pay_to_user_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/kinecosystem_block_margin"
+        android:layout_gravity="bottom"
+        android:gravity="center_horizontal"
+        android:text="@string/pay_to_user"
+        android:textAllCaps="false"
+        android:textColor="@color/kinecosystem_white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/get_user_stats"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/get_user_stats"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/kinecosystem_margin_large"
         android:layout_gravity="bottom"
         android:gravity="center_horizontal"
-        android:text="@string/pay_to_user"
+        android:text="@string/get_user_stats"
         android:textAllCaps="false"
         android:textColor="@color/kinecosystem_white"
         android:textSize="16sp"
@@ -138,6 +155,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"/>
+
 
     <TextView
         android:id="@+id/sample_app_version"

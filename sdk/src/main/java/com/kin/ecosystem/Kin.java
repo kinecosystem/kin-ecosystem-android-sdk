@@ -17,6 +17,7 @@ import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.common.model.NativeSpendOffer;
 import com.kin.ecosystem.common.model.OrderConfirmation;
+import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.common.model.WhitelistData;
 import com.kin.ecosystem.core.Configuration;
 import com.kin.ecosystem.core.Logger;
@@ -38,6 +39,7 @@ import com.kin.ecosystem.core.data.order.OrderRemoteData;
 import com.kin.ecosystem.core.data.order.OrderRepository;
 import com.kin.ecosystem.core.network.model.SignInData;
 import com.kin.ecosystem.core.network.model.SignInData.SignInTypeEnum;
+import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
@@ -203,9 +205,8 @@ public class Kin {
 	public static void launchMarketplace(@NonNull final Activity activity) throws ClientException {
 		checkInstanceNotNull();
 		instance.eventLogger.send(EntrypointButtonTapped.create());
-		boolean isActivated = AuthRepository.getInstance().isActivated();
 		boolean isAccountCreated = AccountManagerImpl.getInstance().isAccountCreated();
-		if (isActivated && isAccountCreated) {
+		if (isAccountCreated) {
 			navigateToMarketplace(activity);
 		} else {
 			navigateToSplash(activity);
@@ -327,6 +328,18 @@ public class Kin {
 		checkInstanceNotNull();
 		AuthRepository.getInstance().hasAccount(userId, callback);
 
+	}
+
+	/**
+	 * Get user's stats which include history information such as number of Earn/Spend orders completed by the user or last earn/spend dates.
+	 * This information could be used for re-engaging users, provide specific experience for users who never earn before etc.
+	 * @param callback The result will be a {@link UserStats}
+	 * @throws ClientException
+	 */
+	public static void userStats(@NonNull KinCallback<UserStats> callback)
+		throws ClientException {
+		checkInstanceNotNull();
+		AuthRepository.getInstance().userStats(callback);
 	}
 
 	/**

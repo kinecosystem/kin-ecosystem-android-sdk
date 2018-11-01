@@ -30,6 +30,7 @@ import com.kin.ecosystem.common.exception.ServiceException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.common.model.NativeSpendOffer;
 import com.kin.ecosystem.common.model.OrderConfirmation;
+import com.kin.ecosystem.common.model.UserStats;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
 	private TextView showPublicAddressTextView;
 	private TextView publicAddressTextArea;
 	private TextView payToUserTextView;
+	private TextView getUserStatsTextView;
+
 
 	private KinCallback<OrderConfirmation> nativeSpendOrderConfirmationCallback;
 	private KinCallback<OrderConfirmation> nativeEarnOrderConfirmationCallback;
@@ -74,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
 		showPublicAddressTextView = findViewById(R.id.show_public_address);
 		publicAddressTextArea = findViewById(R.id.public_text_area);
 		payToUserTextView = findViewById(R.id.pay_to_user_button);
+		getUserStatsTextView = findViewById(R.id.get_user_stats);
+
 		showPublicAddressTextView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -115,6 +120,14 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 
+		getUserStatsTextView.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(final View v) {
+				enableView(v, false);
+				showUserStats(v);
+			}
+		});
+
 		final TextView userIdTextView = findViewById(R.id.user_id_textview);
 		userIdTextView.setText(getString(R.string.user_id, userID));
 		userIdTextView.setOnClickListener(new OnClickListener() {
@@ -134,6 +147,32 @@ public class MainActivity extends AppCompatActivity {
 			.setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
 		addNativeSpendOffer(nativeSpendOffer, getDismissOnTap());
 		addNativeOfferClickedObserver();
+	}
+
+	private void showUserStats(final View v) {
+		try {
+			Kin.userStats(new KinCallback<UserStats>() {
+				@Override
+				public void onResponse(UserStats response) {
+					StringBuilder userStats = new StringBuilder();
+					userStats.append("Earns: ").append(response.getEarnCount()).append(", ").append("last Earn date: ")
+						.append(response.getLastEarnDate()).append(", ").append("Spends: ")
+						.append(response.getSpendCount()).append(", ").append("last spend date: ")
+						.append(response.getLastSpendDate());
+					showToast(userStats.toString());
+					enableView(v, true);
+				}
+
+				@Override
+				public void onFailure(KinEcosystemException exception) {
+					showSnackbar("onFailure on Kin.userStats: " + exception.getMessage(), true);
+					enableView(v, true);
+				}
+			});
+		} catch (ClientException e) {
+			showSnackbar("ClientException on Kin.userStats: " + e.getMessage(), true);
+			enableView(v, true);
+		}
 	}
 
 	private boolean getDismissOnTap() {

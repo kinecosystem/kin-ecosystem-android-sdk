@@ -26,8 +26,6 @@ public class AuthLocalData implements AuthDataSource.Local {
 	private static final String TOKEN_KEY = "token";
 	private static final String TOKEN_EXPIRATION_DATE_KEY = "token_expiration_date";
 
-	private static final String IS_ACTIVATED_KEY = "is_activated";
-
 	private final SharedPreferences signInSharedPreferences;
 
 	private AuthLocalData(Context context) {
@@ -69,7 +67,6 @@ public class AuthLocalData implements AuthDataSource.Local {
 		editor.putString(APP_ID_KEY, authToken.getAppID());
 		editor.putString(USER_ID_KEY, authToken.getUserID());
 		editor.putString(ECOSYSTEM_USER_ID_KEY, authToken.getEcosystemUserID());
-		editor.putBoolean(IS_ACTIVATED_KEY, authToken.isActivated());
 		editor.putString(TOKEN_EXPIRATION_DATE_KEY, authToken.getExpirationDate());
 		editor.apply();
 	}
@@ -100,24 +97,12 @@ public class AuthLocalData implements AuthDataSource.Local {
 		String appID = signInSharedPreferences.getString(APP_ID_KEY, null);
 		String userID = getUserID();
 		String ecosystemUserID = getEcosystemUserID();
-		boolean isActivated = signInSharedPreferences.getBoolean(IS_ACTIVATED_KEY, false);
 		String expirationDate = signInSharedPreferences.getString(TOKEN_EXPIRATION_DATE_KEY, null);
 		if (token != null && expirationDate != null) {
-			return new AuthToken(token, isActivated, expirationDate, appID, userID, ecosystemUserID);
+			return new AuthToken(token, expirationDate, appID, userID, ecosystemUserID);
 		} else {
 			return null;
 		}
-	}
-
-	@Override
-	public boolean isActivated() {
-		return signInSharedPreferences.getBoolean(IS_ACTIVATED_KEY, false);
-	}
-
-	@Override
-	public void activateAccount() {
-		Editor editor = signInSharedPreferences.edit();
-		editor.putBoolean(IS_ACTIVATED_KEY, true).apply();
 	}
 }
 
