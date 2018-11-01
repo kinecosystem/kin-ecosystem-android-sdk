@@ -9,6 +9,7 @@
         android:id="@+id/kinrecovery_password_qr_icon"
         android:layout_width="@dimen/kinrecovery_password_qr_icon_size"
         android:layout_height="@dimen/kinrecovery_password_qr_icon_size"
+        android:layout_marginTop="@dimen/kinrecovery_margin_block"
         android:src="@drawable/kinrecovery_password_recovery_qr_code_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

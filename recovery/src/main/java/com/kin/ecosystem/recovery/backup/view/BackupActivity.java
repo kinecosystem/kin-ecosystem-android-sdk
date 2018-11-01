@@ -1,14 +1,11 @@
 package com.kin.ecosystem.recovery.backup.view;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.InputMethodManager;
 import com.kin.ecosystem.recovery.R;
 import com.kin.ecosystem.recovery.backup.presenter.BackupPresenter;
 import com.kin.ecosystem.recovery.backup.presenter.BackupPresenterImpl;
@@ -124,25 +121,6 @@ public class BackupActivity extends BaseToolbarActivity implements BackupView {
 		closeKeyboard(); // Verify the keyboard is hidden
 		finish();
 		overridePendingTransition(0, R.anim.kinrecovery_slide_out_right);
-	}
-
-	@Override
-	public void openKeyboard(View view) {
-		InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-		if (inputMethodManager != null) {
-			view.requestFocus();
-			inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-		}
-	}
-
-	@Override
-	public void closeKeyboard() {
-		if (getCurrentFocus() != null) {
-			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-			if (imm != null) {
-				imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-			}
-		}
 	}
 
 	@Override

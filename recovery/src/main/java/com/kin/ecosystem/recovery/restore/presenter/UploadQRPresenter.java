@@ -10,5 +10,5 @@ public interface UploadQRPresenter extends BaseChildPresenter<UploadQRView> {
 
 	void onActivityResult(int requestCode, int resultCode, Intent data);
 
-	void onConsent();
+	void onConsent(String chooserTitle);
 }

@@ -19,11 +19,15 @@ class Launcher {
 	}
 
 	void backupFlow() {
-		activity.startActivityForResult(new Intent(activity, BackupActivity.class), REQ_CODE_BACKUP);
-		activity.overridePendingTransition(R.anim.kinrecovery_slide_in_right, R.anim.kinrecovery_slide_out_left);
+		startForResult(new Intent(activity, BackupActivity.class), REQ_CODE_BACKUP);
 	}
 
 	void restoreFlow() {
-		activity.startActivityForResult(new Intent(activity, RestoreActivity.class), REQ_CODE_RESTORE);
+		startForResult(new Intent(activity, RestoreActivity.class), REQ_CODE_RESTORE);
+	}
+
+	private void startForResult(@NonNull final Intent intent, final int reqCode) {
+		activity.startActivityForResult(intent, reqCode);
+		activity.overridePendingTransition(R.anim.kinrecovery_slide_in_right, R.anim.kinrecovery_slide_out_left);
 	}
 }

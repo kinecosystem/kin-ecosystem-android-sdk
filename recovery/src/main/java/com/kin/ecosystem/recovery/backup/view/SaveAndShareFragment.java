@@ -1,6 +1,5 @@
 package com.kin.ecosystem.recovery.backup.view;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -136,10 +135,11 @@ public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 			.append(backupCreated).append(" ").append(dateString).append(" | ").append(time);
 
 		Intent emailIntent = new Intent(Intent.ACTION_SEND)
-			.setType("*/*")
+			.setType("Image/*")
+			.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 			.putExtra(Intent.EXTRA_STREAM, qrURI)
 			.putExtra(Intent.EXTRA_SUBJECT, myKinWallet)
 			.putExtra(Intent.EXTRA_TEXT, subjectBuilder.toString());
-		startActivity(Intent.createChooser(emailIntent , getString(R.string.kinrecovery_send_email)));
+		startActivity(Intent.createChooser(emailIntent, getString(R.string.kinrecovery_send_email)));
 	}
 }

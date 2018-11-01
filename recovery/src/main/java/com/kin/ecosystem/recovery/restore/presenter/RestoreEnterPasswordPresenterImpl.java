@@ -19,8 +19,6 @@ public class RestoreEnterPasswordPresenterImpl extends BaseChildPresenterImpl<Re
 	@Override
 	public void onAttach(RestoreEnterPasswordView view) {
 		super.onAttach(view);
-
-		getView().openKeyboard();
 	}
 
 	@Override

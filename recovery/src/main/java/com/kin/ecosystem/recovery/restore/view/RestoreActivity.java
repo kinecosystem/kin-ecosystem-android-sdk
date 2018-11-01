@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import com.kin.ecosystem.recovery.R;
 import com.kin.ecosystem.recovery.base.BaseToolbarActivity;
 import com.kin.ecosystem.recovery.events.BroadcastManagerImpl;
@@ -40,20 +41,23 @@ public class RestoreActivity extends BaseToolbarActivity implements RestoreView 
 		if (fragment == null) {
 			fragment = UploadQRFragment.newInstance();
 		}
-		replaceFragment(fragment, backStackName);
+		replaceFragment(fragment, backStackName, false);
 	}
 
-	private void replaceFragment(Fragment fragment, String fragmentName) {
-		getSupportFragmentManager()
+	private void replaceFragment(Fragment fragment, String fragmentName, boolean addAnimation) {
+		FragmentTransaction transaction = getSupportFragmentManager()
 			.beginTransaction()
-			.setCustomAnimations(
+			.replace(R.id.fragment_frame, fragment)
+			.addToBackStack(fragmentName);
+
+		if (addAnimation) {
+			transaction.setCustomAnimations(
 				R.anim.kinrecovery_slide_in_right,
 				R.anim.kinrecovery_slide_out_left,
 				R.anim.kinrecovery_slide_in_left,
-				R.anim.kinrecovery_slide_out_right)
-			.replace(R.id.fragment_frame, fragment)
-			.addToBackStack(fragmentName)
-			.commit();
+				R.anim.kinrecovery_slide_out_right);
+		}
+		transaction.commit();
 	}
 
 	@Override
@@ -63,10 +67,10 @@ public class RestoreActivity extends BaseToolbarActivity implements RestoreView 
 			.findFragmentByTag(backStackName);
 
 		if (fragment == null) {
-			fragment = RestoreEnterPasswordFragment.newInstance(keystoreData);
+			fragment = RestoreEnterPasswordFragment.newInstance(keystoreData, this);
 		}
 
-		replaceFragment(fragment, backStackName);
+		replaceFragment(fragment, backStackName, true);
 	}
 
 	@Override
@@ -79,7 +83,7 @@ public class RestoreActivity extends BaseToolbarActivity implements RestoreView 
 			fragment = RestoreCompletedFragment.newInstance(accountIndex);
 		}
 
-		replaceFragment(fragment, backStackName);
+		replaceFragment(fragment, backStackName, true);
 	}
 
 	@Override
@@ -89,7 +93,9 @@ public class RestoreActivity extends BaseToolbarActivity implements RestoreView 
 
 	@Override
 	public void close() {
+		closeKeyboard(); // Verify the keyboard is hidden
 		finish();
+		overridePendingTransition(0, R.anim.kinrecovery_slide_out_right);
 	}
 
 	public RestorePresenter getPresenter() {

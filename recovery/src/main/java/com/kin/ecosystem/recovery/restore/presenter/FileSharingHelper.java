@@ -21,10 +21,17 @@ public class FileSharingHelper {
 		this.fragment = fragment;
 	}
 
-	void requestImageFile() {
-		Intent intent = new Intent(Intent.ACTION_PICK);
-		intent.setType(INTENT_TYPE_ALL_IMAGE);
-		fragment.startActivityForResult(intent, REQUEST_CODE_IMAGE);
+	void requestImageFile(String chooserTitle) {
+		Intent intent;
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+			intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
+				.addCategory(Intent.CATEGORY_OPENABLE)
+				.setType(INTENT_TYPE_ALL_IMAGE);
+		} else {
+			intent = new Intent(Intent.ACTION_PICK)
+			.setType(INTENT_TYPE_ALL_IMAGE);
+		}
+		fragment.startActivityForResult(Intent.createChooser(intent, chooserTitle), REQUEST_CODE_IMAGE);
 	}
 
 	RequestFileResult extractUriFromActivityResult(int requestCode, int resultCode, Intent data) {
@@ -36,7 +43,6 @@ public class FileSharingHelper {
 			}
 		}
 		return new RequestFileResult(REQUEST_RESULT_FAILED, null);
-
 	}
 
 	@NonNull

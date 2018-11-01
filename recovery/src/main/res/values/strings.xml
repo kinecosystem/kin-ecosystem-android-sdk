@@ -52,4 +52,5 @@
     <string name="kinrecovery_something_went_wrong_title">Something went wrong</string>
     <string name="kinrecovery_we_had_some_issues_to_create_backup">We had some issues to create your backup.</string>
     <string name="kinrecovery_could_not_load_the_qr_please_try_again_later">Could not load the QR, please try again later.</string>
+    <string name="kinrecovery_choose_qr_image">Choose QR image...</string>
 </resources>

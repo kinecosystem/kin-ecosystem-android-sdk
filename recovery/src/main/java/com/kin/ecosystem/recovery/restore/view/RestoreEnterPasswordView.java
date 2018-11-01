@@ -5,8 +5,6 @@ import com.kin.ecosystem.recovery.base.BaseView;
 
 public interface RestoreEnterPasswordView extends BaseView {
 
-	void openKeyboard();
-
 	void enableDoneButton();
 
 	void disableDoneButton();

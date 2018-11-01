@@ -83,7 +83,8 @@ public class UploadQRFragment extends Fragment implements UploadQRView {
 			.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					presenter.onConsent();
+					String chooserTitle = getString(R.string.kinrecovery_choose_qr_image);
+					presenter.onConsent(chooserTitle);
 				}
 			})
 			.setNegativeButton(android.R.string.cancel, null)

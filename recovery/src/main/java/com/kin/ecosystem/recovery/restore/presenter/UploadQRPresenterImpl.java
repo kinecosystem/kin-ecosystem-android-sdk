@@ -27,8 +27,8 @@ public class UploadQRPresenterImpl extends BaseChildPresenterImpl<UploadQRView> 
 	}
 
 	@Override
-	public void onConsent() {
-		fileRequester.requestImageFile();
+	public void onConsent(String chooserTitle) {
+		fileRequester.requestImageFile(chooserTitle);
 	}
 
 	@Override

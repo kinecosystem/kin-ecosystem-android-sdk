@@ -24,7 +24,6 @@
     <dimen name="kinrecovery_password_edit_frame_margin_bottom">10dp</dimen>
     <dimen name="kinrecovery_password_edit_text_width">181dp</dimen>
     <dimen name="kinrecovery_password_edit_text_margin_start">21dp</dimen>
-    <dimen name="kinrecovery_password_edit_text_size">14sp</dimen>
     <dimen name="kinrecovery_reveal_icon_width">22dp</dimen>
     <dimen name="kinrecovery_reveal_icon_height">15dp</dimen>
     <dimen name="kinrecovery_circle_v_size">50dp</dimen>
@@ -46,6 +45,7 @@
     <dimen name="kinrecovery_edittext_height">40dp</dimen>
     <dimen name="kinrecovery_edittext_stroke_width">1dp</dimen>
     <dimen name="kinrecovery_edittext_corners_radius">20dp</dimen>
+    <dimen name="kinrecovery_password_edit_text_size">14sp</dimen>
 
     <!--Text Size-->
     <dimen name="kinrecovery_small_size">12sp</dimen>

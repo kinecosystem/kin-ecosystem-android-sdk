@@ -2,6 +2,7 @@ package com.kin.ecosystem.recovery.widget;
 
 import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff.Mode;
@@ -24,6 +25,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,7 +43,9 @@ public class PasswordEditText extends LinearLayout {
 
 	private final int sidesPadding = getResources().getDimensionPixelSize(R.dimen.kinrecovery_margin_main);
 	private final int strokeWidth = getResources().getDimensionPixelSize(R.dimen.kinrecovery_edittext_stroke_width);
+
 	private boolean isRevealIconVisible;
+	private boolean isRevealPressed;
 	private final int passInputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD;
 
 	public PasswordEditText(Context context) {
@@ -94,6 +98,15 @@ public class PasswordEditText extends LinearLayout {
 		passwordField.setPadding(sidesPadding, topBottomPadding, sidesPadding, topBottomPadding);
 		passwordField.setHeight(getResources().getDimensionPixelSize(R.dimen.kinrecovery_edittext_height));
 		passwordField.setWidth(getResources().getDimensionPixelSize(R.dimen.kinrecovery_password_edit_frame_height));
+		passwordField.setFocusable(true);
+		passwordField.setOnFocusChangeListener(new OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if (hasFocus) {
+					openKeyboard();
+				}
+			}
+		});
 		passwordField.setGravity(Gravity.CENTER_VERTICAL);
 		passwordField.setBackgroundResource(R.drawable.kinrecovery_edittext_frame);
 		passwordField.addTextChangedListener(new TextWatcher() {
@@ -129,32 +142,35 @@ public class PasswordEditText extends LinearLayout {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (isRevealIconVisible) {
-					switch (event.getAction()) {
-						case MotionEvent.ACTION_DOWN:
-							if (isInRevealIconBounds(event)) {
+					if (isInRevealIconBounds(event)) {
+						switch (event.getAction()) {
+							case MotionEvent.ACTION_DOWN:
 								setInputAsVisibleChars();
 								return true;
-							}
-							return false;
-						case MotionEvent.ACTION_UP:
-							if (isInRevealIconBounds(event)) {
+							case MotionEvent.ACTION_UP:
 								setInputAsPasswordDots();
 								return true;
-							}
-							return false;
-						case MotionEvent.ACTION_MOVE:
-							if (!isInRevealIconBounds(event)) {
-								setInputAsPasswordDots();
-								return true;
-							}
-							return false;
-						default:
-							return false;
+							default:
+								return false;
+						}
 					}
+					if (event.getAction() == MotionEvent.ACTION_MOVE && isRevealPressed) {
+						setInputAsPasswordDots();
+
+					}
+					return false;
 				}
 				return false;
 			}
 		});
+	}
+
+	private void openKeyboard() {
+		InputMethodManager inputMethodManager = (InputMethodManager) getContext()
+			.getSystemService(Activity.INPUT_METHOD_SERVICE);
+		if (inputMethodManager != null) {
+			inputMethodManager.showSoftInput(passwordField, InputMethodManager.SHOW_IMPLICIT);
+		}
 	}
 
 	private void setLetterSpacing(float spacing) {
@@ -184,6 +200,7 @@ public class PasswordEditText extends LinearLayout {
 		passwordField.setTransformationMethod(LargePasswordDotsTransformationMethod.getInstance());
 		passwordField.setTypeface(Typeface.SANS_SERIF);
 		passwordField.setSelection(passwordField.getText().length());
+		isRevealPressed = false;
 	}
 
 	private void setInputAsVisibleChars() {
@@ -191,6 +208,7 @@ public class PasswordEditText extends LinearLayout {
 		passwordField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_FILTER);
 		passwordField.setTransformationMethod(null);
 		passwordField.setTypeface(Typeface.SANS_SERIF);
+		isRevealPressed = true;
 	}
 
 	public void setFrameBackgroundColor(@ColorRes final int colorRes) {

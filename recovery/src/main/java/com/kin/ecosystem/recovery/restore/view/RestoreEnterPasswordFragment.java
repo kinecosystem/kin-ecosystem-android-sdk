@@ -1,11 +1,9 @@
 package com.kin.ecosystem.recovery.restore.view;
 
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.constraint.Group;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
@@ -14,27 +12,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
+import android.widget.Button;
 import android.widget.TextView;
 import com.kin.ecosystem.recovery.R;
+import com.kin.ecosystem.recovery.backup.view.TextWatcherAdapter;
+import com.kin.ecosystem.recovery.backup.view.TextWatcherAdapter.TextChangeListener;
 import com.kin.ecosystem.recovery.base.BaseToolbarActivity;
+import com.kin.ecosystem.recovery.base.KeyboardHandler;
 import com.kin.ecosystem.recovery.restore.presenter.RestoreEnterPasswordPresenter;
 import com.kin.ecosystem.recovery.restore.presenter.RestoreEnterPasswordPresenterImpl;
-import com.kin.ecosystem.recovery.utils.ViewUtils;
+import com.kin.ecosystem.recovery.widget.PasswordEditText;
 
 
 public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnterPasswordView {
 
 	private static final String BUNDLE_KEY_KEYSTORE = "BUNDLE_KEY_KEYSTORE";
 	private RestoreEnterPasswordPresenter presenter;
+	private KeyboardHandler keyboardHandler;
 	private View root;
-	private Group doneBtn;
+	private Button doneBtn;
 	private TextView contentText;
-	private EditText password;
+	private PasswordEditText password;
 
-	public static RestoreEnterPasswordFragment newInstance(String keystoreData) {
+	public static RestoreEnterPasswordFragment newInstance(String keystoreData, @NonNull KeyboardHandler keyboardHandler) {
 		RestoreEnterPasswordFragment fragment = new RestoreEnterPasswordFragment();
+		fragment.setKeyboardHandler(keyboardHandler);
 		if (keystoreData != null) {
 			Bundle bundle = new Bundle();
 			bundle.putString(BUNDLE_KEY_KEYSTORE, keystoreData);
@@ -43,18 +45,20 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 		return fragment;
 	}
 
+	private void setKeyboardHandler(@NonNull KeyboardHandler keyboardHandler) {
+		this.keyboardHandler = keyboardHandler;
+	}
+
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
 		@Nullable Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.kinrecovery_fragment_password_restore, container, false);
+		initToolbar();
+		initViews(root);
 
 		String keystoreData = extractKeyStoreData(savedInstanceState);
 		injectPresenter(keystoreData);
-		presenter.onAttach(this, ((RestoreActivity) getActivity()).getPresenter());
-
-		initToolbar();
-		initViews(root);
 		return root;
 	}
 
@@ -74,6 +78,7 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 
 	private void injectPresenter(String keystoreData) {
 		presenter = new RestoreEnterPasswordPresenterImpl(keystoreData);
+		presenter.onAttach(this, ((RestoreActivity) getActivity()).getPresenter());
 	}
 
 	private void initToolbar() {
@@ -93,59 +98,51 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 		this.root = root;
 		password = root.findViewById(R.id.kinrecovery_password_edit);
 		contentText = root.findViewById(R.id.kinrecovery_password_recovery_text);
-		doneBtn = root.findViewById(R.id.btn_group);
-		ViewUtils.setGroupEnable(doneBtn, root, false);
-		ViewUtils.registerToGroupOnClickListener(doneBtn, root, new OnClickListener() {
+		doneBtn = root.findViewById(R.id.kinrecovery_password_recovery_btn);
+		doneBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				presenter.restoreClicked(password.getText().toString());
+				presenter.restoreClicked(password.getText());
 			}
 		});
 
-		password.addTextChangedListener(new TextWatcher() {
+		password.addTextChangedListener(new TextWatcherAdapter(new TextChangeListener() {
 			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			public void afterTextChanged(Editable editable) {
+				presenter.onPasswordChanged(editable.toString());
 			}
-
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				presenter.onPasswordChanged(s.toString());
-			}
-
-			@Override
-			public void afterTextChanged(Editable s) {
-			}
-		});
+		}));
+		openKeyboard(password);
 	}
 
-	@Override
-	public void openKeyboard() {
-		InputMethodManager inputMethodManager = (InputMethodManager) getContext()
-			.getSystemService(Activity.INPUT_METHOD_SERVICE);
-		if (inputMethodManager != null) {
-			inputMethodManager.showSoftInput(password, InputMethodManager.HIDE_IMPLICIT_ONLY);
-		}
+	private void openKeyboard(View view) {
+		keyboardHandler.openKeyboard(view);
 	}
 
 	@Override
 	public void enableDoneButton() {
-		ViewUtils.setGroupEnable(doneBtn, root, true);
+		doneBtn.setEnabled(true);
+		doneBtn.setClickable(true);
 	}
 
 	@Override
 	public void disableDoneButton() {
-		ViewUtils.setGroupEnable(doneBtn, root, false);
+		doneBtn.setEnabled(false);
+		doneBtn.setClickable(false);
+		password.setFrameBackgroundColor(R.color.kinrecovery_gray);
 	}
 
 	@Override
 	public void decodeError() {
 		contentText.setText(R.string.kinrecovery_restore_password_error);
 		contentText.setTextColor(ContextCompat.getColor(getContext(), R.color.kinrecovery_red));
+		password.setFrameBackgroundColor(R.color.kinrecovery_red);
 	}
 
 	@Override
 	public void invalidQrError() {
 		contentText.setText(R.string.kinrecovery_restore_invalid_qr);
 		contentText.setTextColor(ContextCompat.getColor(getContext(), R.color.kinrecovery_red));
+		password.setFrameBackgroundColor(R.color.kinrecovery_red);
 	}
 }

@@ -3,6 +3,8 @@ package com.kin.ecosystem.recovery.base;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
@@ -14,11 +16,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import com.kin.ecosystem.recovery.R;
 
 
-public abstract class BaseToolbarActivity extends AppCompatActivity {
+public abstract class BaseToolbarActivity extends AppCompatActivity implements KeyboardHandler {
 
 	public static final int EMPTY_TITLE = -1;
 
@@ -94,4 +97,22 @@ public abstract class BaseToolbarActivity extends AppCompatActivity {
 		topToolBar.setNavigationOnClickListener(clickListener);
 	}
 
+	@Override
+	public void openKeyboard(View view) {
+		InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+		if (inputMethodManager != null) {
+			view.requestFocus();
+			inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+		}
+	}
+
+	@Override
+	public void closeKeyboard() {
+		if (getCurrentFocus() != null) {
+			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+			if (imm != null) {
+				imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+			}
+		}
+	}
 }
