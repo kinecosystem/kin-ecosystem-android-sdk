@@ -14,6 +14,8 @@
 package com.kin.ecosystem.core.network.api;
 
 
+import static com.kin.ecosystem.core.network.ApiClient.PATCH;
+
 import com.google.gson.reflect.TypeToken;
 import com.kin.ecosystem.core.Configuration;
 import com.kin.ecosystem.core.network.ApiCallback;
@@ -25,6 +27,7 @@ import com.kin.ecosystem.core.network.ProgressRequestBody;
 import com.kin.ecosystem.core.network.ProgressResponseBody;
 import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.SignInData;
+import com.kin.ecosystem.core.network.model.UserProperties;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -459,6 +462,73 @@ public class AuthApi {
 		Type localVarReturnType = new TypeToken<Boolean>() {
 		}.getType();
 		apiClient.executeAsync(call, localVarReturnType, callback);
+		return call;
+	}
+
+	/**
+	 * Build call for updateUser
+	 *
+	 * @param userproperties (required)
+	 * @return Call to execute
+	 * @throws ApiException If fail to serialize the request body object
+	 */
+	public Call updateUserCall(UserProperties userproperties) throws ApiException {
+		Object localVarPostBody = userproperties;
+
+		// create path and map variables
+		String localVarPath = "/users";
+
+		List<Pair> localVarQueryParams = new ArrayList<Pair>();
+		List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+
+		Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+
+		Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+		final String[] localVarAccepts = {
+			"application/json"
+		};
+		final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+		if (localVarAccept != null) {
+			localVarHeaderParams.put("Accept", localVarAccept);
+		}
+
+		final String[] localVarContentTypes = {
+			"application/json"
+		};
+		final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+		localVarHeaderParams.put("Content-Type", localVarContentType);
+
+		String[] localVarAuthNames = new String[]{};
+		return apiClient
+			.buildCall(localVarPath, PATCH, localVarQueryParams, localVarCollectionQueryParams, localVarPostBody,
+				localVarHeaderParams, localVarFormParams, localVarAuthNames, null);
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Call updateUserValidateBeforeCall(UserProperties userproperties) throws ApiException {
+
+		// verify the required parameter 'userproperties' is set
+		if (userproperties == null) {
+			throw new ApiException("Missing the required parameter 'userproperties' when calling updateUser(Async)");
+		}
+
+		Call call = updateUserCall(userproperties);
+		return call;
+	}
+
+	/**
+	 * Update user (asynchronously)
+	 * Update user - wallet address
+	 *
+	 * @param userproperties (required)
+	 * @param callback The callback to be executed when the API call finishes
+	 * @return The request call
+	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+	 */
+	public Call updateUserAsync(UserProperties userproperties, final ApiCallback<Void> callback) throws ApiException {
+		Call call = updateUserValidateBeforeCall(userproperties);
+		apiClient.executeAsync(call, callback);
 		return call;
 	}
 }

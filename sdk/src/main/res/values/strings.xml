@@ -35,6 +35,7 @@
     <string name="kinecosystem_order_submission_failed">Order submission failed</string>
     <string name="kinecosystem_keep_your_kin_safe">Keep your Kin Safe</string>
     <string name="kinecosystem_restore_previous_wallet">Restore previous wallet</string>
+    <string name="kinecosystem_could_not_restore_the_wallet">Could not restore the wallet, try again later.</string>
 
 
 </resources>

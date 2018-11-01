@@ -95,6 +95,12 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	}
 
 	@Override
+	protected void onStart() {
+		super.onStart();
+		ecosystemPresenter.onStart();
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.kinecosystem_menu_marketplace, menu);
@@ -199,7 +205,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 			.setCustomAnimations(
 				R.anim.kinecosystem_slide_in_right,
 				R.anim.kinecosystem_slide_out_left,
-				R.anim.kinecosystem_slide_in_left,
+				R.anim.kinrecovery_slide_in_left,
 				R.anim.kinecosystem_slide_out_right)
 			.replace(R.id.fragment_frame, orderHistoryFragment, ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG)
 			.addToBackStack(null).commit();

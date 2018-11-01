@@ -51,6 +51,11 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 	}
 
 	@Override
+	public void onStart() {
+		updateMenuSettingsIcon();
+	}
+
+	@Override
 	public void onDetach() {
 		super.onDetach();
 		removeBalanceObserver();

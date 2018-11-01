@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/kinrecovery_bluePrimary">
+
+    <ImageView
+        android:id="@+id/qr_icon"
+        android:layout_width="@dimen/kinrecovery_upload_qr_icon_size"
+        android:layout_height="@dimen/kinrecovery_upload_qr_icon_size"
+        android:layout_marginTop="@dimen/kinrecovery_upload_qr_icon_margin_top"
+        android:src="@drawable/kinrecovery_white_qr_code"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/content_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinrecovery_upload_content_title_margin_top"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/kinrecovery_upload_qr_title"
+        android:textColor="@color/kinrecovery_white"
+        android:textSize="@dimen/kinrecovery_upload_content_title_text_size"
+        android:fontFamily="sans-serif"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/qr_icon"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinrecovery_upload_content_margin_top"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:text="@string/kinrecovery_upload_qr_description"
+        android:textColor="@color/kinrecovery_white"
+        android:textSize="@dimen/kinrecovery_upload_content_text_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/content_title"
+        />
+
+    <android.support.constraint.Group
+        android:id="@+id/btn_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="upload_btn_frame,upload_btn_text,upload_btn_icon"/>
+
+
+    <View
+        android:id="@+id/upload_btn_frame"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/kinrecovery_btn_frame_height"
+        android:layout_marginBottom="@dimen/kinrecovery_upload_btn_frame_margin_bottom"
+        android:layout_marginStart="@dimen/kinrecovery_btn_frame_margin_sides"
+        android:layout_marginEnd="@dimen/kinrecovery_btn_frame_margin_sides"
+        android:background="@drawable/kinrecovery_btn_rounded_blue_stroke_white"
+        android:text="@string/kinrecovery_upload_qr_btn"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/upload_btn_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/kinrecovery_upload_qr_btn"
+        android:textColor="@color/kinrecovery_white"
+        android:textSize="@dimen/kinrecovery_btn_text_size"
+        app:layout_constraintBottom_toBottomOf="@id/upload_btn_frame"
+        app:layout_constraintEnd_toEndOf="@id/upload_btn_frame"
+        app:layout_constraintStart_toStartOf="@id/upload_btn_frame"
+        app:layout_constraintTop_toTopOf="@id/upload_btn_frame"
+        />
+
+    <ImageView
+        android:id="@+id/upload_btn_icon"
+        android:layout_width="@dimen/kinrecovery_upload_btn_icon_width"
+        android:layout_height="@dimen/kinrecovery_upload_btn_icon_height"
+        android:layout_marginEnd="@dimen/kinrecovery_upload_btn_margin_end"
+        android:layout_marginRight="@dimen/kinrecovery_upload_btn_margin_end"
+        android:fontFamily="sans-serif"
+        android:src="@drawable/kinrecovery_upload_icon"
+        app:layout_constraintBottom_toBottomOf="@id/upload_btn_frame"
+        app:layout_constraintEnd_toEndOf="@id/upload_btn_frame"
+        app:layout_constraintTop_toTopOf="@id/upload_btn_frame"/>
+
+
+</android.support.constraint.ConstraintLayout>

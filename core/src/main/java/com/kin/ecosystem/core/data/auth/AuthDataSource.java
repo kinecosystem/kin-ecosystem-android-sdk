@@ -8,10 +8,13 @@ import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.SignInData;
+import com.kin.ecosystem.core.network.model.UserProperties;
 
 public interface AuthDataSource {
 
 	void setSignInData(@NonNull final SignInData signInData);
+
+	void updateWalletAddress(String address, @NonNull final KinCallback<Boolean> callback);
 
 	ObservableData<String> getAppID();
 
@@ -66,5 +69,7 @@ public interface AuthDataSource {
 		void activateAccount(@NonNull final Callback<AuthToken, ApiException> callback);
 
 		void hasAccount(@NonNull String userId, @NonNull final Callback<Boolean, ApiException> callback);
+
+		void updateWalletAddress(@NonNull UserProperties userProperties, @NonNull final Callback<Void, ApiException> callback);
 	}
 }

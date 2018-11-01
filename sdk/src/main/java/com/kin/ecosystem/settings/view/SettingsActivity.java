@@ -6,13 +6,15 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
 import com.kin.ecosystem.R;
-import com.kin.ecosystem.backup.BackupManager;
 import com.kin.ecosystem.base.BaseToolbarActivity;
+import com.kin.ecosystem.core.accountmanager.AccountManagerImpl;
 import com.kin.ecosystem.core.bi.EventLoggerImpl;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceImpl;
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceLocal;
+import com.kin.ecosystem.recovery.BackupManager;
 import com.kin.ecosystem.settings.presenter.ISettingsPresenter;
 import com.kin.ecosystem.settings.presenter.SettingsPresenter;
 
@@ -61,7 +63,7 @@ public class SettingsActivity extends BaseToolbarActivity implements ISettingsVi
 			new SettingsDataSourceImpl(new SettingsDataSourceLocal(getApplicationContext())),
 			BlockchainSourceImpl.getInstance(),
 			new BackupManager(this, BlockchainSourceImpl.getInstance().getKeyStoreProvider()),
-			EventLoggerImpl.getInstance());
+			EventLoggerImpl.getInstance(), AccountManagerImpl.getInstance());
 	}
 
 	@Override
@@ -108,6 +110,11 @@ public class SettingsActivity extends BaseToolbarActivity implements ISettingsVi
 		if (settingsItem != null) {
 			settingsItem.setTouchIndicatorVisibility(isVisible);
 		}
+	}
+
+	@Override
+	public void showCouldNotImportAccount() {
+		Toast.makeText(this, R.string.kinecosystem_could_not_restore_the_wallet, Toast.LENGTH_SHORT).show();
 	}
 
 	private SettingsItem getSettingsItem(@Item final int item) {

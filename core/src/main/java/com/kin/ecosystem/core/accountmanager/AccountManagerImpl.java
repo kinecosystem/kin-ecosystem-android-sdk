@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
@@ -13,6 +14,7 @@ import com.kin.ecosystem.core.bi.events.WalletCreationSucceeded;
 import com.kin.ecosystem.core.data.auth.AuthDataSource;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.network.model.AuthToken;
+import com.kin.ecosystem.core.util.ErrorUtil;
 import kin.core.EventListener;
 import kin.core.KinAccount;
 import kin.core.ListenerRegistration;
@@ -27,7 +29,6 @@ public class AccountManagerImpl implements AccountManager {
 	private final EventLogger eventLogger;
 	private AuthDataSource authRepository;
 	private BlockchainSource blockchainSource;
-	private KinAccount kinAccount;
 	private final ObservableData<Integer> accountState;
 
 	private ListenerRegistration accountCreationRegistration;
@@ -40,7 +41,6 @@ public class AccountManagerImpl implements AccountManager {
 		this.eventLogger = eventLogger;
 		this.authRepository = authRepository;
 		this.blockchainSource = blockchainSource;
-		this.kinAccount = blockchainSource.getKinAccount();
 		this.accountState = ObservableData.create(local.getAccountState());
 	}
 
@@ -85,14 +85,14 @@ public class AccountManagerImpl implements AccountManager {
 
 	@Override
 	public void retry() {
-		if (kinAccount != null && accountState.getValue() == ERROR) {
+		if (getKinAccount() != null && accountState.getValue() == ERROR) {
 			this.setAccountState(local.getAccountState());
 		}
 	}
 
 	@Override
 	public void start() {
-		if (kinAccount != null) {
+		if (getKinAccount() != null) {
 			Logger.log(new Log().withTag(TAG).put("setAccountState", "start"));
 			if (getAccountState() != CREATION_COMPLETED) {
 				this.setAccountState(local.getAccountState());
@@ -129,7 +129,7 @@ public class AccountManagerImpl implements AccountManager {
 					if (accountCreationRegistration != null) {
 						removeAccountCreationRegistration();
 					}
-					accountCreationRegistration = kinAccount.blockchainEvents()
+					accountCreationRegistration = getKinAccount().blockchainEvents()
 						.addAccountCreationListener(new EventListener<Void>() {
 							@Override
 							public void onEvent(Void data) {
@@ -167,13 +167,47 @@ public class AccountManagerImpl implements AccountManager {
 		}
 	}
 
+	@Override
+	public void switchAccount(final int accountIndex, @NonNull final KinCallback<Boolean> callback) {
+		Logger.log(new Log().withTag(TAG).put("switchAccount", "start"));
+		final String address = blockchainSource.getPublicAddress(accountIndex);
+		//update sign in data with new wallet address and update servers
+		authRepository.updateWalletAddress(address, new KinCallback<Boolean>() {
+			@Override
+			public void onResponse(Boolean response) {
+				try {
+					//switch to the new KinAccount
+					blockchainSource.updateActiveAccount(accountIndex);
+				} catch (BlockchainException e) {
+					callback.onFailure(ErrorUtil.getBlockchainException(e));
+					return;
+				}
+				Logger.log(new Log().withTag(TAG).put("switchAccount", "ended successfully"));
+				callback.onResponse(response);
+			}
+
+			@Override
+			public void onFailure(KinEcosystemException exception) {
+				//switch to the new KinAccount
+				callback.onFailure(exception);
+				Logger.log(new Log().withTag(TAG).put("switchAccount", "ended with failure"));
+			}
+		});
+	}
+
+	private KinAccount getKinAccount() {
+		return blockchainSource.getKinAccount();
+	}
+
 	private void removeAccountCreationRegistration() {
 		accountCreationRegistration.remove();
 		accountCreationRegistration = null;
 	}
 
 	private boolean isValidState(int currentState, int newState) {
-		return newState == ERROR || currentState == ERROR || newState >= currentState;
+		return newState == ERROR || currentState == ERROR || newState >= currentState
+			//allow recreating an account in case of switching account after restore
+			|| (currentState == CREATION_COMPLETED && newState == REQUIRE_CREATION);
 	}
 
 }

@@ -2,13 +2,13 @@
 package com.kin.ecosystem.core.bi.events;
 
 // Augmented by script
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.core.bi.Event;
 import com.kin.ecosystem.core.bi.EventsStore;
+
 import java.util.HashMap;
 import java.util.Map;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 
 /**
@@ -20,7 +20,7 @@ public class EarnOrderCreationRequested implements Event {
     public static final String EVENT_TYPE = "business";
 
     // Augmented by script
-    public static EarnOrderCreationRequested create(OfferType offerType, Double kinAmount, String offerId) {
+    public static EarnOrderCreationRequested create(EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId) {
         return new EarnOrderCreationRequested(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
@@ -77,7 +77,7 @@ public class EarnOrderCreationRequested implements Event {
      */
     @SerializedName("offer_type")
     @Expose
-    private OfferType offerType;
+    private EarnOrderCreationRequested.OfferType offerType;
     /**
      * 
      * (Required)
@@ -113,7 +113,7 @@ public class EarnOrderCreationRequested implements Event {
 
      * @param user
      */
-    public EarnOrderCreationRequested(Common common, User user, Client client, OfferType offerType, Double kinAmount, String offerId) {
+    public EarnOrderCreationRequested(Common common, User user, Client client, EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId) {
         super();
         this.common = common;
         this.user = user;
@@ -218,7 +218,7 @@ public class EarnOrderCreationRequested implements Event {
      * (Required)
      * 
      */
-    public OfferType getOfferType() {
+    public EarnOrderCreationRequested.OfferType getOfferType() {
         return offerType;
     }
 
@@ -227,7 +227,7 @@ public class EarnOrderCreationRequested implements Event {
      * (Required)
      * 
      */
-    public void setOfferType(OfferType offerType) {
+    public void setOfferType(EarnOrderCreationRequested.OfferType offerType) {
         this.offerType = offerType;
     }
 
@@ -280,10 +280,10 @@ public class EarnOrderCreationRequested implements Event {
         @SerializedName("external")
         EXTERNAL("external");
         private final String value;
-        private final static Map<String, OfferType> CONSTANTS = new HashMap<String, OfferType>();
+        private final static Map<String, EarnOrderCreationRequested.OfferType> CONSTANTS = new HashMap<String, EarnOrderCreationRequested.OfferType>();
 
         static {
-            for (OfferType c: values()) {
+            for (EarnOrderCreationRequested.OfferType c: values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
@@ -301,8 +301,8 @@ public class EarnOrderCreationRequested implements Event {
             return this.value;
         }
 
-        public static OfferType fromValue(String value) {
-            OfferType constant = CONSTANTS.get(value);
+        public static EarnOrderCreationRequested.OfferType fromValue(String value) {
+            EarnOrderCreationRequested.OfferType constant = CONSTANTS.get(value);
             if (constant == null) {
                 throw new IllegalArgumentException(value);
             } else {

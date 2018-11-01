@@ -1,5 +1,7 @@
 package com.kin.ecosystem.core;
 
+import static com.kin.ecosystem.core.network.ApiClient.POST;
+
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.text.TextUtils;
@@ -55,8 +57,7 @@ public class Configuration {
 					public Response intercept(Chain chain) throws IOException {
 						Request originalRequest = chain.request();
 						final String path = originalRequest.url().encodedPath();
-
-						if (path.equals(USERS_PATH)) {
+						if (path.equals(USERS_PATH) && originalRequest.method().equals(POST)) {
 							return chain.proceed(originalRequest);
 						} else {
 							AuthToken authToken = AuthRepository.getInstance().getAuthTokenSync();

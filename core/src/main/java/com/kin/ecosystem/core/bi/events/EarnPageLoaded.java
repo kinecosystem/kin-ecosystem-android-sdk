@@ -2,13 +2,13 @@
 package com.kin.ecosystem.core.bi.events;
 
 // Augmented by script
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.core.bi.Event;
 import com.kin.ecosystem.core.bi.EventsStore;
+
 import java.util.HashMap;
 import java.util.Map;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 
 /**
@@ -20,7 +20,7 @@ public class EarnPageLoaded implements Event {
     public static final String EVENT_TYPE = "log";
 
     // Augmented by script
-    public static EarnPageLoaded create(OfferType offerType) {
+    public static EarnPageLoaded create(EarnPageLoaded.OfferType offerType) {
         return new EarnPageLoaded(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
@@ -75,7 +75,7 @@ public class EarnPageLoaded implements Event {
      */
     @SerializedName("offer_type")
     @Expose
-    private OfferType offerType;
+    private EarnPageLoaded.OfferType offerType;
 
     /**
      * No args constructor for use in serialization
@@ -93,7 +93,7 @@ public class EarnPageLoaded implements Event {
 
      * @param user
      */
-    public EarnPageLoaded(Common common, User user, Client client, OfferType offerType) {
+    public EarnPageLoaded(Common common, User user, Client client, EarnPageLoaded.OfferType offerType) {
         super();
         this.common = common;
         this.user = user;
@@ -196,7 +196,7 @@ public class EarnPageLoaded implements Event {
      * (Required)
      * 
      */
-    public OfferType getOfferType() {
+    public EarnPageLoaded.OfferType getOfferType() {
         return offerType;
     }
 
@@ -205,7 +205,7 @@ public class EarnPageLoaded implements Event {
      * (Required)
      * 
      */
-    public void setOfferType(OfferType offerType) {
+    public void setOfferType(EarnPageLoaded.OfferType offerType) {
         this.offerType = offerType;
     }
 
@@ -222,10 +222,10 @@ public class EarnPageLoaded implements Event {
         @SerializedName("external")
         EXTERNAL("external");
         private final String value;
-        private final static Map<String, OfferType> CONSTANTS = new HashMap<String, OfferType>();
+        private final static Map<String, EarnPageLoaded.OfferType> CONSTANTS = new HashMap<String, EarnPageLoaded.OfferType>();
 
         static {
-            for (OfferType c: values()) {
+            for (EarnPageLoaded.OfferType c: values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
@@ -243,8 +243,8 @@ public class EarnPageLoaded implements Event {
             return this.value;
         }
 
-        public static OfferType fromValue(String value) {
-            OfferType constant = CONSTANTS.get(value);
+        public static EarnPageLoaded.OfferType fromValue(String value) {
+            EarnPageLoaded.OfferType constant = CONSTANTS.get(value);
             if (constant == null) {
                 throw new IllegalArgumentException(value);
             } else {

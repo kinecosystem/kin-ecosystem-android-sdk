@@ -6,17 +6,22 @@ import static com.kin.ecosystem.settings.view.ISettingsView.ITEM_BACKUP;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.backup.BackupCallback;
-import com.kin.ecosystem.backup.BackupEvents;
-import com.kin.ecosystem.backup.BackupManager;
-import com.kin.ecosystem.backup.RestoreCallback;
-import com.kin.ecosystem.backup.RestoreEvents;
 import com.kin.ecosystem.base.BasePresenter;
+import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.model.Balance;
+import com.kin.ecosystem.core.Log;
+import com.kin.ecosystem.core.Logger;
+import com.kin.ecosystem.core.accountmanager.AccountManager;
 import com.kin.ecosystem.core.bi.EventLogger;
+import com.kin.ecosystem.core.bi.RecoveryBackupEvents;
+import com.kin.ecosystem.core.bi.RecoveryRestoreEvents;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.settings.SettingsDataSource;
+import com.kin.ecosystem.recovery.BackupCallback;
+import com.kin.ecosystem.recovery.BackupManager;
+import com.kin.ecosystem.recovery.RestoreCallback;
 import com.kin.ecosystem.settings.view.ISettingsView;
 import com.kin.ecosystem.settings.view.ISettingsView.IconColor;
 import com.kin.ecosystem.settings.view.ISettingsView.Item;
@@ -24,22 +29,25 @@ import java.math.BigDecimal;
 
 public class SettingsPresenter extends BasePresenter<ISettingsView> implements ISettingsPresenter {
 
+	private static final String TAG = SettingsPresenter.class.getSimpleName();
 	private final BackupManager backupManager;
 	private final SettingsDataSource settingsDataSource;
 	private final BlockchainSource blockchainSource;
 	private final EventLogger eventLogger;
+	private final AccountManager accountManager;
 
 	private Observer<Balance> balanceObserver;
 	private Balance currentBalance;
 
 	public SettingsPresenter(@NonNull final ISettingsView view, @NonNull final SettingsDataSource settingsDataSource,
 		@NonNull final BlockchainSource blockchainSource, @NonNull final BackupManager backupManager,
-		@NonNull final EventLogger eventLogger) {
+		@NonNull final EventLogger eventLogger, AccountManager accountManager) {
 		this.view = view;
 		this.backupManager = backupManager;
 		this.settingsDataSource = settingsDataSource;
 		this.blockchainSource = blockchainSource;
 		this.eventLogger = eventLogger;
+		this.accountManager = accountManager;
 		this.currentBalance = blockchainSource.getBalance();
 		registerToCallbacks();
 		registerToEvents();
@@ -64,7 +72,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 			@Override
 			public void onChanged(Balance value) {
 				currentBalance = value;
-				if(isGreaterThenZero(value)) {
+				if (isGreaterThenZero(value)) {
 					updateSettingsIcon();
 				}
 			}
@@ -121,12 +129,8 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 	}
 
 	private void registerToEvents() {
-		backupManager.registerBackupEvents(new BackupEvents() {
-			//TODO add event handling
-		});
-		backupManager.registerRestoreEvents(new RestoreEvents() {
-			//TODO add event handling
-		});
+		backupManager.registerBackupEvents(new RecoveryBackupEvents(eventLogger));
+		backupManager.registerRestoreEvents(new RecoveryRestoreEvents(eventLogger));
 	}
 
 	private void registerToCallbacks() {
@@ -149,13 +153,14 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 
 		backupManager.registerRestoreCallback(new RestoreCallback() {
 			@Override
-			public void onSuccess(int index) {
-
+			public void onSuccess(int accountIndex) {
+				Logger.log(new Log().withTag(TAG).put("RestoreCallback", "onSuccess"));
+				switchAccount(accountIndex);
 			}
 
 			@Override
 			public void onCancel() {
-
+				Logger.log(new Log().withTag(TAG).put("RestoreCallback", "onCancel"));
 			}
 
 			@Override
@@ -163,6 +168,26 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 
 			}
 		});
+	}
+
+	private void switchAccount(int accountIndex) {
+		accountManager.switchAccount(accountIndex, new KinCallback<Boolean>() {
+			@Override
+			public void onResponse(Boolean response) {
+				//do nothing succeed
+			}
+
+			@Override
+			public void onFailure(KinEcosystemException exception) {
+				showCouldNotImportAccountError();
+			}
+		});
+	}
+
+	private void showCouldNotImportAccountError() {
+		if (view != null) {
+			view.showCouldNotImportAccount();
+		}
 	}
 
 	private void onBackupSuccess() {
