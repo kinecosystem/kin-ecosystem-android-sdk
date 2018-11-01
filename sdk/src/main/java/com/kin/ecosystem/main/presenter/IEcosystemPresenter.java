@@ -11,4 +11,10 @@ public interface IEcosystemPresenter extends IBasePresenter<IEcosystemView> {
 	void backButtonPressed();
 
 	void visibleScreen(@ScreenId final int id);
+
+	void settingsMenuClicked();
+
+	void onMenuInitialized();
+
+	void onStart();
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="kinrecovery_bluePrimary">#0000ff</color>
+    <color name="kinrecovery_bluePrimaryDark">#0365ce</color>
+
+    <color name="kinrecovery_black">#000</color>
+    <color name="kinrecovery_white">#ffffff</color>
+    <color name="kinrecovery_gray">#7884a5</color>
+
+    <color name="kinrecovery_red">#ff0232</color>
+
+    <color name="kinrecovery_btn_disabled">#d7dce9</color>
+
+</resources>

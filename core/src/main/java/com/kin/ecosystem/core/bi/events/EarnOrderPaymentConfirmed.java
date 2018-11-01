@@ -2,11 +2,13 @@
 package com.kin.ecosystem.core.bi.events;
 
 // Augmented by script
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import com.kin.ecosystem.core.bi.Event;
 import com.kin.ecosystem.core.bi.EventsStore;
+
+import java.util.HashMap;
+import java.util.Map;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 
 /**
@@ -18,13 +20,12 @@ public class EarnOrderPaymentConfirmed implements Event {
     public static final String EVENT_TYPE = "log";
 
     // Augmented by script
-    public static EarnOrderPaymentConfirmed create(String transactionId, String offerId, String orderId) {
+    public static EarnOrderPaymentConfirmed create(String transactionId, String orderId) {
         return new EarnOrderPaymentConfirmed(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             (Client) EventsStore.client(),
             transactionId,
-            offerId,
             orderId);
     }
 
@@ -81,14 +82,6 @@ public class EarnOrderPaymentConfirmed implements Event {
      * (Required)
      * 
      */
-    @SerializedName("offer_id")
-    @Expose
-    private String offerId;
-    /**
-     * 
-     * (Required)
-     * 
-     */
     @SerializedName("order_id")
     @Expose
     private String orderId;
@@ -106,18 +99,16 @@ public class EarnOrderPaymentConfirmed implements Event {
      * @param orderId
 
      * @param client
-     * @param offerId
 
      * @param user
      * @param transactionId
      */
-    public EarnOrderPaymentConfirmed(Common common, User user, Client client, String transactionId, String offerId, String orderId) {
+    public EarnOrderPaymentConfirmed(Common common, User user, Client client, String transactionId, String orderId) {
         super();
         this.common = common;
         this.user = user;
         this.client = client;
         this.transactionId = transactionId;
-        this.offerId = offerId;
         this.orderId = orderId;
     }
 
@@ -227,24 +218,6 @@ public class EarnOrderPaymentConfirmed implements Event {
      */
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public String getOfferId() {
-        return offerId;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setOfferId(String offerId) {
-        this.offerId = offerId;
     }
 
     /**

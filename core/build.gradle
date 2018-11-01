@@ -20,6 +20,7 @@ android {
 dependencies {
 
     implementation project(':common')
+    api project(':recovery')
 
     api devDependencies.kinCore
     implementation devDependencies.okhttp3

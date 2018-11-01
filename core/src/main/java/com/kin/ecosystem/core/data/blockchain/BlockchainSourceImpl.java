@@ -23,6 +23,7 @@ import com.kin.ecosystem.core.bi.events.StellarKinTrustlineSetupSucceeded;
 import com.kin.ecosystem.core.data.blockchain.CreateTrustLineCall.TrustlineCallback;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
+import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
 import kin.core.EventListener;
 import kin.core.KinAccount;
@@ -47,8 +48,8 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	private KinAccount account;
 	private ObservableData<Balance> balance = ObservableData.create(new Balance());
 	/**
-	 * Listen for {@code completedPayment} in order to be notify about completed transaction sent to
-	 * the blockchain, it could failed or succeed.
+	 * Listen for {@code completedPayment} in order to be notify about completed transaction sent to the blockchain, it
+	 * could failed or succeed.
 	 */
 	private ObservableData<Payment> completedPayment = ObservableData.create();
 	private final Object paymentObserversLock = new Object();
@@ -98,13 +99,18 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	private void createKinAccountIfNeeded() throws BlockchainException {
-		account = kinClient.getAccount(0);
-		if (account == null) {
+		int accountIndex = local.getAccountIndex();
+		if (kinClient.hasAccount()) {
+			account = kinClient.getAccount(accountIndex);
+		} else {
 			try {
 				account = kinClient.addAccount();
 			} catch (CreateAccountException e) {
 				throw ErrorUtil.getBlockchainException(e);
 			}
+		}
+		if (account == null) {
+			throw ErrorUtil.createAccountCannotLoadedExcpetion(accountIndex);
 		}
 	}
 
@@ -171,7 +177,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			@Override
 			public void onResult(final kin.core.Balance balanceObj) {
 				setBalance(balanceObj);
-				if(callback != null) {
+				if (callback != null) {
 					mainThread.execute(new Runnable() {
 						@Override
 						public void run() {
@@ -184,7 +190,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 			@Override
 			public void onError(final Exception e) {
-				if(callback != null) {
+				if (callback != null) {
 					mainThread.execute(new Runnable() {
 						@Override
 						public void run() {
@@ -281,6 +287,13 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
+	@Nullable
+	public String getPublicAddress(final int accountIndex) {
+		KinAccount account = kinClient.getAccount(accountIndex);
+		return account != null ? account.getPublicAddress() : null;
+	}
+
+	@Override
 	public void addPaymentObservable(Observer<Payment> observer) {
 		completedPayment.addObserver(observer);
 		incrementPaymentCount();
@@ -353,6 +366,22 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				});
 			}
 		}).start();
+	}
+
+	@Override
+	public KeyStoreProvider getKeyStoreProvider() {
+		return new KeyStoreProviderImpl(kinClient, account);
+	}
+
+	@Override
+	public void updateActiveAccount(int accountIndex) throws BlockchainException {
+		local.setAccountIndex(accountIndex);
+		createKinAccountIfNeeded();
+
+		balanceRegistration.remove();
+		startBalanceListener();
+		//trigger balance update
+		getBalance(null);
 	}
 
 	private void decrementPaymentCount() {

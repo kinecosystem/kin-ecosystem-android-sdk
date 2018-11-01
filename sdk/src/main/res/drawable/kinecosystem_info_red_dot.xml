@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval" android:thickness="@dimen/kinecosystem_stroke_width">
+            <solid android:color="@color/kinecosystem_white"/>
+        </shape>
+    </item>
+    <item
+        android:bottom="@dimen/kinecosystem_stroke_small_padding"
+        android:left="@dimen/kinecosystem_stroke_small_padding"
+        android:right="@dimen/kinecosystem_stroke_small_padding"
+        android:top="@dimen/kinecosystem_stroke_small_padding">
+        <shape android:id="@+id/center_dot" android:shape="oval">
+            <solid
+                android:width="@dimen/kinecosystem_stroke_width"
+                android:color="@color/kinecosystem_red" />
+            <size
+                android:width="@dimen/kinecosystem_info_dot_radius"
+                android:height="@dimen/kinecosystem_info_dot_radius" />
+        </shape>
+    </item>
+</layer-list>
