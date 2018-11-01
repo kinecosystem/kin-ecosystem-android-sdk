@@ -6,5 +6,7 @@ public interface INavigator {
 
 	void navigateToOrderHistory(boolean isFirstSpendOrder);
 
+	void navigateToSettings();
+
 	void close();
 }

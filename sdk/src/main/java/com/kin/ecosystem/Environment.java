@@ -21,6 +21,14 @@ public class Environment implements KinEnvironment {
 		"https://s3.amazonaws.com/assets.kinplayground.com/web-offers/cards-based/index.html",
 		"https://kin-bi.appspot.com/eco_play_");
 
+	private static final Environment BETA = new Environment(
+		"https://horizon-playground.kininfrastructure.com",
+		"Kin Playground Network ; June 2018",
+		"GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7",
+		"http://api.kinecosystembeta.com/v1",
+		"https://s3.amazonaws.com/assets.kinplayground.com/web-offers/cards-based/index.html",
+		"https://kin-bi.appspot.com/eco_play_");
+
 	private final String blockchainNetworkUrl;
 	private final String blockchainPassphrase;
 	private final String issuer;
@@ -74,5 +82,9 @@ public class Environment implements KinEnvironment {
 
 	public static KinEnvironment getPlayground() {
 		return PLAYGROUND;
+	}
+
+	public static KinEnvironment getBeta() {
+		return BETA;
 	}
 }
