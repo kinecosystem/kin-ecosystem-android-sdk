@@ -1,5 +1,8 @@
 package com.kin.ecosystem.recovery.events;
 
+import static com.kin.ecosystem.recovery.events.BroadcastManagerImpl.ACTION_EVENTS_BACKUP;
+import static com.kin.ecosystem.recovery.events.BroadcastManagerImpl.ACTION_EVENTS_RESTORE;
+
 import android.content.Intent;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
@@ -7,6 +10,7 @@ import android.support.annotation.Nullable;
 import com.kin.ecosystem.recovery.BackupEvents;
 import com.kin.ecosystem.recovery.RestoreEvents;
 import com.kin.ecosystem.recovery.events.BroadcastManager.Listener;
+import com.kin.ecosystem.recovery.events.BroadcastManagerImpl.ActionName;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -42,7 +46,8 @@ public class EventDispatcherImpl implements EventDispatcher {
 	public static final int RESTORE_PASSWORD_DONE_TAPPED = 80004;
 
 
-	@IntDef({RESTORE_UPLOAD_QR_CODE_PAGE_VIEWED, RESTORE_UPLOAD_QR_CODE_BUTTON_TAPPED, RESTORE_ARE_YOUR_SURE_CANCEL_TAPPED,
+	@IntDef({RESTORE_UPLOAD_QR_CODE_PAGE_VIEWED, RESTORE_UPLOAD_QR_CODE_BUTTON_TAPPED,
+		RESTORE_ARE_YOUR_SURE_CANCEL_TAPPED,
 		RESTORE_PASSWORD_ENTRY_PAGE_VIEWED, RESTORE_PASSWORD_DONE_TAPPED})
 	@Retention(RetentionPolicy.SOURCE)
 	@interface RestoreEventCode {
@@ -57,7 +62,7 @@ public class EventDispatcherImpl implements EventDispatcher {
 	public void setBackupEvents(@Nullable BackupEvents backupEvents) {
 		this.backupEvents = backupEvents;
 		if (backupEvents != null) {
-			registerBroadcastListener();
+			registerBroadcastListener(ACTION_EVENTS_BACKUP);
 		}
 	}
 
@@ -65,7 +70,7 @@ public class EventDispatcherImpl implements EventDispatcher {
 	public void setRestoreEvents(@Nullable RestoreEvents restoreEvents) {
 		this.restoreEvents = restoreEvents;
 		if (restoreEvents != null) {
-			registerBroadcastListener();
+			registerBroadcastListener(ACTION_EVENTS_RESTORE);
 		}
 	}
 
@@ -74,7 +79,7 @@ public class EventDispatcherImpl implements EventDispatcher {
 		Intent data = new Intent();
 		data.putExtra(EXTRA_KEY_EVENT_TYPE, eventType);
 		data.putExtra(EXTRA_KEY_EVENT_ID, eventID);
-		broadcastManager.sendEvent(data);
+		broadcastManager.sendEvent(data, eventType == BACKUP_EVENTS ? ACTION_EVENTS_BACKUP : ACTION_EVENTS_RESTORE);
 	}
 
 	@Override
@@ -89,16 +94,16 @@ public class EventDispatcherImpl implements EventDispatcher {
 		}
 	}
 
-	private void registerBroadcastListener() {
-		if (broadcastListener != null) {
+	private void registerBroadcastListener(@ActionName final String actionName) {
+		if (broadcastListener == null) {
 			broadcastListener = new Listener() {
 				@Override
 				public void onReceive(Intent data) {
 					parseData(data);
 				}
 			};
-			broadcastManager.register(broadcastListener);
 		}
+		broadcastManager.register(broadcastListener, actionName);
 	}
 
 	private void parseData(Intent data) {

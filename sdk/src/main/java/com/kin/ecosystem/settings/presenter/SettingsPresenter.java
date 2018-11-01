@@ -51,8 +51,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 		this.eventLogger = eventLogger;
 		this.accountManager = accountManager;
 		this.currentBalance = blockchainSource.getBalance();
-		registerToCallbacks();
-		registerToEvents();
+
 
 		this.view.attachPresenter(this);
 	}
@@ -61,12 +60,15 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 	public void onAttach(ISettingsView view) {
 		super.onAttach(view);
 		updateSettingsIcon();
+		registerToCallbacks();
+		registerToEvents();
 	}
 
 	@Override
 	public void onDetach() {
 		super.onDetach();
 		removeBalanceObserver();
+		backupManager.release();
 	}
 
 	private void addBalanceObserver() {

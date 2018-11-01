@@ -5,8 +5,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringDef;
 import android.support.v4.content.LocalBroadcastManager;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 public class BroadcastManagerImpl implements BroadcastManager {
 
@@ -15,14 +19,23 @@ public class BroadcastManagerImpl implements BroadcastManager {
 
 	private BroadcastReceiver receiver;
 
-	private static final String ACTION_EVENTS_BACKUP = "ACTION_EVENTS_BACKUP";
+
+
+	static final String ACTION_EVENTS_BACKUP = "ACTION_EVENTS_BACKUP";
+	static final String ACTION_EVENTS_RESTORE = "ACTION_EVENTS_RESTORE";
+
+	@StringDef({ACTION_EVENTS_BACKUP, ACTION_EVENTS_RESTORE})
+	@Retention(RetentionPolicy.SOURCE)
+	@interface ActionName {
+
+	}
 
 	public BroadcastManagerImpl(@NonNull Activity activity) {
 		this.activity = activity;
 	}
 
 	@Override
-	public void register(@NonNull final Listener listener) {
+	public void register(@NonNull final Listener listener, @ActionName final String actionName) {
 		this.listener = listener;
 		receiver = new BroadcastReceiver() {
 			@Override
@@ -30,7 +43,7 @@ public class BroadcastManagerImpl implements BroadcastManager {
 				BroadcastManagerImpl.this.listener.onReceive(data);
 			}
 		};
-		LocalBroadcastManager.getInstance(activity).registerReceiver(receiver, new IntentFilter(ACTION_EVENTS_BACKUP));
+		LocalBroadcastManager.getInstance(activity).registerReceiver(receiver, new IntentFilter(actionName));
 	}
 
 	@Override
@@ -41,8 +54,8 @@ public class BroadcastManagerImpl implements BroadcastManager {
 	}
 
 	@Override
-	public void sendEvent(Intent data) {
-		data.setAction(ACTION_EVENTS_BACKUP);
+	public void sendEvent(Intent data, @ActionName final String actionName) {
+		data.setAction(actionName);
 		LocalBroadcastManager.getInstance(activity).sendBroadcast(data);
 	}
 
