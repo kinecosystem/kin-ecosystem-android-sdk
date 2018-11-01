@@ -22,13 +22,13 @@ public interface EventDispatcher {
 	int RESTORE_EVENTS = 0x00000002;
 
 	String EXTRA_KEY_EVENT_TYPE = "EVENT_TYPE";
-	String EXTRA_KEY_EVENT_NAME = "EVENT_NAME";
+	String EXTRA_KEY_EVENT_ID = "EVENT_ID";
 
 	void setBackupEvents(@Nullable BackupEvents backupEvents);
 
 	void setRestoreEvents(@Nullable RestoreEvents restoreEvents);
 
-	void sendEvent(@EventType final int eventType, @NonNull final String eventName);
+	void sendEvent(@EventType final int eventType, final int eventID);
 
 	void sendCallback(int resultCode, Intent data);
 

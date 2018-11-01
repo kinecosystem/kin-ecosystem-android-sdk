@@ -1,8 +1,15 @@
 package com.kin.ecosystem.recovery.restore.presenter;
 
 
+import static com.kin.ecosystem.recovery.events.EventDispatcherImpl.RESTORE_ARE_YOUR_SURE_CANCEL_TAPPED;
+import static com.kin.ecosystem.recovery.events.EventDispatcherImpl.RESTORE_UPLOAD_QR_CODE_BUTTON_TAPPED;
+import static com.kin.ecosystem.recovery.events.EventDispatcherImpl.RESTORE_UPLOAD_QR_CODE_PAGE_VIEWED;
+
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import com.kin.ecosystem.recovery.events.CallbackManager;
+import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator.QRBarcodeGeneratorException;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator.QRFileHandlingException;
@@ -14,21 +21,35 @@ public class UploadQRPresenterImpl extends BaseChildPresenterImpl<UploadQRView> 
 
 	private final FileSharingHelper fileRequester;
 	private final QRBarcodeGenerator qrBarcodeGenerator;
+	private final CallbackManager callbackManager;
 
-	public UploadQRPresenterImpl(FileSharingHelper fileRequester,
+	public UploadQRPresenterImpl(@NonNull final CallbackManager callbackManager, FileSharingHelper fileRequester,
 		QRBarcodeGenerator qrBarcodeGenerator) {
+		this.callbackManager = callbackManager;
 		this.fileRequester = fileRequester;
 		this.qrBarcodeGenerator = qrBarcodeGenerator;
 	}
 
 	@Override
+	public void onAttach(UploadQRView view, RestorePresenter restorePresenter) {
+		super.onAttach(view, restorePresenter);
+		callbackManager.sendRestoreEvents(RESTORE_UPLOAD_QR_CODE_PAGE_VIEWED);
+	}
+
+	@Override
 	public void uploadClicked() {
 		getView().showConsentDialog();
+		callbackManager.sendRestoreEvents(RESTORE_UPLOAD_QR_CODE_BUTTON_TAPPED);
 	}
 
 	@Override
 	public void onConsent(String chooserTitle) {
 		fileRequester.requestImageFile(chooserTitle);
+	}
+
+	@Override
+	public void onCancelPressed() {
+		callbackManager.sendRestoreEvents(RESTORE_ARE_YOUR_SURE_CANCEL_TAPPED);
 	}
 
 	@Override

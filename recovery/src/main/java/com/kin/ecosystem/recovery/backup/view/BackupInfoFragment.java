@@ -12,8 +12,11 @@ import com.kin.ecosystem.recovery.R;
 import com.kin.ecosystem.recovery.backup.presenter.BackupInfoPresenter;
 import com.kin.ecosystem.recovery.backup.presenter.BackupInfoPresenterImpl;
 import com.kin.ecosystem.recovery.base.BaseView;
+import com.kin.ecosystem.recovery.events.BroadcastManagerImpl;
+import com.kin.ecosystem.recovery.events.CallbackManager;
+import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
 
-public class BackupInfoFragment extends Fragment implements BaseView{
+public class BackupInfoFragment extends Fragment implements BaseView {
 
 	public static BackupInfoFragment newInstance(@NonNull final BackupNextStepListener nextStepListener) {
 		BackupInfoFragment fragment = new BackupInfoFragment();
@@ -31,7 +34,8 @@ public class BackupInfoFragment extends Fragment implements BaseView{
 		@Nullable Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.kinrecovery_fragment_backup_info, container, false);
 		initViews(root);
-		backupInfoPresenter = new BackupInfoPresenterImpl(nextStepListener);
+		backupInfoPresenter = new BackupInfoPresenterImpl(
+			new CallbackManager(new EventDispatcherImpl(new BroadcastManagerImpl(getActivity()))), nextStepListener);
 		backupInfoPresenter.onAttach(this);
 		return root;
 	}

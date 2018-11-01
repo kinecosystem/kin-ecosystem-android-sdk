@@ -1,8 +1,14 @@
 package com.kin.ecosystem.recovery.restore.presenter;
 
 
+import static com.kin.ecosystem.recovery.events.EventDispatcherImpl.RESTORE_PASSWORD_DONE_TAPPED;
+import static com.kin.ecosystem.recovery.events.EventDispatcherImpl.RESTORE_PASSWORD_ENTRY_PAGE_VIEWED;
+
+import android.support.annotation.NonNull;
 import com.kin.ecosystem.recovery.BackupManager;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
+import com.kin.ecosystem.recovery.events.CallbackManager;
+import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
 import com.kin.ecosystem.recovery.exception.BackupException;
 import com.kin.ecosystem.recovery.restore.view.RestoreEnterPasswordView;
 import com.kin.ecosystem.recovery.utils.Logger;
@@ -11,14 +17,17 @@ public class RestoreEnterPasswordPresenterImpl extends BaseChildPresenterImpl<Re
 	RestoreEnterPasswordPresenter {
 
 	private final String keystoreData;
+	private final CallbackManager callbackManager;
 
-	public RestoreEnterPasswordPresenterImpl(String keystoreData) {
+	public RestoreEnterPasswordPresenterImpl(@NonNull final CallbackManager callbackManager, String keystoreData) {
+		this.callbackManager = callbackManager;
 		this.keystoreData = keystoreData;
 	}
 
 	@Override
 	public void onAttach(RestoreEnterPasswordView view) {
 		super.onAttach(view);
+		callbackManager.sendRestoreEvents(RESTORE_PASSWORD_ENTRY_PAGE_VIEWED);
 	}
 
 	@Override
@@ -32,6 +41,7 @@ public class RestoreEnterPasswordPresenterImpl extends BaseChildPresenterImpl<Re
 
 	@Override
 	public void restoreClicked(String password) {
+		callbackManager.sendRestoreEvents(RESTORE_PASSWORD_DONE_TAPPED);
 		KeyStoreProvider keyStoreProvider = BackupManager.getKeyStoreProvider();
 		try {
 			int accountIndex = keyStoreProvider.importAccount(keystoreData, password);

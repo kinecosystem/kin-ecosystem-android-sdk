@@ -3,9 +3,12 @@ package com.kin.ecosystem.recovery.backup.presenter;
 import static com.kin.ecosystem.recovery.backup.view.BackupNextStepListener.STEP_WELL_DONE;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import com.kin.ecosystem.recovery.backup.view.BackupNextStepListener;
 import com.kin.ecosystem.recovery.backup.view.SaveAndShareView;
 import com.kin.ecosystem.recovery.base.BasePresenterImpl;
+import com.kin.ecosystem.recovery.events.CallbackManager;
+import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator.QRBarcodeGeneratorException;
 
@@ -13,12 +16,14 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 
 	private final BackupNextStepListener nextStepListener;
 	private final QRBarcodeGenerator qrBarcodeGenerator;
+	private final CallbackManager callbackManager;
 
 	private Uri qrURI;
 
 
-	public SaveAndSharePresenterImpl(BackupNextStepListener nextStepListener, QRBarcodeGenerator qrBarcodeGenerator,
+	public SaveAndSharePresenterImpl(@NonNull final CallbackManager callbackManager, BackupNextStepListener nextStepListener, QRBarcodeGenerator qrBarcodeGenerator,
 		String key) {
+		this.callbackManager = callbackManager;
 		this.nextStepListener = nextStepListener;
 		this.qrBarcodeGenerator = qrBarcodeGenerator;
 		createQR(key);
@@ -36,6 +41,7 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 	public void onAttach(SaveAndShareView view) {
 		super.onAttach(view);
 		setQRImage();
+		callbackManager.sendBackupEvents(EventDispatcherImpl.BACKUP_QR_CODE_PAGE_VIEWED);
 	}
 
 	private void setQRImage() {

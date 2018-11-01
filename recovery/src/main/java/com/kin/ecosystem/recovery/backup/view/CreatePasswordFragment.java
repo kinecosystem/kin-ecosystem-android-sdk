@@ -2,7 +2,6 @@ package com.kin.ecosystem.recovery.backup.view;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,18 +15,21 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.Toast;
 import com.kin.ecosystem.recovery.BackupManager;
 import com.kin.ecosystem.recovery.R;
 import com.kin.ecosystem.recovery.backup.presenter.CreatePasswordPresenter;
 import com.kin.ecosystem.recovery.backup.presenter.CreatePasswordPresenterImpl;
 import com.kin.ecosystem.recovery.backup.view.TextWatcherAdapter.TextChangeListener;
 import com.kin.ecosystem.recovery.base.KeyboardHandler;
+import com.kin.ecosystem.recovery.events.BroadcastManagerImpl;
+import com.kin.ecosystem.recovery.events.CallbackManager;
+import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
 import com.kin.ecosystem.recovery.widget.PasswordEditText;
 
 public class CreatePasswordFragment extends Fragment implements CreatePasswordView {
 
-	public static CreatePasswordFragment newInstance(@NonNull final BackupNextStepListener nextStepListener, @NonNull final KeyboardHandler keyboardHandler) {
+	public static CreatePasswordFragment newInstance(@NonNull final BackupNextStepListener nextStepListener,
+		@NonNull final KeyboardHandler keyboardHandler) {
 		CreatePasswordFragment fragment = new CreatePasswordFragment();
 		fragment.setNextStepListener(nextStepListener);
 		fragment.setKeyboardHandler(keyboardHandler);
@@ -48,7 +50,8 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 		@Nullable Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.kinrecovery_fragment_backup_create_password, container, false);
 		initViews(root);
-		createPasswordPresenter = new CreatePasswordPresenterImpl(nextStepListener,
+		createPasswordPresenter = new CreatePasswordPresenterImpl(
+			new CallbackManager(new EventDispatcherImpl(new BroadcastManagerImpl(getActivity()))), nextStepListener,
 			BackupManager.getKeyStoreProvider());
 		createPasswordPresenter.onAttach(this);
 		return root;
@@ -131,7 +134,7 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 		this.keyboardHandler = keyboardHandler;
 	}
 
-	private void openKeyboard(View view){
+	private void openKeyboard(View view) {
 		keyboardHandler.openKeyboard(view);
 	}
 
