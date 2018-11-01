@@ -28,7 +28,9 @@ import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.exception.ServiceException;
 import com.kin.ecosystem.common.model.Balance;
-import com.kin.ecosystem.common.model.NativeSpendOffer;
+import com.kin.ecosystem.common.model.NativeOffer;
+import com.kin.ecosystem.common.model.NativeOffer.OfferType;
+import com.kin.ecosystem.common.model.NativeOfferBuilder;
 import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.common.model.UserStats;
 import java.util.Random;
@@ -50,20 +52,40 @@ public class MainActivity extends AppCompatActivity {
 	private KinCallback<OrderConfirmation> nativeSpendOrderConfirmationCallback;
 	private KinCallback<OrderConfirmation> nativeEarnOrderConfirmationCallback;
 	private KinCallback<OrderConfirmation> payToUserOrderConfirmationCallback;
-	private Observer<NativeOfferClickEvent> nativeSpendOfferClickedObserver;
+	private Observer<NativeOfferClickEvent> nativeOfferClickedObserver;
 	private Observer<Balance> balanceObserver;
 
 	private String userID;
 	private String publicAddress;
 
-	private int randomID = new Random().nextInt((9999 - 1) + 1) + 1;
-	private NativeSpendOffer nativeSpendOffer =
-		new NativeSpendOffer(String.valueOf(randomID))
-			.title("Native Spend")
+
+	private int getRandomID() {
+		return new Random().nextInt((9999 - 1) + 1) + 1;
+	}
+
+	private NativeOffer nativeOffer;
+
+	private NativeOffer getNativeSpendOffer() {
+		return new NativeOfferBuilder(String.valueOf(getRandomID()))
+			.offerType(OfferType.SPEND)
+			.title("Spacial one time offer")
+			.description("More details on native spend")
+			.amount(100)
+			.image("https://cdn.kinecosystem.com/thumbnails/offers/spend_offer_smplapp.png")
+			.build();
+	}
+
+
+	private NativeOffer getNativeEarnOffer() {
+		return new NativeOfferBuilder(String.valueOf(getRandomID()))
+			.offerType(OfferType.EARN)
+			.title("Get your free Kin")
 			.description("Upgrade your profile")
 			.amount(100)
-			.image("https://cdn.kinecosystem.com/thumbnails/offers/spend_offer_smplapp.png");
-	private boolean dismissOnTap = true;
+			.image("https://cdn.kinecosystem.com/thumbnails/offers/spend_offer_smplapp.png")
+			.build();
+	}
+	private boolean addNativeSpendOrder = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -139,16 +161,30 @@ public class MainActivity extends AppCompatActivity {
 		findViewById(R.id.launch_marketplace).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				addNativeSpendOffer(nativeSpendOffer, getDismissOnTap());
 				openKinMarketplace();
 			}
 		});
 		((TextView) findViewById(R.id.sample_app_version))
 			.setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
-		addNativeSpendOffer(nativeSpendOffer, getDismissOnTap());
+		addNativeOffer();
 		addNativeOfferClickedObserver();
 	}
 
+	private void addNativeOffer() {
+		if(nativeOffer != null) {
+			removeNativeOffer(nativeOffer);
+		}
+		if(addNativeSpendOrder){
+			nativeOffer = getNativeSpendOffer();
+			addNativeOffer(nativeOffer, true);
+		} else {
+			nativeOffer = getNativeEarnOffer();
+			addNativeOffer(nativeOffer, false);
+
+		}
+		addNativeSpendOrder = !addNativeSpendOrder;
+  }
+  
 	private void showUserStats(final View v) {
 		try {
 			Kin.userStats(new KinCallback<UserStats>() {
@@ -175,9 +211,6 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	private boolean getDismissOnTap() {
-		return dismissOnTap = !dismissOnTap;
-	}
 
 	@Override
 	protected void onStart() {
@@ -219,9 +252,9 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	// Use this method to remove the nativeSpendOffer you added
-	private void removeNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer) {
+	private void removeNativeOffer(@NonNull NativeOffer nativeOffer) {
 		try {
-			if (Kin.removeNativeOffer(nativeSpendOffer)) {
+			if (Kin.removeNativeOffer(nativeOffer)) {
 				showSnackbar("Native offer removed", false);
 			}
 		} catch (ClientException e) {
@@ -238,30 +271,33 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private Observer<NativeOfferClickEvent> getNativeOfferClickedObserver() {
-		if (nativeSpendOfferClickedObserver == null) {
-			nativeSpendOfferClickedObserver = new Observer<NativeOfferClickEvent>() {
+		if (nativeOfferClickedObserver == null) {
+			nativeOfferClickedObserver = new Observer<NativeOfferClickEvent>() {
 				@Override
 				public void onChanged(NativeOfferClickEvent nativeOfferClickEvent) {
-					NativeSpendOffer nativeSpendOffer = (NativeSpendOffer) nativeOfferClickEvent.getNativeOffer();
+
+					NativeOffer nativeOffer = nativeOfferClickEvent.getNativeOffer();
+					removeNativeOffer(nativeOffer);
+					addNativeOffer();
 					if (nativeOfferClickEvent.isDismissOnTap()) {
 						new AlertDialog.Builder(MainActivity.this)
-							.setTitle("Native Offer (" + nativeSpendOffer.getTitle() + ")")
-							.setMessage("You tapped a native offer and the observer was notified.")
+							.setTitle("Native Offer (" + nativeOffer.getTitle() + ")")
+							.setMessage("You tapped on a native " + nativeOffer.getOfferType() + " offer and the observer was notified.")
 							.show();
 					} else {
 						Intent nativeOfferIntent = NativeOfferActivity
-							.createIntent(MainActivity.this, nativeSpendOffer.getTitle());
+							.createIntent(MainActivity.this, nativeOffer.getTitle(), nativeOffer.getOfferType().toString());
 						startActivity(nativeOfferIntent);
 					}
 				}
 			};
 		}
-		return nativeSpendOfferClickedObserver;
+		return nativeOfferClickedObserver;
 	}
 
-	private void addNativeSpendOffer(@NonNull NativeSpendOffer nativeSpendOffer, boolean dismissMarketPlaceOnTap) {
+	private void addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissMarketPlaceOnTap) {
 		try {
-			if (Kin.addNativeOffer(nativeSpendOffer, dismissMarketPlaceOnTap)) {
+			if (Kin.addNativeOffer(nativeOffer, dismissMarketPlaceOnTap)) {
 				showToast("Native offer added");
 			}
 		} catch (ClientException e) {
@@ -528,8 +564,8 @@ public class MainActivity extends AppCompatActivity {
 		nativeEarnOrderConfirmationCallback = null;
 		payToUserOrderConfirmationCallback = null;
 		try {
-			Kin.removeNativeOffer(nativeSpendOffer);
-			Kin.removeNativeOfferClickedObserver(nativeSpendOfferClickedObserver);
+			Kin.removeNativeOffer(nativeOffer);
+			Kin.removeNativeOfferClickedObserver(nativeOfferClickedObserver);
 		} catch (ClientException e) {
 			Log.d(TAG, "onDestroy: Failed to remove native offer clicked observer");
 		}
