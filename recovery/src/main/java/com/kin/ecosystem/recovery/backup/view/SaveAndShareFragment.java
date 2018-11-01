@@ -21,6 +21,9 @@ import android.widget.TextView;
 import com.kin.ecosystem.recovery.R;
 import com.kin.ecosystem.recovery.backup.presenter.SaveAndSharePresenter;
 import com.kin.ecosystem.recovery.backup.presenter.SaveAndSharePresenterImpl;
+import com.kin.ecosystem.recovery.events.BroadcastManagerImpl;
+import com.kin.ecosystem.recovery.events.CallbackManager;
+import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGeneratorImpl;
 import com.kin.ecosystem.recovery.qr.QRFileUriHandlerImpl;
@@ -59,7 +62,9 @@ public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 		String key = getArguments().getString(KEY_ACCOUNT_KEY, null);
 		final QRBarcodeGenerator qrBarcodeGenerator = new QRBarcodeGeneratorImpl(
 			new QRFileUriHandlerImpl(getContext()));
-		saveAndSharePresenter = new SaveAndSharePresenterImpl(nextStepListener, qrBarcodeGenerator, key);
+		saveAndSharePresenter = new SaveAndSharePresenterImpl(
+			new CallbackManager(new EventDispatcherImpl(new BroadcastManagerImpl(getActivity()))), nextStepListener,
+			qrBarcodeGenerator, key);
 		saveAndSharePresenter.onAttach(this);
 		return root;
 	}

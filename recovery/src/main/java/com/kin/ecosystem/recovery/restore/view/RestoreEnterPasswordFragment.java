@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,6 +18,9 @@ import com.kin.ecosystem.recovery.backup.view.TextWatcherAdapter;
 import com.kin.ecosystem.recovery.backup.view.TextWatcherAdapter.TextChangeListener;
 import com.kin.ecosystem.recovery.base.BaseToolbarActivity;
 import com.kin.ecosystem.recovery.base.KeyboardHandler;
+import com.kin.ecosystem.recovery.events.BroadcastManagerImpl;
+import com.kin.ecosystem.recovery.events.CallbackManager;
+import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
 import com.kin.ecosystem.recovery.restore.presenter.RestoreEnterPasswordPresenter;
 import com.kin.ecosystem.recovery.restore.presenter.RestoreEnterPasswordPresenterImpl;
 import com.kin.ecosystem.recovery.widget.PasswordEditText;
@@ -34,7 +36,8 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 	private TextView contentText;
 	private PasswordEditText password;
 
-	public static RestoreEnterPasswordFragment newInstance(String keystoreData, @NonNull KeyboardHandler keyboardHandler) {
+	public static RestoreEnterPasswordFragment newInstance(String keystoreData,
+		@NonNull KeyboardHandler keyboardHandler) {
 		RestoreEnterPasswordFragment fragment = new RestoreEnterPasswordFragment();
 		fragment.setKeyboardHandler(keyboardHandler);
 		if (keystoreData != null) {
@@ -77,7 +80,8 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 	}
 
 	private void injectPresenter(String keystoreData) {
-		presenter = new RestoreEnterPasswordPresenterImpl(keystoreData);
+		presenter = new RestoreEnterPasswordPresenterImpl(
+			new CallbackManager(new EventDispatcherImpl(new BroadcastManagerImpl(getActivity()))), keystoreData);
 		presenter.onAttach(this, ((RestoreActivity) getActivity()).getPresenter());
 	}
 

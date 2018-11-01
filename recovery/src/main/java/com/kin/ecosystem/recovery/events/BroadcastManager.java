@@ -2,6 +2,7 @@ package com.kin.ecosystem.recovery.events;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import com.kin.ecosystem.recovery.events.BroadcastManagerImpl.ActionName;
 
 public interface BroadcastManager {
 
@@ -10,11 +11,11 @@ public interface BroadcastManager {
 		void onReceive(Intent data);
 
 	}
-	void register(@NonNull final Listener listener);
+	void register(@NonNull final Listener listener, @ActionName final String actionName);
 
 	void unregister();
 
-	void sendEvent(Intent data);
+	void sendEvent(Intent data, @ActionName final String actionName);
 
 	void sendCallback(int resultCode, Intent data);
 

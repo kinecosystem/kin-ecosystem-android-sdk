@@ -17,6 +17,8 @@ import com.kin.ecosystem.core.accountmanager.AccountManager;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.RecoveryBackupEvents;
 import com.kin.ecosystem.core.bi.RecoveryRestoreEvents;
+import com.kin.ecosystem.core.bi.events.BackupWalletCompleted;
+import com.kin.ecosystem.core.bi.events.RestoreWalletCompleted;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.settings.SettingsDataSource;
 import com.kin.ecosystem.recovery.BackupCallback;
@@ -49,8 +51,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 		this.eventLogger = eventLogger;
 		this.accountManager = accountManager;
 		this.currentBalance = blockchainSource.getBalance();
-		registerToCallbacks();
-		registerToEvents();
+
 
 		this.view.attachPresenter(this);
 	}
@@ -59,12 +60,15 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 	public void onAttach(ISettingsView view) {
 		super.onAttach(view);
 		updateSettingsIcon();
+		registerToCallbacks();
+		registerToEvents();
 	}
 
 	@Override
 	public void onDetach() {
 		super.onDetach();
 		removeBalanceObserver();
+		backupManager.release();
 	}
 
 	private void addBalanceObserver() {
@@ -165,7 +169,6 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 
 			@Override
 			public void onFailure(Throwable throwable) {
-
 			}
 		});
 	}
@@ -174,7 +177,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 		accountManager.switchAccount(accountIndex, new KinCallback<Boolean>() {
 			@Override
 			public void onResponse(Boolean response) {
-				//do nothing succeed
+				eventLogger.send(RestoreWalletCompleted.create());
 			}
 
 			@Override
@@ -191,6 +194,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 	}
 
 	private void onBackupSuccess() {
+		eventLogger.send(BackupWalletCompleted.create());
 		settingsDataSource.setIsBackedUp(true);
 		updateSettingsIcon();
 	}

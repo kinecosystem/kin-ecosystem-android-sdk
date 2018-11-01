@@ -16,6 +16,9 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 import com.kin.ecosystem.recovery.R;
 import com.kin.ecosystem.recovery.base.BaseToolbarActivity;
+import com.kin.ecosystem.recovery.events.BroadcastManagerImpl;
+import com.kin.ecosystem.recovery.events.CallbackManager;
+import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGeneratorImpl;
 import com.kin.ecosystem.recovery.qr.QRFileUriHandlerImpl;
 import com.kin.ecosystem.recovery.restore.presenter.FileSharingHelper;
@@ -48,7 +51,8 @@ public class UploadQRFragment extends Fragment implements UploadQRView {
 
 	private void injectPresenter() {
 		presenter = new UploadQRPresenterImpl(
-			new FileSharingHelper(this),
+			new CallbackManager(new EventDispatcherImpl(new BroadcastManagerImpl(getActivity()))),
+		new FileSharingHelper(this),
 			new QRBarcodeGeneratorImpl(new QRFileUriHandlerImpl(getContext())));
 	}
 
@@ -87,7 +91,12 @@ public class UploadQRFragment extends Fragment implements UploadQRView {
 					presenter.onConsent(chooserTitle);
 				}
 			})
-			.setNegativeButton(android.R.string.cancel, null)
+			.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					presenter.onCancelPressed();
+				}
+			})
 			.create()
 			.show();
 	}

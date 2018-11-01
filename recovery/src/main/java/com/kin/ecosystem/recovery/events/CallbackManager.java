@@ -9,6 +9,8 @@ import com.kin.ecosystem.recovery.BackupCallback;
 import com.kin.ecosystem.recovery.BackupEvents;
 import com.kin.ecosystem.recovery.RestoreCallback;
 import com.kin.ecosystem.recovery.RestoreEvents;
+import com.kin.ecosystem.recovery.events.EventDispatcherImpl.BackupEventCode;
+import com.kin.ecosystem.recovery.events.EventDispatcherImpl.RestoreEventCode;
 import com.kin.ecosystem.recovery.exception.BackupException;
 
 public class CallbackManager {
@@ -129,5 +131,13 @@ public class CallbackManager {
 					break;
 			}
 		}
+	}
+
+	public void sendBackupEvents(@BackupEventCode int eventCode) {
+		eventDispatcher.sendEvent(EventDispatcher.BACKUP_EVENTS, eventCode);
+	}
+
+	public void sendRestoreEvents(@RestoreEventCode int eventCode) {
+		eventDispatcher.sendEvent(EventDispatcher.RESTORE_EVENTS, eventCode);
 	}
 }
