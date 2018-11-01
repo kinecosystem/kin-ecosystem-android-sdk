@@ -211,9 +211,6 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	private boolean getDismissOnTap() {
-		return dismissOnTap = !dismissOnTap;
-	}
 
 	@Override
 	protected void onStart() {
