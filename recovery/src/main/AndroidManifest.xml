@@ -3,10 +3,10 @@
 
     <application>
         <provider
-            android:authorities="${applicationId}.KinEcosystemFileProvider"
+            android:authorities="${applicationId}.KinRecoveryFileProvider"
             android:exported="false"
             android:grantUriPermissions="true"
-            android:name=".KinEcosystemFileProvider">
+            android:name="android.support.v4.content.FileProvider">
 
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
