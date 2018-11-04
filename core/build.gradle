@@ -27,6 +27,6 @@ dependencies {
     implementation devDependencies.loginInterceptor3
 
     testImplementation project(':test-base')
-    testCompile testingDependencies.mockitoKotlin
-    testCompile testingDependencies.robolectric
+    testImplementation testingDependencies.mockitoKotlin
+    testImplementation testingDependencies.robolectric
 }

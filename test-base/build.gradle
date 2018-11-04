@@ -16,7 +16,7 @@ android {
 
 dependencies {
     implementation project(':core')
-    compile testingDependencies.kotlin
-    compile testingDependencies.junit
+    implementation testingDependencies.kotlin
+    implementation testingDependencies.junit
 
 }

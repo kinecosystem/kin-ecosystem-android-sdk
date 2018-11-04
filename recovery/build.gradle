@@ -18,11 +18,13 @@ dependencies {
     implementation devDependencies.constraintLayout
     implementation devDependencies.supportAnnotations
     implementation devDependencies.appCompat_v7
-    implementation 'com.google.zxing:core:3.3.3'
+    implementation devDependencies.zxing_qr
+
     androidTestImplementation testingDependencies.junit
     androidTestImplementation testingDependencies.mockitoAndroid
     androidTestImplementation testingDependencies.androidTestRunner
     androidTestImplementation testingDependencies.hamcrest
+
     testImplementation testingDependencies.junit
     testImplementation testingDependencies.mockito
     testImplementation testingDependencies.robolectric
