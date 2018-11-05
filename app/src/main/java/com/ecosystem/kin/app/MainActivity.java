@@ -28,9 +28,9 @@ import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.exception.ServiceException;
 import com.kin.ecosystem.common.model.Balance;
+import com.kin.ecosystem.common.model.NativeEarnOfferBuilder;
 import com.kin.ecosystem.common.model.NativeOffer;
-import com.kin.ecosystem.common.model.NativeOffer.OfferType;
-import com.kin.ecosystem.common.model.NativeOfferBuilder;
+import com.kin.ecosystem.common.model.NativeSpendOfferBuilder;
 import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.common.model.UserStats;
 import java.util.Random;
@@ -66,8 +66,7 @@ public class MainActivity extends AppCompatActivity {
 	private NativeOffer nativeOffer;
 
 	private NativeOffer getNativeSpendOffer() {
-		return new NativeOfferBuilder(String.valueOf(getRandomID()))
-			.offerType(OfferType.SPEND)
+		return new NativeSpendOfferBuilder(String.valueOf(getRandomID()))
 			.title("Spacial one time offer")
 			.description("More details on native spend")
 			.amount(100)
@@ -77,8 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 	private NativeOffer getNativeEarnOffer() {
-		return new NativeOfferBuilder(String.valueOf(getRandomID()))
-			.offerType(OfferType.EARN)
+		return new NativeEarnOfferBuilder(String.valueOf(getRandomID()))
 			.title("Get your free Kin")
 			.description("Upgrade your profile")
 			.amount(100)

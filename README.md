@@ -148,6 +148,8 @@ The following sections show how to implement some primary APIs using the Kin Eco
 
 * [Displaying the Kin Marketplace Offer Wall](docs/DISPLAY_MARKETPLACE.md)
 
+* [Adding Native Offers to Marketplace Offer Wall](docs/ADD_NATIVE_OFFERS_TO_MARKETPLACE.md)
+
 * [Requesting an Order Confirmation](docs/ORDER_CONFIRMATION.md)
 
 * [Misc](docs/MISC.md)

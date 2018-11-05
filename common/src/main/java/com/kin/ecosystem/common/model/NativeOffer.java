@@ -1,13 +1,12 @@
 package com.kin.ecosystem.common.model;
 
-public class NativeOffer {
+public abstract class NativeOffer {
 
 	private String id;
 	private String title;
 	private String description;
 	private int amount;
 	private String image;
-	private OfferType offerType;
 
 	public NativeOffer(String id) {
 		this.id = id;
@@ -53,13 +52,7 @@ public class NativeOffer {
 		this.image = image;
 	}
 
-	public OfferType getOfferType() {
-		return offerType;
-	}
-
-	public void setOfferType(OfferType offerType) {
-		this.offerType = offerType;
-	}
+	public abstract OfferType getOfferType();
 
 	public enum OfferType {
 
