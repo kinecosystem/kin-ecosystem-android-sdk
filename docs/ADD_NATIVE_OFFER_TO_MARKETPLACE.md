@@ -24,24 +24,22 @@ Kin.addNativeOfferClickedObserver(getNativeOfferClickedObserver());
     }
 
     private Observer<NativeOfferClickEvent> getNativeOfferClickedObserver() {
-        if (nativeSpendOfferClickedObserver == null) {
-            nativeSpendOfferClickedObserver = new Observer<NativeOfferClickEvent>() {
+            Observer<NativeOfferClickEvent> nativeOfferClickedObserver = new Observer<NativeOfferClickEvent>() {
                 @Override
                 public void onChanged(NativeOfferClickEvent nativeOfferClickEvent) {
-                    NativeSpendOffer nativeSpendOffer = (NativeSpendOffer) nativeOfferClickEvent.getNativeOffer();
+                    NativeOffer nativedOffer = nativeOfferClickEvent.getNativeOffer();
                     if(nativeOfferClickEvent.isDismissOnTap()){
                         new AlertDialog.Builder(MainActivity.this)
-                            .setTitle("Native Offer (" + nativeSpendOffer.getTitle() +")")
+                            .setTitle("Native Offer (" + nativeOffer.getTitle() +")")
                             .setMessage("You tapped a native offer and the observer was notified.")
                             .show();
                     } else {
-                        Intent nativeOfferIntent = NativeOfferActivity.createIntent(MainActivity.this, nativeSpendOffer.getTitle());
+                        Intent nativeOfferIntent = NativeOfferActivity.createIntent(MainActivity.this, nativeOffer.getTitle());
                         startActivity(nativeOfferIntent);
                     }
                 }
             };
-        }
-        return nativeSpendOfferClickedObserver;
+        return nativeOfferClickedObserver;
 }
 ```
 
