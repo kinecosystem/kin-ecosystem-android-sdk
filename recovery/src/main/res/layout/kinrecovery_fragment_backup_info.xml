@@ -44,7 +44,7 @@
     <Button
         android:id="@+id/lets_go_button"
         android:layout_width="@dimen/kinrecovery_btn_width"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/kinrecovery_btn_frame_height"
         android:layout_marginBottom="@dimen/kinrecovery_margin_xlarge"
         android:text="@string/kinrecovery_let_s_go"
         style="@style/KinrecoveryTitleLargeBlue"
