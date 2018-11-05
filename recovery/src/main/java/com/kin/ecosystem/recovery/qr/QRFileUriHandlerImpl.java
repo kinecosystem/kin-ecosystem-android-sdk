@@ -16,11 +16,13 @@ import java.io.IOException;
 public class QRFileUriHandlerImpl implements QRFileUriHandler {
 
 	private static final String RELATIVE_PATH_FILENAME_QR_IMAGE = "/kinrecovery_qr_codes/backup_qr.png";
-	private static final String AUTHORITY = "com.kin.ecosystem.recovery";
+	private static final String AUTHORITY_FORMAT = "%s.KinRecoveryFileProvider";
+	private final String AUTHORITY;
 	private final Context context;
 
 	public QRFileUriHandlerImpl(@NonNull Context context) {
 		this.context = context;
+		this.AUTHORITY = String.format(AUTHORITY_FORMAT, context.getPackageName());
 	}
 
 	@NonNull

@@ -6,7 +6,7 @@
             android:authorities="${applicationId}.KinRecoveryFileProvider"
             android:exported="false"
             android:grantUriPermissions="true"
-            android:name="android.support.v4.content.FileProvider">
+            android:name=".KinRecoveryFileProvider">
 
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
