@@ -13,6 +13,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:name=".App">
+
+        <provider
+            android:authorities="${applicationId}.MySampleProvider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:name="android.support.v4.content.FileProvider">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/paths"/>
+
+        </provider>
+
         <activity android:name=".MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
