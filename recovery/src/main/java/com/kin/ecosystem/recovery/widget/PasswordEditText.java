@@ -84,6 +84,7 @@ public class PasswordEditText extends LinearLayout {
 	@SuppressLint("ClickableViewAccessibility")
 	private void setupPasswordField(boolean addRevealIcon, String hint) {
 		final int topBottomPadding = getResources().getDimensionPixelSize(R.dimen.kinrecovery_margin_block);
+		final int textSize = getResources().getDimensionPixelSize(R.dimen.kinrecovery_password_edit_text_size);
 		final int colorGray = ContextCompat.getColor(getContext(), R.color.kinrecovery_gray);
 		if (!TextUtils.isEmpty(hint)) {
 			passwordField.setHint(hint);
@@ -94,7 +95,7 @@ public class PasswordEditText extends LinearLayout {
 		passwordField.setTypeface(Typeface.SANS_SERIF);
 		passwordField.setTextColor(colorGray);
 		passwordField.setHintTextColor(colorGray);
-		passwordField.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f);
+		passwordField.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
 		passwordField.setPadding(sidesPadding, topBottomPadding, sidesPadding, topBottomPadding);
 		passwordField.setHeight(getResources().getDimensionPixelSize(R.dimen.kinrecovery_edittext_height));
 		passwordField.setWidth(getResources().getDimensionPixelSize(R.dimen.kinrecovery_password_edit_frame_height));
@@ -180,10 +181,11 @@ public class PasswordEditText extends LinearLayout {
 	}
 
 	private void setupErrorText() {
+		final int textSize = getResources().getDimensionPixelSize(R.dimen.kinrecovery_password_edittext_error_size);
 		final int color = ContextCompat.getColor(getContext(), R.color.kinrecovery_red);
 		errorText.setVisibility(GONE);
 		errorText.setTextColor(color);
-		errorText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f);
+		errorText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
 		errorText.setTypeface(Typeface.SANS_SERIF);
 		errorText.setPadding(sidesPadding, 0, 0, 0);
 	}
