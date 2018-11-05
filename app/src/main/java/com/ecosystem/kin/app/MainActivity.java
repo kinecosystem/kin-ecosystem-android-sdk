@@ -168,7 +168,6 @@ public class MainActivity extends AppCompatActivity {
 			.setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
 		addNativeOffer();
 		addNativeOfferClickedObserver();
-		openKinMarketplace();
 	}
 
 	private void addNativeOffer() {

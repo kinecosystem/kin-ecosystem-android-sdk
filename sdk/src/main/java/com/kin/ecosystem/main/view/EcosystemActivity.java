@@ -10,7 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -93,10 +92,6 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 		ecosystemPresenter = new EcosystemPresenter(this,
 			new SettingsDataSourceImpl(new SettingsDataSourceLocal(getApplicationContext())),
 			BlockchainSourceImpl.getInstance(), this);
-
-		DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-		System.out.println("DIM >> densityDpi ###" + displayMetrics.densityDpi);
-		System.out.println("DIM >> density ???" + displayMetrics.density);
 	}
 
 	@Override
