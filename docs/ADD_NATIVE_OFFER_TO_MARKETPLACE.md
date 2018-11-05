@@ -55,8 +55,6 @@ NativeOffer nativeOffer =
             .image("Image URL")// Image to display with offer
             ,build(); 
 ```
-or
-
 
 #### Earn Offer:
 ```java
