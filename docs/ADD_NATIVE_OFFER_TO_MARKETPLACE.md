@@ -43,8 +43,9 @@ Kin.addNativeOfferClickedObserver(getNativeOfferClickedObserver());
 }
 ```
 
-2. Create a Spend or Earn `NativeOffer` object as in the examples below.
+2. Create a `NativeOffer` object as in the examples below.
 
+#### Spend Offer:
 ```java
 NativeOffer nativeOffer =
         new NativeSpendOfferBuilder("The offerID") // OfferId must be a UUID
@@ -56,6 +57,8 @@ NativeOffer nativeOffer =
 ```
 or
 
+
+#### Earn Offer:
 ```java
 NativeOffer nativeOffer =
         new NativeEarnOfferBuilder("The offerID") // OfferId must be a UUID
