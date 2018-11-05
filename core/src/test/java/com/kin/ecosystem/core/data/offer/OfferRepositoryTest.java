@@ -12,9 +12,13 @@ import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.Callback;
+import com.kin.ecosystem.common.model.NativeEarnOffer;
+import com.kin.ecosystem.common.model.NativeEarnOfferBuilder;
 import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.NativeOffer.OfferType;
 import com.kin.ecosystem.common.model.NativeOfferBuilder;
+import com.kin.ecosystem.common.model.NativeSpendOffer;
+import com.kin.ecosystem.common.model.NativeSpendOfferBuilder;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.network.model.Offer;
@@ -113,7 +117,7 @@ public class OfferRepositoryTest {
 
 		offerRepository.addNativeOfferClickedObserver(callback);
 		offerRepository.getNativeSpendOfferObservable().postValue(new NativeOfferClickEvent.Builder()
-			.nativeOffer(new NativeOffer("5"))
+			.nativeOffer(new NativeEarnOffer("5"))
 			.isDismissed(false)
 			.build());
 	}
@@ -124,8 +128,7 @@ public class OfferRepositoryTest {
 		List<Offer> newEarnOffers = new ArrayList<>();
 		List<Offer> newSpendOffers = new ArrayList<>();
 		NativeOffer nativeOffer =
-			new NativeOfferBuilder("1")
-				.offerType(OfferType.SPEND)
+			new NativeSpendOfferBuilder("1")
 				.title("Native offer title")
 				.description("Native offer desc")
 				.amount(1000)
@@ -156,8 +159,7 @@ public class OfferRepositoryTest {
 		List<Offer> newEarnOffers = new ArrayList<>();
 		List<Offer> newSpendOffers = new ArrayList<>();
 		NativeOffer nativeOffer =
-			new NativeOfferBuilder("2")
-				.offerType(OfferType.EARN)
+			new NativeEarnOfferBuilder("2")
 				.title("Native offer title")
 				.description("Native offer desc")
 				.amount(1000)
@@ -186,8 +188,7 @@ public class OfferRepositoryTest {
 	@Test
 	public void removeNativeSpendOffer() throws Exception {
 		NativeOffer nativeOffer =
-			new NativeOfferBuilder("1")
-				.offerType(OfferType.SPEND)
+			new NativeSpendOfferBuilder("1")
 				.title("Native offer title")
 				.description("Native offer desc")
 				.amount(1000)
