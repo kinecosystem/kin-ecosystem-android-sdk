@@ -6,14 +6,15 @@ import static com.kin.ecosystem.main.Title.MARKETPLACE_TITLE;
 import static com.kin.ecosystem.main.Title.ORDER_HISTORY_TITLE;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.MenuItemCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.balance.presenter.BalancePresenter;
 import com.kin.ecosystem.balance.presenter.IBalancePresenter;
@@ -43,14 +44,12 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 
 	public static final String ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG = "ecosystem_marketplace_fragment_tag";
 	public static final String ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG = "ecosystem_order_history_fragment_tag";
-	public static final int ALPHA_255 = 255;
-	public static final int ALPHA_0 = 0;
 
 	private IBalancePresenter balancePresenter;
 	private IEcosystemPresenter ecosystemPresenter;
 	private IMarketplacePresenter marketplacePresenter;
 
-	private Menu menu;
+	private View actionView;
 
 	@Override
 	protected int getLayoutRes() {
@@ -104,34 +103,33 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.kinecosystem_menu_marketplace, menu);
-		this.menu = menu;
+		setupActionView(menu);
 		ecosystemPresenter.onMenuInitialized();
 		return true;
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle item selection
-		int itemId = item.getItemId();
-		if (itemId == R.id.menu_settings) {
-			ecosystemPresenter.settingsMenuClicked();
-			return true;
-		} else {
-			return super.onOptionsItemSelected(item);
+	private void setupActionView(final Menu menu) {
+		final MenuItem settingsItem = menu.findItem(R.id.menu_settings);
+		if (settingsItem != null) {
+			actionView = MenuItemCompat.getActionView(settingsItem);
+			actionView.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					ecosystemPresenter.settingsMenuClicked();
+				}
+			});
 		}
 	}
 
 	@Override
 	public void showMenuTouchIndicator(boolean isVisible) {
-		if (menu != null) {
-			final MenuItem settingsItem = menu.findItem(R.id.menu_settings);
-			if (settingsItem != null) {
-				LayerDrawable icon = (LayerDrawable) settingsItem.getIcon();
-				Drawable touchIndicator = icon.findDrawableByLayerId(R.id.ic_info_dot);
+		if (actionView != null) {
+			ImageView infoBadge = actionView.findViewById(R.id.ic_info_dot);
+			if(infoBadge != null) {
 				if (isVisible) {
-					touchIndicator.setAlpha(ALPHA_255);
+					infoBadge.setVisibility(View.VISIBLE);
 				} else {
-					touchIndicator.setAlpha(ALPHA_0);
+					infoBadge.setVisibility(View.GONE);
 				}
 			}
 		}
