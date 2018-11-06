@@ -15,7 +15,7 @@ import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.model.Balance;
-import com.kin.ecosystem.common.model.NativeSpendOffer;
+import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.common.model.WhitelistData;
@@ -372,29 +372,29 @@ public class Kin {
 	}
 
 	/**
-	 * Adds an {@link NativeSpendOffer} to spend offer list on Kin Marketplace activity.
+	 * Adds an {@link NativeOffer} to spend or earn offer list on Kin Marketplace activity.
 	 * The offer will be added at index 0 in the spend list.
 	 *
-	 * @param nativeSpendOffer The spend offer you want to add to the spend list.
+	 * @param nativeOffer The spend or earn offer you want to add to the spend list.
 	 * @param dismissOnTap An indication if the sdk should close the marketplace when this offer tapped.
 	 * @return true if the offer added successfully, the list was changed.
 	 * @throws ClientException Could not add the offer to the list.
 	 */
-	public static boolean addNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer, boolean dismissOnTap)
+	public static boolean addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissOnTap)
 		throws ClientException {
 		checkInstanceNotNull();
-		return OfferRepository.getInstance().addNativeOffer(nativeSpendOffer, dismissOnTap);
+		return OfferRepository.getInstance().addNativeOffer(nativeOffer, dismissOnTap);
 	}
 
 	/**
-	 * Removes a {@link NativeSpendOffer} from the spend list on Kin Marketplace activity.
+	 * Removes a {@link NativeOffer} from the spend or earn list on Kin Marketplace activity.
 	 *
-	 * @param nativeSpendOffer The spend offer you want to remove from the spend list.
+	 * @param nativeOffer The spend or earn offer you want to remove from the spend list.
 	 * @return true if the offer removed successfully, the list was changed.
 	 * @throws ClientException Could not remove the offer from the list.
 	 */
-	public static boolean removeNativeOffer(@NonNull NativeSpendOffer nativeSpendOffer) throws ClientException {
+	public static boolean removeNativeOffer(@NonNull NativeOffer nativeOffer) throws ClientException {
 		checkInstanceNotNull();
-		return OfferRepository.getInstance().removeNativeOffer(nativeSpendOffer);
+		return OfferRepository.getInstance().removeNativeOffer(nativeOffer);
 	}
 }

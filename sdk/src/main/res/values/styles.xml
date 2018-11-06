@@ -2,17 +2,17 @@
 <resources>
 
     <style name="KinecosysNoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/kinecosystem_bluePrimary</item>
-        <item name="colorPrimaryDark">@color/kinecosystem_bluePrimaryDark</item>
+        <item name="colorPrimary">@color/kinecosystem_white</item>
+        <item name="colorPrimaryDark">@color/kinecosystem_gray</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name = "android:windowBackground">@color/kinecosystem_white</item>
     </style>
 
     <style name="KinecosysToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="android:background">@color/kinecosystem_bluePrimary</item>
+        <item name="android:background">@color/kinecosystem_white</item>
         <!-- android:textColorPrimary is the color of the title text in the Toolbar  -->
-        <item name="android:textColorPrimary">@color/kinecosystem_white</item>
+        <item name="android:textColorPrimary">@color/kinecosystem_black</item>
 
         <!-- Enable clicking icons to trigger a ripple effect -->
         <item name="selectableItemBackground">?android:selectableItemBackground</item>

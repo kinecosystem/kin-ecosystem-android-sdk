@@ -1,9 +1,11 @@
 
 package com.kin.ecosystem.core.bi.events;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import java.util.UUID;
 
 
 /**
@@ -12,7 +14,16 @@ import java.util.UUID;
  */
 public class Common implements CommonInterface {
     public static final String PLATFORM = "Android";
+    public static final String SCHEMA_VERSION = "15522c820ef84aca25fb775a7eea5c6dcc9daac2";
 
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("schema_version")
+    @Expose
+    private String schemaVersion = SCHEMA_VERSION;
     /**
      * 
      * (Required)
@@ -64,16 +75,36 @@ public class Common implements CommonInterface {
     /**
      * 
      * @param eventId
+     * @param schemaVersion
      * @param version
      * @param userId
      * @param timestamp
      */
-    public Common(UUID eventId, String version, String userId, Long timestamp) {
+    public Common(String schemaVersion, UUID eventId, String version, String userId, Long timestamp) {
         super();
+        this.schemaVersion = schemaVersion;
         this.eventId = eventId;
         this.version = version;
         this.userId = userId;
         this.timestamp = timestamp;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getSchemaVersion() {
+        return schemaVersion;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setSchemaVersion(String schemaVersion) {
+        this.schemaVersion = schemaVersion;
     }
 
     /**

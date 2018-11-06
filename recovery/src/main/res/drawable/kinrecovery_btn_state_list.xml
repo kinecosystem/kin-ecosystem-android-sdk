@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@drawable/kinrecovery_btn_rounded_blue_stroke_white"
+        android:state_enabled="true"/>
+    <item
+        android:drawable="@drawable/kinrecovery_btn_restore_rounded_disabled"
+        android:state_enabled="false"/>
+</selector>

@@ -1,12 +1,14 @@
 ext {
 
     //Version
-    kinCoreVersion = '0.1.4'
-    constraintLayoutVersion = '1.0.2'
+    kinCoreVersion = '3907369a9c'
+    constraintLayoutVersion = '1.1.2'
     supportVersion = '26.1.0'
     picassoVersion = '2.71828'
     okhttp3Version = '3.9.1'
     gsonVersion = '2.8.2'
+    hamcrestVersion = '1.3'
+    zxingVersion = '3.3.3'
 
     //Packages
     kinFoundationPackage = 'com.github.kinfoundation'
@@ -15,6 +17,7 @@ ext {
     picassoPackage = 'com.squareup.picasso'
     okhttp3Packace = 'com.squareup.okhttp3'
     gsonPackage = 'com.google.code.gson'
+    zxingPackage = 'com.google.zxing'
 
     //Testing Version
     junitVersion = '4.12'
@@ -22,6 +25,8 @@ ext {
     robolectricVersion = '3.6.1'
     kotlinVersion = kotlin_version
     mokitoKotlinVersion = '2.0.0-RC1'
+    mockitoAndroidVersion = '2.10.0'
+    androidTestVersion = '1.0.1'
 
     //Testing Packages
     junitPackage = 'junit'
@@ -29,6 +34,9 @@ ext {
     robolectricPackage = 'org.robolectric'
     kotlinPackage = 'org.jetbrains.kotlin'
     mokitoKotlinPackage = 'com.nhaarman.mockitokotlin2'
+    androidTestPackage = 'com.android.support.test'
+    hamcrestPackage = 'org.hamcrest'
+
 
     devDependencies = [
             kinCore           : buildDependency(kinFoundationPackage, 'kin-core-android', kinCoreVersion),
@@ -40,6 +48,7 @@ ext {
             okhttp3           : buildDependency(okhttp3Packace, 'okhttp', okhttp3Version),
             loginInterceptor3 : buildDependency(okhttp3Packace, 'logging-interceptor', okhttp3Version),
             supportAnnotations: buildDependency(supportPackage, 'support-annotations', supportVersion),
+            zxing_qr: buildDependency(zxingPackage, 'core', zxingVersion),
     ]
 
     testingDependencies = [
@@ -48,6 +57,9 @@ ext {
             robolectric : buildDependency(robolectricPackage, 'robolectric', robolectricVersion),
             kotlin      : buildDependency(kotlinPackage, 'kotlin-stdlib', kotlinVersion),
             mockitoKotlin: buildDependency(mokitoKotlinPackage, 'mockito-kotlin', mokitoKotlinVersion),
+            mockitoAndroid   : buildDependency(mockitoPackage, 'mockito-android', mockitoAndroidVersion),
+            androidTestRunner: buildDependency(androidTestPackage, 'runner', androidTestVersion),
+            hamcrest          : buildDependency(hamcrestPackage, 'hamcrest-library', hamcrestVersion)
     ]
 }
 

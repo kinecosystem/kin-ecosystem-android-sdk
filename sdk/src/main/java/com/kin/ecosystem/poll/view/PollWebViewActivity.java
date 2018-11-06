@@ -44,7 +44,7 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
 
 	@Override
 	protected int getNavigationIcon() {
-		return R.drawable.kinecosystem_ic_close_white_24dp;
+		return R.drawable.kinecosystem_ic_back_black;
 	}
 
 	@Override

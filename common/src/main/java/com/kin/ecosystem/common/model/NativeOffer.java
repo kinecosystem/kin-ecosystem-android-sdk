@@ -1,109 +1,105 @@
 package com.kin.ecosystem.common.model;
 
-public class NativeOffer {
+public abstract class NativeOffer {
 
-    private String id;
-    private String title;
-    private String description;
-    private int amount;
-    private String image;
-    private final OfferType offerType;
+	private String id;
+	private String title;
+	private String description;
+	private int amount;
+	private String image;
 
-    public NativeOffer(String id, OfferType offerType) {
-        this.id = id;
-        this.offerType = offerType;
-    }
+	public NativeOffer(String id) {
+		this.id = id;
+	}
 
-    public String getId() {
-        return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getTitle() {
-        return title;
-    }
+	public String getTitle() {
+		return title;
+	}
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public int getAmount() {
-        return amount;
-    }
+	public int getAmount() {
+		return amount;
+	}
 
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
 
-    public String getImage() {
-        return image;
-    }
+	public String getImage() {
+		return image;
+	}
 
-    public void setImage(String image) {
-        this.image = image;
-    }
+	public void setImage(String image) {
+		this.image = image;
+	}
 
-    public OfferType getOfferType() {
-        return offerType;
-    }
+	public abstract OfferType getOfferType();
 
-    public enum OfferType {
+	public enum OfferType {
 
-        EARN("earn"),
-        SPEND("spend");
+		EARN("earn"),
+		SPEND("spend");
 
-        private String value;
+		private String value;
 
-        OfferType(String value) {
-            this.value = value;
-        }
+		OfferType(String value) {
+			this.value = value;
+		}
 
-        public String getValue() {
-            return value;
-        }
+		public String getValue() {
+			return value;
+		}
 
-        @Override
-        public String toString() {
-            return String.valueOf(value);
-        }
+		@Override
+		public String toString() {
+			return String.valueOf(value);
+		}
 
-        public static OfferType fromValue(String text) {
-            for (OfferType b : OfferType.values()) {
-                if (String.valueOf(b.value).equals(text)) {
-                    return b;
-                }
-            }
-            return null;
-        }
-    }
+		public static OfferType fromValue(String text) {
+			for (OfferType b : OfferType.values()) {
+				if (String.valueOf(b.value).equals(text)) {
+					return b;
+				}
+			}
+			return null;
+		}
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-        NativeOffer that = (NativeOffer) o;
+		NativeOffer that = (NativeOffer) o;
 
-        return id != null ? id.equals(that.id) : that.id == null;
-    }
+		return id != null ? id.equals(that.id) : that.id == null;
+	}
 
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
-    }
+	@Override
+	public int hashCode() {
+		return id != null ? id.hashCode() : 0;
+	}
 }

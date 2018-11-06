@@ -9,12 +9,13 @@ import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.UserProfile;
+import com.kin.ecosystem.core.network.model.AuthToken;
+import com.kin.ecosystem.core.network.model.SignInData;
+import com.kin.ecosystem.core.network.model.UserProperties;
 import com.kin.ecosystem.core.util.DateUtil;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import java.util.Calendar;
 import java.util.Date;
-import com.kin.ecosystem.core.network.model.AuthToken;
-import com.kin.ecosystem.core.network.model.SignInData;
 
 public class AuthRepository implements AuthDataSource {
 
@@ -58,6 +59,24 @@ public class AuthRepository implements AuthDataSource {
 	}
 
 	@Override
+	public void updateWalletAddress(final String address, @NonNull final KinCallback<Boolean> callback) {
+		final UserProperties userProperties = new UserProperties().walletAddress(address);
+		remoteData.updateWalletAddress(userProperties, new Callback<Void, ApiException>() {
+			@Override
+			public void onResponse(Void response) {
+				cachedSignInData.setWalletAddress(address);
+				setSignInData(cachedSignInData);
+				callback.onResponse(true);
+			}
+
+			@Override
+			public void onFailure(ApiException exception) {
+				callback.onFailure(ErrorUtil.fromApiException(exception));
+			}
+		});
+	}
+
+	@Override
 	public ObservableData<String> getAppID() {
 		loadCachedAppIDIfNeeded();
 		return appId;
@@ -81,7 +100,7 @@ public class AuthRepository implements AuthDataSource {
 	private void loadCachedAppIDIfNeeded() {
 		if (TextUtils.isEmpty(appId.getValue())) {
 			final String localAppId = localData.getAppId();
-			if (!TextUtils.isEmpty(localAppId)){
+			if (!TextUtils.isEmpty(localAppId)) {
 				postAppID(localAppId);
 			}
 		}
