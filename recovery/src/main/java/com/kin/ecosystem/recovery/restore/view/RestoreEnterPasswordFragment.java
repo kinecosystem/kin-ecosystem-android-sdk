@@ -29,9 +29,9 @@ import com.kin.ecosystem.recovery.widget.PasswordEditText;
 public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnterPasswordView {
 
 	private static final String BUNDLE_KEY_KEYSTORE = "BUNDLE_KEY_KEYSTORE";
+	public static final int VIEW_MIN_DELAY_MILLIS = 50;
 	private RestoreEnterPasswordPresenter presenter;
 	private KeyboardHandler keyboardHandler;
-	private View root;
 	private Button doneBtn;
 	private TextView contentText;
 	private PasswordEditText password;
@@ -99,7 +99,6 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 	}
 
 	private void initViews(View root) {
-		this.root = root;
 		password = root.findViewById(R.id.kinrecovery_password_edit);
 		contentText = root.findViewById(R.id.kinrecovery_password_recovery_text);
 		doneBtn = root.findViewById(R.id.kinrecovery_password_recovery_btn);
@@ -116,7 +115,12 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 				presenter.onPasswordChanged(editable.toString());
 			}
 		}));
-		openKeyboard(password);
+		password.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				openKeyboard(password);
+			}
+		}, VIEW_MIN_DELAY_MILLIS);
 	}
 
 	private void openKeyboard(View view) {

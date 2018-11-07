@@ -50,6 +50,7 @@ public class RestorePresenterImpl extends BasePresenterImpl<RestoreView> impleme
 				getView().navigateToEnterPassword((String) data);
 				break;
 			case STEP_RESTORE_COMPLETED:
+				getView().closeKeyboard();
 				getView().navigateToRestoreCompleted((Integer) data);
 				break;
 			case STEP_FINISH:
