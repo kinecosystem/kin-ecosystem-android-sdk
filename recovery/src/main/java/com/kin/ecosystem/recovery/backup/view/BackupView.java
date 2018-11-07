@@ -16,4 +16,6 @@ public interface BackupView extends BaseView, KeyboardHandler {
 	void moveToWellDonePage();
 
 	void close();
+
+	void showError();
 }

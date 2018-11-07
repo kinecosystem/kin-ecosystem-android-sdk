@@ -21,7 +21,5 @@ public interface BackupNextStepListener {
 
 	}
 
-	String KEY_ACCOUNT_KEY = "kinrecovery_account_key";
-
 	void setStep(@Step final int step, @Nullable final Bundle data);
 }

@@ -14,7 +14,8 @@ public class BackupInfoPresenterImpl extends BasePresenterImpl<BaseView> impleme
 	private final BackupNextStepListener backupNextStepListener;
 	private final CallbackManager callbackManager;
 
-	public BackupInfoPresenterImpl(@NonNull CallbackManager callbackManager, BackupNextStepListener backupNextStepListener) {
+	public BackupInfoPresenterImpl(@NonNull CallbackManager callbackManager,
+		BackupNextStepListener backupNextStepListener) {
 		this.callbackManager = callbackManager;
 		this.backupNextStepListener = backupNextStepListener;
 	}

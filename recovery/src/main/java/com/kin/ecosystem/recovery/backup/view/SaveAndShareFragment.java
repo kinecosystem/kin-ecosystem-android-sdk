@@ -1,5 +1,7 @@
 package com.kin.ecosystem.recovery.backup.view;
 
+import static com.kin.ecosystem.recovery.backup.presenter.BackupPresenterImpl.KEY_ACCOUNT_KEY;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -35,8 +37,6 @@ import java.util.TimeZone;
 
 public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 
-	public static final String KEY_ACCOUNT_KEY = "key_account_key";
-
 	public static SaveAndShareFragment newInstance(BackupNextStepListener listener, String key) {
 		SaveAndShareFragment fragment = new SaveAndShareFragment();
 		fragment.setNextStepListener(listener);
@@ -64,7 +64,7 @@ public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 			new QRFileUriHandlerImpl(getContext()));
 		saveAndSharePresenter = new SaveAndSharePresenterImpl(
 			new CallbackManager(new EventDispatcherImpl(new BroadcastManagerImpl(getActivity()))), nextStepListener,
-			qrBarcodeGenerator, key);
+			qrBarcodeGenerator, key, savedInstanceState);
 		saveAndSharePresenter.onAttach(this);
 		return root;
 	}
@@ -97,6 +97,12 @@ public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 	}
 
 	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		saveAndSharePresenter.onSaveInstanceState(outState);
+		super.onSaveInstanceState(outState);
+	}
+
+	@Override
 	public void showIHaveSavedCheckBox() {
 		iHaveSavedCheckbox.setVisibility(View.VISIBLE);
 		iHaveSavedText.setVisibility(View.VISIBLE);
@@ -112,7 +118,7 @@ public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 			.show();
 	}
 
-	private void setNextStepListener(@NonNull final BackupNextStepListener nextStepListener) {
+	public void setNextStepListener(@NonNull final BackupNextStepListener nextStepListener) {
 		this.nextStepListener = nextStepListener;
 	}
 

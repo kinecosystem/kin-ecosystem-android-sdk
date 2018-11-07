@@ -126,11 +126,11 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 		confirmPassEditText.setFrameBackgroundColor(R.color.kinrecovery_gray);
 	}
 
-	private void setNextStepListener(@NonNull final BackupNextStepListener nextStepListener) {
+	public void setNextStepListener(@NonNull final BackupNextStepListener nextStepListener) {
 		this.nextStepListener = nextStepListener;
 	}
 
-	private void setKeyboardHandler(KeyboardHandler keyboardHandler) {
+	public void setKeyboardHandler(KeyboardHandler keyboardHandler) {
 		this.keyboardHandler = keyboardHandler;
 	}
 

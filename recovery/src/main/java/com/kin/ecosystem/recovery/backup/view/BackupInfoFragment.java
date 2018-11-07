@@ -49,7 +49,7 @@ public class BackupInfoFragment extends Fragment implements BaseView {
 		});
 	}
 
-	private void setNextStepListener(@NonNull final BackupNextStepListener nextStepListener) {
+	public void setNextStepListener(@NonNull final BackupNextStepListener nextStepListener) {
 		this.nextStepListener = nextStepListener;
 	}
 }

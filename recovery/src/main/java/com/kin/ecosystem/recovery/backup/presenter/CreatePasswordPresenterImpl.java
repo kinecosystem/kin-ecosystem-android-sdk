@@ -1,6 +1,7 @@
 package com.kin.ecosystem.recovery.backup.presenter;
 
-import static com.kin.ecosystem.recovery.backup.view.BackupNextStepListener.KEY_ACCOUNT_KEY;
+
+import static com.kin.ecosystem.recovery.backup.presenter.BackupPresenterImpl.KEY_ACCOUNT_KEY;
 import static com.kin.ecosystem.recovery.backup.view.BackupNextStepListener.STEP_CLOSE;
 import static com.kin.ecosystem.recovery.backup.view.BackupNextStepListener.STEP_SAVE_AND_SHARE;
 import static com.kin.ecosystem.recovery.events.EventDispatcherImpl.BACKUP_CREATE_PASSWORD_PAGE_VIEWED;
@@ -12,7 +13,6 @@ import com.kin.ecosystem.recovery.backup.view.BackupNextStepListener;
 import com.kin.ecosystem.recovery.backup.view.CreatePasswordView;
 import com.kin.ecosystem.recovery.base.BasePresenterImpl;
 import com.kin.ecosystem.recovery.events.CallbackManager;
-import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
 import com.kin.ecosystem.recovery.exception.BackupException;
 
 public class CreatePasswordPresenterImpl extends BasePresenterImpl<CreatePasswordView> implements
@@ -25,7 +25,8 @@ public class CreatePasswordPresenterImpl extends BasePresenterImpl<CreatePasswor
 	private boolean isPasswordsMatches = false;
 	private boolean isIUnderstandChecked = false;
 
-	public CreatePasswordPresenterImpl(@NonNull final CallbackManager callbackManager, @NonNull final BackupNextStepListener backupNextStepListener, @NonNull final
+	public CreatePasswordPresenterImpl(@NonNull final CallbackManager callbackManager,
+		@NonNull final BackupNextStepListener backupNextStepListener, @NonNull final
 	KeyStoreProvider keyStoreProvider) {
 		this.callbackManager = callbackManager;
 		this.backupNextStepListener = backupNextStepListener;
