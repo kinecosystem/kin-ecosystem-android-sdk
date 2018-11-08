@@ -68,12 +68,6 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 	}
 
 	@Override
-	public void onStop() {
-		super.onStop();
-		keyboardHandler.closeKeyboard();
-	}
-
-	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		presenter.onSaveInstanceState(outState);
 		super.onSaveInstanceState(outState);

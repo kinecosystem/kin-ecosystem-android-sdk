@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentManager.BackStackEntry;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -163,12 +165,15 @@ public class BackupActivity extends BaseToolbarActivity implements BackupView {
 	@Override
 	public void onBackButtonClicked() {
 		int count = getSupportFragmentManager().getBackStackEntryCount();
-		if (count == 1) {
-			// After pressing back from SaveAndShareFragment, should put the attrs again.
-			// Because this is the only fragment that should be in stack.
-			CreatePasswordFragment createPasswordFragment = getSavedCreatePasswordFragment();
-			if (createPasswordFragment != null) {
-				setCreatePasswordFragmentAttributes(createPasswordFragment);
+		if(count >= 1) {
+			BackStackEntry entry = getSupportFragmentManager().getBackStackEntryAt(count - 1);
+			if (entry.getName().equals(MOVE_TO_SAVE_AND_SHARE)) {
+				// After pressing back from SaveAndShareFragment, should put the attrs again.
+				// Because this is the only fragment that should be in stack.
+				CreatePasswordFragment createPasswordFragment = getSavedCreatePasswordFragment();
+				if (createPasswordFragment != null) {
+					setCreatePasswordFragmentAttributes(createPasswordFragment);
+				}
 			}
 		}
 		super.onBackPressed();

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager.BackStackEntry;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
 import com.kin.ecosystem.recovery.R;
@@ -30,6 +31,12 @@ public class RestoreActivity extends BaseToolbarActivity implements RestoreView 
 	protected void onSaveInstanceState(Bundle outState) {
 		presenter.onSaveInstanceState(outState);
 		super.onSaveInstanceState(outState);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		closeKeyboard();
 	}
 
 	@Override
@@ -104,12 +111,15 @@ public class RestoreActivity extends BaseToolbarActivity implements RestoreView 
 	@Override
 	public void navigateBack() {
 		int count = getSupportFragmentManager().getBackStackEntryCount();
-		if (count == 3) {
-			// After pressing back from RestoreCompletedPage, should put the attrs again.
-			// This is the only fragment that should set arguments again on back.
-			RestoreEnterPasswordFragment enterPasswordFragment = getSavedRestoreEnterPasswordFragment();
-			if (enterPasswordFragment != null) {
-				enterPasswordFragment.setKeyboardHandler(this);
+		if(count >= 1) {
+			BackStackEntry entry = getSupportFragmentManager().getBackStackEntryAt(count - 1);
+			if (entry.getName().equals(RestoreEnterPasswordFragment.class.getSimpleName())) {
+				// After pressing back from RestoreCompletedPage, should put the attrs again.
+				// This is the only fragment that should set arguments again on back.
+				RestoreEnterPasswordFragment enterPasswordFragment = getSavedRestoreEnterPasswordFragment();
+				if (enterPasswordFragment != null) {
+					enterPasswordFragment.setKeyboardHandler(this);
+				}
 			}
 		}
 		super.onBackPressed();
