@@ -16,7 +16,6 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 	private static final String IS_SEND_EMAIL_CLICKED = "is_send_email_clicked";
 	private final BackupNavigator backupNavigator;
 	private final QRBarcodeGenerator qrBarcodeGenerator;
-	private final CallbackManager callbackManager;
 
 	private Uri qrURI;
 	private boolean isSendQREmailClicked;
@@ -25,10 +24,10 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 	public SaveAndSharePresenterImpl(@NonNull final CallbackManager callbackManager,
 		BackupNavigator backupNavigator,
 		QRBarcodeGenerator qrBarcodeGenerator, String key, Bundle savedInstanceState) {
-		this.callbackManager = callbackManager;
 		this.backupNavigator = backupNavigator;
 		this.qrBarcodeGenerator = qrBarcodeGenerator;
 		this.isSendQREmailClicked = getIsSendQrEmailClicked(savedInstanceState);
+		callbackManager.sendBackupEvents(EventDispatcherImpl.BACKUP_QR_CODE_PAGE_VIEWED);
 		createQR(key);
 	}
 
@@ -51,7 +50,6 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 		if (isSendQREmailClicked && view != null) {
 			view.showIHaveSavedCheckBox();
 		}
-		callbackManager.sendBackupEvents(EventDispatcherImpl.BACKUP_QR_CODE_PAGE_VIEWED);
 	}
 
 	private void setQRImage() {

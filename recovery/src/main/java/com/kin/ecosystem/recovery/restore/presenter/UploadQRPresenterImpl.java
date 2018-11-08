@@ -28,12 +28,7 @@ public class UploadQRPresenterImpl extends BaseChildPresenterImpl<UploadQRView> 
 		this.callbackManager = callbackManager;
 		this.fileRequester = fileRequester;
 		this.qrBarcodeGenerator = qrBarcodeGenerator;
-	}
-
-	@Override
-	public void onAttach(UploadQRView view, RestorePresenter restorePresenter) {
-		super.onAttach(view, restorePresenter);
-		callbackManager.sendRestoreEvents(RESTORE_UPLOAD_QR_CODE_PAGE_VIEWED);
+		this.callbackManager.sendRestoreEvents(RESTORE_UPLOAD_QR_CODE_PAGE_VIEWED);
 	}
 
 	@Override
