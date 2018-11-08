@@ -18,13 +18,13 @@ import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
 
 public class BackupInfoFragment extends Fragment implements BaseView {
 
-	public static BackupInfoFragment newInstance(@NonNull final BackupNextStepListener nextStepListener) {
+	public static BackupInfoFragment newInstance(@NonNull final BackupNavigator nextStepListener) {
 		BackupInfoFragment fragment = new BackupInfoFragment();
 		fragment.setNextStepListener(nextStepListener);
 		return fragment;
 	}
 
-	private BackupNextStepListener nextStepListener;
+	private BackupNavigator nextStepListener;
 	private BackupInfoPresenter backupInfoPresenter;
 
 
@@ -49,7 +49,7 @@ public class BackupInfoFragment extends Fragment implements BaseView {
 		});
 	}
 
-	public void setNextStepListener(@NonNull final BackupNextStepListener nextStepListener) {
+	public void setNextStepListener(@NonNull final BackupNavigator nextStepListener) {
 		this.nextStepListener = nextStepListener;
 	}
 }

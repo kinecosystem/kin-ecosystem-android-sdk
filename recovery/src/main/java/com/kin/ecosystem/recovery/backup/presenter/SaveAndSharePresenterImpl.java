@@ -1,11 +1,9 @@
 package com.kin.ecosystem.recovery.backup.presenter;
 
-import static com.kin.ecosystem.recovery.backup.view.BackupNextStepListener.STEP_WELL_DONE;
-
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.recovery.backup.view.BackupNextStepListener;
+import com.kin.ecosystem.recovery.backup.view.BackupNavigator;
 import com.kin.ecosystem.recovery.backup.view.SaveAndShareView;
 import com.kin.ecosystem.recovery.base.BasePresenterImpl;
 import com.kin.ecosystem.recovery.events.CallbackManager;
@@ -15,8 +13,8 @@ import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator.QRBarcodeGeneratorExcept
 
 public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareView> implements SaveAndSharePresenter {
 
-	public static final String IS_SEND_EMAIL_CLICKED = "is_send_email_clicked";
-	private final BackupNextStepListener nextStepListener;
+	private static final String IS_SEND_EMAIL_CLICKED = "is_send_email_clicked";
+	private final BackupNavigator backupNavigator;
 	private final QRBarcodeGenerator qrBarcodeGenerator;
 	private final CallbackManager callbackManager;
 
@@ -25,10 +23,10 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 
 
 	public SaveAndSharePresenterImpl(@NonNull final CallbackManager callbackManager,
-		BackupNextStepListener nextStepListener,
+		BackupNavigator backupNavigator,
 		QRBarcodeGenerator qrBarcodeGenerator, String key, Bundle savedInstanceState) {
 		this.callbackManager = callbackManager;
-		this.nextStepListener = nextStepListener;
+		this.backupNavigator = backupNavigator;
 		this.qrBarcodeGenerator = qrBarcodeGenerator;
 		this.isSendQREmailClicked = getIsSendQrEmailClicked(savedInstanceState);
 		createQR(key);
@@ -70,7 +68,7 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 	@Override
 	public void iHaveSavedChecked(boolean isChecked) {
 		if (isChecked) {
-			nextStepListener.setStep(STEP_WELL_DONE, null);
+			backupNavigator.navigateToWellDonePage();
 		}
 	}
 

@@ -4,20 +4,20 @@ package com.kin.ecosystem.recovery.backup.presenter;
 import static com.kin.ecosystem.recovery.events.EventDispatcherImpl.BACKUP_WELCOME_PAGE_VIEWED;
 
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.recovery.backup.view.BackupNextStepListener;
+import com.kin.ecosystem.recovery.backup.view.BackupNavigator;
 import com.kin.ecosystem.recovery.base.BasePresenterImpl;
 import com.kin.ecosystem.recovery.base.BaseView;
 import com.kin.ecosystem.recovery.events.CallbackManager;
 
 public class BackupInfoPresenterImpl extends BasePresenterImpl<BaseView> implements BackupInfoPresenter {
 
-	private final BackupNextStepListener backupNextStepListener;
+	private final BackupNavigator backupNavigator;
 	private final CallbackManager callbackManager;
 
 	public BackupInfoPresenterImpl(@NonNull CallbackManager callbackManager,
-		BackupNextStepListener backupNextStepListener) {
+		BackupNavigator backupNavigator) {
 		this.callbackManager = callbackManager;
-		this.backupNextStepListener = backupNextStepListener;
+		this.backupNavigator = backupNavigator;
 	}
 
 	@Override
@@ -28,13 +28,13 @@ public class BackupInfoPresenterImpl extends BasePresenterImpl<BaseView> impleme
 
 	@Override
 	public void onBackClicked() {
-		backupNextStepListener.setStep(BackupNextStepListener.STEP_CLOSE, null);
+		backupNavigator.closeFlow();
 	}
 
 	@Override
 	public void letsGoButtonClicked() {
 		if (view != null) {
-			backupNextStepListener.setStep(BackupNextStepListener.STEP_CREATE_PASSWORD, null);
+			backupNavigator.navigateToCreatePasswordPage();
 		}
 	}
 }

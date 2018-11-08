@@ -37,7 +37,7 @@ import java.util.TimeZone;
 
 public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 
-	public static SaveAndShareFragment newInstance(BackupNextStepListener listener, String key) {
+	public static SaveAndShareFragment newInstance(BackupNavigator listener, String key) {
 		SaveAndShareFragment fragment = new SaveAndShareFragment();
 		fragment.setNextStepListener(listener);
 		Bundle bundle = new Bundle();
@@ -46,7 +46,7 @@ public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 		return fragment;
 	}
 
-	private BackupNextStepListener nextStepListener;
+	private BackupNavigator nextStepListener;
 	private SaveAndSharePresenter saveAndSharePresenter;
 
 	private CheckBox iHaveSavedCheckbox;
@@ -118,7 +118,7 @@ public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 			.show();
 	}
 
-	public void setNextStepListener(@NonNull final BackupNextStepListener nextStepListener) {
+	public void setNextStepListener(@NonNull final BackupNavigator nextStepListener) {
 		this.nextStepListener = nextStepListener;
 	}
 

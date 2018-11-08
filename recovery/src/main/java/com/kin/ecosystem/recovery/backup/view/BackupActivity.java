@@ -91,7 +91,7 @@ public class BackupActivity extends BaseToolbarActivity implements BackupView {
 		setNavigationIcon(R.drawable.kinrecovery_ic_back_black);
 		setToolbarTitle(R.string.kinrecovery_keep_your_kin_safe);
 		setStep(2, 2);
-		backupPresenter.saveKeyData(key);
+		backupPresenter.setAccountKey(key);
 		SaveAndShareFragment saveAndShareFragment = (SaveAndShareFragment) getSupportFragmentManager()
 			.findFragmentByTag(TAG_SAVE_AND_SHARE_PAGE);
 

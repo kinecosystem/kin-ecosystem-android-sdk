@@ -1,12 +1,11 @@
 package com.kin.ecosystem.recovery.backup.view;
 
-import android.os.Bundle;
 import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public interface BackupNextStepListener {
+public interface BackupNavigator {
 
 	int STEP_START = 0x00000000;
 	int STEP_CREATE_PASSWORD = 0x00000001;
@@ -21,5 +20,12 @@ public interface BackupNextStepListener {
 
 	}
 
-	void setStep(@Step final int step, @Nullable final Bundle data);
+	void navigateToCreatePasswordPage();
+
+	void navigateToSaveAndSharePage(@NonNull String accountKey);
+
+	void navigateToWellDonePage();
+
+	void closeFlow();
+
 }
