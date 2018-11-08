@@ -6,6 +6,7 @@ import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
@@ -24,6 +25,7 @@ import com.kin.ecosystem.recovery.R;
 public abstract class BaseToolbarActivity extends AppCompatActivity implements KeyboardHandler {
 
 	public static final int EMPTY_TITLE = -1;
+	public static final String BACKGROUND_COLOR = "background_color";
 
 	protected abstract @LayoutRes
 	int getContentLayout();
@@ -36,12 +38,34 @@ public abstract class BaseToolbarActivity extends AppCompatActivity implements K
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(getContentLayout());
-		setupToolbar();
+		setupToolbar(savedInstanceState);
 	}
 
-	private void setupToolbar() {
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		saveToolbarBackgroundColor(outState);
+		super.onSaveInstanceState(outState);
+
+	}
+
+	private void saveToolbarBackgroundColor(Bundle outState) {
+		ColorDrawable colorDrawable = ((ColorDrawable) topToolBar.getBackground());
+		if (colorDrawable != null) {
+			outState.putInt(BACKGROUND_COLOR, colorDrawable.getColor());
+		}
+	}
+
+	private void setupToolbar(Bundle savedInstanceState) {
 		topToolBar = findViewById(R.id.toolbar);
+		int color = getColorFromBundle(savedInstanceState);
+		topToolBar.setBackgroundColor(color);
 		setSupportActionBar(topToolBar);
+	}
+
+	private int getColorFromBundle(Bundle savedInstanceState) {
+		final int defaultColor = ContextCompat.getColor(getApplicationContext(), R.color.kinrecovery_white);
+		return savedInstanceState != null ? savedInstanceState
+			.getInt(BACKGROUND_COLOR, defaultColor) : defaultColor;
 	}
 
 	public void setToolbarTitle(@StringRes int titleRes) {

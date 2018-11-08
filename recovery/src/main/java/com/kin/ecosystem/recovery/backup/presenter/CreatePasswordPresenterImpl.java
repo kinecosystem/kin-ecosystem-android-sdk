@@ -1,34 +1,30 @@
 package com.kin.ecosystem.recovery.backup.presenter;
 
-import static com.kin.ecosystem.recovery.backup.view.BackupNextStepListener.KEY_ACCOUNT_KEY;
-import static com.kin.ecosystem.recovery.backup.view.BackupNextStepListener.STEP_CLOSE;
-import static com.kin.ecosystem.recovery.backup.view.BackupNextStepListener.STEP_SAVE_AND_SHARE;
+
 import static com.kin.ecosystem.recovery.events.EventDispatcherImpl.BACKUP_CREATE_PASSWORD_PAGE_VIEWED;
 
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
-import com.kin.ecosystem.recovery.backup.view.BackupNextStepListener;
+import com.kin.ecosystem.recovery.backup.view.BackupNavigator;
 import com.kin.ecosystem.recovery.backup.view.CreatePasswordView;
 import com.kin.ecosystem.recovery.base.BasePresenterImpl;
 import com.kin.ecosystem.recovery.events.CallbackManager;
-import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
 import com.kin.ecosystem.recovery.exception.BackupException;
 
 public class CreatePasswordPresenterImpl extends BasePresenterImpl<CreatePasswordView> implements
 	CreatePasswordPresenter {
 
-	private final BackupNextStepListener backupNextStepListener;
+	private final BackupNavigator backupNavigator;
 	private final KeyStoreProvider keyStoreProvider;
 	private final CallbackManager callbackManager;
 	private boolean isPasswordRulesOK = false;
 	private boolean isPasswordsMatches = false;
 	private boolean isIUnderstandChecked = false;
 
-	public CreatePasswordPresenterImpl(@NonNull final CallbackManager callbackManager, @NonNull final BackupNextStepListener backupNextStepListener, @NonNull final
-	KeyStoreProvider keyStoreProvider) {
+	public CreatePasswordPresenterImpl(@NonNull final CallbackManager callbackManager,
+		@NonNull final BackupNavigator backupNavigator, @NonNull final KeyStoreProvider keyStoreProvider) {
 		this.callbackManager = callbackManager;
-		this.backupNextStepListener = backupNextStepListener;
+		this.backupNavigator = backupNavigator;
 		this.keyStoreProvider = keyStoreProvider;
 	}
 
@@ -40,7 +36,7 @@ public class CreatePasswordPresenterImpl extends BasePresenterImpl<CreatePasswor
 
 	@Override
 	public void onBackClicked() {
-		backupNextStepListener.setStep(STEP_CLOSE, null);
+		backupNavigator.closeFlow();
 	}
 
 	@Override
@@ -108,10 +104,8 @@ public class CreatePasswordPresenterImpl extends BasePresenterImpl<CreatePasswor
 
 	private void exportAccount(String password) {
 		try {
-			final String key = keyStoreProvider.exportAccount(password);
-			final Bundle data = new Bundle();
-			data.putString(KEY_ACCOUNT_KEY, key);
-			backupNextStepListener.setStep(STEP_SAVE_AND_SHARE, data);
+			final String accountKey = keyStoreProvider.exportAccount(password);
+			backupNavigator.navigateToSaveAndSharePage(accountKey);
 		} catch (BackupException e) {
 			if (view != null) {
 				view.showBackupFailed();
