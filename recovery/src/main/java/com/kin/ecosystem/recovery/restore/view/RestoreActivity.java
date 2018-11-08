@@ -55,8 +55,7 @@ public class RestoreActivity extends BaseToolbarActivity implements RestoreView 
 	@Override
 	public void navigateToEnterPassword(String keystoreData) {
 		final String fragmentName = RestoreEnterPasswordFragment.class.getSimpleName();
-		RestoreEnterPasswordFragment fragment = (RestoreEnterPasswordFragment) getSupportFragmentManager()
-			.findFragmentByTag(fragmentName);
+		RestoreEnterPasswordFragment fragment = getSavedRestoreEnterPasswordFragment();
 
 		if (fragment == null) {
 			fragment = RestoreEnterPasswordFragment.newInstance(keystoreData, this);
@@ -85,8 +84,7 @@ public class RestoreActivity extends BaseToolbarActivity implements RestoreView 
 
 	private void replaceFragment(Fragment fragment, String backStackName, String tag, boolean addAnimation) {
 		FragmentTransaction transaction = getSupportFragmentManager()
-			.beginTransaction()
-			.replace(R.id.fragment_frame, fragment, tag);
+			.beginTransaction();
 
 		if (backStackName != null) {
 			transaction.addToBackStack(backStackName);
@@ -94,12 +92,13 @@ public class RestoreActivity extends BaseToolbarActivity implements RestoreView 
 
 		if (addAnimation) {
 			transaction.setCustomAnimations(
-				R.anim.kinrecovery_slide_in_right,
-				R.anim.kinrecovery_slide_out_left,
+				0,
+				0,
 				R.anim.kinrecovery_slide_in_left,
 				R.anim.kinrecovery_slide_out_right);
 		}
-		transaction.commit();
+
+		transaction.replace(R.id.fragment_frame, fragment, tag).commit();
 	}
 
 	@Override
@@ -113,7 +112,7 @@ public class RestoreActivity extends BaseToolbarActivity implements RestoreView 
 				enterPasswordFragment.setKeyboardHandler(this);
 			}
 		}
-		getSupportFragmentManager().popBackStack(null, 0);
+		super.onBackPressed();
 	}
 
 	private RestoreEnterPasswordFragment getSavedRestoreEnterPasswordFragment() {
