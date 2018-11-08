@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.recovery.events.CallbackManager;
-import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator.QRBarcodeGeneratorException;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator.QRFileHandlingException;
@@ -70,7 +69,7 @@ public class UploadQRPresenterImpl extends BaseChildPresenterImpl<UploadQRView> 
 	private void loadEncryptedKeyStore(Uri fileUri) {
 		try {
 			String encryptedKeyStore = qrBarcodeGenerator.decodeQR(fileUri);
-			getParentPresenter().nextStep(encryptedKeyStore);
+			getParentPresenter().navigateToEnterPasswordPage(encryptedKeyStore);
 		} catch (QRFileHandlingException e) {
 			Logger.e("loadEncryptedKeyStore - loading file failed.", e);
 			view.showErrorLoadingFileDialog();

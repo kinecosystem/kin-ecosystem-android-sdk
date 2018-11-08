@@ -1,6 +1,7 @@
 package com.kin.ecosystem.recovery.restore.presenter;
 
 
+import android.os.Bundle;
 import com.kin.ecosystem.recovery.restore.view.RestoreEnterPasswordView;
 
 public interface RestoreEnterPasswordPresenter extends BaseChildPresenter<RestoreEnterPasswordView> {
@@ -9,4 +10,5 @@ public interface RestoreEnterPasswordPresenter extends BaseChildPresenter<Restor
 
 	void restoreClicked(String password);
 
+	void onSaveInstanceState(Bundle outState);
 }
