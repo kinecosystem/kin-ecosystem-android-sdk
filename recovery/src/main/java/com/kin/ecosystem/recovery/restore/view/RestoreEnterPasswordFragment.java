@@ -1,6 +1,8 @@
 package com.kin.ecosystem.recovery.restore.view;
 
 
+import static com.kin.ecosystem.recovery.restore.presenter.RestorePresenterImpl.KEY_ACCOUNT_KEY;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,8 +30,8 @@ import com.kin.ecosystem.recovery.widget.PasswordEditText;
 
 public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnterPasswordView {
 
-	private static final String BUNDLE_KEY_KEYSTORE = "BUNDLE_KEY_KEYSTORE";
 	public static final int VIEW_MIN_DELAY_MILLIS = 50;
+
 	private RestoreEnterPasswordPresenter presenter;
 	private KeyboardHandler keyboardHandler;
 	private Button doneBtn;
@@ -42,13 +44,13 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 		fragment.setKeyboardHandler(keyboardHandler);
 		if (keystoreData != null) {
 			Bundle bundle = new Bundle();
-			bundle.putString(BUNDLE_KEY_KEYSTORE, keystoreData);
+			bundle.putString(KEY_ACCOUNT_KEY, keystoreData);
 			fragment.setArguments(bundle);
 		}
 		return fragment;
 	}
 
-	private void setKeyboardHandler(@NonNull KeyboardHandler keyboardHandler) {
+	public void setKeyboardHandler(@NonNull KeyboardHandler keyboardHandler) {
 		this.keyboardHandler = keyboardHandler;
 	}
 
@@ -65,6 +67,18 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 		return root;
 	}
 
+	@Override
+	public void onStop() {
+		super.onStop();
+		keyboardHandler.closeKeyboard();
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		presenter.onSaveInstanceState(outState);
+		super.onSaveInstanceState(outState);
+	}
+
 	@NonNull
 	private String extractKeyStoreData(@Nullable Bundle savedInstanceState) {
 		String keystoreData;
@@ -72,7 +86,7 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 		if (bundle == null) {
 			throw new IllegalStateException("Bundle is null, can't extract required keystore data.");
 		}
-		keystoreData = bundle.getString(BUNDLE_KEY_KEYSTORE);
+		keystoreData = bundle.getString(KEY_ACCOUNT_KEY);
 		if (keystoreData == null) {
 			throw new IllegalStateException("Can't find keystore data inside Bundle.");
 		}
