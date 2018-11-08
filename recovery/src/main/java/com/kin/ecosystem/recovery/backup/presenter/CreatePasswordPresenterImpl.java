@@ -16,21 +16,15 @@ public class CreatePasswordPresenterImpl extends BasePresenterImpl<CreatePasswor
 
 	private final BackupNavigator backupNavigator;
 	private final KeyStoreProvider keyStoreProvider;
-	private final CallbackManager callbackManager;
+
 	private boolean isPasswordRulesOK = false;
 	private boolean isPasswordsMatches = false;
 	private boolean isIUnderstandChecked = false;
 
 	public CreatePasswordPresenterImpl(@NonNull final CallbackManager callbackManager,
 		@NonNull final BackupNavigator backupNavigator, @NonNull final KeyStoreProvider keyStoreProvider) {
-		this.callbackManager = callbackManager;
 		this.backupNavigator = backupNavigator;
 		this.keyStoreProvider = keyStoreProvider;
-	}
-
-	@Override
-	public void onAttach(CreatePasswordView view) {
-		super.onAttach(view);
 		callbackManager.sendBackupEvents(BACKUP_CREATE_PASSWORD_PAGE_VIEWED);
 	}
 
