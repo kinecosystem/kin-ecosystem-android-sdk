@@ -23,12 +23,12 @@ public class RestoreEnterPasswordPresenterImpl extends BaseChildPresenterImpl<Re
 	public RestoreEnterPasswordPresenterImpl(@NonNull final CallbackManager callbackManager, String keystoreData) {
 		this.callbackManager = callbackManager;
 		this.keystoreData = keystoreData;
+		this.callbackManager.sendRestoreEvents(RESTORE_PASSWORD_ENTRY_PAGE_VIEWED);
 	}
 
 	@Override
 	public void onAttach(RestoreEnterPasswordView view) {
 		super.onAttach(view);
-		callbackManager.sendRestoreEvents(RESTORE_PASSWORD_ENTRY_PAGE_VIEWED);
 	}
 
 	@Override

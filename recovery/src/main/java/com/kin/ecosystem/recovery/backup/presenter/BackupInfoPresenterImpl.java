@@ -12,17 +12,10 @@ import com.kin.ecosystem.recovery.events.CallbackManager;
 public class BackupInfoPresenterImpl extends BasePresenterImpl<BaseView> implements BackupInfoPresenter {
 
 	private final BackupNavigator backupNavigator;
-	private final CallbackManager callbackManager;
 
 	public BackupInfoPresenterImpl(@NonNull CallbackManager callbackManager,
 		BackupNavigator backupNavigator) {
-		this.callbackManager = callbackManager;
 		this.backupNavigator = backupNavigator;
-	}
-
-	@Override
-	public void onAttach(BaseView view) {
-		super.onAttach(view);
 		callbackManager.sendBackupEvents(BACKUP_WELCOME_PAGE_VIEWED);
 	}
 
