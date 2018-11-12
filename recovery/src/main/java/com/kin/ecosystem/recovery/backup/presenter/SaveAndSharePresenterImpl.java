@@ -1,5 +1,9 @@
 package com.kin.ecosystem.recovery.backup.presenter;
 
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_QR_CODE_PAGE_VIEWED;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_QR_PAGE_QR_SAVED_TAPPED;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_QR_PAGE_SEND_QR_TAPPED;
+
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -7,7 +11,6 @@ import com.kin.ecosystem.recovery.backup.view.BackupNavigator;
 import com.kin.ecosystem.recovery.backup.view.SaveAndShareView;
 import com.kin.ecosystem.recovery.base.BasePresenterImpl;
 import com.kin.ecosystem.recovery.events.CallbackManager;
-import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator.QRBarcodeGeneratorException;
 
@@ -16,6 +19,7 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 	private static final String IS_SEND_EMAIL_CLICKED = "is_send_email_clicked";
 	private final BackupNavigator backupNavigator;
 	private final QRBarcodeGenerator qrBarcodeGenerator;
+	private final CallbackManager callbackManager;
 
 	private Uri qrURI;
 	private boolean isSendQREmailClicked;
@@ -26,8 +30,9 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 		QRBarcodeGenerator qrBarcodeGenerator, String key, Bundle savedInstanceState) {
 		this.backupNavigator = backupNavigator;
 		this.qrBarcodeGenerator = qrBarcodeGenerator;
+		this.callbackManager = callbackManager;
 		this.isSendQREmailClicked = getIsSendQrEmailClicked(savedInstanceState);
-		callbackManager.sendBackupEvents(EventDispatcherImpl.BACKUP_QR_CODE_PAGE_VIEWED);
+		this.callbackManager.sendBackupEvent(BACKUP_QR_CODE_PAGE_VIEWED);
 		createQR(key);
 	}
 
@@ -66,12 +71,14 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 	@Override
 	public void iHaveSavedChecked(boolean isChecked) {
 		if (isChecked) {
+			callbackManager.sendBackupEvent(BACKUP_QR_PAGE_QR_SAVED_TAPPED);
 			backupNavigator.navigateToWellDonePage();
 		}
 	}
 
 	@Override
 	public void sendQREmailClicked() {
+		callbackManager.sendBackupEvent(BACKUP_QR_PAGE_SEND_QR_TAPPED);
 		isSendQREmailClicked = true;
 		if (qrURI != null && view != null) {
 			view.showSendIntent(qrURI);
