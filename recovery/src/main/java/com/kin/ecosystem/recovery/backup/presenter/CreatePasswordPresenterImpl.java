@@ -1,7 +1,8 @@
 package com.kin.ecosystem.recovery.backup.presenter;
 
 
-import static com.kin.ecosystem.recovery.events.EventDispatcherImpl.BACKUP_CREATE_PASSWORD_PAGE_VIEWED;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_CREATE_PASSWORD_PAGE_NEXT_TAPPED;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_CREATE_PASSWORD_PAGE_VIEWED;
 
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
@@ -16,6 +17,7 @@ public class CreatePasswordPresenterImpl extends BasePresenterImpl<CreatePasswor
 
 	private final BackupNavigator backupNavigator;
 	private final KeyStoreProvider keyStoreProvider;
+	private final CallbackManager callbackManager;
 
 	private boolean isPasswordRulesOK = false;
 	private boolean isPasswordsMatches = false;
@@ -25,7 +27,8 @@ public class CreatePasswordPresenterImpl extends BasePresenterImpl<CreatePasswor
 		@NonNull final BackupNavigator backupNavigator, @NonNull final KeyStoreProvider keyStoreProvider) {
 		this.backupNavigator = backupNavigator;
 		this.keyStoreProvider = keyStoreProvider;
-		callbackManager.sendBackupEvents(BACKUP_CREATE_PASSWORD_PAGE_VIEWED);
+		this.callbackManager = callbackManager;
+		this.callbackManager.sendBackupEvent(BACKUP_CREATE_PASSWORD_PAGE_VIEWED);
 	}
 
 	@Override
@@ -93,6 +96,7 @@ public class CreatePasswordPresenterImpl extends BasePresenterImpl<CreatePasswor
 
 	@Override
 	public void nextButtonClicked(String password) {
+		callbackManager.sendBackupEvent(BACKUP_CREATE_PASSWORD_PAGE_NEXT_TAPPED);
 		exportAccount(password);
 	}
 

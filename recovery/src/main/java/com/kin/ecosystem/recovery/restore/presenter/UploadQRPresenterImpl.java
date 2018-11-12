@@ -1,9 +1,10 @@
 package com.kin.ecosystem.recovery.restore.presenter;
 
-
-import static com.kin.ecosystem.recovery.events.EventDispatcherImpl.RESTORE_ARE_YOUR_SURE_CANCEL_TAPPED;
-import static com.kin.ecosystem.recovery.events.EventDispatcherImpl.RESTORE_UPLOAD_QR_CODE_BUTTON_TAPPED;
-import static com.kin.ecosystem.recovery.events.EventDispatcherImpl.RESTORE_UPLOAD_QR_CODE_PAGE_VIEWED;
+import static com.kin.ecosystem.recovery.events.RestoreEventCode.RESTORE_ARE_YOUR_SURE_CANCEL_TAPPED;
+import static com.kin.ecosystem.recovery.events.RestoreEventCode.RESTORE_ARE_YOUR_SURE_OK_TAPPED;
+import static com.kin.ecosystem.recovery.events.RestoreEventCode.RESTORE_UPLOAD_QR_CODE_BACK_TAPPED;
+import static com.kin.ecosystem.recovery.events.RestoreEventCode.RESTORE_UPLOAD_QR_CODE_BUTTON_TAPPED;
+import static com.kin.ecosystem.recovery.events.RestoreEventCode.RESTORE_UPLOAD_QR_CODE_PAGE_VIEWED;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -37,7 +38,8 @@ public class UploadQRPresenterImpl extends BaseChildPresenterImpl<UploadQRView> 
 	}
 
 	@Override
-	public void onConsent(String chooserTitle) {
+	public void onOkPressed(String chooserTitle) {
+		callbackManager.sendRestoreEvents(RESTORE_ARE_YOUR_SURE_OK_TAPPED);
 		fileRequester.requestImageFile(chooserTitle);
 	}
 
@@ -76,6 +78,7 @@ public class UploadQRPresenterImpl extends BaseChildPresenterImpl<UploadQRView> 
 
 	@Override
 	public void onBackClicked() {
+		callbackManager.sendRestoreEvents(RESTORE_UPLOAD_QR_CODE_BACK_TAPPED);
 		getParentPresenter().previousStep();
 	}
 }

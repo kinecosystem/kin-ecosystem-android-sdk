@@ -1,6 +1,10 @@
 package com.kin.ecosystem.recovery.backup.presenter;
 
 
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_CREATE_PASSWORD_PAGE_BACK_TAPPED;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_QR_PAGE_BACK_TAPPED;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_WELCOME_PAGE_BACK_TAPPED;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -42,6 +46,7 @@ public class BackupPresenterImpl extends BasePresenterImpl<BackupView> implement
 
 	@Override
 	public void onBackClicked() {
+		sendBackEvent(step);
 		if (step == STEP_WELL_DONE) {
 			switchToStep(STEP_CLOSE);
 		} else {
@@ -52,6 +57,20 @@ public class BackupPresenterImpl extends BasePresenterImpl<BackupView> implement
 				step--;
 				view.onBackButtonClicked();
 			}
+		}
+	}
+
+	private void sendBackEvent(@Step final int step) {
+		switch (step) {
+			case STEP_START:
+				callbackManager.sendBackupEvent(BACKUP_WELCOME_PAGE_BACK_TAPPED);
+				break;
+			case STEP_CREATE_PASSWORD:
+				callbackManager.sendBackupEvent(BACKUP_CREATE_PASSWORD_PAGE_BACK_TAPPED);
+				break;
+			case STEP_SAVE_AND_SHARE:
+				callbackManager.sendBackupEvent(BACKUP_QR_PAGE_BACK_TAPPED);
+				break;
 		}
 	}
 
