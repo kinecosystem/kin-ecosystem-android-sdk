@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/save_qr_tile"
+        style="@style/KinrecoveryTitleLargeLight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinrecovery_margin_large"
+        android:text="@string/kinrecovery_save_your_qr_code"
+        android:textColor="@color/kinrecovery_bluePrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/save_qr_description"
+        style="@style/KinrecoveryTitleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinrecovery_margin_block"
+        android:gravity="center"
+        android:lineSpacingExtra="@dimen/kinrecovery_line_spacing"
+        android:text="@string/kinrecovery_you_will_need_it_to_restore_your_kin_send_it_to_yourself_by_email"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/save_qr_tile"/>
+
+
+    <ImageView
+        android:id="@+id/qr_image"
+        android:layout_width="@dimen/kinrecovery_qr_code_image_size"
+        android:layout_height="@dimen/kinrecovery_qr_code_image_size"
+        android:layout_marginTop="@dimen/kinrecovery_margin_large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/save_qr_description"/>
+
+    <ImageView
+        android:id="@+id/flag_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/kinrecovery_icon_side_margin"
+        android:src="@drawable/kinrecovery_red_flag_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/remember_text"
+        app:layout_constraintEnd_toStartOf="@+id/remember_text"
+        app:layout_constraintTop_toTopOf="@+id/remember_text"/>
+
+    <TextView
+        android:id="@+id/remember_text"
+        style="@style/KinrecoveryTitleGray"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinrecovery_margin_xlarge"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:lineSpacingExtra="@dimen/kinrecovery_line_spacing"
+        android:text="@string/kinrecovery_remember"
+        android:textColor="@color/kinrecovery_red"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/qr_image"/>
+
+    <TextView
+        android:id="@+id/remember_description"
+        style="@style/KinrecoveryTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:lineSpacingExtra="@dimen/kinrecovery_line_spacing"
+        android:text="@string/kinrecovery_keep_your_password_in_a_safe_place_and_the_qr_handy"
+        android:textColor="@color/kinrecovery_red"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/remember_text"/>
+
+    <CheckBox
+        android:id="@+id/i_saved_my_qr_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColorHighlight="@color/kinrecovery_bluePrimary"
+        android:theme="@style/KinrecoveryCheckBox"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/send_email_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/remember_description"/>
+
+    <TextView
+        android:id="@+id/i_saved_my_qr_text"
+        style="@style/KinrecoveryTitleGray"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/kinrecovery_i_ve_saved_my_qr"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/i_saved_my_qr_checkbox"
+        app:layout_constraintStart_toEndOf="@id/i_saved_my_qr_checkbox"
+        app:layout_constraintTop_toTopOf="@id/i_saved_my_qr_checkbox"/>
+
+    <Button
+        android:id="@+id/send_email_button"
+        style="@style/KinrecoveryTitleLarge"
+        android:layout_width="@dimen/kinrecovery_btn_width"
+        android:layout_height="@dimen/kinrecovery_btn_frame_height"
+        android:layout_marginBottom="@dimen/kinrecovery_margin_xlarge"
+        android:background="@drawable/kinrecovery_btn_rounded_blue_solid"
+        android:text="@string/kinrecovery_send_qr_code_via_email"
+        android:textSize="@dimen/kinrecovery_btn_text_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+</android.support.constraint.ConstraintLayout>

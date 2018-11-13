@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <dimen name="kinrecovery_icon_side_margin">3dp</dimen>
+    <dimen name="kinrecovery_qr_code_image_size">160dp</dimen>
+</resources>

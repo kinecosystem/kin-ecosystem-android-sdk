@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="kinrecovery_upload_qr_icon_margin_top">52dp</dimen>
+    <dimen name="kinrecovery_upload_content_title_text_size">22sp</dimen>
+    <dimen name="kinrecovery_upload_content_text_size">12sp</dimen>
+    <dimen name="kinrecovery_btn_frame_height">50dp</dimen>
+    <dimen name="kinrecovery_upload_btn_frame_margin_bottom">35dp</dimen>
+    <dimen name="kinrecovery_btn_frame_margin_sides">30dp</dimen>
+    <dimen name="kinrecovery_button_corners_radius">25dp</dimen>
+    <dimen name="kinrecovery_button_dash_width">2dp</dimen>
+    <dimen name="kinrecovery_upload_qr_icon_size">84dp</dimen>
+    <dimen name="kinrecovery_upload_content_title_margin_top">38dp</dimen>
+    <dimen name="kinrecovery_upload_content_margin_top">14dp</dimen>
+    <dimen name="kinrecovery_upload_btn_icon_width">18dp</dimen>
+    <dimen name="kinrecovery_upload_btn_icon_height">22dp</dimen>
+    <dimen name="kinrecovery_upload_btn_margin_end">15dp</dimen>
+    <dimen name="kinrecovery_password_qr_icon_size">70dp</dimen>
+    <dimen name="kinrecovery_password_recovery_content_margin_top">9dp</dimen>
+    <dimen name="kinrecovery_password_recovery_content_text_size">12sp</dimen>
+    <dimen name="kinrecovery_password_edit_frame_radius">20dp</dimen>
+    <dimen name="kinrecovery_password_frame_width">1dp</dimen>
+    <dimen name="kinrecovery_password_blue_v_size">28dp</dimen>
+    <dimen name="kinrecovery_password_edit_frame_height">40dp</dimen>
+    <dimen name="kinrecovery_password_edit_frame_margin_bottom">10dp</dimen>
+    <dimen name="kinrecovery_password_edit_text_width">181dp</dimen>
+    <dimen name="kinrecovery_password_edit_text_margin_start">21dp</dimen>
+    <dimen name="kinrecovery_reveal_icon_width">22dp</dimen>
+    <dimen name="kinrecovery_reveal_icon_height">15dp</dimen>
+    <dimen name="kinrecovery_circle_v_size">50dp</dimen>
+    <dimen name="kinrecovery_circle_v_margin_bottom">15dp</dimen>
+    <dimen name="kinrecovery_password_recovery_btn_margin_bottom">10dp</dimen>
+    <dimen name="kinrecovery_reveal_icon_margin_end">15dp</dimen>
+    <dimen name="button_margin_bottom">36dp</dimen>
+
+
+    <dimen name="kinrecovery_margin_xlarge">36dp</dimen>
+    <dimen name="kinrecovery_margin_large">20dp</dimen>
+    <dimen name="kinrecovery_margin_main">16dp</dimen>
+    <dimen name="kinrecovery_margin_medium">12dp</dimen>
+    <dimen name="kinrecovery_margin_block">9dp</dimen>
+
+
+    <dimen name="kinrecovery_line_spacing">4dp</dimen>
+    <dimen name="kinrecovery_btn_width">300dp</dimen>
+    <dimen name="kinrecovery_edittext_margin">15dp</dimen>
+    <dimen name="kinrecovery_edittext_height">40dp</dimen>
+    <dimen name="kinrecovery_edittext_stroke_width">1dp</dimen>
+    <dimen name="kinrecovery_edittext_corners_radius">20dp</dimen>
+    <dimen name="kinrecovery_password_edit_text_size">14sp</dimen>
+    <dimen name="kinrecovery_password_edittext_error_size">13sp</dimen>
+    <dimen name="kinrecovery_text_align_top_checkbox_margin">5dp</dimen>
+
+    <!--Text Size-->
+    <dimen name="kinrecovery_small_size">12sp</dimen>
+    <dimen name="kinrecovery_regular_size">14sp</dimen>
+    <dimen name="kinrecovery_medium_size">18sp</dimen>
+    <dimen name="kinrecovery_large_size">22sp</dimen>
+    <dimen name="kinrecovery_btn_text_size">16sp</dimen>
+
+
+</resources>

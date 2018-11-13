@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/spend_offer_container">
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="300dp"
+        android:layout_height="90dp"
+        android:background="@drawable/kinecosystem_item_bg_placeholder"/>
+
+    <FrameLayout
+        android:id="@+id/earn_title_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinecosystem_block_medium_margin">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title"
+                style="@style/KinecosysSubTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/kinecosystem_title"
+                android:maxLength="24"
+                tools:text="Spotify"/>
+
+            <TextView
+                android:id="@+id/sub_title"
+                style="@style/KinecosysSubTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLength="30"
+                tools:text="1 week subscription"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/amount_text"
+            style="@style/KinecosysSubTitleMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:gravity="right"
+            android:textColor="@color/kinecosystem_bluePrimary"
+            tools:text="2,000 KIN"/>
+
+    </FrameLayout>
+
+</LinearLayout>

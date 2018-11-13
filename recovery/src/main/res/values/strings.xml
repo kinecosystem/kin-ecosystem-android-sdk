@@ -1,0 +1,56 @@
+<resources>
+
+    <!--Activity Name-->
+    <string name="kinrecovery_restore">Restore</string>
+    <string name="kinrecovery_backup">Backup</string>
+
+    <string name="kinrecovery_steps_format">%d/%d</string>
+
+    <!--Sentences-->
+    <string name="kinrecovery_upload_qr_title">Import your Kin</string>
+    <string name="kinrecovery_upload_qr_description">All you need is to upload\nthe QR code we provided you</string>
+    <string name="kinrecovery_upload_qr_btn">Upload your QR code</string>
+    <string name="kinrecovery_restore_consent_title">Are you sure you want to restore your previous balance?</string>
+    <string name="kinrecovery_consent_message">Restoring your old balance will replace your current Kin balance.</string>
+    <string name="kinrecovery_password_restore_title">Enter Your Password</string>
+    <string name="kinrecovery_password_recovery_content">Great, we’re almost there!\nPlease enter your password</string>
+    <string name="kinrecovery_done">Done</string>
+    <string name="kinrecovery_thank_you">Thank You!</string>
+    <string name="kinrecovery_restore_completed_title">Your Kin balance is updated</string>
+    <string name="kinrecovery_enter_password">Enter Password</string>
+    <string name="kinrecovery_try_again">Try Again</string>
+    <string name="kinrecovery_cancel">Cancel</string>
+
+    <!--Errors-->
+    <string name="kinrecovery_loading_file_error">Error Loading QR File</string>
+    <string name="kinrecovery_error_decoding_QR">Error Processing QR File</string>
+    <string name="kinrecovery_restore_password_error">Password does not match QR code.\nPlease try again.</string>
+    <string name="kinrecovery_restore_invalid_qr">Oops, we didn\'t recognized this QR code.\nPlease upload again.</string>
+    <string name="kinrecovery_password_does_not_meet_req_above">Password doesn\'t meet the requirements above</string>
+    <string name="kinrecovery_password_does_not_match">Password doesn\'t match</string>
+
+    <!--Backup Strings-->
+    <string name="kinrecovery_backup_description">Backing up your current balance will allow\nyou to recover it in case you switch phones,\n delete the app or clear your data.</string>
+    <string name="kinrecovery_keep_your_kin_safe">Keep your Kin Safe</string>
+    <string name="kinrecovery_let_s_go">Let\'s Go</string>
+    <string name="kinrecovery_create_password_description">Create a strong password to backup your Kin\nPassword must include the following:\n(9 character, 1 upper case, 1 special character \"#,!,@\", 1 digit)</string>
+    <string name="kinrecovery_confirm_password">Confirm Password</string>
+    <string name="kinrecovery_next">Next</string>
+    <string name="kinrecovery_i_understand_password_description">I understand this password is required to restore\nmy Kin and it can\'t be recovered if lost.</string>
+    <string name="kinrecovery_create_password">Create Password</string>
+    <string name="kinrecovery_i_ve_saved_my_qr">I\'ve saved my QR code</string>
+    <string name="kinrecovery_send_qr_code_via_email">Send QR code via Email</string>
+    <string name="kinrecovery_keep_your_password_in_a_safe_place_and_the_qr_handy">Keep your password in a safe place\nand the QR code handy.</string>
+    <string name="kinrecovery_remember">Remember!</string>
+    <string name="kinrecovery_you_will_need_it_to_restore_your_kin_send_it_to_yourself_by_email">You will need it to restore your Kin.\nSend it to yourself by email.</string>
+    <string name="kinrecovery_save_your_qr_code">Save your QR Code</string>
+    <string name="kinrecovery_my_kin_wallet_qr_code">My Kin Wallet QR Code</string>
+    <string name="kinrecovery_backup_created_on">Backup created on:</string>
+    <string name="kinrecovery_send_email">Send email…</string>
+    <string name="kinrecovery_in_order_to_restore_your_kin_you_will_need_the_qr">In order to restore your Kin, you will need the QR code\nand the password you\'ve created.</string>
+    <string name="kinrecovery_well_done_your_kin_is_safe">Well done, your Kin is safe!</string>
+    <string name="kinrecovery_something_went_wrong_title">Something went wrong</string>
+    <string name="kinrecovery_we_had_some_issues_to_create_backup">We had some issues to create your backup.</string>
+    <string name="kinrecovery_could_not_load_the_qr_please_try_again_later">Could not load the QR, please try again later.</string>
+    <string name="kinrecovery_choose_qr_image">Choose QR image…</string>
+</resources>

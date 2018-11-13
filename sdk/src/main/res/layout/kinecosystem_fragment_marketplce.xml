@@ -1,0 +1,96 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="1">
+
+    <LinearLayout
+        android:id="@+id/earn_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.52"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:id="@+id/earn_title_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/kinecosystem_block_margin"
+            android:layout_marginLeft="@dimen/kinecosystem_main_margin"
+            android:layout_marginRight="@dimen/kinecosystem_main_margin"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/earn_title"
+                style="@style/KinecosysTitleTextMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/kinecosystem_tiny_margin"
+                android:text="@string/kinecosystem_earn"/>
+
+            <TextView
+                android:id="@+id/earn_subtitle"
+                style="@style/KinecosysSubTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/earn_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/kinecosystem_main_small_margin"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/kinecosystem_gray_darker"/>
+
+    <LinearLayout
+        android:id="@+id/spend_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.48"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/spend_title_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/kinecosystem_block_margin"
+            android:layout_marginLeft="@dimen/kinecosystem_main_margin"
+            android:layout_marginRight="@dimen/kinecosystem_main_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/spend_title"
+                style="@style/KinecosysTitleTextMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/kinecosystem_tiny_margin"
+                android:text="@string/kinecosystem_spend"/>
+
+            <TextView
+                android:id="@+id/spend_subtitle"
+                style="@style/KinecosysSubTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/spend_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/kinecosystem_main_small_margin"/>
+    </LinearLayout>
+
+</LinearLayout>

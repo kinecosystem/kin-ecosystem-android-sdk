@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.kin.ecosystem">
+
+    <application>
+        <activity
+            android:label="@string/kinecosystem_welcome_to_kin"
+            android:name=".splash.view.SplashActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/KinecosysNoActionBar"/>
+
+        <activity
+            android:label="@string/kinecosystem_kin_marketplace"
+            android:name=".main.view.EcosystemActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/KinecosysNoActionBar"/>
+
+        <activity
+            android:name=".poll.view.PollWebViewActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/KinecosysNoActionBar"/>
+
+        <activity
+            android:name=".settings.view.SettingsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/KinecosysNoActionBar"/>
+
+    </application>
+
+</manifest>

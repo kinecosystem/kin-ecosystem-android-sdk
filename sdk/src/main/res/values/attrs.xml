@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="KinEcosystemDashView">
+        <attr format="color" name="color"/>
+        <attr format="dimension" name="dashLength"/>
+        <attr format="dimension" name="dashGap"/>
+        <attr format="dimension" name="dashThickness"/>
+        <attr format="enum" name="orientation">
+            <enum name="horizontal" value="0"/>
+            <enum name="vertical" value="1"/>
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="KinEcosystemBalanceView">
+        <attr format="string" name="subTitle"/>
+    </declare-styleable>
+
+    <declare-styleable name="KinEcosystemTouchIndicatorIcon">
+        <attr format="reference" name="src"/>
+        <attr name="kinecosystem_indicatorVisibility"/>
+    </declare-styleable>
+
+    <declare-styleable name="KinEcosystemSettingsItem">
+        <attr format="reference" name="kinecosystem_src"/>
+        <attr format="string" name="kinecosysem_text"/>
+        <attr name="kinecosystem_indicatorVisibility"/>
+    </declare-styleable>
+
+    <attr format="boolean" name="kinecosystem_indicatorVisibility"/>
+</resources>

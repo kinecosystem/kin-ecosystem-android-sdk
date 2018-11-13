@@ -1,0 +1,32 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply from: '../dependencies.gradle'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "${KIN_ECOSYSTEM_CORE_VERSION_NAME}"
+    }
+
+    sourceSets {
+        test.java.srcDirs += 'src/test/kotlin'
+    }
+}
+
+dependencies {
+
+    implementation project(':common')
+    api project(':recovery')
+
+    api devDependencies.kinCore
+    implementation devDependencies.okhttp3
+    implementation devDependencies.loginInterceptor3
+
+    testImplementation project(':test-base')
+    testImplementation testingDependencies.mockitoKotlin
+    testImplementation testingDependencies.robolectric
+}

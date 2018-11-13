@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">@color/bluePrimary</color>
-    <color name="colorPrimaryDark">@color/bluePrimaryDark</color>
-    <color name="colorAccent">@color/bluePrimary</color>
-
-
-    <color name="sample_app_blue">#263ffd</color>
+    <color name="colorPrimary">#304ffe</color>
+    <color name="colorPrimaryDark">#233aba</color>
+    <color name="colorAccent">@color/colorPrimary</color>
 </resources>

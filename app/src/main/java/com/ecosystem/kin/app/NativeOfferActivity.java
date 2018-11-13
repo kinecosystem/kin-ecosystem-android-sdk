@@ -11,10 +11,13 @@ import android.widget.Toast;
 public class NativeOfferActivity extends AppCompatActivity {
 
     private static final String OFFER_NAME_KEY = "offer_name_key";
+    private static final String OFFER_TYPE_KEY = "offer_type_key";
 
-    public static Intent createIntent(Context context, String offerName) {
+
+    public static Intent createIntent(Context context, String offerName, String offerTpye) {
         Intent intent = new Intent(context.getApplicationContext(), NativeOfferActivity.class);
         intent.putExtra(OFFER_NAME_KEY, offerName);
+        intent.putExtra(OFFER_TYPE_KEY, offerTpye);
         return  intent;
     }
 
@@ -25,6 +28,8 @@ public class NativeOfferActivity extends AppCompatActivity {
         setContentView(R.layout.native_offer_activity);
 
         String offerName = getIntent().getStringExtra(OFFER_NAME_KEY);
-        Toast.makeText(this, offerName + " offer was clicked", Toast.LENGTH_LONG).show();
+        String offerType = getIntent().getStringExtra(OFFER_TYPE_KEY);
+
+        Toast.makeText(this, offerName + " offer was clicked and type is:" + offerType , Toast.LENGTH_LONG).show();
     }
 }

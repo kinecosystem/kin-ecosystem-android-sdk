@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <ImageView
+        android:id="@+id/kinrecovery_password_qr_icon"
+        android:layout_width="@dimen/kinrecovery_password_qr_icon_size"
+        android:layout_height="@dimen/kinrecovery_password_qr_icon_size"
+        android:layout_marginTop="@dimen/kinrecovery_margin_block"
+        android:src="@drawable/kinrecovery_password_recovery_qr_code_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <ImageView
+        android:layout_width="@dimen/kinrecovery_password_blue_v_size"
+        android:layout_height="@dimen/kinrecovery_password_blue_v_size"
+        android:src="@drawable/kinrecovery_blue_v_mark"
+        app:layout_constraintBottom_toBottomOf="@id/kinrecovery_password_qr_icon"
+        app:layout_constraintEnd_toEndOf="@+id/kinrecovery_password_qr_icon"
+        />
+
+    <TextView
+        android:id="@+id/kinrecovery_password_recovery_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinrecovery_password_recovery_content_margin_top"
+        android:fontFamily="sans-serif"
+        android:gravity="center_horizontal"
+        android:text="@string/kinrecovery_thank_you"
+        android:textColor="@color/kinrecovery_gray"
+        android:textSize="@dimen/kinrecovery_password_recovery_content_text_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/kinrecovery_password_qr_icon"/>
+
+    <android.support.constraint.Group
+        android:id="@+id/btn_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="kinrecovery_password_recovery_btn_frame,kinrecovery_password_recovery_btn_text"
+        />
+
+    <ImageView
+        android:id="@+id/kinrecovery_v_btn"
+        android:layout_width="@dimen/kinrecovery_circle_v_size"
+        android:layout_height="@dimen/kinrecovery_circle_v_size"
+        android:layout_marginBottom="@dimen/kinrecovery_circle_v_margin_bottom"
+        android:background="@drawable/kinrecovery_circle_v_mark_icon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+
+</android.support.constraint.ConstraintLayout>
