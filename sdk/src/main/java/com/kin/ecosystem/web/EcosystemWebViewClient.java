@@ -34,20 +34,18 @@ public class EcosystemWebViewClient extends WebViewClient {
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        if (url.startsWith("mailto:")) {
+        if (url != null && url.startsWith("mailto:")) {
             MailTo mt = MailTo.parse(url);
-            Intent intent = newEmailIntent(context, mt.getTo(), mt.getSubject(), mt.getBody(), mt.getCc());
+            Intent intent = newEmailIntent(mt.getTo(), mt.getSubject(), mt.getBody(), mt.getCc());
             context.startActivity(intent);
 
             return true;
-        } else {
-            view.loadUrl(url);
         }
 
-        return true;
+        return false;
     }
 
-    private Intent newEmailIntent(Context context, String address, String subject, String body, String cc) {
+    private Intent newEmailIntent(String address, String subject, String body, String cc) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_EMAIL, new String[] { address });
         intent.putExtra(Intent.EXTRA_TEXT, body);
