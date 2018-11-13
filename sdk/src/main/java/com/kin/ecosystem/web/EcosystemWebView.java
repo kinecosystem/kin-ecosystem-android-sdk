@@ -37,7 +37,7 @@ public class EcosystemWebView extends WebView {
 
         mainThreadHandler = new Handler(Looper.getMainLooper());
 
-        webViewClient = new EcosystemWebViewClient();
+        webViewClient = new EcosystemWebViewClient(context);
         setWebViewClient(this.webViewClient);
 
         webChromeClient = new EcosystemWebChromeClient(context);
