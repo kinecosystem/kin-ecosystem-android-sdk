@@ -28,7 +28,7 @@ import com.kin.ecosystem.recovery.widget.PasswordEditText;
 
 public class CreatePasswordFragment extends Fragment implements CreatePasswordView {
 
-	public static CreatePasswordFragment newInstance(@NonNull final BackupNextStepListener nextStepListener,
+	public static CreatePasswordFragment newInstance(@NonNull final BackupNavigator nextStepListener,
 		@NonNull final KeyboardHandler keyboardHandler) {
 		CreatePasswordFragment fragment = new CreatePasswordFragment();
 		fragment.setNextStepListener(nextStepListener);
@@ -36,7 +36,7 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 		return fragment;
 	}
 
-	private BackupNextStepListener nextStepListener;
+	private BackupNavigator nextStepListener;
 	private KeyboardHandler keyboardHandler;
 	private CreatePasswordPresenter createPasswordPresenter;
 
@@ -126,11 +126,11 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 		confirmPassEditText.setFrameBackgroundColor(R.color.kinrecovery_gray);
 	}
 
-	private void setNextStepListener(@NonNull final BackupNextStepListener nextStepListener) {
+	public void setNextStepListener(@NonNull final BackupNavigator nextStepListener) {
 		this.nextStepListener = nextStepListener;
 	}
 
-	private void setKeyboardHandler(KeyboardHandler keyboardHandler) {
+	public void setKeyboardHandler(KeyboardHandler keyboardHandler) {
 		this.keyboardHandler = keyboardHandler;
 	}
 

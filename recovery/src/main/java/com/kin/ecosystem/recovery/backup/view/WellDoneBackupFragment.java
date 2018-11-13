@@ -1,6 +1,6 @@
 package com.kin.ecosystem.recovery.backup.view;
 
-import static com.kin.ecosystem.recovery.events.EventDispatcherImpl.BACKUP_COMPLETED_PAGE_VIEWED;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_COMPLETED_PAGE_VIEWED;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -24,8 +24,9 @@ public class WellDoneBackupFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
 		@Nullable Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.kinrecovery_fragment_well_done_backup, container, false);
-		final CallbackManager callbackManager = new CallbackManager(new EventDispatcherImpl(new BroadcastManagerImpl(getActivity())));
-		callbackManager.sendBackupEvents(BACKUP_COMPLETED_PAGE_VIEWED);
+		final CallbackManager callbackManager = new CallbackManager(
+			new EventDispatcherImpl(new BroadcastManagerImpl(getActivity())));
+		callbackManager.sendBackupEvent(BACKUP_COMPLETED_PAGE_VIEWED);
 		return root;
 	}
 }

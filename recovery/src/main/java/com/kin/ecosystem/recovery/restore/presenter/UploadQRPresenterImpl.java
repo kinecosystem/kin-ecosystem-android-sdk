@@ -1,15 +1,15 @@
 package com.kin.ecosystem.recovery.restore.presenter;
 
-
-import static com.kin.ecosystem.recovery.events.EventDispatcherImpl.RESTORE_ARE_YOUR_SURE_CANCEL_TAPPED;
-import static com.kin.ecosystem.recovery.events.EventDispatcherImpl.RESTORE_UPLOAD_QR_CODE_BUTTON_TAPPED;
-import static com.kin.ecosystem.recovery.events.EventDispatcherImpl.RESTORE_UPLOAD_QR_CODE_PAGE_VIEWED;
+import static com.kin.ecosystem.recovery.events.RestoreEventCode.RESTORE_ARE_YOUR_SURE_CANCEL_TAPPED;
+import static com.kin.ecosystem.recovery.events.RestoreEventCode.RESTORE_ARE_YOUR_SURE_OK_TAPPED;
+import static com.kin.ecosystem.recovery.events.RestoreEventCode.RESTORE_UPLOAD_QR_CODE_BACK_TAPPED;
+import static com.kin.ecosystem.recovery.events.RestoreEventCode.RESTORE_UPLOAD_QR_CODE_BUTTON_TAPPED;
+import static com.kin.ecosystem.recovery.events.RestoreEventCode.RESTORE_UPLOAD_QR_CODE_PAGE_VIEWED;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.recovery.events.CallbackManager;
-import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator.QRBarcodeGeneratorException;
 import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator.QRFileHandlingException;
@@ -28,12 +28,7 @@ public class UploadQRPresenterImpl extends BaseChildPresenterImpl<UploadQRView> 
 		this.callbackManager = callbackManager;
 		this.fileRequester = fileRequester;
 		this.qrBarcodeGenerator = qrBarcodeGenerator;
-	}
-
-	@Override
-	public void onAttach(UploadQRView view, RestorePresenter restorePresenter) {
-		super.onAttach(view, restorePresenter);
-		callbackManager.sendRestoreEvents(RESTORE_UPLOAD_QR_CODE_PAGE_VIEWED);
+		this.callbackManager.sendRestoreEvents(RESTORE_UPLOAD_QR_CODE_PAGE_VIEWED);
 	}
 
 	@Override
@@ -43,7 +38,8 @@ public class UploadQRPresenterImpl extends BaseChildPresenterImpl<UploadQRView> 
 	}
 
 	@Override
-	public void onConsent(String chooserTitle) {
+	public void onOkPressed(String chooserTitle) {
+		callbackManager.sendRestoreEvents(RESTORE_ARE_YOUR_SURE_OK_TAPPED);
 		fileRequester.requestImageFile(chooserTitle);
 	}
 
@@ -70,7 +66,7 @@ public class UploadQRPresenterImpl extends BaseChildPresenterImpl<UploadQRView> 
 	private void loadEncryptedKeyStore(Uri fileUri) {
 		try {
 			String encryptedKeyStore = qrBarcodeGenerator.decodeQR(fileUri);
-			getParentPresenter().nextStep(encryptedKeyStore);
+			getParentPresenter().navigateToEnterPasswordPage(encryptedKeyStore);
 		} catch (QRFileHandlingException e) {
 			Logger.e("loadEncryptedKeyStore - loading file failed.", e);
 			view.showErrorLoadingFileDialog();
@@ -82,6 +78,7 @@ public class UploadQRPresenterImpl extends BaseChildPresenterImpl<UploadQRView> 
 
 	@Override
 	public void onBackClicked() {
+		callbackManager.sendRestoreEvents(RESTORE_UPLOAD_QR_CODE_BACK_TAPPED);
 		getParentPresenter().previousStep();
 	}
 }

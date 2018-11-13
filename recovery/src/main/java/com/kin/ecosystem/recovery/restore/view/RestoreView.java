@@ -15,4 +15,7 @@ public interface RestoreView extends BaseView {
 
 	void close();
 
+	void closeKeyboard();
+
+	void showError();
 }

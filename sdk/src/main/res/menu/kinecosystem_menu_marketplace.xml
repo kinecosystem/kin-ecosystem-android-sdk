@@ -5,6 +5,7 @@
     <item android:id="@+id/menu_settings"
         android:title="@string/kinecosystem_settings"
         app:showAsAction="always"
-        android:icon="@drawable/kinecosystem_settings_menu_with_info_dot"/>
+        app:actionLayout="@layout/kinecosystem_menu_settings_action_layout"
+        android:icon="@drawable/kinecosystem_settings_icon"/>
 
 </menu>
