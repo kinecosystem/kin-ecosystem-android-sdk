@@ -3,6 +3,7 @@ package com.kin.ecosystem.recovery.backup.presenter
 import com.kin.ecosystem.recovery.KeyStoreProvider
 import com.kin.ecosystem.recovery.backup.view.BackupNavigator
 import com.kin.ecosystem.recovery.backup.view.CreatePasswordView
+import com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_CREATE_PASSWORD_PAGE_VIEWED
 import com.kin.ecosystem.recovery.events.CallbackManager
 import com.kin.ecosystem.recovery.exception.BackupException
 import com.nhaarman.mockitokotlin2.*
@@ -27,6 +28,11 @@ class CreatePasswordPresenterImplTest {
     fun setUp() {
         presenter = CreatePasswordPresenterImpl(callbackManager, backupNavigator, keyStoreProvider)
         presenter.onAttach(view)
+    }
+
+    @Test
+    fun `send create password page view event on create`() {
+        verify(callbackManager).sendBackupEvent(BACKUP_CREATE_PASSWORD_PAGE_VIEWED)
     }
 
     @Test

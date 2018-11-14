@@ -5,8 +5,7 @@ import android.os.Bundle
 import com.kin.ecosystem.recovery.backup.presenter.SaveAndSharePresenterImpl.IS_SEND_EMAIL_CLICKED
 import com.kin.ecosystem.recovery.backup.view.BackupNavigator
 import com.kin.ecosystem.recovery.backup.view.SaveAndShareView
-import com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_QR_PAGE_QR_SAVED_TAPPED
-import com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_QR_PAGE_SEND_QR_TAPPED
+import com.kin.ecosystem.recovery.events.BackupEventCode.*
 import com.kin.ecosystem.recovery.events.CallbackManager
 import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator
 import com.nhaarman.mockitokotlin2.*
@@ -39,6 +38,11 @@ class SaveAndSharePresenterImplTest {
 
     private lateinit var presenter: SaveAndSharePresenterImpl
 
+    @Test
+    fun `send qr code page view event on create`() {
+        createPresenter()
+        verify(callbackManager).sendBackupEvent(BACKUP_QR_CODE_PAGE_VIEWED)
+    }
 
     @Test
     fun `send qr code is clicked, show send intent and saved checkbox`() {
