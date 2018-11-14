@@ -16,13 +16,14 @@ import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator.QRBarcodeGeneratorExcept
 
 public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareView> implements SaveAndSharePresenter {
 
-	private static final String IS_SEND_EMAIL_CLICKED = "is_send_email_clicked";
+	static final String IS_SEND_EMAIL_CLICKED = "is_send_email_clicked";
 	private final BackupNavigator backupNavigator;
 	private final QRBarcodeGenerator qrBarcodeGenerator;
 	private final CallbackManager callbackManager;
 
 	private Uri qrURI;
 	private boolean isSendQREmailClicked;
+	private boolean couldNotGenerateQR = false;
 
 
 	public SaveAndSharePresenterImpl(@NonNull final CallbackManager callbackManager,
@@ -44,14 +45,18 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 		try {
 			this.qrURI = this.qrBarcodeGenerator.generate(key);
 		} catch (QRBarcodeGeneratorException e) {
-			couldNotLoadQRImage();
+			couldNotGenerateQR = true;
 		}
 	}
 
 	@Override
 	public void onAttach(SaveAndShareView view) {
 		super.onAttach(view);
-		setQRImage();
+		if (couldNotGenerateQR) {
+			couldNotLoadQRImage();
+		} else {
+			setQRImage();
+		}
 		if (isSendQREmailClicked && view != null) {
 			view.showIHaveSavedCheckBox();
 		}

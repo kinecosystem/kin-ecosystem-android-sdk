@@ -14,7 +14,7 @@ import com.kin.ecosystem.recovery.events.CallbackManager;
 
 public class BackupPresenterImpl extends BasePresenterImpl<BackupView> implements BackupPresenter {
 
-	private static final String KEY_STEP = "kinrecovery_backup_step";
+	static final String KEY_STEP = "kinrecovery_backup_step";
 	public static final String KEY_ACCOUNT_KEY = "kinrecovery_backup_account_key";
 
 	private @Step
