@@ -8,6 +8,8 @@ import static com.kin.ecosystem.main.Title.ORDER_HISTORY_TITLE;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager.BackStackEntry;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -44,6 +46,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 
 	public static final String ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG = "ecosystem_marketplace_fragment_tag";
 	public static final String ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG = "ecosystem_order_history_fragment_tag";
+	public static final String MARKETPLACE_TO_ORDER_HISTORY = "marketplace_to_order_history";
 
 	private IBalancePresenter balancePresenter;
 	private IEcosystemPresenter ecosystemPresenter;
@@ -90,13 +93,19 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 		});
 		ecosystemPresenter = new EcosystemPresenter(this,
 			new SettingsDataSourceImpl(new SettingsDataSourceLocal(getApplicationContext())),
-			BlockchainSourceImpl.getInstance(), this);
+			BlockchainSourceImpl.getInstance(), this, savedInstanceState);
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
 		ecosystemPresenter.onStart();
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		ecosystemPresenter.onSaveInstanceState(outState);
+		super.onSaveInstanceState(outState);
 	}
 
 	@Override
@@ -125,7 +134,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	public void showMenuTouchIndicator(boolean isVisible) {
 		if (actionView != null) {
 			ImageView infoBadge = actionView.findViewById(R.id.ic_info_dot);
-			if(infoBadge != null) {
+			if (infoBadge != null) {
 				if (isVisible) {
 					infoBadge.setVisibility(View.VISIBLE);
 				} else {
@@ -152,8 +161,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 
 	@Override
 	public void navigateToMarketplace() {
-		MarketplaceFragment marketplaceFragment = (MarketplaceFragment) getSupportFragmentManager()
-			.findFragmentByTag(ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG);
+		MarketplaceFragment marketplaceFragment = getSavedMarketplaceFragment();
 		if (marketplaceFragment == null) {
 			marketplaceFragment = MarketplaceFragment.newInstance();
 		}
@@ -165,6 +173,11 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 			.commit();
 
 		setVisibleScreen(MARKETPLACE);
+	}
+
+	private MarketplaceFragment getSavedMarketplaceFragment() {
+		return (MarketplaceFragment) getSupportFragmentManager()
+			.findFragmentByTag(ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG);
 	}
 
 	private IMarketplacePresenter getMarketplacePresenter(MarketplaceFragment marketplaceFragment) {
@@ -188,9 +201,11 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	public void navigateToOrderHistory(boolean isFirstSpendOrder) {
 		OrderHistoryFragment orderHistoryFragment = (OrderHistoryFragment) getSupportFragmentManager()
 			.findFragmentByTag(ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG);
-
+		boolean shouldAddToBackStack = true;
 		if (orderHistoryFragment == null) {
 			orderHistoryFragment = OrderHistoryFragment.newInstance();
+		} else {
+			shouldAddToBackStack = false;
 		}
 
 		new OrderHistoryPresenter(orderHistoryFragment,
@@ -199,14 +214,19 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 			EventLoggerImpl.getInstance(),
 			isFirstSpendOrder);
 
-		getSupportFragmentManager().beginTransaction()
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
 			.setCustomAnimations(
 				R.anim.kinecosystem_slide_in_right,
 				R.anim.kinecosystem_slide_out_left,
 				R.anim.kinrecovery_slide_in_left,
 				R.anim.kinecosystem_slide_out_right)
-			.replace(R.id.fragment_frame, orderHistoryFragment, ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG)
-			.addToBackStack(null).commit();
+			.replace(R.id.fragment_frame, orderHistoryFragment, ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG);
+
+		if (shouldAddToBackStack) {
+			transaction.addToBackStack(MARKETPLACE_TO_ORDER_HISTORY);
+		}
+
+		transaction.commit();
 
 		setVisibleScreen(ORDER_HISTORY);
 	}
@@ -247,6 +267,19 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 			super.onBackPressed();
 			overridePendingTransition(0, R.anim.kinecosystem_slide_out_right);
 		} else {
+			BackStackEntry entry = getSupportFragmentManager().getBackStackEntryAt(count - 1);
+			if (entry.getName().equals(MARKETPLACE_TO_ORDER_HISTORY)) {
+				// After pressing back from OrderHistory, should put the attrs again.
+				// This is the only fragment that should set presenter again on back.
+				MarketplaceFragment marketplaceFragment = getSavedMarketplaceFragment();
+				if (marketplaceFragment != null) {
+					if (marketplacePresenter == null) {
+						getMarketplacePresenter(marketplaceFragment);
+					} else {
+						marketplaceFragment.attachPresenter(marketplacePresenter);
+					}
+				}
+			}
 			getSupportFragmentManager().popBackStackImmediate();
 			setVisibleScreen(MARKETPLACE);
 		}
