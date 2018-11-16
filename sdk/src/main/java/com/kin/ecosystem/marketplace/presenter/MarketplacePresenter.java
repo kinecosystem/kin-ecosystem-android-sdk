@@ -272,6 +272,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	@Override
 	public void onItemClicked(int position, OfferType offerType) {
+		if (position == NOT_FOUND)
+			return;
+
 		final Offer offer;
 		if (offerType == OfferType.EARN) {
 			offer = earnList.get(position);
