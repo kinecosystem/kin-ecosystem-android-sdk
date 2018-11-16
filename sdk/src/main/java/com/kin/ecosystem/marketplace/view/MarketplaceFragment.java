@@ -60,7 +60,7 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 	}
 
 	@Override
-	public void attachPresenter(MarketplacePresenter presenter) {
+	public void attachPresenter(IMarketplacePresenter presenter) {
 		marketplacePresenter = presenter;
 	}
 
