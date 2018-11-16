@@ -268,7 +268,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 			overridePendingTransition(0, R.anim.kinecosystem_slide_out_right);
 		} else {
 			BackStackEntry entry = getSupportFragmentManager().getBackStackEntryAt(count - 1);
-			if (entry.getName().equals(MARKETPLACE_TO_ORDER_HISTORY)) {
+			if (entry != null && entry.getName().equals(MARKETPLACE_TO_ORDER_HISTORY)) {
 				// After pressing back from OrderHistory, should put the attrs again.
 				// This is the only fragment that should set presenter again on back.
 				MarketplaceFragment marketplaceFragment = getSavedMarketplaceFragment();
