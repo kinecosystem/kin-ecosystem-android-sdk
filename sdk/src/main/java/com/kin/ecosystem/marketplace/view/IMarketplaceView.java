@@ -3,6 +3,7 @@ package com.kin.ecosystem.marketplace.view;
 import android.support.annotation.IntDef;
 import com.kin.ecosystem.base.IBaseView;
 import com.kin.ecosystem.core.network.model.Offer;
+import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter;
 import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
 import com.kin.ecosystem.marketplace.presenter.MarketplacePresenter;
 import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
@@ -10,7 +11,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
-public interface IMarketplaceView extends IBaseView<MarketplacePresenter> {
+public interface IMarketplaceView extends IBaseView<IMarketplacePresenter> {
 
 	int NOT_ENOUGH_KIN = 0x00000001;
 	int SOMETHING_WENT_WRONG = 0x00000002;
