@@ -24,7 +24,7 @@ public class RestoreEnterPasswordPresenterImpl extends BaseChildPresenterImpl<Re
 	public RestoreEnterPasswordPresenterImpl(@NonNull final CallbackManager callbackManager, String keystoreData) {
 		this.callbackManager = callbackManager;
 		this.keystoreData = keystoreData;
-		this.callbackManager.sendRestoreEvents(RESTORE_PASSWORD_ENTRY_PAGE_VIEWED);
+		this.callbackManager.sendRestoreEvent(RESTORE_PASSWORD_ENTRY_PAGE_VIEWED);
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class RestoreEnterPasswordPresenterImpl extends BaseChildPresenterImpl<Re
 
 	@Override
 	public void restoreClicked(String password) {
-		callbackManager.sendRestoreEvents(RESTORE_PASSWORD_DONE_TAPPED);
+		callbackManager.sendRestoreEvent(RESTORE_PASSWORD_DONE_TAPPED);
 		KeyStoreProvider keyStoreProvider = BackupManager.getKeyStoreProvider();
 		try {
 			int accountIndex = keyStoreProvider.importAccount(keystoreData, password);
@@ -65,7 +65,7 @@ public class RestoreEnterPasswordPresenterImpl extends BaseChildPresenterImpl<Re
 
 	@Override
 	public void onBackClicked() {
-		callbackManager.sendRestoreEvents(RESTORE_PASSWORD_ENTRY_PAGE_BACK_TAPPED);
+		callbackManager.sendRestoreEvent(RESTORE_PASSWORD_ENTRY_PAGE_BACK_TAPPED);
 		getParentPresenter().previousStep();
 	}
 }

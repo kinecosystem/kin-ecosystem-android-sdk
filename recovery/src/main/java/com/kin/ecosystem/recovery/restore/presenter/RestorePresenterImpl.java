@@ -9,12 +9,12 @@ import com.kin.ecosystem.recovery.restore.view.RestoreView;
 
 public class RestorePresenterImpl extends BasePresenterImpl<RestoreView> implements RestorePresenter {
 
-	private static final int STEP_UPLOAD = 0;
+	static final int STEP_UPLOAD = 0;
 	static final int STEP_ENTER_PASSWORD = 1;
 	static final int STEP_RESTORE_COMPLETED = 2;
 	static final int STEP_FINISH = 3;
 
-	private static final String KEY_RESTORE_STEP = "kinrecovery_restore_step";
+	static final String KEY_RESTORE_STEP = "kinrecovery_restore_step";
 	public static final String KEY_ACCOUNT_KEY = "kinrecovery_restore_account_key";
 	public static final String KEY_ACCOUNT_INDEX = "kinrecovery_restore_account_index";
 
@@ -47,8 +47,9 @@ public class RestorePresenterImpl extends BasePresenterImpl<RestoreView> impleme
 	}
 
 	private int getAccountIndex(Bundle saveInstanceState) {
-		return saveInstanceState != null ? saveInstanceState.getInt(KEY_ACCOUNT_INDEX) : -1;
+		return saveInstanceState != null ? saveInstanceState.getInt(KEY_ACCOUNT_INDEX, -1) : -1;
 	}
+
 
 	@Override
 	public void onBackClicked() {

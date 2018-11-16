@@ -57,12 +57,20 @@ public class FileSharingHelper {
 
 	static class RequestFileResult {
 
-		final int result;
-		final Uri fileUri;
+		private final int result;
+		private final Uri fileUri;
 
 		RequestFileResult(int result, Uri fileUri) {
 			this.result = result;
 			this.fileUri = fileUri;
+		}
+
+		public int getResult() {
+			return result;
+		}
+
+		public Uri getFileUri() {
+			return fileUri;
 		}
 	}
 }
