@@ -30,6 +30,7 @@ public class ErrorUtil {
 	private static final String ECOSYSTEM_SDK_IS_NOT_STARTED = "Operation not permitted: Ecosystem SDK is not started";
 	private static final String BAD_OR_MISSING_PARAMETERS = "Bad or missing parameters";
 	private static final String FAILED_TO_LOAD_ACCOUNT_ON_INDEX = "Failed to load blockchain wallet on index %d";
+	private static final String ACCOUNT_IS_NOT_LOGGED_IN = "Account is not logged in, please call Kin.login(...) first.";
 
 
 	// Server Error codes
@@ -121,7 +122,7 @@ public class ErrorUtil {
 	}
 
 	@SuppressLint("DefaultLocale")
-	public static BlockchainException createAccountCannotLoadedExcpetion(int accountIndex) {
+	public static BlockchainException createAccountCannotLoadedException(int accountIndex) {
 		return new BlockchainException(BlockchainException.ACCOUNT_LOADING_FAILED,
 			String.format(FAILED_TO_LOAD_ACCOUNT_ON_INDEX, accountIndex), null);
 	}
@@ -134,6 +135,9 @@ public class ErrorUtil {
 				break;
 			case ClientException.BAD_CONFIGURATION:
 				exception = new ClientException(ClientException.BAD_CONFIGURATION, BAD_OR_MISSING_PARAMETERS, e);
+				break;
+			case ClientException.ACCOUNT_NOT_LOGGED_IN:
+				exception = new ClientException(ClientException.ACCOUNT_NOT_LOGGED_IN, ACCOUNT_IS_NOT_LOGGED_IN, e);
 				break;
 			case ClientException.INTERNAL_INCONSISTENCY:
 			default:

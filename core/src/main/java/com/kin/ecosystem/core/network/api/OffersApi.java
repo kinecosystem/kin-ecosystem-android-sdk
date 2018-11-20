@@ -2,7 +2,7 @@ package com.kin.ecosystem.core.network.api;
 
 
 import com.google.gson.reflect.TypeToken;
-import com.kin.ecosystem.core.Configuration;
+import com.kin.ecosystem.core.data.internal.ConfigurationImpl;
 import com.kin.ecosystem.core.network.ApiCallback;
 import com.kin.ecosystem.core.network.ApiClient;
 import com.kin.ecosystem.core.network.ApiException;
@@ -27,7 +27,7 @@ public class OffersApi {
     private ApiClient apiClient;
 
     public OffersApi() {
-        this(Configuration.getDefaultApiClient());
+        this(ConfigurationImpl.getInstance().getDefaultApiClient());
     }
 
     public OffersApi(ApiClient apiClient) {

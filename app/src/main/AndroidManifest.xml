@@ -14,6 +14,8 @@
         android:theme="@style/AppTheme"
         android:name=".App">
 
+        <meta-data android:name="com.kin.ecosystem.sdk.EnvironmentName" android:value="beta"/>
+
         <provider
             android:authorities="${applicationId}.MySampleProvider"
             android:exported="false"

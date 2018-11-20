@@ -33,6 +33,8 @@ public class AuthRepository implements AuthDataSource {
 		@NonNull AuthDataSource.Remote remote) {
 		this.localData = local;
 		this.remoteData = remote;
+		this.cachedSignInData = local.getSignInData();
+		this.cachedAuthToken = local.getAuthTokenSync();
 	}
 
 	public static void init(@NonNull AuthDataSource.Local localData,

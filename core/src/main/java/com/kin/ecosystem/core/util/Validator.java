@@ -7,4 +7,8 @@ public class Validator {
 			throw new IllegalArgumentException(paramName + " == null");
 		}
 	}
+
+	public static boolean isEnvironmentName(String environmentName) {
+		return environmentName.equals("beta") || environmentName.equals("prod");
+	}
 }

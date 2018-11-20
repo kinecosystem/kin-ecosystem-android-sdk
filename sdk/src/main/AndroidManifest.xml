@@ -3,6 +3,12 @@
     package="com.kin.ecosystem">
 
     <application>
+
+        <provider
+            android:authorities="${applicationId}.KinEcosystemInitProvider"
+            android:exported="false"
+            android:name=".KinEcosystemInitProvider"/>
+
         <activity
             android:label="@string/kinecosystem_welcome_to_kin"
             android:name=".splash.view.SplashActivity"

@@ -44,7 +44,7 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 
 	@Override
 	public int getAccountIndex() {
-		return blockchainSharedPreferences.getInt(ACCOUNT_INDEX_KEY, 0);
+		return blockchainSharedPreferences.getInt(ACCOUNT_INDEX_KEY, -1);
 	}
 
 	@Override

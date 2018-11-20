@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
+import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
@@ -66,7 +67,7 @@ public interface BlockchainSource {
 	/**
 	 * @return the public address of the initiated account
 	 */
-	String getPublicAddress();
+	String getPublicAddress() throws ClientException;
 
 	/**
 	 * @return the public address of the account with {@param accountIndex}

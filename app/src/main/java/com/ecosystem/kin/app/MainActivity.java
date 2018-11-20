@@ -1,5 +1,8 @@
 package com.ecosystem.kin.app;
 
+import static com.ecosystem.kin.app.App.getApiKey;
+import static com.ecosystem.kin.app.App.getAppId;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
@@ -24,6 +27,7 @@ import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.exception.ServiceException;
@@ -33,6 +37,7 @@ import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.NativeSpendOfferBuilder;
 import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.common.model.UserStats;
+import com.kin.ecosystem.common.model.WhitelistData;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -83,12 +88,16 @@ public class MainActivity extends AppCompatActivity {
 			.image("https://cdn.kinecosystem.com/thumbnails/offers/spend_offer_smplapp.png")
 			.build();
 	}
+
 	private boolean addNativeSpendOrder = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		initSDK();
+
 		userID = SignInRepo.getUserId(getApplicationContext());
 		containerLayout = findViewById(R.id.container);
 		balanceView = findViewById(R.id.get_balance);
@@ -168,11 +177,60 @@ public class MainActivity extends AppCompatActivity {
 		addNativeOfferClickedObserver();
 	}
 
+	private void initSDK() {
+//		KinEnvironment environment = Environment.getBeta();
+
+		if (BuildConfig.IS_JWT_REGISTRATION) {
+			/**
+			 * SignInData should be created with registration JWT {see https://jwt.io/} created securely by server side
+			 * In the the this example {@link SignInRepo#getJWT} generate the JWT locally.
+			 * DO NOT!!!! use this approach in your real app.
+			 * */
+			String jwt = SignInRepo.getJWT(this);
+
+			try {
+				Kin.login(jwt, new KinCallback<Void>() {
+					@Override
+					public void onResponse(Void response) {
+						showSnackbar("Login succeed", false);
+					}
+
+					@Override
+					public void onFailure(KinEcosystemException exception) {
+						showSnackbar("Login failed: " + exception.getMessage(), true);
+					}
+				});
+			} catch (ClientException | BlockchainException e) {
+				e.printStackTrace();
+			}
+		} else {
+			/** Use {@link WhitelistData} for small scale testing */
+			WhitelistData whitelistData = SignInRepo.getWhitelistSignInData(this, getAppId(), getApiKey());
+			try {
+				Kin.login(whitelistData, new KinCallback<Void>() {
+					@Override
+					public void onResponse(Void response) {
+						showSnackbar("Login succeed", false);
+					}
+
+					@Override
+					public void onFailure(KinEcosystemException exception) {
+						showSnackbar("Login failed: " + exception.getMessage(), true);
+					}
+				});
+			} catch (ClientException | BlockchainException e) {
+				e.printStackTrace();
+			}
+		}
+
+		Kin.enableLogs(true);
+	}
+
 	private void addNativeOffer() {
-		if(nativeOffer != null) {
+		if (nativeOffer != null) {
 			removeNativeOffer(nativeOffer);
 		}
-		if(addNativeSpendOrder){
+		if (addNativeSpendOrder) {
 			nativeOffer = getNativeSpendOffer();
 			addNativeOffer(nativeOffer, true);
 		} else {
@@ -181,8 +239,8 @@ public class MainActivity extends AppCompatActivity {
 
 		}
 		addNativeSpendOrder = !addNativeSpendOrder;
-  }
-  
+	}
+
 	private void showUserStats(final View v) {
 		try {
 			Kin.userStats(new KinCallback<UserStats>() {
@@ -280,11 +338,13 @@ public class MainActivity extends AppCompatActivity {
 					if (nativeOfferClickEvent.isDismissOnTap()) {
 						new AlertDialog.Builder(MainActivity.this)
 							.setTitle("Native Offer (" + nativeOffer.getTitle() + ")")
-							.setMessage("You tapped on a native " + nativeOffer.getOfferType() + " offer and the observer was notified.")
+							.setMessage("You tapped on a native " + nativeOffer.getOfferType()
+								+ " offer and the observer was notified.")
 							.show();
 					} else {
 						Intent nativeOfferIntent = NativeOfferActivity
-							.createIntent(MainActivity.this, nativeOffer.getTitle(), nativeOffer.getOfferType().toString());
+							.createIntent(MainActivity.this, nativeOffer.getTitle(),
+								nativeOffer.getOfferType().toString());
 						startActivity(nativeOfferIntent);
 					}
 				}
@@ -307,10 +367,14 @@ public class MainActivity extends AppCompatActivity {
 	private void getPublicAddress() {
 		try {
 			publicAddress = Kin.getPublicAddress();
-			int blueColor = ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark);
-			publicAddressTextArea.getBackground().setColorFilter(blueColor, Mode.SRC_ATOP);
-			showPublicAddressTextView.setText(R.string.copy_public_address);
-			publicAddressTextArea.setText(publicAddress);
+			if (publicAddress != null) {
+				int blueColor = ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark);
+				publicAddressTextArea.getBackground().setColorFilter(blueColor, Mode.SRC_ATOP);
+				showPublicAddressTextView.setText(R.string.copy_public_address);
+				publicAddressTextArea.setText(publicAddress);
+			} else {
+				publicAddressTextArea.setText(R.string.account_not_logged_in);
+			}
 		} catch (ClientException e) {
 			e.printStackTrace();
 		}

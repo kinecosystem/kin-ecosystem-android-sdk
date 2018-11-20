@@ -1,10 +1,15 @@
 package com.kin.ecosystem;
 
+import static com.kin.ecosystem.common.exception.ClientException.BAD_CONFIGURATION;
 import static com.kin.ecosystem.common.exception.ClientException.SDK_NOT_STARTED;
+import static com.kin.ecosystem.core.accountmanager.AccountManager.CREATION_COMPLETED;
+import static com.kin.ecosystem.core.accountmanager.AccountManager.ERROR;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.common.KinCallback;
@@ -20,7 +25,6 @@ import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.common.model.WhitelistData;
-import com.kin.ecosystem.core.Configuration;
 import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.accountmanager.AccountManager;
 import com.kin.ecosystem.core.accountmanager.AccountManagerImpl;
@@ -34,6 +38,8 @@ import com.kin.ecosystem.core.data.auth.AuthRemoteData;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceLocal;
+import com.kin.ecosystem.core.data.internal.ConfigurationImpl;
+import com.kin.ecosystem.core.data.internal.ConfigurationLocal;
 import com.kin.ecosystem.core.data.offer.OfferRemoteData;
 import com.kin.ecosystem.core.data.offer.OfferRepository;
 import com.kin.ecosystem.core.data.order.OrderLocalData;
@@ -42,10 +48,10 @@ import com.kin.ecosystem.core.data.order.OrderRepository;
 import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.SignInData;
 import com.kin.ecosystem.core.network.model.SignInData.SignInTypeEnum;
-import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
+import com.kin.ecosystem.core.util.Validator;
 import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.splash.view.SplashActivity;
 import java.util.UUID;
@@ -56,14 +62,17 @@ import kin.core.ServiceProvider;
 public class Kin {
 
 	private static final String KIN_ECOSYSTEM_STORE_PREFIX_KEY = "kinecosystem_store";
+	private static final String KIN_ECOSYSTEM_ENVIRONMENT_NAME_KEY = "com.kin.ecosystem.sdk.EnvironmentName";
 	private static volatile Kin instance;
 
+	private static EventLogger eventLogger;
+	private static boolean sdkInitialized = false;
+	private static volatile String environmentName;
+
 	private final ExecutorsUtil executorsUtil;
-	private final EventLogger eventLogger;
 
 	private Kin() {
 		executorsUtil = new ExecutorsUtil();
-		eventLogger = EventLoggerImpl.getInstance();
 	}
 
 	private static Kin getInstance() {
@@ -78,25 +87,109 @@ public class Kin {
 		return instance;
 	}
 
-	public static void start(@NonNull Context appContext, @NonNull WhitelistData whitelistData,
-		@NonNull KinEnvironment environment)
-		throws ClientException, BlockchainException {
-		if (isInstanceNull()) {
-			SignInData signInData = getWhiteListSignInData(whitelistData);
-			init(appContext, signInData, environment);
+	synchronized static void initialize(Context appContext) throws ClientException, BlockchainException {
+		if (!sdkInitialized) {
+			instance = getInstance();
+			// use application context to avoid leaks.
+			appContext = appContext.getApplicationContext();
+
+			//Load data from manifest.
+			loadDefaultsFromMetadata(appContext);
+
+			//Set Environment
+			ConfigurationImpl.init(ConfigurationLocal.getInstance(appContext));
+			ConfigurationImpl.getInstance().setEnvironment(environmentName);
+			KinEnvironment kinEnvironment = ConfigurationImpl.getInstance().getEnvironment();
+			eventLogger = EventLoggerImpl.getInstance();
+			final String networkUrl = kinEnvironment.getBlockchainNetworkUrl();
+			final String networkId = kinEnvironment.getBlockchainPassphrase();
+			final String issuer = kinEnvironment.getIssuer();
+
+			KinClient kinClient = new KinClient(appContext, new ServiceProvider(networkUrl, networkId) {
+				@Override
+				protected String getIssuerAccountId() {
+					return issuer;
+				}
+			}, KIN_ECOSYSTEM_STORE_PREFIX_KEY);
+			BlockchainSourceImpl.init(eventLogger, kinClient, BlockchainSourceLocal.getInstance(appContext));
+
+			AuthRepository
+				.init(AuthLocalData.getInstance(appContext), AuthRemoteData.getInstance(instance.executorsUtil));
+
+			EventCommonDataUtil.setBaseData(appContext);
+
+			AccountManagerImpl
+				.init(AccountManagerLocal.getInstance(appContext), eventLogger, AuthRepository.getInstance(),
+					BlockchainSourceImpl.getInstance());
+
+			OrderRepository.init(BlockchainSourceImpl.getInstance(),
+				eventLogger,
+				OrderRemoteData.getInstance(instance.executorsUtil),
+				OrderLocalData.getInstance(appContext, instance.executorsUtil));
+
+			OfferRepository.init(OfferRemoteData.getInstance(instance.executorsUtil), OrderRepository.getInstance());
+
+			DeviceUtils.init(appContext);
+
+			sdkInitialized = true;
+			eventLogger.send(KinSdkInitiated.create());
 		}
 	}
 
-	public static void start(@NonNull Context appContext, @NonNull String jwt, @NonNull KinEnvironment environment)
-		throws ClientException, BlockchainException {
-		if (isInstanceNull()) {
-			SignInData signInData = getJwtSignInData(jwt);
-			init(appContext, signInData, environment);
+	private static void loadDefaultsFromMetadata(Context context) throws ClientException {
+		if (context == null) {
+			return;
 		}
+
+		ApplicationInfo applicationInfo;
+		try {
+			applicationInfo = context.getPackageManager().getApplicationInfo(
+				context.getPackageName(), PackageManager.GET_META_DATA);
+		} catch (PackageManager.NameNotFoundException e) {
+			throwProvideEnvironmentMetaDataException();
+			return;
+		}
+
+		if (applicationInfo == null || applicationInfo.metaData == null) {
+			throwProvideEnvironmentMetaDataException();
+		}
+
+		Object envNameObj = applicationInfo.metaData.get(KIN_ECOSYSTEM_ENVIRONMENT_NAME_KEY);
+		if (envNameObj instanceof String) {
+			final String envName = (String) envNameObj;
+			if (Validator.isEnvironmentName(envName)) {
+				environmentName = envName;
+			} else {
+				throw new ClientException(BAD_CONFIGURATION, "Environment name: " + envName + " is not valid", null);
+			}
+		} else {
+			throwProvideEnvironmentMetaDataException();
+		}
+	}
+
+	private static void throwProvideEnvironmentMetaDataException() throws ClientException {
+		throw new ClientException(BAD_CONFIGURATION,
+			"You must provide environment meta data element in AndroidManifest.xml as a String value", null);
 	}
 
 	public static void enableLogs(final boolean enableLogs) {
 		Logger.enableLogs(enableLogs);
+	}
+
+	public static void login(@NonNull WhitelistData whitelistData,
+		KinCallback<Void> loginCallback)
+		throws ClientException, BlockchainException {
+		checkInstanceNotNull();
+		SignInData signInData = getWhiteListSignInData(whitelistData);
+		init(signInData, loginCallback);
+
+	}
+
+	public static void login(@NonNull String jwt, KinCallback<Void> loginCallback)
+		throws ClientException, BlockchainException {
+		checkInstanceNotNull();
+		SignInData signInData = getJwtSignInData(jwt);
+		init(signInData, loginCallback);
 	}
 
 	private static SignInData getWhiteListSignInData(@NonNull final WhitelistData whitelistData) {
@@ -113,79 +206,57 @@ public class Kin {
 			.jwt(jwt);
 	}
 
-	private synchronized static void init(@NonNull Context appContext, @NonNull SignInData signInData,
-		@NonNull KinEnvironment environment) throws ClientException, BlockchainException {
-		Configuration.setEnvironment(environment);
+	private synchronized static void init(@NonNull SignInData signInData,
+		final KinCallback<Void> loginCallback)
+		throws ClientException, BlockchainException {
 		instance = getInstance();
-		appContext = appContext.getApplicationContext(); // use application context to avoid leaks.
-		DeviceUtils.init(appContext);
-		initBlockchain(appContext);
-		initAuthRepository(appContext, signInData);
-		initEventCommonData(appContext);
-		instance.eventLogger.send(KinSdkInitiated.create());
-		initAccountManager(appContext);
-		initOrderRepository(appContext);
-		initOfferRepository();
-		setAppID();
-	}
+		BlockchainSourceImpl.getInstance().createAccount();
 
-	private static void initAccountManager(@NonNull final Context context) {
-		AccountManagerImpl
-			.init(AccountManagerLocal.getInstance(context), instance.eventLogger, AuthRepository.getInstance(),
-				BlockchainSourceImpl.getInstance());
-		if (!AccountManagerImpl.getInstance().isAccountCreated()) {
-			AccountManagerImpl.getInstance().start();
-		}
-	}
-
-	private static void initEventCommonData(@NonNull Context context) {
-		EventCommonDataUtil.setBaseData(context);
-	}
-
-	private static void setAppID() {
-		ObservableData<String> observableData = AuthRepository.getInstance().getAppID();
-		String appID = observableData.getValue();
-		observableData.addObserver(new Observer<String>() {
-			@Override
-			public void onChanged(String appID) {
-				BlockchainSourceImpl.getInstance().setAppID(appID);
-			}
-		});
-
-		BlockchainSourceImpl.getInstance().setAppID(appID);
-	}
-
-	private static void initBlockchain(@NonNull final Context context) throws BlockchainException {
-		final String networkUrl = Configuration.getEnvironment().getBlockchainNetworkUrl();
-		final String networkId = Configuration.getEnvironment().getBlockchainPassphrase();
-		KinClient kinClient = new KinClient(context, new ServiceProvider(networkUrl, networkId) {
-			@Override
-			protected String getIssuerAccountId() {
-				return Configuration.getEnvironment().getIssuer();
-			}
-		}, KIN_ECOSYSTEM_STORE_PREFIX_KEY);
-		BlockchainSourceImpl.init(instance.eventLogger, kinClient, BlockchainSourceLocal.getInstance(context));
-	}
-
-	private static void initAuthRepository(@NonNull final Context context, @NonNull final SignInData signInData)
-		throws ClientException {
-		AuthRepository.init(AuthLocalData.getInstance(context),
-			AuthRemoteData.getInstance(instance.executorsUtil));
 		String deviceID = AuthRepository.getInstance().getDeviceID();
 		signInData.setDeviceId(deviceID != null ? deviceID : UUID.randomUUID().toString());
 		signInData.setWalletAddress(getPublicAddress());
 		AuthRepository.getInstance().setSignInData(signInData);
-	}
 
-	private static void initOfferRepository() {
-		OfferRepository.init(OfferRemoteData.getInstance(instance.executorsUtil), OrderRepository.getInstance());
-	}
+		ObservableData<String> observableData = AuthRepository.getInstance().getAppID();
+		String appID = observableData.getValue();
+		if (appID == null) {
+			observableData.addObserver(new Observer<String>() {
+				@Override
+				public void onChanged(String appID) {
+					BlockchainSourceImpl.getInstance().setAppID(appID);
+				}
+			});
+		}
+		BlockchainSourceImpl.getInstance().setAppID(appID);
 
-	private static void initOrderRepository(@NonNull final Context context) {
-		OrderRepository.init(BlockchainSourceImpl.getInstance(),
-			instance.eventLogger,
-			OrderRemoteData.getInstance(instance.executorsUtil),
-			OrderLocalData.getInstance(context, instance.executorsUtil));
+
+		if (!AccountManagerImpl.getInstance().isAccountCreated()) {
+			AccountManagerImpl.getInstance().start();
+			AccountManagerImpl.getInstance().addAccountStateObserver(new Observer<Integer>() {
+				@Override
+				public void onChanged(Integer value) {
+					if (value == CREATION_COMPLETED) {
+						instance.executorsUtil.mainThread().execute(new Runnable() {
+							@Override
+							public void run() {
+								loginCallback.onResponse(null);
+							}
+						});
+					} else {
+						if (value == ERROR) {
+							instance.executorsUtil.mainThread().execute(new Runnable() {
+								@Override
+								public void run() {
+									loginCallback.onFailure(AccountManagerImpl.getInstance().getError());
+								}
+							});
+						}
+					}
+				}
+			});
+		} else {
+			OfferRepository.getInstance().getOffers(null);
+		}
 	}
 
 	private static boolean isInstanceNull() {
@@ -195,7 +266,7 @@ public class Kin {
 	private static void checkInstanceNotNull() throws ClientException {
 		if (isInstanceNull()) {
 			throw ErrorUtil.getClientException(SDK_NOT_STARTED,
-				new IllegalStateException("Kin.start(...) should be called first"));
+				new IllegalStateException("Kin.initialize(...) should be called first"));
 		}
 	}
 
@@ -206,7 +277,7 @@ public class Kin {
 	 */
 	public static void launchMarketplace(@NonNull final Activity activity) throws ClientException {
 		checkInstanceNotNull();
-		instance.eventLogger.send(EntrypointButtonTapped.create());
+		eventLogger.send(EntrypointButtonTapped.create());
 		boolean isAccountCreated = AccountManagerImpl.getInstance().isAccountCreated();
 		if (isAccountCreated) {
 			navigateToMarketplace(activity);
@@ -323,7 +394,6 @@ public class Kin {
 	 *
 	 * @param userId The user id to check
 	 * @param callback The result will be a {@link Boolean}
-	 * @throws ClientException
 	 */
 	public static void hasAccount(@NonNull String userId, @NonNull KinCallback<Boolean> callback)
 		throws ClientException {
@@ -335,8 +405,8 @@ public class Kin {
 	/**
 	 * Get user's stats which include history information such as number of Earn/Spend orders completed by the user or last earn/spend dates.
 	 * This information could be used for re-engaging users, provide specific experience for users who never earn before etc.
+	 *
 	 * @param callback The result will be a {@link UserStats}
-	 * @throws ClientException
 	 */
 	public static void userStats(@NonNull KinCallback<UserStats> callback)
 		throws ClientException {
