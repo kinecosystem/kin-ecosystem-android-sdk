@@ -85,7 +85,6 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 				marketplacePresenter.onItemClicked(position, OfferType.SPEND);
 			}
 		});
-		spendRecyclerAdapter.setEmptyView(new OffersEmptyView(getContext()));
 
 		//Earn Recycler
 		RecyclerView earnRecycler = root.findViewById(R.id.earn_recycler);
@@ -99,7 +98,6 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 				marketplacePresenter.onItemClicked(position, OfferType.EARN);
 			}
 		});
-		earnRecyclerAdapter.setEmptyView(new OffersEmptyView(getContext()));
 
 	}
 
@@ -112,6 +110,12 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 	@Override
 	public void setEarnList(List<Offer> earnList) {
 		earnRecyclerAdapter.setNewData(earnList);
+	}
+
+	@Override
+	public void setupEmptyItemView() {
+		spendRecyclerAdapter.setEmptyView(new OffersEmptyView(getContext()));
+		earnRecyclerAdapter.setEmptyView(new OffersEmptyView(getContext()));
 	}
 
 	@Override
