@@ -9,9 +9,11 @@ import android.support.annotation.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.kin.ecosystem.base.BasePresenter;
+import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.KinCallbackAdapter;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.BackButtonOnMarketplacePageTapped;
@@ -199,11 +201,18 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	@Override
 	public void getOffers() {
-		this.offerRepository.getOffers(new KinCallbackAdapter<OfferList>() {
+		this.offerRepository.getOffers(new KinCallback<OfferList>() {
 			@Override
 			public void onResponse(OfferList offerList) {
 				setupEmptyItemView();
 				syncOffers(offerList);
+			}
+
+			@Override
+			public void onFailure(KinEcosystemException exception) {
+				setupEmptyItemView();
+				updateEarnTitle();
+				updateSpendTitle();
 			}
 		});
 	}
