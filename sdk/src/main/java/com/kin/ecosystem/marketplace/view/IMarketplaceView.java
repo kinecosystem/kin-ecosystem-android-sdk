@@ -16,6 +16,7 @@ public interface IMarketplaceView extends IBaseView<IMarketplacePresenter> {
 	int NOT_ENOUGH_KIN = 0x00000001;
 	int SOMETHING_WENT_WRONG = 0x00000002;
 
+
 	@IntDef({NOT_ENOUGH_KIN, SOMETHING_WENT_WRONG})
 	@Retention(RetentionPolicy.SOURCE)
 	@interface Message {
@@ -25,6 +26,8 @@ public interface IMarketplaceView extends IBaseView<IMarketplacePresenter> {
 	void setSpendList(List<Offer> response);
 
 	void setEarnList(List<Offer> response);
+
+	void setupEmptyItemView();
 
 	void showOfferActivity(PollBundle pollBundle);
 

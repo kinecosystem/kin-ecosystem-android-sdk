@@ -89,16 +89,20 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 				OfferListUtil.splitOffersByType(cachedOfferList.getOffers(), this.earnList, this.spendList);
 			}
 		}
-		setOfferLists();
+		setCachedOfferLists();
 	}
 
-	private void setOfferLists() {
+	private void setCachedOfferLists() {
 		if (this.view != null) {
 			this.view.setEarnList(earnList);
 			this.view.setSpendList(spendList);
 
-			setEarnEmptyViewState();
-			setSpendEmptyViewState();
+			if (!earnList.isEmpty()) {
+				updateEarnTitle();
+			}
+			if (!spendList.isEmpty()) {
+				updateSpendTitle();
+			}
 		}
 	}
 
@@ -128,7 +132,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 				if (offer.getId().equals(offerId)) {
 					earnList.remove(i);
 					notifyEarnItemRemoved(i);
-					setEarnEmptyViewState();
+					updateEarnTitle();
 					return;
 				}
 			}
@@ -138,21 +142,21 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 				if (offer.getId().equals(offerId)) {
 					spendList.remove(i);
 					notifySpendItemRemoved(i);
-					setSpendEmptyViewState();
+					updateSpendTitle();
 					return;
 				}
 			}
 		}
 	}
 
-	private void setEarnEmptyViewState() {
+	private void updateEarnTitle() {
 		boolean isEarnListEmpty = earnList.isEmpty();
 		if (view != null) {
 			view.updateEarnSubtitle(isEarnListEmpty);
 		}
 	}
 
-	private void setSpendEmptyViewState() {
+	private void updateSpendTitle() {
 		boolean isSpendListEmpty = spendList.isEmpty();
 		if (view != null) {
 			view.updateSpendSubtitle(isSpendListEmpty);
@@ -198,9 +202,16 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		this.offerRepository.getOffers(new KinCallbackAdapter<OfferList>() {
 			@Override
 			public void onResponse(OfferList offerList) {
+				setupEmptyItemView();
 				syncOffers(offerList);
 			}
 		});
+	}
+
+	private void setupEmptyItemView() {
+		if (view != null) {
+			view.setupEmptyItemView();
+		}
 	}
 
 	private void syncOffers(OfferList offerList) {
@@ -242,9 +253,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		}
 
 		if (offerType == OfferType.EARN) {
-			setEarnEmptyViewState();
+			updateEarnTitle();
 		} else {
-			setSpendEmptyViewState();
+			updateSpendTitle();
 		}
 	}
 
@@ -259,10 +270,10 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private void notifyItemInserted(int index, OfferType offerType) {
 		if (isSpend(offerType)) {
 			notifySpendItemInserted(index);
-			setSpendEmptyViewState();
+			updateSpendTitle();
 		} else {
 			notifyEarnItemInserted(index);
-			setEarnEmptyViewState();
+			updateEarnTitle();
 		}
 	}
 
@@ -272,8 +283,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	@Override
 	public void onItemClicked(int position, OfferType offerType) {
-		if (position == NOT_FOUND)
+		if (position == NOT_FOUND) {
 			return;
+		}
 
 		final Offer offer;
 		if (offerType == OfferType.EARN) {
