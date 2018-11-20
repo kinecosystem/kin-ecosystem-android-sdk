@@ -46,7 +46,7 @@ public class CreatePasswordPresenterImpl extends BasePresenterImpl<CreatePasswor
 			checkConfirmPassword(password, confirmPassword);
 		} else {
 			isPasswordRulesOK = false;
-			if (password.length() == 0) {
+			if (password.isEmpty()) {
 				if (view != null) {
 					view.resetEnterPasswordField();
 					view.resetConfirmPasswordField();
@@ -62,7 +62,7 @@ public class CreatePasswordPresenterImpl extends BasePresenterImpl<CreatePasswor
 	}
 
 	private void checkConfirmPassword(String password, String confirmPassword) {
-		if (password.length() > 0 && confirmPassword.length() > 0) {
+		if (!password.isEmpty() && !confirmPassword.isEmpty()) {
 			if (password.equals(confirmPassword)) {
 				isPasswordsMatches = true;
 				if (view != null) {
