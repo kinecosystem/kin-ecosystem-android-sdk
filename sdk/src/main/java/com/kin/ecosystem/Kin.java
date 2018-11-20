@@ -14,6 +14,7 @@ import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.OrderConfirmation;
@@ -21,6 +22,7 @@ import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.common.model.WhitelistData;
 import com.kin.ecosystem.core.Configuration;
 import com.kin.ecosystem.core.Logger;
+import com.kin.ecosystem.core.accountmanager.AccountManager;
 import com.kin.ecosystem.core.accountmanager.AccountManagerImpl;
 import com.kin.ecosystem.core.accountmanager.AccountManagerLocal;
 import com.kin.ecosystem.core.bi.EventLogger;
@@ -37,6 +39,7 @@ import com.kin.ecosystem.core.data.offer.OfferRepository;
 import com.kin.ecosystem.core.data.order.OrderLocalData;
 import com.kin.ecosystem.core.data.order.OrderRemoteData;
 import com.kin.ecosystem.core.data.order.OrderRepository;
+import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.SignInData;
 import com.kin.ecosystem.core.network.model.SignInData.SignInTypeEnum;
 import com.kin.ecosystem.core.network.model.UserProfile;
@@ -176,7 +179,6 @@ public class Kin {
 
 	private static void initOfferRepository() {
 		OfferRepository.init(OfferRemoteData.getInstance(instance.executorsUtil), OrderRepository.getInstance());
-		OfferRepository.getInstance().getOffers(null);
 	}
 
 	private static void initOrderRepository(@NonNull final Context context) {
