@@ -1,8 +1,5 @@
 package com.ecosystem.kin.app;
 
-import static com.ecosystem.kin.app.App.getApiKey;
-import static com.ecosystem.kin.app.App.getAppId;
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
@@ -37,7 +34,6 @@ import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.NativeSpendOfferBuilder;
 import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.common.model.UserStats;
-import com.kin.ecosystem.common.model.WhitelistData;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -95,8 +91,6 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-//		initSDK();
 
 		userID = SignInRepo.getUserId(getApplicationContext());
 		containerLayout = findViewById(R.id.container);
@@ -175,53 +169,6 @@ public class MainActivity extends AppCompatActivity {
 			.setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
 		addNativeOffer();
 		addNativeOfferClickedObserver();
-	}
-
-	private void initSDK() {
-		if (BuildConfig.IS_JWT_REGISTRATION) {
-			/**
-			 * SignInData should be created with registration JWT {see https://jwt.io/} created securely by server side
-			 * In the the this example {@link SignInRepo#getJWT} generate the JWT locally.
-			 * DO NOT!!!! use this approach in your real app.
-			 * */
-			String jwt = SignInRepo.getJWT(this);
-
-			try {
-				Kin.login(jwt, new KinCallback<Void>() {
-					@Override
-					public void onResponse(Void response) {
-						showSnackbar("Login succeed", false);
-					}
-
-					@Override
-					public void onFailure(KinEcosystemException exception) {
-						showSnackbar("Login failed: " + exception.getMessage(), true);
-					}
-				});
-			} catch (ClientException | BlockchainException e) {
-				e.printStackTrace();
-			}
-		} else {
-			/** Use {@link WhitelistData} for small scale testing */
-			WhitelistData whitelistData = SignInRepo.getWhitelistSignInData(this, getAppId(), getApiKey());
-			try {
-				Kin.login(whitelistData, new KinCallback<Void>() {
-					@Override
-					public void onResponse(Void response) {
-						showSnackbar("Login succeed", false);
-					}
-
-					@Override
-					public void onFailure(KinEcosystemException exception) {
-						showSnackbar("Login failed: " + exception.getMessage(), true);
-					}
-				});
-			} catch (ClientException | BlockchainException e) {
-				e.printStackTrace();
-			}
-		}
-
-		Kin.enableLogs(true);
 	}
 
 	private void addNativeOffer() {

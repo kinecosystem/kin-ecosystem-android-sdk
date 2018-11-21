@@ -47,7 +47,7 @@ public class App extends Application {
                         Log.e(TAG, "JWT onFailure: " + exception.getMessage());
                     }
                 });
-            } catch (ClientException | BlockchainException e) {
+            } catch (BlockchainException e) {
                 e.printStackTrace();
             }
         } else {
@@ -65,7 +65,7 @@ public class App extends Application {
                         Log.e(TAG, "WhiteList onFailure: " + exception.getMessage());
                     }
                 });
-            } catch (ClientException | BlockchainException e) {
+            } catch (BlockchainException e) {
                 e.printStackTrace();
             }
         }
