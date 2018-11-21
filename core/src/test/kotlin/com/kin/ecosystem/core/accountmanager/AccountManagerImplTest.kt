@@ -79,9 +79,6 @@ class AccountManagerImplTest : BaseTestClass() {
         whenever(local.accountState).doReturn(PENDING_CREATION)
         assertEquals(PENDING_CREATION, accountManager.accountState)
 
-        whenever(local.accountState).doReturn(REQUIRE_TRUSTLINE)
-        assertEquals(REQUIRE_TRUSTLINE, accountManager.accountState)
-
         whenever(local.accountState).doReturn(CREATION_COMPLETED)
         assertEquals(CREATION_COMPLETED, accountManager.accountState)
     }
@@ -95,7 +92,6 @@ class AccountManagerImplTest : BaseTestClass() {
         whenever(local.accountState).doReturn(PENDING_CREATION)
         assertFalse(accountManager.isAccountCreated)
 
-        whenever(local.accountState).doReturn(REQUIRE_TRUSTLINE)
         assertFalse(accountManager.isAccountCreated)
     }
 
@@ -123,7 +119,7 @@ class AccountManagerImplTest : BaseTestClass() {
             firstValue.onEvent(null)
         }
 
-        assertEquals(listOf(1, 1, 2, 3, 4), stateList)
+        assertEquals(listOf(1, 1, 2, 3), stateList)
     }
 
     @Test
@@ -143,6 +139,6 @@ class AccountManagerImplTest : BaseTestClass() {
             firstValue.onEvent(null)
         }
 
-        assertEquals(listOf(5, 1, 2, 3, 4).toList(), statesArray)
+        assertEquals(listOf(4, 1, 2, 3).toList(), statesArray)
     }
 }
