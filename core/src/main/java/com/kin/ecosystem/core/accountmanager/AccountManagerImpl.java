@@ -134,24 +134,9 @@ public class AccountManagerImpl implements AccountManager {
 							@Override
 							public void onEvent(Void data) {
 								removeAccountCreationRegistration();
-								setAccountState(REQUIRE_TRUSTLINE);
+								setAccountState(CREATION_COMPLETED);
 							}
 						});
-					break;
-				case REQUIRE_TRUSTLINE:
-					Logger.log(new Log().withTag(TAG).put("setAccountState", "REQUIRE_TRUSTLINE"));
-					// Create trustline transaction with KIN
-					blockchainSource.createTrustLine(new KinCallback<Void>() {
-						@Override
-						public void onResponse(Void response) {
-							setAccountState(CREATION_COMPLETED);
-						}
-
-						@Override
-						public void onFailure(KinEcosystemException error) {
-							setAccountState(ERROR);
-						}
-					});
 					break;
 				case CREATION_COMPLETED:
 					// Mark account creation completed.
