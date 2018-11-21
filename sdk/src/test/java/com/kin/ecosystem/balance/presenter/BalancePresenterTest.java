@@ -92,7 +92,7 @@ public class BalancePresenterTest extends BaseTestClass {
 	@After
 	public void tearDown() throws Exception {
 		balancePresenter.onDetach();
-		verify(blockchainSource).removeBalanceObserver(balanceObserverCaptor.getValue());
+		verify(blockchainSource).removeBalanceObserverAndStopListen(balanceObserverCaptor.getValue());
 		verify(orderRepository).removeOrderObserver(orderObserverCaptor.getValue());
 		assertNull(balancePresenter.getView());
 	}

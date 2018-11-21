@@ -225,7 +225,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	public void addBalanceObserverAndStartListen(@NonNull Observer<Balance> observer) {
 		addBalanceObserver(observer);
-		Logger.log(new Log().withTag(TAG).put("addBalanceObserverAndStartListen count", balanceObserversCount));
 		incrementBalanceCount();
 	}
 
@@ -235,6 +234,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				startBalanceListener();
 			}
 			balanceObserversCount++;
+			Logger.log(new Log().withTag(TAG).put("incrementBalanceCount count", balanceObserversCount));
 		}
 	}
 
@@ -268,13 +268,12 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			if (balanceObserversCount > 0) {
 				balanceObserversCount--;
 			}
+			Logger.log(new Log().withTag(TAG).put("decrementBalanceCount: count", balanceObserversCount));
 
 			if (balanceObserversCount == 0) {
 				removeRegistration(balanceRegistration);
-				Logger.log(new Log().withTag(TAG).text("decrementBalanceCount: removeRegistration"));
 			}
 		}
-		Logger.log(new Log().withTag(TAG).put("decrementBalanceCount: count", balanceObserversCount));
 	}
 
 
@@ -397,6 +396,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	private void removeRegistration(ListenerRegistration listenerRegistration) {
+		Logger.log(new Log().withTag(TAG).text("removeRegistration"));
 		if (listenerRegistration != null) {
 			listenerRegistration.remove();
 		}
