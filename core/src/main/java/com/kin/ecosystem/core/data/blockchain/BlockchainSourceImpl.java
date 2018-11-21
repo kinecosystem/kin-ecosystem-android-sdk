@@ -75,18 +75,16 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	private static final int MEMO_SPLIT_LENGTH = 3;
 
 	private BlockchainSourceImpl(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient,
-		@NonNull BlockchainSource.Local local)
-		throws BlockchainException {
+		@NonNull BlockchainSource.Local local) {
 		this.eventLogger = eventLogger;
 		this.kinClient = kinClient;
 		this.local = local;
 		this.activeAccountIndex = local.getAccountIndex();
-		updateActiveAccount(activeAccountIndex);
+		initAccount();
 	}
 
 	public static void init(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient,
-		@NonNull BlockchainSource.Local local)
-		throws BlockchainException {
+		@NonNull BlockchainSource.Local local) {
 		if (instance == null) {
 			synchronized (BlockchainSourceImpl.class) {
 				if (instance == null) {
@@ -100,23 +98,27 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		return instance;
 	}
 
+	private void initAccount() {
+		if (kinClient.hasAccount()) {
+			if (account == null) {
+				account = kinClient.getAccount(activeAccountIndex);
+			}
+		}
+	}
+
+	@Override
 	public void createAccount() throws BlockchainException {
 		createKinAccountIfNeeded();
 		initBalance();
 	}
 
 	private void createKinAccountIfNeeded() throws BlockchainException {
-		if (kinClient.hasAccount()) {
-			int accountIndex = local.getAccountIndex();
-			if (account == null && activeAccountIndex != accountIndex) {
-				account = kinClient.getAccount(accountIndex);
-				if (account == null) {
-					throw ErrorUtil.createAccountCannotLoadedException(accountIndex);
-				}
-			}
-		} else {
+		if (!kinClient.hasAccount()) {
 			try {
+				// Create new account
 				account = kinClient.addAccount();
+				activeAccountIndex = 0;
+				local.setAccountIndex(0);
 			} catch (CreateAccountException e) {
 				throw ErrorUtil.getBlockchainException(e);
 			}
@@ -304,9 +306,9 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 
 	@Override
-	public String getPublicAddress() {
+	public String getPublicAddress() throws BlockchainException {
 		if (account == null) {
-			return null;
+			throw new BlockchainException(BlockchainException.ACCOUNT_NOT_FOUND, "The Account could not be found", null);
 		}
 		return account.getPublicAddress();
 	}
@@ -342,7 +344,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 						final String orderID = extractOrderId(data.memo());
 						Logger.log(new Log().withTag(TAG).put("startPaymentListener onEvent: the orderId", orderID)
 							.put("with memo", data.memo()));
-						final String accountPublicAddress = getPublicAddress();
+						final String accountPublicAddress = account.getPublicAddress();
 						if (orderID != null && accountPublicAddress != null) {
 							completedPayment.postValue(PaymentConverter.toPayment(data, orderID, accountPublicAddress));
 							Logger.log(new Log().withTag(TAG).put("completedPayment order id", orderID));

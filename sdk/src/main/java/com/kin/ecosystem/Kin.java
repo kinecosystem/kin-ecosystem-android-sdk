@@ -1,8 +1,7 @@
 package com.kin.ecosystem;
 
+import static com.kin.ecosystem.common.exception.ClientException.ACCOUNT_NOT_LOGGED_IN;
 import static com.kin.ecosystem.common.exception.ClientException.BAD_CONFIGURATION;
-import static com.kin.ecosystem.common.exception.ClientException.SDK_NOT_STARTED;
-import static com.kin.ecosystem.core.accountmanager.AccountManager.CREATION_COMPLETED;
 import static com.kin.ecosystem.core.accountmanager.AccountManager.ERROR;
 
 import android.app.Activity;
@@ -19,7 +18,6 @@ import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
-import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.OrderConfirmation;
@@ -45,7 +43,6 @@ import com.kin.ecosystem.core.data.offer.OfferRepository;
 import com.kin.ecosystem.core.data.order.OrderLocalData;
 import com.kin.ecosystem.core.data.order.OrderRemoteData;
 import com.kin.ecosystem.core.data.order.OrderRepository;
-import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.SignInData;
 import com.kin.ecosystem.core.network.model.SignInData.SignInTypeEnum;
 import com.kin.ecosystem.core.util.DeviceUtils;
@@ -66,7 +63,7 @@ public class Kin {
 	private static volatile Kin instance;
 
 	private static EventLogger eventLogger;
-	private static boolean sdkInitialized = false;
+	private static volatile boolean isAccountLoggedIn = false;
 	private static volatile String environmentName;
 
 	private final ExecutorsUtil executorsUtil;
@@ -87,13 +84,13 @@ public class Kin {
 		return instance;
 	}
 
-	synchronized static void initialize(Context appContext) throws ClientException, BlockchainException {
-		if (!sdkInitialized) {
+	synchronized static void initialize(Context appContext) throws ClientException {
+		if (isInstanceNull()) {
 			instance = getInstance();
 			// use application context to avoid leaks.
 			appContext = appContext.getApplicationContext();
 
-			//Load data from manifest.
+			//Load data from manifest, can throw ClientException if no data available.
 			loadDefaultsFromMetadata(appContext);
 
 			//Set Environment
@@ -131,7 +128,6 @@ public class Kin {
 
 			DeviceUtils.init(appContext);
 
-			sdkInitialized = true;
 			eventLogger.send(KinSdkInitiated.create());
 		}
 	}
@@ -176,18 +172,14 @@ public class Kin {
 		Logger.enableLogs(enableLogs);
 	}
 
-	public static void login(@NonNull WhitelistData whitelistData,
-		KinCallback<Void> loginCallback)
-		throws ClientException, BlockchainException {
-		checkInstanceNotNull();
+	public static void login(@NonNull WhitelistData whitelistData, KinCallback<Void> loginCallback)
+		throws BlockchainException {
 		SignInData signInData = getWhiteListSignInData(whitelistData);
 		init(signInData, loginCallback);
 
 	}
 
-	public static void login(@NonNull String jwt, KinCallback<Void> loginCallback)
-		throws ClientException, BlockchainException {
-		checkInstanceNotNull();
+	public static void login(@NonNull String jwt, KinCallback<Void> loginCallback) throws BlockchainException {
 		SignInData signInData = getJwtSignInData(jwt);
 		init(signInData, loginCallback);
 	}
@@ -206,10 +198,8 @@ public class Kin {
 			.jwt(jwt);
 	}
 
-	private synchronized static void init(@NonNull SignInData signInData,
-		final KinCallback<Void> loginCallback)
-		throws ClientException, BlockchainException {
-		instance = getInstance();
+	private static void init(@NonNull SignInData signInData, final KinCallback<Void> loginCallback)
+		throws BlockchainException {
 		BlockchainSourceImpl.getInstance().createAccount();
 
 		String deviceID = AuthRepository.getInstance().getDeviceID();
@@ -229,32 +219,36 @@ public class Kin {
 		}
 		BlockchainSourceImpl.getInstance().setAppID(appID);
 
-
 		if (!AccountManagerImpl.getInstance().isAccountCreated()) {
 			AccountManagerImpl.getInstance().start();
 			AccountManagerImpl.getInstance().addAccountStateObserver(new Observer<Integer>() {
 				@Override
 				public void onChanged(Integer value) {
-					if (value == CREATION_COMPLETED) {
-						instance.executorsUtil.mainThread().execute(new Runnable() {
-							@Override
-							public void run() {
-								loginCallback.onResponse(null);
-							}
-						});
-					} else {
-						if (value == ERROR) {
+					switch (value) {
+						case AccountManager.PENDING_CREATION:
+							isAccountLoggedIn = true;
+							break;
+						case AccountManager.CREATION_COMPLETED:
+							instance.executorsUtil.mainThread().execute(new Runnable() {
+								@Override
+								public void run() {
+									loginCallback.onResponse(null);
+								}
+							});
+							break;
+						case ERROR:
 							instance.executorsUtil.mainThread().execute(new Runnable() {
 								@Override
 								public void run() {
 									loginCallback.onFailure(AccountManagerImpl.getInstance().getError());
 								}
 							});
-						}
+							break;
 					}
 				}
 			});
 		} else {
+			isAccountLoggedIn = true;
 			OfferRepository.getInstance().getOffers(null);
 		}
 	}
@@ -263,10 +257,9 @@ public class Kin {
 		return instance == null;
 	}
 
-	private static void checkInstanceNotNull() throws ClientException {
-		if (isInstanceNull()) {
-			throw ErrorUtil.getClientException(SDK_NOT_STARTED,
-				new IllegalStateException("Kin.initialize(...) should be called first"));
+	private static void checkAccountIsLoggedIn() throws ClientException {
+		if (!isAccountLoggedIn) {
+			throw ErrorUtil.getClientException(ACCOUNT_NOT_LOGGED_IN, null);
 		}
 	}
 
@@ -276,7 +269,7 @@ public class Kin {
 	 * @param activity the activity user can go back to.
 	 */
 	public static void launchMarketplace(@NonNull final Activity activity) throws ClientException {
-		checkInstanceNotNull();
+		checkAccountIsLoggedIn();
 		eventLogger.send(EntrypointButtonTapped.create());
 		boolean isAccountCreated = AccountManagerImpl.getInstance().isAccountCreated();
 		if (isAccountCreated) {
@@ -299,8 +292,7 @@ public class Kin {
 	/**
 	 * @return The account public address
 	 */
-	public static String getPublicAddress() throws ClientException {
-		checkInstanceNotNull();
+	public static String getPublicAddress() throws BlockchainException {
 		return BlockchainSourceImpl.getInstance().getPublicAddress();
 	}
 
@@ -310,7 +302,7 @@ public class Kin {
 	 * @return balance amount
 	 */
 	public static Balance getCachedBalance() throws ClientException {
-		checkInstanceNotNull();
+		checkAccountIsLoggedIn();
 		return BlockchainSourceImpl.getInstance().getBalance();
 	}
 
@@ -320,7 +312,7 @@ public class Kin {
 	 * @param callback balance amount
 	 */
 	public static void getBalance(@NonNull final KinCallback<Balance> callback) throws ClientException {
-		checkInstanceNotNull();
+		checkAccountIsLoggedIn();
 		BlockchainSourceImpl.getInstance().getBalance(callback);
 	}
 
@@ -333,7 +325,6 @@ public class Kin {
 	 * no other observers on this connection, the connection will be closed.
 	 */
 	public static void addBalanceObserver(@NonNull final Observer<Balance> observer) throws ClientException {
-		checkInstanceNotNull();
 		BlockchainSourceImpl.getInstance().addBalanceObserverAndStartListen(observer);
 	}
 
@@ -342,7 +333,6 @@ public class Kin {
 	 * if there is no more observers.
 	 */
 	public static void removeBalanceObserver(@NonNull final Observer<Balance> observer) throws ClientException {
-		checkInstanceNotNull();
 		BlockchainSourceImpl.getInstance().removeBalanceObserverAndStopListen(observer);
 	}
 
@@ -355,7 +345,7 @@ public class Kin {
 	 */
 	public static void purchase(String offerJwt, @Nullable KinCallback<OrderConfirmation> callback)
 		throws ClientException {
-		checkInstanceNotNull();
+		checkAccountIsLoggedIn();
 		OrderRepository.getInstance().purchase(offerJwt, callback);
 	}
 
@@ -369,7 +359,7 @@ public class Kin {
 	 */
 	public static void requestPayment(String offerJwt, @Nullable KinCallback<OrderConfirmation> callback)
 		throws ClientException {
-		checkInstanceNotNull();
+		checkAccountIsLoggedIn();
 		OrderRepository.getInstance().requestPayment(offerJwt, callback);
 	}
 
@@ -382,7 +372,7 @@ public class Kin {
 	 */
 	public static void payToUser(String offerJwt, @Nullable KinCallback<OrderConfirmation> callback)
 		throws ClientException {
-		checkInstanceNotNull();
+		checkAccountIsLoggedIn();
 		//pay to user has a similar flow like purchase (spend), the only different is the expected input JWT.
 		OrderRepository.getInstance().purchase(offerJwt, callback);
 	}
@@ -395,11 +385,8 @@ public class Kin {
 	 * @param userId The user id to check
 	 * @param callback The result will be a {@link Boolean}
 	 */
-	public static void hasAccount(@NonNull String userId, @NonNull KinCallback<Boolean> callback)
-		throws ClientException {
-		checkInstanceNotNull();
+	public static void hasAccount(@NonNull String userId, @NonNull KinCallback<Boolean> callback) {
 		AuthRepository.getInstance().hasAccount(userId, callback);
-
 	}
 
 	/**
@@ -410,7 +397,7 @@ public class Kin {
 	 */
 	public static void userStats(@NonNull KinCallback<UserStats> callback)
 		throws ClientException {
-		checkInstanceNotNull();
+		checkAccountIsLoggedIn();
 		AuthRepository.getInstance().userStats(callback);
 	}
 
@@ -419,27 +406,21 @@ public class Kin {
 	 *
 	 * @param offerID The offerID that this order created from
 	 */
-	public static void getOrderConfirmation(@NonNull String offerID, @NonNull KinCallback<OrderConfirmation> callback)
-		throws ClientException {
-		checkInstanceNotNull();
+	public static void getOrderConfirmation(@NonNull String offerID, @NonNull KinCallback<OrderConfirmation> callback) {
 		OrderRepository.getInstance().getExternalOrderStatus(offerID, callback);
 	}
 
 	/**
 	 * Add a native offer {@link Observer} to receive a trigger when you native offers on Kin Marketplace are clicked.
 	 */
-	public static void addNativeOfferClickedObserver(@NonNull Observer<NativeOfferClickEvent> observer)
-		throws ClientException {
-		checkInstanceNotNull();
+	public static void addNativeOfferClickedObserver(@NonNull Observer<NativeOfferClickEvent> observer) {
 		OfferRepository.getInstance().addNativeOfferClickedObserver(observer);
 	}
 
 	/**
 	 * Remove the callback if you no longer want to get triggered when your offer on Kin marketplace are clicked.
 	 */
-	public static void removeNativeOfferClickedObserver(@NonNull Observer<NativeOfferClickEvent> observer)
-		throws ClientException {
-		checkInstanceNotNull();
+	public static void removeNativeOfferClickedObserver(@NonNull Observer<NativeOfferClickEvent> observer) {
 		OfferRepository.getInstance().removeNativeOfferClickedObserver(observer);
 	}
 
@@ -450,11 +431,8 @@ public class Kin {
 	 * @param nativeOffer The spend or earn offer you want to add to the spend list.
 	 * @param dismissOnTap An indication if the sdk should close the marketplace when this offer tapped.
 	 * @return true if the offer added successfully, the list was changed.
-	 * @throws ClientException Could not add the offer to the list.
 	 */
-	public static boolean addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissOnTap)
-		throws ClientException {
-		checkInstanceNotNull();
+	public static boolean addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissOnTap) {
 		return OfferRepository.getInstance().addNativeOffer(nativeOffer, dismissOnTap);
 	}
 
@@ -463,10 +441,8 @@ public class Kin {
 	 *
 	 * @param nativeOffer The spend or earn offer you want to remove from the spend list.
 	 * @return true if the offer removed successfully, the list was changed.
-	 * @throws ClientException Could not remove the offer from the list.
 	 */
-	public static boolean removeNativeOffer(@NonNull NativeOffer nativeOffer) throws ClientException {
-		checkInstanceNotNull();
+	public static boolean removeNativeOffer(@NonNull NativeOffer nativeOffer) {
 		return OfferRepository.getInstance().removeNativeOffer(nativeOffer);
 	}
 }

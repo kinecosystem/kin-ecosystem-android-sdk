@@ -11,7 +11,7 @@ import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
 
-public class KinEcosystemInitProvider extends ContentProvider {
+public final class KinEcosystemInitProvider extends ContentProvider {
 
 	private static final String TAG = "KinEcosystemAutoInit";
 
@@ -20,8 +20,6 @@ public class KinEcosystemInitProvider extends ContentProvider {
 		try {
 			Kin.initialize(getContext());
 		} catch (ClientException e) {
-			Logger.log(new Log().withTag(TAG).text("KinEcosystem sdk auto initialize failed"));
-		} catch (BlockchainException e) {
 			Logger.log(new Log().withTag(TAG).text("KinEcosystem sdk auto initialize failed"));
 		}
 		return false;

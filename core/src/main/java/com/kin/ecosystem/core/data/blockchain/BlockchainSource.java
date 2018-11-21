@@ -14,6 +14,12 @@ import kin.core.KinAccount;
 public interface BlockchainSource {
 
 	/**
+	 * Create account if there is no accounts in local
+	 * @throws BlockchainException could not load the account, or could not create a new account.
+	 */
+	void createAccount() throws BlockchainException;
+
+	/**
 	 * Getting the current account.
 	 */
 	@Nullable
@@ -67,7 +73,7 @@ public interface BlockchainSource {
 	/**
 	 * @return the public address of the initiated account
 	 */
-	String getPublicAddress() throws ClientException;
+	String getPublicAddress() throws ClientException, BlockchainException;
 
 	/**
 	 * @return the public address of the account with {@param accountIndex}

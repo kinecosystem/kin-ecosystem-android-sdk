@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		initSDK();
+//		initSDK();
 
 		userID = SignInRepo.getUserId(getApplicationContext());
 		containerLayout = findViewById(R.id.container);
@@ -178,8 +178,6 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void initSDK() {
-//		KinEnvironment environment = Environment.getBeta();
-
 		if (BuildConfig.IS_JWT_REGISTRATION) {
 			/**
 			 * SignInData should be created with registration JWT {see https://jwt.io/} created securely by server side
@@ -309,21 +307,15 @@ public class MainActivity extends AppCompatActivity {
 
 	// Use this method to remove the nativeSpendOffer you added
 	private void removeNativeOffer(@NonNull NativeOffer nativeOffer) {
-		try {
-			if (Kin.removeNativeOffer(nativeOffer)) {
-				showSnackbar("Native offer removed", false);
-			}
-		} catch (ClientException e) {
-			e.printStackTrace();
+		if (Kin.removeNativeOffer(nativeOffer)) {
+			showSnackbar("Native offer removed", false);
+		} else {
+			showSnackbar("Could not removed native offer", true);
 		}
 	}
 
 	private void addNativeOfferClickedObserver() {
-		try {
-			Kin.addNativeOfferClickedObserver(getNativeOfferClickedObserver());
-		} catch (ClientException e) {
-			showSnackbar("Could not add native offer callback", true);
-		}
+		Kin.addNativeOfferClickedObserver(getNativeOfferClickedObserver());
 	}
 
 	private Observer<NativeOfferClickEvent> getNativeOfferClickedObserver() {
@@ -354,12 +346,9 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissMarketPlaceOnTap) {
-		try {
-			if (Kin.addNativeOffer(nativeOffer, dismissMarketPlaceOnTap)) {
-				showToast("Native offer added");
-			}
-		} catch (ClientException e) {
-			e.printStackTrace();
+		if (Kin.addNativeOffer(nativeOffer, dismissMarketPlaceOnTap)) {
+			showToast("Native offer added");
+		} else {
 			showToast("Could not add native offer");
 		}
 	}
@@ -367,18 +356,15 @@ public class MainActivity extends AppCompatActivity {
 	private void getPublicAddress() {
 		try {
 			publicAddress = Kin.getPublicAddress();
-			if (publicAddress != null) {
-				int blueColor = ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark);
-				publicAddressTextArea.getBackground().setColorFilter(blueColor, Mode.SRC_ATOP);
-				showPublicAddressTextView.setText(R.string.copy_public_address);
-				publicAddressTextArea.setText(publicAddress);
-			} else {
-				publicAddressTextArea.setText(R.string.account_not_logged_in);
-			}
-		} catch (ClientException e) {
+			int blueColor = ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark);
+			publicAddressTextArea.getBackground().setColorFilter(blueColor, Mode.SRC_ATOP);
+			showPublicAddressTextView.setText(R.string.copy_public_address);
+			publicAddressTextArea.setText(publicAddress);
+		} catch (BlockchainException e) {
+			//Account could not be found
+			publicAddressTextArea.setText(e.getMessage());
 			e.printStackTrace();
 		}
-
 	}
 
 	private void copyToClipboard(CharSequence textToCopy, String paramName) {
@@ -478,28 +464,23 @@ public class MainActivity extends AppCompatActivity {
 				if (payToUserDialog.getUserId() != null) {
 					showSnackbar("Pay to user flow started", false);
 					final String userId = payToUserDialog.getUserId();
-					try {
-						Kin.hasAccount(userId, new KinCallback<Boolean>() {
-							@Override
-							public void onResponse(Boolean hasAccount) {
-								if (hasAccount != null && hasAccount) {
-									createPayToUserOffer(userId);
-								} else {
-									showSnackbar("Account not found", true);
-									enableView(v, true);
-								}
-							}
-
-							@Override
-							public void onFailure(KinEcosystemException exception) {
-								showSnackbar("Failed - " + exception.getMessage(), true);
+					Kin.hasAccount(userId, new KinCallback<Boolean>() {
+						@Override
+						public void onResponse(Boolean hasAccount) {
+							if (hasAccount != null && hasAccount) {
+								createPayToUserOffer(userId);
+							} else {
+								showSnackbar("Account not found", true);
 								enableView(v, true);
 							}
-						});
-					} catch (ClientException e) {
-						e.printStackTrace();
-						enableView(v, true);
-					}
+						}
+
+						@Override
+						public void onFailure(KinEcosystemException exception) {
+							showSnackbar("Failed - " + exception.getMessage(), true);
+							enableView(v, true);
+						}
+					});
 
 				} else {
 					enableView(v, true);
@@ -514,21 +495,17 @@ public class MainActivity extends AppCompatActivity {
 	 */
 	private void getOrderConfirmation(@NonNull final String offerID) {
 		if (!TextUtils.isEmpty(offerID)) {
-			try {
-				Kin.getOrderConfirmation(offerID, new KinCallback<OrderConfirmation>() {
-					@Override
-					public void onResponse(OrderConfirmation orderConfirmation) {
-						showSnackbar("Offer: " + offerID + " Status is: " + orderConfirmation.getStatus(), false);
-					}
+			Kin.getOrderConfirmation(offerID, new KinCallback<OrderConfirmation>() {
+				@Override
+				public void onResponse(OrderConfirmation orderConfirmation) {
+					showSnackbar("Offer: " + offerID + " Status is: " + orderConfirmation.getStatus(), false);
+				}
 
-					@Override
-					public void onFailure(KinEcosystemException exception) {
-						showSnackbar("Failed to get OfferId: " + offerID + " status", true);
-					}
-				});
-			} catch (ClientException e) {
-				e.printStackTrace();
-			}
+				@Override
+				public void onFailure(KinEcosystemException exception) {
+					showSnackbar("Failed to get OfferId: " + offerID + " status", true);
+				}
+			});
 		}
 	}
 
@@ -625,11 +602,7 @@ public class MainActivity extends AppCompatActivity {
 		nativeSpendOrderConfirmationCallback = null;
 		nativeEarnOrderConfirmationCallback = null;
 		payToUserOrderConfirmationCallback = null;
-		try {
-			Kin.removeNativeOffer(nativeOffer);
-			Kin.removeNativeOfferClickedObserver(nativeOfferClickedObserver);
-		} catch (ClientException e) {
-			Log.d(TAG, "onDestroy: Failed to remove native offer clicked observer");
-		}
+		Kin.removeNativeOffer(nativeOffer);
+		Kin.removeNativeOfferClickedObserver(nativeOfferClickedObserver);
 	}
 }
