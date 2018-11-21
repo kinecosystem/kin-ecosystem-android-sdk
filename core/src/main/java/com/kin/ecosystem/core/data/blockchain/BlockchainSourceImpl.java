@@ -217,24 +217,22 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
-	public void addBalanceObserver(@NonNull Observer<Balance> observer) {
+	public void addBalanceObserver(@NonNull Observer<Balance> observer, boolean startSSE) {
 		balance.addObserver(observer);
 		observer.onChanged(balance.getValue());
+
+		if(startSSE) {
+			incrementBalanceSSECount();
+		}
 	}
 
-	@Override
-	public void addBalanceObserverAndStartListen(@NonNull Observer<Balance> observer) {
-		addBalanceObserver(observer);
-		incrementBalanceCount();
-	}
-
-	private void incrementBalanceCount() {
+	private void incrementBalanceSSECount() {
 		synchronized (balanceObserversLock) {
 			if (balanceObserversCount == 0) {
 				startBalanceListener();
 			}
 			balanceObserversCount++;
-			Logger.log(new Log().withTag(TAG).put("incrementBalanceCount count", balanceObserversCount));
+			Logger.log(new Log().withTag(TAG).put("incrementBalanceSSECount count", balanceObserversCount));
 		}
 	}
 
@@ -252,23 +250,20 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
-	public void removeBalanceObserver(@NonNull Observer<Balance> observer) {
+	public void removeBalanceObserver(@NonNull Observer<Balance> observer, boolean isSSE) {
 		Logger.log(new Log().withTag(TAG).text("removeBalanceObserver"));
 		balance.removeObserver(observer);
+		if (isSSE) {
+			decrementBalanceSSECount();
+		}
 	}
 
-
-	public void removeBalanceObserverAndStopListen(@NonNull Observer<Balance> observer) {
-		removeBalanceObserver(observer);
-		decrementBalanceCount();
-	}
-
-	private void decrementBalanceCount() {
+	private void decrementBalanceSSECount() {
 		synchronized (balanceObserversLock) {
 			if (balanceObserversCount > 0) {
 				balanceObserversCount--;
 			}
-			Logger.log(new Log().withTag(TAG).put("decrementBalanceCount: count", balanceObserversCount));
+			Logger.log(new Log().withTag(TAG).put("decrementBalanceSSECount: count", balanceObserversCount));
 
 			if (balanceObserversCount == 0) {
 				removeRegistration(balanceRegistration);
