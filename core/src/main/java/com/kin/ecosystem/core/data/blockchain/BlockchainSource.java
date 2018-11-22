@@ -51,9 +51,9 @@ public interface BlockchainSource {
 
 	/**
 	 * Remove the balance observer in order to stop receiving balance updates.
-	 * @param isSSE true will close the connection if no other observers
+	 * @param stopSSE true will close the connection if no other observers
 	 */
-	void removeBalanceObserver(@NonNull final Observer<Balance> observer, boolean isSSE);
+	void removeBalanceObserver(@NonNull final Observer<Balance> observer, boolean stopSSE);
 
 	/**
 	 * @return the public address of the initiated account

@@ -250,10 +250,10 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
-	public void removeBalanceObserver(@NonNull Observer<Balance> observer, boolean isSSE) {
+	public void removeBalanceObserver(@NonNull Observer<Balance> observer, boolean stopSSE) {
 		Logger.log(new Log().withTag(TAG).text("removeBalanceObserver"));
 		balance.removeObserver(observer);
-		if (isSSE) {
+		if (stopSSE) {
 			decrementBalanceSSECount();
 		}
 	}

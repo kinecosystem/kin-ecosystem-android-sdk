@@ -138,6 +138,24 @@ public class AccountManagerImpl implements AccountManager {
 							}
 						});
 					break;
+				case REQUIRE_TRUSTLINE:
+					///////////////////////////////////////////////////////////////////////////////////////////////
+					//  Deprecated this is NOT part of the current flow, it's only for backward compatibility.   //
+					///////////////////////////////////////////////////////////////////////////////////////////////
+					Logger.log(new Log().withTag(TAG).put("setAccountState", "REQUIRE_TRUSTLINE"));
+					// Create trustline transaction with KIN
+					blockchainSource.createTrustLine(new KinCallback<Void>() {
+						@Override
+						public void onResponse(Void response) {
+							setAccountState(CREATION_COMPLETED);
+						}
+
+						@Override
+						public void onFailure(KinEcosystemException error) {
+							setAccountState(ERROR);
+						}
+					});
+					break;
 				case CREATION_COMPLETED:
 					// Mark account creation completed.
 					eventLogger.send(WalletCreationSucceeded.create());
