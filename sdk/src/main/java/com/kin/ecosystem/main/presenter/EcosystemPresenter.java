@@ -98,7 +98,7 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 				}
 			}
 		};
-		blockchainSource.addBalanceObserver(balanceObserver);
+		blockchainSource.addBalanceObserver(balanceObserver, false);
 	}
 
 	private boolean isGreaterThenZero(Balance value) {
@@ -121,7 +121,7 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 
 	private void removeBalanceObserver() {
 		if (balanceObserver != null) {
-			blockchainSource.removeBalanceObserver(balanceObserver);
+			blockchainSource.removeBalanceObserver(balanceObserver, false);
 			balanceObserver = null;
 		}
 	}

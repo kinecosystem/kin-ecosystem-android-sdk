@@ -79,7 +79,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 				}
 			}
 		};
-		blockchainSource.addBalanceObserver(balanceObserver);
+		blockchainSource.addBalanceObserver(balanceObserver, false);
 	}
 
 	private boolean isGreaterThenZero(Balance value) {
@@ -104,7 +104,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 
 	private void removeBalanceObserver() {
 		if (balanceObserver != null) {
-			blockchainSource.removeBalanceObserver(balanceObserver);
+			blockchainSource.removeBalanceObserver(balanceObserver, false);
 		}
 	}
 

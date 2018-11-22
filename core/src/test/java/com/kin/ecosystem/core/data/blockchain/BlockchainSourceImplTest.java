@@ -207,7 +207,7 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 			public void onChanged(Balance value) {
 				balance = value;
 			}
-		});
+		}, false);
 		assertEquals(new BigDecimal(20), balance.getAmount());
 
 		InOrder inOrder = Mockito.inOrder(local);
@@ -235,12 +235,12 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 	public void add_balance_observer_and_start_listen() throws Exception {
 		ArgumentCaptor<EventListener<kin.core.Balance>> balanceEventListener = forClass(EventListener.class);
 
-		blockchainSource.addBalanceObserverAndStartListen(new Observer<Balance>() {
+		blockchainSource.addBalanceObserver(new Observer<Balance>() {
 			@Override
 			public void onChanged(Balance value) {
 				balance = value;
 			}
-		});
+		}, true);
 
 		verify(blockchainEvents).addBalanceListener(balanceEventListener.capture());
 		BigDecimal value = new BigDecimal(123);
