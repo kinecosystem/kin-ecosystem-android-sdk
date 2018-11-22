@@ -221,7 +221,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		balance.addObserver(observer);
 		observer.onChanged(balance.getValue());
 
-		if(startSSE) {
+		if (startSSE) {
 			incrementBalanceSSECount();
 		}
 	}
@@ -371,9 +371,13 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	public void updateActiveAccount(int accountIndex) throws BlockchainException {
 		local.setAccountIndex(accountIndex);
 		createKinAccountIfNeeded();
-
-		balanceRegistration.remove();
-		startBalanceListener();
+		
+		synchronized (balanceObserversLock) {
+			removeRegistration(balanceRegistration);
+			if (balanceObserversCount > 0) {
+				startBalanceListener();
+			}
+		}
 		//trigger balance update
 		getBalance(null);
 	}

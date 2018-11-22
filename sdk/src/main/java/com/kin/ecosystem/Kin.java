@@ -268,7 +268,7 @@ public class Kin {
 	 */
 	public static void removeBalanceObserver(@NonNull final Observer<Balance> observer) throws ClientException {
 		checkInstanceNotNull();
-		BlockchainSourceImpl.getInstance().addBalanceObserver(observer, true);
+		BlockchainSourceImpl.getInstance().removeBalanceObserver(observer, true);
 	}
 
 	/**
