@@ -376,8 +376,10 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			balanceRegistration.remove();
 		}
 
-		if (balanceObserversCount > 0) {
-			startBalanceListener();
+		synchronized (balanceObserversLock) {
+			if (balanceObserversCount > 0) {
+				startBalanceListener();
+			}
 		}
 		//trigger balance update
 		getBalance(null);
