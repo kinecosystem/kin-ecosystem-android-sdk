@@ -9,6 +9,7 @@ import static com.kin.ecosystem.balance.presenter.BalancePresenter.SPEND;
 import static com.kin.ecosystem.main.ScreenId.MARKETPLACE;
 import static com.kin.ecosystem.main.ScreenId.ORDER_HISTORY;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.inOrder;
@@ -65,6 +66,9 @@ public class BalancePresenterTest extends BaseTestClass {
 	private ArgumentCaptor<Observer<Balance>> balanceObserverCaptor;
 
 	@Captor
+	private ArgumentCaptor<Boolean> sseCaptor;
+
+	@Captor
 	private ArgumentCaptor<Observer<Order>> orderObserverCaptor;
 
 	@Mock
@@ -85,8 +89,9 @@ public class BalancePresenterTest extends BaseTestClass {
 
 		balancePresenter.onAttach(balanceView);
 		verify(balanceView).setWelcomeSubtitle();
-		verify(blockchainSource).addBalanceObserver(balanceObserverCaptor.capture(), true);
+		verify(blockchainSource).addBalanceObserver(balanceObserverCaptor.capture(), sseCaptor.capture());
 		verify(orderRepository).addOrderObserver(orderObserverCaptor.capture());
+		assertTrue(sseCaptor.getValue());
 	}
 
 	@After

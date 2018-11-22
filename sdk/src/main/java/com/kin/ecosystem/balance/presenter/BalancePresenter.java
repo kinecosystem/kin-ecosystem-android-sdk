@@ -189,7 +189,7 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 
 	private void removeObservers() {
 		orderRepository.removeOrderObserver(orderObserver);
-		blockchainSource.addBalanceObserver(balanceObserver, true);
+		blockchainSource.removeBalanceObserver(balanceObserver, true);
 	}
 
 	@Override
