@@ -371,12 +371,9 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	public void updateActiveAccount(int accountIndex) throws BlockchainException {
 		local.setAccountIndex(accountIndex);
 		createKinAccountIfNeeded();
-
-		if (balanceRegistration != null) {
-			balanceRegistration.remove();
-		}
-
+		
 		synchronized (balanceObserversLock) {
+			removeRegistration(balanceRegistration);
 			if (balanceObserversCount > 0) {
 				startBalanceListener();
 			}
