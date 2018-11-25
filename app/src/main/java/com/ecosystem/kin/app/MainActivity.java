@@ -233,23 +233,13 @@ public class MainActivity extends AppCompatActivity {
 					Log.d(TAG, "Balance - " + value.getAmount().intValue());
 				}
 			};
-
-			try {
-				Kin.addBalanceObserver(balanceObserver);
-			} catch (ClientException e) {
-				e.printStackTrace();
-			}
+			Kin.addBalanceObserver(balanceObserver);
 		}
-
 	}
 
 	private void removeBalanceObserver() {
-		try {
-			Kin.removeBalanceObserver(balanceObserver);
-			balanceObserver = null;
-		} catch (ClientException e) {
-			e.printStackTrace();
-		}
+		Kin.removeBalanceObserver(balanceObserver);
+		balanceObserver = null;
 	}
 
 	// Use this method to remove the nativeSpendOffer you added
