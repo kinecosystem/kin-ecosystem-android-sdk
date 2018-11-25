@@ -79,9 +79,6 @@ class AccountManagerImplTest : BaseTestClass() {
         whenever(local.accountState).doReturn(PENDING_CREATION)
         assertEquals(PENDING_CREATION, accountManager.accountState)
 
-        whenever(local.accountState).doReturn(REQUIRE_TRUSTLINE)
-        assertEquals(REQUIRE_TRUSTLINE, accountManager.accountState)
-
         whenever(local.accountState).doReturn(CREATION_COMPLETED)
         assertEquals(CREATION_COMPLETED, accountManager.accountState)
     }
@@ -95,7 +92,6 @@ class AccountManagerImplTest : BaseTestClass() {
         whenever(local.accountState).doReturn(PENDING_CREATION)
         assertFalse(accountManager.isAccountCreated)
 
-        whenever(local.accountState).doReturn(REQUIRE_TRUSTLINE)
         assertFalse(accountManager.isAccountCreated)
     }
 
@@ -107,7 +103,7 @@ class AccountManagerImplTest : BaseTestClass() {
     }
 
     @Test
-    fun `start account creation flow and listen for state changes`() {
+    fun `start account creation flow and listen for state changes, skip on REQUIRE_TRUSTLINE`() {
         initWithFirstState(REQUIRE_CREATION)
         val stateList = arrayListOf<Int>()
         val stateObserver = object : Observer<Int>() {
@@ -123,11 +119,27 @@ class AccountManagerImplTest : BaseTestClass() {
             firstValue.onEvent(null)
         }
 
-        assertEquals(listOf(1, 1, 2, 3, 4), stateList)
+        assertEquals(listOf(1, 1, 2, 4), stateList)
     }
 
     @Test
-    fun `retry from the beginning`() {
+    fun `start with old state REQUIRE_TRUSTLINE state move to COMPLETE`() {
+        initWithFirstState(REQUIRE_TRUSTLINE)
+        val stateList = arrayListOf<Int>()
+        val stateObserver = object : Observer<Int>() {
+            override fun onChanged(value: Int) {
+                stateList.add(value)
+            }
+        }
+
+        accountManager.addAccountStateObserver(stateObserver)
+        accountManager.start()
+
+        assertEquals(listOf(3, 3, 4), stateList)
+    }
+
+    @Test
+    fun `retry from the beginning skip on REQUIRE_TRUSTLINE`() {
         initWithFirstState(ERROR)
         val statesArray = arrayListOf<Int>()
         val stateObserver = object : Observer<Int>() {
@@ -143,6 +155,6 @@ class AccountManagerImplTest : BaseTestClass() {
             firstValue.onEvent(null)
         }
 
-        assertEquals(listOf(5, 1, 2, 3, 4).toList(), statesArray)
+        assertEquals(listOf(5, 1, 2, 4).toList(), statesArray)
     }
 }

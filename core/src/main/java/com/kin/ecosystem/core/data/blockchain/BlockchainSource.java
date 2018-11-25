@@ -52,23 +52,15 @@ public interface BlockchainSource {
 
 	/**
 	 * Add balance observer in order to start receive balance updates
+	 * @param startSSE true will keep a connection on account balance updates from the blockchain network
 	 */
-	void addBalanceObserver(@NonNull final Observer<Balance> observer);
-
-	/**
-	 * Add balance observer that will keep a connection on account balance updates from the blockchain network.
-	 */
-	void addBalanceObserverAndStartListen(@NonNull final Observer<Balance> observer);
+	void addBalanceObserver(@NonNull final Observer<Balance> observer, boolean startSSE);
 
 	/**
 	 * Remove the balance observer in order to stop receiving balance updates.
+	 * @param stopSSE true will close the connection if no other observers
 	 */
-	void removeBalanceObserver(@NonNull final Observer<Balance> observer);
-
-	/**
-	 * Remove the balance observer, and close the connection if no other observers.
-	 */
-	void removeBalanceObserverAndStopListen(@NonNull final Observer<Balance> observer);
+	void removeBalanceObserver(@NonNull final Observer<Balance> observer, boolean stopSSE);
 
 	/**
 	 * @return the public address of the initiated account

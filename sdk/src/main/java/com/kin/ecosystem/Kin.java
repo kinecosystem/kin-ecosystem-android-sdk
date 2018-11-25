@@ -324,16 +324,17 @@ public class Kin {
 	 * network, In order to close the connection use {@link #removeBalanceObserver(Observer)} with the same observer. If
 	 * no other observers on this connection, the connection will be closed.
 	 */
-	public static void addBalanceObserver(@NonNull final Observer<Balance> observer) throws ClientException {
-		BlockchainSourceImpl.getInstance().addBalanceObserverAndStartListen(observer);
+	public static void addBalanceObserver(@NonNull final Observer<Balance> observer) {
+		BlockchainSourceImpl.getInstance().addBalanceObserver(observer, true);
+
 	}
 
 	/**
 	 * Remove the balance observer, this method will close the live network connection to the blockchain network
 	 * if there is no more observers.
 	 */
-	public static void removeBalanceObserver(@NonNull final Observer<Balance> observer) throws ClientException {
-		BlockchainSourceImpl.getInstance().removeBalanceObserverAndStopListen(observer);
+	public static void removeBalanceObserver(@NonNull final Observer<Balance> observer) {
+		BlockchainSourceImpl.getInstance().removeBalanceObserver(observer, true);
 	}
 
 	/**

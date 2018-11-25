@@ -141,11 +141,14 @@ public class AccountManagerImpl implements AccountManager {
 							@Override
 							public void onEvent(Void data) {
 								removeAccountCreationRegistration();
-								setAccountState(REQUIRE_TRUSTLINE);
+								setAccountState(CREATION_COMPLETED);
 							}
 						});
 					break;
 				case REQUIRE_TRUSTLINE:
+					///////////////////////////////////////////////////////////////////////////////////////////////
+					//  Deprecated this is NOT part of the current flow, it's only for backward compatibility.   //
+					///////////////////////////////////////////////////////////////////////////////////////////////
 					Logger.log(new Log().withTag(TAG).put("setAccountState", "REQUIRE_TRUSTLINE"));
 					// Create trustline transaction with KIN
 					blockchainSource.createTrustLine(new KinCallback<Void>() {
