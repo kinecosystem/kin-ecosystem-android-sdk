@@ -82,7 +82,7 @@ public class ErrorUtil {
 	}
 
 	private static KinEcosystemException createUnknownServiceException(@Nullable Throwable throwable) {
-		final String msg  = (throwable != null && throwable.getMessage() != null) ? throwable.getMessage() : ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR
+		final String msg  = (throwable != null && throwable.getMessage() != null) ? throwable.getMessage() : ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR;
 		return new ServiceException(ServiceException.SERVICE_ERROR, msg, throwable);
 	}
 
