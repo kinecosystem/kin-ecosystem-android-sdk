@@ -81,46 +81,9 @@ public class ErrorUtil {
 		return exception;
 	}
 
-//	public static KinEcosystemException fromApiException(ApiException apiException) {
-//		KinEcosystemException exception;
-//		if (apiException == null) {
-//			exception = createUnknownServiceException(null);
-//		} else {
-//			final int apiCode = apiException.getCode();
-//			switch (apiCode) {
-//				case ERROR_CODE_BAD_REQUEST:
-//				case ERROR_CODE_UNAUTHORIZED:
-//				case ERROR_CODE_NOT_FOUND:
-//					if (apiException.getResponseBody() != null
-//						&& apiException.getResponseBody().getCode() == ERROR_CODE_USER_NOT_FOUND) {
-//						exception = new ServiceException(ServiceException.USER_NOT_FOUND,
-//							USER_NOT_FOUND_ON_ECOSYSTEM_SERVER, apiException);
-//						break;
-//					}
-//				case ERROR_CODE_CONFLICT:
-//				case ERROR_CODE_INTERNAL_SERVER_ERROR:
-//					exception = new ServiceException(ServiceException.SERVICE_ERROR,
-//						THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR,
-//						apiException);
-//					break;
-//				case ERROR_CODE_REQUEST_TIMEOUT:
-//					exception = new ServiceException(ServiceException.TIMEOUT_ERROR, THE_OPERATION_TIMED_OUT,
-//						apiException);
-//					break;
-//				case ClientException.INTERNAL_INCONSISTENCY:
-//					exception = new ClientException(ClientException.INTERNAL_INCONSISTENCY, THE_OPERATION_TIMED_OUT,
-//						apiException);
-//					break;
-//				default:
-//					exception = createUnknownServiceException(apiException);
-//					break;
-//			}
-//		}
-//		return exception;
-//	}
-
 	private static KinEcosystemException createUnknownServiceException(@Nullable Throwable throwable) {
-		return new ServiceException(ServiceException.SERVICE_ERROR, ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR, throwable);
+		final String msg  = (throwable != null && throwable.getMessage() != null) ? throwable.getMessage() : ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR
+		return new ServiceException(ServiceException.SERVICE_ERROR, msg, throwable);
 	}
 
 	public static ApiException createOrderTimeoutException() {
