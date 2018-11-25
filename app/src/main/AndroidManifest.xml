@@ -15,6 +15,7 @@
         android:name=".App">
 
         <meta-data android:name="com.kin.ecosystem.sdk.EnvironmentName" android:value="beta"/>
+        <!--<meta-data android:name="com.kin.ecosystem.sdk.EnvironmentName" android:value="prod"/>-->
 
         <provider
             android:authorities="${applicationId}.MySampleProvider"

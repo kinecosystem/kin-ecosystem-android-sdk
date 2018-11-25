@@ -8,12 +8,22 @@ The Kin Ecosystem SDK allows you to quickly and easily integrate with the Kin pl
 
 The Kin Ecosystem provides two working environments:
 
-- **Playground** – a staging and testing environment using test servers and a blockchain test network.
+- **Beta** – a staging and testing environment using test servers and a blockchain test network.
 - **Production** – uses production servers and the main blockchain network.
 
 Use the Playground environment to develop, integrate and test your app. Transition to the Production environment when you’re ready to go live with your Kin-integrated app.
 
-When your app calls ```Kin.start(…)```, you specify which environment to work with.
+Add environment meta data to you manifest in application level, specifying which one you want to work with.
+For Beta: ("beta")
+```xml
+<application>
+
+    <meta-data android:name="com.kin.ecosystem.sdk.EnvironmentName" android:value="beta"/>
+    
+</application>
+```
+And for Production use: `"prod"` as value. 
+
 
 >**NOTES:**
 >* When working with the Playground environment, you can only register up to 1000 users. An attempt to register additional users will result in an error.
@@ -30,7 +40,7 @@ There are 2 types of authentication:
     >**NOTE:** You can only use whitelist authentication for the Playground environment. The Production environment requires that you use JWT authentication.
 * **JWT authentication** – a secure authentication method to be used in production. This method uses a JSON Web Token (JWT) signed by the Kin Server to authenticate the client request. You provide the Kin team with one or more public signature keys and its corresponding keyID, and you receive a JWT issuer identifier (ISS key). (See [https://jwt.io](https://jwt.io) to learn more about JWT tokens.)
 
-For both types of authentication, you supply your credentials when calling the SDK’s ```Kin.start(…)``` function for a specific user. See [Initialize The SDK And Creating a User’s Kin Account](#initialize-the-sdk-and-creating-a-users-kin-account) to learn how.
+For both types of authentication, you supply your credentials when calling the SDK’s ```Kin.login(…)``` function for a specific user. See [Creating a User’s Kin Account](docs/CREATE_ACCOUNT.md) to learn how.
 
 ## Generating the JWT Token ##
 
@@ -136,7 +146,7 @@ The Sample App Gradle build loads the ```credential.properties``` setting and us
 
 The following sections show how to implement some primary APIs using the Kin Ecosystem SDK.
 
-* [Initialize the SDK and Creating a User’s Kin Account](docs/INITIALIZE_SDK_AND_CREATE_ACCOUNT.md)
+* [Creating a User’s Kin Account](docs/CREATE_ACCOUNT.md)
   
 * [Getting an Account’s Balance](docs/BALANCE.md)
 
