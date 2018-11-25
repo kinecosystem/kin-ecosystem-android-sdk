@@ -91,10 +91,10 @@ class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements 
 			public void onFailure(KinEcosystemException exception) {
 				showToast(SOMETHING_WENT_WRONG);
 				try {
-					String errorMsg = ((ApiException) exception.getCause()).getResponseBody().getMessage();
+					String errorMsg = exception.getMessage();
 					eventLogger.send(SpendOrderCreationFailed
 						.create(errorMsg, offer.getId(), false, SpendOrderCreationFailed.Origin.MARKETPLACE));
-				} catch (ClassCastException e) {
+				} catch (Throwable e) {
 					eventLogger.send(SpendOrderCreationFailed.create(exception.getMessage(), offer.getId(), false,
 						SpendOrderCreationFailed.Origin.MARKETPLACE));
 				}

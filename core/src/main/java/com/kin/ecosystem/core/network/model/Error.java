@@ -22,11 +22,11 @@ import java.util.Objects;
  */
 public class Error {
     @SerializedName("error")
-    private String error = null;
+    private String error;
     @SerializedName("message")
-    private String message = null;
+    private String message;
     @SerializedName("code")
-    private Integer code = null;
+    private Integer code;
 
     public Error(String error, String message, Integer code) {
         this.error = error;
@@ -46,7 +46,7 @@ public class Error {
      * @return error
      **/
     public String getError() {
-        return error;
+        return error == null ? "" : error;
     }
 
     public void setError(String error) {
@@ -65,7 +65,7 @@ public class Error {
      * @return message
      **/
     public String getMessage() {
-        return message;
+        return message == null ? "" : message;
     }
 
     public void setMessage(String message) {
@@ -78,7 +78,7 @@ public class Error {
     }
 
 
-    /**
+    /**g
      * Get code
      *
      * @return code
@@ -107,6 +107,7 @@ public class Error {
 
     @Override
     public int hashCode() {
+
         return Objects.hash(error, message, code);
     }
 }

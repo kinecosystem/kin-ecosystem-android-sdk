@@ -576,7 +576,7 @@ public class ApiClient {
             return (Error) (json.deserialize(respBody, new TypeToken<Error>() {
             }.getType()));
         } catch (Throwable throwable) {
-            return null;
+            return new Error("Could not deserialize Error", "Could not deserialize: " + respBody, 0);
         }
     }
 
