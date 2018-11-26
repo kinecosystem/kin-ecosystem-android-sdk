@@ -21,6 +21,9 @@ import java.util.Objects;
  * an error
  */
 public class Error {
+
+    private static final String EMPTY_STR = "";
+
     @SerializedName("error")
     private String error;
     @SerializedName("message")
@@ -46,7 +49,7 @@ public class Error {
      * @return error
      **/
     public String getError() {
-        return error == null ? "" : error;
+        return error == null ? EMPTY_STR : error;
     }
 
     public void setError(String error) {
@@ -65,7 +68,7 @@ public class Error {
      * @return message
      **/
     public String getMessage() {
-        return message == null ? "" : message;
+        return message == null ? EMPTY_STR : message;
     }
 
     public void setMessage(String message) {
@@ -78,7 +81,7 @@ public class Error {
     }
 
 
-    /**g
+    /**
      * Get code
      *
      * @return code
