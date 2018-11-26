@@ -154,22 +154,22 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 
 	@Override
 	public void notifyEarnItemRemoved(int index) {
-		earnRecyclerAdapter.itemRemoved(index);
+		earnRecyclerAdapter.notifyItemRemoved(index);
 	}
 
 	@Override
 	public void notifyEarnItemInserted(int index) {
-		earnRecyclerAdapter.itemInserted(index);
+		earnRecyclerAdapter.notifyItemInserted(index);
 	}
 
 	@Override
 	public void notifySpendItemRemoved(int index) {
-		spendRecyclerAdapter.itemRemoved(index);
+		spendRecyclerAdapter.notifyItemRemoved(index);
 	}
 
 	@Override
 	public void notifySpendItemInserted(int index) {
-		spendRecyclerAdapter.itemInserted(index);
+		spendRecyclerAdapter.notifyItemInserted(index);
 	}
 
 	@Override

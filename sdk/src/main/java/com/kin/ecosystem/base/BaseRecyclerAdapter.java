@@ -18,7 +18,8 @@ public abstract class BaseRecyclerAdapter<T, VH extends BaseViewHolder> extends 
 
 	private OnItemClickListener onItemClickListener;
 	private LayoutInflater layoutInflater;
-	private @LayoutRes int layoutResId;
+	private @LayoutRes
+	int layoutResId;
 
 	private FrameLayout emptyLayout;
 	private RecyclerView recyclerView;
@@ -141,19 +142,10 @@ public abstract class BaseRecyclerAdapter<T, VH extends BaseViewHolder> extends 
 		this.emptyLayout.removeAllViews();
 		this.emptyLayout.addView(emptyView);
 		if (insert) {
-			itemInserted(0);
+			if (isEmptyView()) {
+				notifyItemInserted(0);
+			}
 		}
-	}
-
-	public void itemInserted(final int position) {
-		if (isEmptyView()) {
-			recyclerView.removeAllViews();
-		}
-		notifyItemInserted(position);
-	}
-
-	public void itemRemoved(final int position) {
-		notifyItemRemoved(position);
 	}
 
 	public void setOnItemClickListener(@Nullable OnItemClickListener listener) {

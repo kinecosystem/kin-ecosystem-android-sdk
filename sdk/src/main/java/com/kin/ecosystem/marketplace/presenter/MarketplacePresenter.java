@@ -4,6 +4,7 @@ package com.kin.ecosystem.marketplace.presenter;
 import static com.kin.ecosystem.marketplace.view.IMarketplaceView.NOT_ENOUGH_KIN;
 import static com.kin.ecosystem.marketplace.view.IMarketplaceView.SOMETHING_WENT_WRONG;
 
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.google.gson.Gson;
@@ -39,6 +40,7 @@ import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implements IMarketplacePresenter {
 
@@ -89,15 +91,11 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		if (earnList == null && spendList == null) {
 			earnList = new ArrayList<>();
 			spendList = new ArrayList<>();
-			if (hasOffers(cachedOfferList)) {
-				syncOffers(cachedOfferList);
-			}
-			setCachedOfferLists();
-		} else {
-			if (hasOffers(cachedOfferList)) {
-				syncOffers(cachedOfferList);
-			}
 		}
+		if (hasOffers(cachedOfferList)) {
+			syncOffers(cachedOfferList);
+		}
+		setCachedOfferLists();
 	}
 
 	private boolean hasOffers(OfferList cachedOfferList) {
@@ -285,7 +283,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void notifyItemRangRemoved(int fromIndex, int size, OfferType offerType) {
-		if(view != null) {
+		if (view != null) {
 			if (isSpend(offerType)) {
 				view.notifySpendItemRangRemoved(fromIndex, size);
 			} else {
