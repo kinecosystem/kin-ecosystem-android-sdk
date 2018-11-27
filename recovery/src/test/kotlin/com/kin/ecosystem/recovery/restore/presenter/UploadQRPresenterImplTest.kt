@@ -141,7 +141,7 @@ class UploadQRPresenterImplTest {
         whenever(fileSharingHelper.extractUriFromActivityResult(req, res, data)).thenReturn(result)
         whenever(result.result).thenReturn(REQUEST_RESULT_OK)
         whenever(result.fileUri).thenReturn(uri)
-        whenever(qrBarcodeGenerator.decodeQR(uri)) doThrow (QRBarcodeGenerator.QRBarcodeGeneratorException::class)
+        whenever(qrBarcodeGenerator.decodeQR(uri)).thenReturn(accountKey)
         presenter.onActivityResult(req, res, data)
         verify(fileSharingHelper).extractUriFromActivityResult(req, res, data)
         verify(qrBarcodeGenerator).decodeQR(uri)
