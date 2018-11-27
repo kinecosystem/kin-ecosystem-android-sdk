@@ -7,6 +7,7 @@ import static com.kin.ecosystem.main.ScreenId.ORDER_HISTORY;
 import static com.kin.ecosystem.main.Title.MARKETPLACE_TITLE;
 import static com.kin.ecosystem.main.Title.ORDER_HISTORY_TITLE;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.common.Observer;
@@ -21,6 +22,7 @@ import java.math.BigDecimal;
 
 public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements IEcosystemPresenter {
 
+	public static final String KEY_SCREEN_ID = "screen_id";
 	private @ScreenId
 	int visibleScreen = NONE;
 	private final INavigator navigator;
@@ -32,27 +34,51 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 
 	public EcosystemPresenter(@NonNull IEcosystemView view, @NonNull SettingsDataSource settingsDataSource,
 		@NonNull final BlockchainSource blockchainSource,
-		@NonNull INavigator navigator) {
+		@NonNull INavigator navigator, Bundle savedInstanceState) {
 		this.view = view;
 		this.settingsDataSource = settingsDataSource;
 		this.blockchainSource = blockchainSource;
 		this.navigator = navigator;
 		this.currentBalance = blockchainSource.getBalance();
+		this.visibleScreen = getVisibleScreen(savedInstanceState);
 
 		this.view.attachPresenter(this);
+	}
+
+	private int getVisibleScreen(Bundle savedInstanceState) {
+		return savedInstanceState != null ? savedInstanceState.getInt(KEY_SCREEN_ID, NONE) : NONE;
 	}
 
 	@Override
 	public void onAttach(IEcosystemView view) {
 		super.onAttach(view);
-		if (this.view != null && visibleScreen != MARKETPLACE) {
-			navigator.navigateToMarketplace();
+		navigateToVisibleScreen(visibleScreen);
+	}
+
+	private void navigateToVisibleScreen(int visibleScreen) {
+		if (view != null) {
+			switch (visibleScreen) {
+				case ORDER_HISTORY:
+					navigator.navigateToOrderHistory(false);
+					break;
+				case MARKETPLACE:
+				case NONE:
+				default:
+					navigator.navigateToMarketplace();
+					break;
+
+			}
 		}
 	}
 
 	@Override
 	public void onStart() {
 		updateMenuSettingsIcon();
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		outState.putInt(KEY_SCREEN_ID, visibleScreen);
 	}
 
 	@Override
@@ -72,7 +98,7 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 				}
 			}
 		};
-		blockchainSource.addBalanceObserver(balanceObserver);
+		blockchainSource.addBalanceObserver(balanceObserver, false);
 	}
 
 	private boolean isGreaterThenZero(Balance value) {
@@ -95,7 +121,7 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 
 	private void removeBalanceObserver() {
 		if (balanceObserver != null) {
-			blockchainSource.removeBalanceObserver(balanceObserver);
+			blockchainSource.removeBalanceObserver(balanceObserver, false);
 			balanceObserver = null;
 		}
 	}

@@ -39,7 +39,6 @@ import com.kin.ecosystem.core.data.order.OrderRemoteData;
 import com.kin.ecosystem.core.data.order.OrderRepository;
 import com.kin.ecosystem.core.network.model.SignInData;
 import com.kin.ecosystem.core.network.model.SignInData.SignInTypeEnum;
-import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
@@ -176,7 +175,6 @@ public class Kin {
 
 	private static void initOfferRepository() {
 		OfferRepository.init(OfferRemoteData.getInstance(instance.executorsUtil), OrderRepository.getInstance());
-		OfferRepository.getInstance().getOffers(null);
 	}
 
 	private static void initOrderRepository(@NonNull final Context context) {
@@ -261,7 +259,7 @@ public class Kin {
 	 */
 	public static void addBalanceObserver(@NonNull final Observer<Balance> observer) throws ClientException {
 		checkInstanceNotNull();
-		BlockchainSourceImpl.getInstance().addBalanceObserverAndStartListen(observer);
+		BlockchainSourceImpl.getInstance().addBalanceObserver(observer, true);
 	}
 
 	/**
@@ -270,7 +268,7 @@ public class Kin {
 	 */
 	public static void removeBalanceObserver(@NonNull final Observer<Balance> observer) throws ClientException {
 		checkInstanceNotNull();
-		BlockchainSourceImpl.getInstance().removeBalanceObserverAndStopListen(observer);
+		BlockchainSourceImpl.getInstance().removeBalanceObserver(observer, true);
 	}
 
 	/**

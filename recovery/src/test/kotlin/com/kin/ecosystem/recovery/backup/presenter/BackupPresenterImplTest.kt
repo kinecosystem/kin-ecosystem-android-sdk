@@ -19,7 +19,7 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 class BackupPresenterImplTest {
 
-    private val callbackManager: CallbackManager = mock ()
+    private val callbackManager: CallbackManager = mock()
     private val savedInstanceState: Bundle = mock()
     private val view: BackupView = mock()
 
