@@ -30,6 +30,12 @@ public class QRBarcodeGeneratorImplTest {
 		+ "  \"salt\": \"ad1b920b16e4f7b519ac5117af77069d\"\n"
 		+ "}";
 
+	private static final String EXPECTED_TEXT_QR_IMAGE_TRY_HARDER = "{\n"
+		+ "  \"pkey\": \"GCSFMCRAJ7UQU7MDA5TUBY3ROFYU6L6D2JPKXUM4YGSL2SLZOTKCS647\",\n"
+		+ "  \"seed\": \"6f9e2fe953d37a0122347df582e57f9f7a2a7a91eccb3c5b13450c4ac7b94987ebd330e546b020e930062ed01c32d228f557e74979d3170d66644a6407ba56f70d9d508e2f4c5b7a\",\n"
+		+ "  \"salt\": \"0586cdddfa57a2cfa8d02ca78103f3c7\"\n"
+		+ "}";
+
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
 	private QRBarcodeGeneratorImpl qrBarcodeGenerator;
@@ -73,10 +79,16 @@ public class QRBarcodeGeneratorImplTest {
 
 	@Test
 	public void decodeQR_success() throws Exception {
-		Bitmap bitmap = TestUtils.loadBitmapFromResource(this.getClass(), "qr_test.png");
+		// test a QR that was being able to be decoded only with TRY_HARDER flag on in zxing library
+		Bitmap bitmap = TestUtils.loadBitmapFromResource(this.getClass(), "backup_qr_try_harder.png");
 		Uri uri = fakeQRFileHandler.saveFile(bitmap);
 		String decodedQR = qrBarcodeGenerator.decodeQR(uri);
-		assertThat(decodedQR, equalTo(EXPECTED_TEXT_QR_IMAGE));
+		assertThat(decodedQR, equalTo(EXPECTED_TEXT_QR_IMAGE_TRY_HARDER));
+
+		Bitmap bitmap2 = TestUtils.loadBitmapFromResource(this.getClass(), "qr_test.png");
+		Uri uri2 = fakeQRFileHandler.saveFile(bitmap2);
+		String decodedQR2 = qrBarcodeGenerator.decodeQR(uri2);
+		assertThat(decodedQR2, equalTo(EXPECTED_TEXT_QR_IMAGE));
 	}
 
 	@Test
