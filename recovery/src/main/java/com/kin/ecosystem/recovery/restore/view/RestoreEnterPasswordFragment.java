@@ -15,6 +15,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import com.kin.ecosystem.recovery.BackupManager;
 import com.kin.ecosystem.recovery.R;
 import com.kin.ecosystem.recovery.backup.view.TextWatcherAdapter;
 import com.kin.ecosystem.recovery.backup.view.TextWatcherAdapter.TextChangeListener;
@@ -89,7 +90,8 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 
 	private void injectPresenter(String keystoreData) {
 		presenter = new RestoreEnterPasswordPresenterImpl(
-			new CallbackManager(new EventDispatcherImpl(new BroadcastManagerImpl(getActivity()))), keystoreData);
+			new CallbackManager(new EventDispatcherImpl(new BroadcastManagerImpl(getActivity()))), keystoreData,
+			BackupManager.getKeyStoreProvider());
 		presenter.onAttach(this, ((RestoreActivity) getActivity()).getPresenter());
 	}
 

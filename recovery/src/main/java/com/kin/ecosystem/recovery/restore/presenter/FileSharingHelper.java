@@ -13,8 +13,8 @@ public class FileSharingHelper {
 	static final int REQUEST_RESULT_OK = 1;
 	static final int REQUEST_RESULT_FAILED = 2;
 
-	private static final String INTENT_TYPE_ALL_IMAGE = "image/*";
-	private static final int REQUEST_CODE_IMAGE = 800;
+	static final String INTENT_TYPE_ALL_IMAGE = "image/*";
+	static final int REQUEST_CODE_IMAGE = 800;
 	private final Fragment fragment;
 
 	public FileSharingHelper(Fragment fragment) {

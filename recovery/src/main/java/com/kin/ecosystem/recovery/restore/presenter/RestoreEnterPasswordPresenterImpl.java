@@ -20,16 +20,13 @@ public class RestoreEnterPasswordPresenterImpl extends BaseChildPresenterImpl<Re
 
 	private final String keystoreData;
 	private final CallbackManager callbackManager;
+	private final KeyStoreProvider keyStoreProvider;
 
-	public RestoreEnterPasswordPresenterImpl(@NonNull final CallbackManager callbackManager, String keystoreData) {
+	public RestoreEnterPasswordPresenterImpl(@NonNull final CallbackManager callbackManager, String keystoreData, @NonNull KeyStoreProvider keyStoreProvider) {
 		this.callbackManager = callbackManager;
 		this.keystoreData = keystoreData;
+		this.keyStoreProvider = keyStoreProvider;
 		this.callbackManager.sendRestoreEvent(RESTORE_PASSWORD_ENTRY_PAGE_VIEWED);
-	}
-
-	@Override
-	public void onAttach(RestoreEnterPasswordView view) {
-		super.onAttach(view);
 	}
 
 	@Override
@@ -44,7 +41,6 @@ public class RestoreEnterPasswordPresenterImpl extends BaseChildPresenterImpl<Re
 	@Override
 	public void restoreClicked(String password) {
 		callbackManager.sendRestoreEvent(RESTORE_PASSWORD_DONE_TAPPED);
-		KeyStoreProvider keyStoreProvider = BackupManager.getKeyStoreProvider();
 		try {
 			int accountIndex = keyStoreProvider.importAccount(keystoreData, password);
 			getParentPresenter().navigateToRestoreCompletedPage(accountIndex);

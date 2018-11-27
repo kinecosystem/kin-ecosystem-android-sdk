@@ -10,7 +10,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.common.KinCallback;
-import com.kin.ecosystem.common.KinCallbackAdapter;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
