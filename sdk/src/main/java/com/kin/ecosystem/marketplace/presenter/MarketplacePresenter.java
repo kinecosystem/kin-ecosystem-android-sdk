@@ -4,7 +4,6 @@ package com.kin.ecosystem.marketplace.presenter;
 import static com.kin.ecosystem.marketplace.view.IMarketplaceView.NOT_ENOUGH_KIN;
 import static com.kin.ecosystem.marketplace.view.IMarketplaceView.SOMETHING_WENT_WRONG;
 
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.google.gson.Gson;
@@ -40,7 +39,6 @@ import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implements IMarketplacePresenter {
 
@@ -98,8 +96,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		setCachedOfferLists();
 	}
 
-	private boolean hasOffers(OfferList cachedOfferList) {
-		return cachedOfferList != null && cachedOfferList.getOffers() != null;
+	private boolean hasOffers(OfferList offerList) {
+		return offerList != null && offerList.getOffers() != null;
 	}
 
 	private void setCachedOfferLists() {
