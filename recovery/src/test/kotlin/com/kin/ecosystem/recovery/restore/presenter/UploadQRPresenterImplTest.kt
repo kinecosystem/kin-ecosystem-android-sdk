@@ -9,7 +9,12 @@ import com.kin.ecosystem.recovery.restore.view.UploadQRView
 import com.nhaarman.mockitokotlin2.*
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
+@Config(manifest = Config.NONE)
+@RunWith(RobolectricTestRunner::class)
 class UploadQRPresenterImplTest {
 
     private val callbackManager: CallbackManager = mock()
@@ -136,7 +141,7 @@ class UploadQRPresenterImplTest {
         whenever(fileSharingHelper.extractUriFromActivityResult(req, res, data)).thenReturn(result)
         whenever(result.result).thenReturn(REQUEST_RESULT_OK)
         whenever(result.fileUri).thenReturn(uri)
-        whenever(qrBarcodeGenerator.decodeQR(uri)) doThrow(QRBarcodeGenerator.QRBarcodeGeneratorException::class)
+        whenever(qrBarcodeGenerator.decodeQR(uri)) doThrow (QRBarcodeGenerator.QRBarcodeGeneratorException::class)
         presenter.onActivityResult(req, res, data)
         verify(fileSharingHelper).extractUriFromActivityResult(req, res, data)
         verify(qrBarcodeGenerator).decodeQR(uri)
