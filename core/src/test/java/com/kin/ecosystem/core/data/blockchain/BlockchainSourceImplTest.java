@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -100,8 +101,7 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 
 	@Test
 	public void kinClient_has_no_account_do_not_init_account() {
-		when(local.getAccountIndex()).thenReturn(-1);
-		when(kinClient.hasAccount()).thenReturn(false);
+		verify(kinClient, never()).hasAccount();
 		verify(kinClient, never()).getAccount(anyInt());
 	}
 
@@ -110,15 +110,16 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 		when(local.getAccountIndex()).thenReturn(11);
 		when(kinClient.hasAccount()).thenReturn(true);
 		resetInstance();
+		blockchainSource.createAccount();
 		verify(kinClient).getAccount(11);
 	}
 
 	@Test
-	public void init_once_and_check_has_account() throws Exception {
+	public void init_once_local_getAccountIndex_called_once(){
 		BlockchainSourceImpl.init(eventLogger, kinClient, local);
 		BlockchainSourceImpl.init(eventLogger, kinClient, local);
 		assertEquals(blockchainSource, BlockchainSourceImpl.getInstance());
-		verify(kinClient).hasAccount();
+		verify(local).getAccountIndex();
 	}
 
 	@Test

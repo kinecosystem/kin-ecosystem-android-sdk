@@ -172,14 +172,13 @@ public class Kin {
 		Logger.enableLogs(enableLogs);
 	}
 
-	public static void login(@NonNull WhitelistData whitelistData, KinCallback<Void> loginCallback)
-		throws BlockchainException {
+	public static void login(@NonNull WhitelistData whitelistData, KinCallback<Void> loginCallback) {
 		SignInData signInData = getWhiteListSignInData(whitelistData);
 		init(signInData, loginCallback);
 
 	}
 
-	public static void login(@NonNull String jwt, KinCallback<Void> loginCallback) throws BlockchainException {
+	public static void login(@NonNull String jwt, KinCallback<Void> loginCallback) {
 		SignInData signInData = getJwtSignInData(jwt);
 		init(signInData, loginCallback);
 	}
@@ -198,13 +197,23 @@ public class Kin {
 			.jwt(jwt);
 	}
 
-	private static void init(@NonNull SignInData signInData, final KinCallback<Void> loginCallback)
-		throws BlockchainException {
-		BlockchainSourceImpl.getInstance().createAccount();
+	private static void init(@NonNull SignInData signInData, final KinCallback<Void> loginCallback) {
+		String publicAddress = null;
+		try {
+			BlockchainSourceImpl.getInstance().createAccount();
+			publicAddress = getPublicAddress();
+		} catch (final BlockchainException exception) {
+			instance.executorsUtil.mainThread().execute(new Runnable() {
+				@Override
+				public void run() {
+					loginCallback.onFailure(exception);
+				}
+			});
+		}
 
 		String deviceID = AuthRepository.getInstance().getDeviceID();
 		signInData.setDeviceId(deviceID != null ? deviceID : UUID.randomUUID().toString());
-		signInData.setWalletAddress(getPublicAddress());
+		signInData.setWalletAddress(publicAddress);
 		AuthRepository.getInstance().setSignInData(signInData);
 
 		ObservableData<String> observableData = AuthRepository.getInstance().getAppID();

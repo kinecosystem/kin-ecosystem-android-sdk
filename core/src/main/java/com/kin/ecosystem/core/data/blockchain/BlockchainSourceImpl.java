@@ -80,7 +80,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		this.kinClient = kinClient;
 		this.local = local;
 		this.activeAccountIndex = local.getAccountIndex();
-		initAccount();
 	}
 
 	public static void init(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient,
@@ -98,14 +97,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		return instance;
 	}
 
-	private void initAccount() {
-		if (kinClient.hasAccount()) {
-			if (account == null) {
-				account = kinClient.getAccount(activeAccountIndex);
-			}
-		}
-	}
-
 	@Override
 	public void createAccount() throws BlockchainException {
 		createKinAccountIfNeeded();
@@ -113,7 +104,11 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	private void createKinAccountIfNeeded() throws BlockchainException {
-		if (!kinClient.hasAccount()) {
+		if (kinClient.hasAccount()) {
+			if (account == null) {
+				account = kinClient.getAccount(activeAccountIndex);
+			}
+		} else {
 			try {
 				// Create new account
 				account = kinClient.addAccount();
@@ -302,7 +297,8 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	public String getPublicAddress() throws BlockchainException {
 		if (account == null) {
-			throw new BlockchainException(BlockchainException.ACCOUNT_NOT_FOUND, "The Account could not be found", null);
+			throw new BlockchainException(BlockchainException.ACCOUNT_NOT_FOUND, "The Account could not be found",
+				null);
 		}
 		return account.getPublicAddress();
 	}

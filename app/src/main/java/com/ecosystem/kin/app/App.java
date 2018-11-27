@@ -35,39 +35,31 @@ public class App extends Application {
              * */
             String jwt = SignInRepo.getJWT(this);
 
-            try {
-                Kin.login(jwt, new KinCallback<Void>() {
-                    @Override
-                    public void onResponse(Void response) {
-                        Log.d(TAG, "JWT onResponse: login");
-                    }
+            Kin.login(jwt, new KinCallback<Void>() {
+                @Override
+                public void onResponse(Void response) {
+                    Log.d(TAG, "JWT onResponse: login");
+                }
 
-                    @Override
-                    public void onFailure(KinEcosystemException exception) {
-                        Log.e(TAG, "JWT onFailure: " + exception.getMessage());
-                    }
-                });
-            } catch (BlockchainException e) {
-                e.printStackTrace();
-            }
+                @Override
+                public void onFailure(KinEcosystemException exception) {
+                    Log.e(TAG, "JWT onFailure: " + exception.getMessage());
+                }
+            });
         } else {
             /** Use {@link WhitelistData} for small scale testing */
             WhitelistData whitelistData = SignInRepo.getWhitelistSignInData(this, getAppId(), getApiKey());
-            try {
-                Kin.login(whitelistData, new KinCallback<Void>() {
-                    @Override
-                    public void onResponse(Void response) {
-                        Log.d(TAG, "WhiteList onResponse: login");
-                    }
+            Kin.login(whitelistData, new KinCallback<Void>() {
+                @Override
+                public void onResponse(Void response) {
+                    Log.d(TAG, "WhiteList onResponse: login");
+                }
 
-                    @Override
-                    public void onFailure(KinEcosystemException exception) {
-                        Log.e(TAG, "WhiteList onFailure: " + exception.getMessage());
-                    }
-                });
-            } catch (BlockchainException e) {
-                e.printStackTrace();
-            }
+                @Override
+                public void onFailure(KinEcosystemException exception) {
+                    Log.e(TAG, "WhiteList onFailure: " + exception.getMessage());
+                }
+            });
         }
 
         Kin.enableLogs(true);
