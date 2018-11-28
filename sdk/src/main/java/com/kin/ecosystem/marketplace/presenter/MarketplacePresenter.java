@@ -85,20 +85,24 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private void getCachedOffers() {
 		OfferList cachedOfferList = offerRepository.getCachedOfferList();
-		if (earnList == null && spendList == null) {
-			earnList = new ArrayList<>();
-			spendList = new ArrayList<>();
-		}
-		setCachedOfferLists();
-		syncOffers(cachedOfferList);
+		setCachedOfferLists(cachedOfferList);
 	}
 
 	private boolean hasOffers(OfferList offerList) {
 		return offerList != null && offerList.getOffers() != null;
 	}
 
-	private void setCachedOfferLists() {
+	private void setCachedOfferLists(OfferList cachedOfferList) {
 		if (this.view != null) {
+			if (earnList == null && spendList == null) {
+				earnList = new ArrayList<>();
+				spendList = new ArrayList<>();
+			}
+
+			if (hasOffers(cachedOfferList)) {
+				OfferListUtil.splitOffersByType(cachedOfferList.getOffers(), earnList, spendList);
+			}
+
 			this.view.setEarnList(earnList);
 			this.view.setSpendList(spendList);
 
@@ -199,6 +203,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void release() {
+		earnList = null;
+		spendList = null;
 		orderRepository.removeOrderObserver(orderObserver);
 	}
 
