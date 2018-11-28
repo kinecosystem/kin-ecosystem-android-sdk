@@ -57,7 +57,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private Observer<Order> orderObserver;
 
 
-	private long lastClickTime;
+	private long lastClickTime = NOT_FOUND;
 	private final Gson gson;
 
 	public MarketplacePresenter(@NonNull final IMarketplaceView view, @NonNull final OfferDataSource offerRepository,
@@ -70,7 +70,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		this.navigator = navigator;
 		this.eventLogger = eventLogger;
 		this.gson = new Gson();
-		this.lastClickTime = System.currentTimeMillis();
 
 		this.view.attachPresenter(this);
 	}
@@ -90,10 +89,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			earnList = new ArrayList<>();
 			spendList = new ArrayList<>();
 		}
-		if (hasOffers(cachedOfferList)) {
-			syncOffers(cachedOfferList);
-		}
 		setCachedOfferLists();
+		syncOffers(cachedOfferList);
 	}
 
 	private boolean hasOffers(OfferList offerList) {
@@ -363,6 +360,10 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private boolean isFastClicks() {
+		if(lastClickTime == NOT_FOUND) {
+			return false;
+		}
+
 		long now = System.currentTimeMillis();
 		if (now - lastClickTime < CLICK_TIME_INTERVAL) {
 			return true;
