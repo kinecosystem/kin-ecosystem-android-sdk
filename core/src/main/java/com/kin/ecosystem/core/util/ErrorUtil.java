@@ -82,8 +82,18 @@ public class ErrorUtil {
 	}
 
 	private static KinEcosystemException createUnknownServiceException(@Nullable Throwable throwable) {
-		final String msg  = (throwable != null && throwable.getMessage() != null) ? throwable.getMessage() : ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR;
+		final String msg = getMessage(throwable);
 		return new ServiceException(ServiceException.SERVICE_ERROR, msg, throwable);
+	}
+
+	private static String getMessage(Throwable throwable) {
+		return (throwable != null && throwable.getMessage() != null) ? throwable.getMessage()
+			: getCauseOrDefault(throwable);
+	}
+
+	private static String getCauseOrDefault(Throwable throwable) {
+		return (throwable != null && throwable.getCause() != null && throwable.getCause().getMessage() != null)
+			? throwable.getCause().getMessage() : ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR;
 	}
 
 	public static ApiException createOrderTimeoutException() {
