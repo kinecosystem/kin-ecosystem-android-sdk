@@ -93,16 +93,16 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void setCachedOfferLists(OfferList cachedOfferList) {
+		if (earnList == null && spendList == null) {
+			earnList = new ArrayList<>();
+			spendList = new ArrayList<>();
+		}
+
+		if (hasOffers(cachedOfferList)) {
+			OfferListUtil.splitOffersByType(cachedOfferList.getOffers(), earnList, spendList);
+		}
+
 		if (this.view != null) {
-			if (earnList == null && spendList == null) {
-				earnList = new ArrayList<>();
-				spendList = new ArrayList<>();
-			}
-
-			if (hasOffers(cachedOfferList)) {
-				OfferListUtil.splitOffersByType(cachedOfferList.getOffers(), earnList, spendList);
-			}
-
 			this.view.setEarnList(earnList);
 			this.view.setSpendList(spendList);
 
