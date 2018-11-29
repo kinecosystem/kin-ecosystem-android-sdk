@@ -238,7 +238,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			List<Offer> newSpendOffers = new ArrayList<>();
 
 			OfferListUtil.splitOffersByType(offerList.getOffers(), newEarnOffers, newSpendOffers);
-			g
+			
 			if (earnList == null) { earnList = new ArrayList<>(); }
 			if (spendList == null) { spendList = new ArrayList<>(); }
 			syncList(newEarnOffers, earnList, OfferType.EARN);
