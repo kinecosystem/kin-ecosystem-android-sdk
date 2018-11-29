@@ -238,15 +238,15 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			List<Offer> newSpendOffers = new ArrayList<>();
 
 			OfferListUtil.splitOffersByType(offerList.getOffers(), newEarnOffers, newSpendOffers);
+			g
+			if (earnList == null) { earnList = new ArrayList<>(); }
+			if (spendList == null) { spendList = new ArrayList<>(); }
 			syncList(newEarnOffers, earnList, OfferType.EARN);
 			syncList(newSpendOffers, spendList, OfferType.SPEND);
 		}
 	}
 
 	private void syncList(List<Offer> newList, List<Offer> oldList, OfferType offerType) {
-		// Make sure olsList is not null
-		if (oldList == null) { oldList = new ArrayList<>(); }
-
 		// check if offer should be removed (index changed / removed from list).
 		if (newList.size() > 0) {
 			for (int i = 0; i < oldList.size(); i++) {
