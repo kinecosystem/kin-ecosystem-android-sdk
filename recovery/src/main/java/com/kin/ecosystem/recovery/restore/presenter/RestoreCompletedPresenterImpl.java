@@ -16,11 +16,6 @@ public class RestoreCompletedPresenterImpl extends BaseChildPresenterImpl<Restor
 	}
 
 	@Override
-	public RestoreCompletedView getView() {
-		return null;
-	}
-
-	@Override
 	public void onBackClicked() {
 		getParentPresenter().previousStep();
 	}
