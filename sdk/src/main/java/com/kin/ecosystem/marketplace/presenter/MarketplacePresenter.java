@@ -203,9 +203,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void release() {
+		orderRepository.removeOrderObserver(orderObserver);
 		earnList = null;
 		spendList = null;
-		orderRepository.removeOrderObserver(orderObserver);
 	}
 
 	@Override
@@ -238,6 +238,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			List<Offer> newSpendOffers = new ArrayList<>();
 
 			OfferListUtil.splitOffersByType(offerList.getOffers(), newEarnOffers, newSpendOffers);
+			
+			if (earnList == null) { earnList = new ArrayList<>(); }
+			if (spendList == null) { spendList = new ArrayList<>(); }
 			syncList(newEarnOffers, earnList, OfferType.EARN);
 			syncList(newSpendOffers, spendList, OfferType.SPEND);
 		}
