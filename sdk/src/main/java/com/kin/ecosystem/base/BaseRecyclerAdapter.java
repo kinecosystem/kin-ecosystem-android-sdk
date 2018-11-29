@@ -18,9 +18,9 @@ public abstract class BaseRecyclerAdapter<T, VH extends BaseViewHolder> extends 
 
 	private OnItemClickListener onItemClickListener;
 	private LayoutInflater layoutInflater;
-	private @LayoutRes int layoutResId;
+	private @LayoutRes
+	int layoutResId;
 
-	private boolean isEmptyViewVisible;
 	private FrameLayout emptyLayout;
 	private RecyclerView recyclerView;
 
@@ -36,7 +36,6 @@ public abstract class BaseRecyclerAdapter<T, VH extends BaseViewHolder> extends 
 
 	public void setNewData(@Nullable List<T> data) {
 		this.data = data == null ? new ArrayList<T>() : data;
-		this.isEmptyViewVisible = false;
 		notifyDataSetChanged();
 	}
 
@@ -47,11 +46,9 @@ public abstract class BaseRecyclerAdapter<T, VH extends BaseViewHolder> extends 
 		this.layoutInflater = LayoutInflater.from(context);
 		switch (viewType) {
 			case EMPTY_VIEW:
-				isEmptyViewVisible = true;
 				baseViewHolder = createBaseViewHolder(emptyLayout);
 				break;
 			default:
-				isEmptyViewVisible = false;
 				baseViewHolder = createBaseViewHolder(getItemView(layoutResId, parent));
 				bindViewListener(baseViewHolder);
 		}
@@ -149,20 +146,6 @@ public abstract class BaseRecyclerAdapter<T, VH extends BaseViewHolder> extends 
 				notifyItemInserted(0);
 			}
 		}
-	}
-
-	public void itemInserted(final int position) {
-		if (isEmptyViewVisible) {
-			recyclerView.removeAllViews();
-			notifyItemRemoved(0);
-			notifyItemInserted(0);
-		} else {
-			notifyItemInserted(position);
-		}
-	}
-
-	public void itemRemoved(final int position) {
-		notifyItemRemoved(position);
 	}
 
 	public void setOnItemClickListener(@Nullable OnItemClickListener listener) {
