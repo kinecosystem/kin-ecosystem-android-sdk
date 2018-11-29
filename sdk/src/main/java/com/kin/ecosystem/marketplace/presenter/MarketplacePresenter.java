@@ -203,9 +203,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void release() {
+		orderRepository.removeOrderObserver(orderObserver);
 		earnList = null;
 		spendList = null;
-		orderRepository.removeOrderObserver(orderObserver);
 	}
 
 	@Override
@@ -244,6 +244,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void syncList(List<Offer> newList, List<Offer> oldList, OfferType offerType) {
+		// Make sure olsList is not null
+		if (oldList == null) { oldList = new ArrayList<>(); }
+
 		// check if offer should be removed (index changed / removed from list).
 		if (newList.size() > 0) {
 			for (int i = 0; i < oldList.size(); i++) {
