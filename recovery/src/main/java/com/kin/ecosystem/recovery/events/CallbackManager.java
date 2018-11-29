@@ -135,7 +135,7 @@ public class CallbackManager {
 		eventDispatcher.sendEvent(EventDispatcher.BACKUP_EVENTS, eventCode);
 	}
 
-	public void sendRestoreEvents(@RestoreEventCode int eventCode) {
+	public void sendRestoreEvent(@RestoreEventCode int eventCode) {
 		eventDispatcher.sendEvent(EventDispatcher.RESTORE_EVENTS, eventCode);
 	}
 }

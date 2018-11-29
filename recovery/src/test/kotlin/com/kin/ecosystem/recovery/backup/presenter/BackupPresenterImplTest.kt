@@ -20,7 +20,6 @@ import org.robolectric.annotation.Config
 class BackupPresenterImplTest {
 
     private val callbackManager: CallbackManager = mock()
-
     private val savedInstanceState: Bundle = mock()
     private val view: BackupView = mock()
 
