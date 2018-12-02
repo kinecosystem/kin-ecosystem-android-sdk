@@ -7,7 +7,6 @@ import com.crashlytics.android.Crashlytics;
 import com.ecosystem.kin.app.model.SignInRepo;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.common.KinCallback;
-import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.model.WhitelistData;
@@ -21,12 +20,16 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         Fabric.with(this, new Crashlytics());
         initSDK();
     }
 
     private void initSDK() {
+        try {
+            Kin.initialize(getApplicationContext());
+        } catch (ClientException e) {
+            e.printStackTrace();
+        }
         if (BuildConfig.IS_JWT_REGISTRATION) {
             /**
              * SignInData should be created with registration JWT {see https://jwt.io/} created securely by server side

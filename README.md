@@ -18,16 +18,22 @@ For Beta: ("beta")
 ```xml
 <application>
 
-    <meta-data android:name="com.kin.ecosystem.sdk.EnvironmentName" android:value="beta"/>
+    <meta-data android:name="com.kin.ecosystem.sdk.EnvironmentName" android:value="@string/kinecosystem_environment_beta"/>
     
 </application>
 ```
-And for Production use: `"prod"` as value. 
+And for Production use: `@string/kinecosystem_environment_production` as value. 
 
 
 >**NOTES:**
 >* When working with the Playground environment, you can only register up to 1000 users. An attempt to register additional users will result in an error.
 >* In order to switch between environments, you’ll need to clear the application cache.
+
+## Initialize The SDK ##
+Kin Ecosystem SDK must be initialized before any interaction with the SDK, in order to do that you should call first:
+```Kin.initialize(getApplicationContext())```
+
+   >**NOTE** `initialize` method does not perform any network calls and it's a synchronous method, so you will get an exception if something went wrong.
 
 ## Obtaining Authentication Credentials ##
 

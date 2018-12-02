@@ -5,10 +5,8 @@ import static com.kin.ecosystem.splash.presenter.ISplashPresenter.TRY_AGAIN;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
@@ -18,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.kin.ecosystem.R;
+import com.kin.ecosystem.base.KinEcosystemBaseActivity;
 import com.kin.ecosystem.core.accountmanager.AccountManagerImpl;
 import com.kin.ecosystem.core.bi.EventLoggerImpl;
 import com.kin.ecosystem.main.view.EcosystemActivity;
@@ -27,7 +26,7 @@ import com.kin.ecosystem.splash.presenter.SplashPresenter;
 import com.kin.ecosystem.splash.view.SplashScreenButton.LoadAnimationListener;
 import java.util.Timer;
 
-public class SplashActivity extends AppCompatActivity implements ISplashView {
+public class SplashActivity extends KinEcosystemBaseActivity implements ISplashView {
 
 	private ISplashPresenter splashPresenter;
 
@@ -43,11 +42,11 @@ public class SplashActivity extends AppCompatActivity implements ISplashView {
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.kinecosystem_activity_splash);
 		attachPresenter(new SplashPresenter(AccountManagerImpl.getInstance(),
 			EventLoggerImpl.getInstance(), new Timer()));
-		initViews();
 		initAnimations();
+		setBackButtonListener();
+		setLetsGetStartedButtonListener();
 	}
 
 	private void initAnimations() {
@@ -71,14 +70,18 @@ public class SplashActivity extends AppCompatActivity implements ISplashView {
 		});
 	}
 
-	private void initViews() {
-		letsGetStartedBtn = findViewById(R.id.lets_get_started);
-		loadingText = findViewById(R.id.loading_text);
-		setUpBackButton();
-		setUpLetsGetStartedButton();
+	@Override
+	protected int getLayoutRes() {
+		return R.layout.kinecosystem_activity_splash;
 	}
 
-	private void setUpLetsGetStartedButton() {
+	@Override
+	protected void initViews() {
+		letsGetStartedBtn = findViewById(R.id.lets_get_started);
+		loadingText = findViewById(R.id.loading_text);
+	}
+
+	private void setLetsGetStartedButtonListener() {
 		letsGetStartedBtn = findViewById(R.id.lets_get_started);
 		letsGetStartedBtn.setButtonListener(new OnClickListener() {
 			@Override
@@ -94,7 +97,7 @@ public class SplashActivity extends AppCompatActivity implements ISplashView {
 		});
 	}
 
-	private void setUpBackButton() {
+	private void setBackButtonListener() {
 		final ImageView backButton = findViewById(R.id.back_btn);
 		backButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -164,7 +167,6 @@ public class SplashActivity extends AppCompatActivity implements ISplashView {
 		});
 	}
 
-	@NonNull
 	private @StringRes int getMessageResId(@Message final int msg) {
 		switch (msg) {
 			case TRY_AGAIN:

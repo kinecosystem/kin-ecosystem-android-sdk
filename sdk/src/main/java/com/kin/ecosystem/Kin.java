@@ -84,7 +84,7 @@ public class Kin {
 		return instance;
 	}
 
-	synchronized static void initialize(Context appContext) throws ClientException {
+	public synchronized static void initialize(Context appContext) throws ClientException {
 		if (isInstanceNull()) {
 			instance = getInstance();
 			// use application context to avoid leaks.
@@ -258,6 +258,12 @@ public class Kin {
 			});
 		} else {
 			isAccountLoggedIn = true;
+			instance.executorsUtil.mainThread().execute(new Runnable() {
+				@Override
+				public void run() {
+					loginCallback.onResponse(null);
+				}
+			});
 			OfferRepository.getInstance().getOffers(null);
 		}
 	}
