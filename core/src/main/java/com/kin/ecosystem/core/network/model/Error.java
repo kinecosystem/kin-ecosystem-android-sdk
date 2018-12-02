@@ -21,12 +21,15 @@ import java.util.Objects;
  * an error
  */
 public class Error {
+
+    private static final String EMPTY_STR = "";
+
     @SerializedName("error")
-    private String error = null;
+    private String error;
     @SerializedName("message")
-    private String message = null;
+    private String message;
     @SerializedName("code")
-    private Integer code = null;
+    private Integer code;
 
     public Error(String error, String message, Integer code) {
         this.error = error;
@@ -46,7 +49,7 @@ public class Error {
      * @return error
      **/
     public String getError() {
-        return error;
+        return error == null ? EMPTY_STR : error;
     }
 
     public void setError(String error) {
@@ -65,7 +68,7 @@ public class Error {
      * @return message
      **/
     public String getMessage() {
-        return message;
+        return message == null ? EMPTY_STR : message;
     }
 
     public void setMessage(String message) {
@@ -107,6 +110,7 @@ public class Error {
 
     @Override
     public int hashCode() {
+
         return Objects.hash(error, message, code);
     }
 }

@@ -9,8 +9,9 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
+import com.google.zxing.ChecksumException;
 import com.google.zxing.DecodeHintType;
-import com.google.zxing.MultiFormatReader;
+import com.google.zxing.FormatException;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.RGBLuminanceSource;
@@ -18,9 +19,12 @@ import com.google.zxing.Result;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.qrcode.QRCodeReader;
 import com.kin.ecosystem.recovery.utils.Logger;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.Map;
 
 public class QRBarcodeGeneratorImpl implements QRBarcodeGenerator {
 
@@ -76,10 +80,14 @@ public class QRBarcodeGeneratorImpl implements QRBarcodeGenerator {
 			RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
 			BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source));
 
-			MultiFormatReader reader = new MultiFormatReader();
-			reader.setHints(Collections.singletonMap(DecodeHintType.POSSIBLE_FORMATS,
-				Collections.singleton(BarcodeFormat.QR_CODE)));
-			Result result = reader.decode(binaryBitmap);
+			QRCodeReader reader = new QRCodeReader();
+			Map<DecodeHintType, Object>
+				hintsMap = new EnumMap<>(DecodeHintType.class);
+			hintsMap.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
+			hintsMap.put(DecodeHintType.POSSIBLE_FORMATS, EnumSet
+				.allOf(BarcodeFormat.class));
+			hintsMap.put(DecodeHintType.PURE_BARCODE, Boolean.FALSE);
+			Result result = reader.decode(binaryBitmap, hintsMap);
 			return result.getText();
 		} catch (IOException e) {
 			Logger.e("decodeQR failed. ", e);
@@ -87,6 +95,9 @@ public class QRBarcodeGeneratorImpl implements QRBarcodeGenerator {
 		} catch (NotFoundException e) {
 			Logger.e("decodeQR failed. ", e);
 			throw new QRNotFoundInImageException("Cannot find a QR code in given image.", e);
+		} catch (FormatException | ChecksumException e) {
+			Logger.e("decodeQR failed. ", e);
+			throw new QRBarcodeGeneratorException("Cannot find a QR code in given image.", e);
 		}
 	}
 }

@@ -28,37 +28,37 @@ public class UploadQRPresenterImpl extends BaseChildPresenterImpl<UploadQRView> 
 		this.callbackManager = callbackManager;
 		this.fileRequester = fileRequester;
 		this.qrBarcodeGenerator = qrBarcodeGenerator;
-		this.callbackManager.sendRestoreEvents(RESTORE_UPLOAD_QR_CODE_PAGE_VIEWED);
+		this.callbackManager.sendRestoreEvent(RESTORE_UPLOAD_QR_CODE_PAGE_VIEWED);
 	}
 
 	@Override
 	public void uploadClicked() {
 		getView().showConsentDialog();
-		callbackManager.sendRestoreEvents(RESTORE_UPLOAD_QR_CODE_BUTTON_TAPPED);
+		callbackManager.sendRestoreEvent(RESTORE_UPLOAD_QR_CODE_BUTTON_TAPPED);
 	}
 
 	@Override
 	public void onOkPressed(String chooserTitle) {
-		callbackManager.sendRestoreEvents(RESTORE_ARE_YOUR_SURE_OK_TAPPED);
+		callbackManager.sendRestoreEvent(RESTORE_ARE_YOUR_SURE_OK_TAPPED);
 		fileRequester.requestImageFile(chooserTitle);
 	}
 
 	@Override
 	public void onCancelPressed() {
-		callbackManager.sendRestoreEvents(RESTORE_ARE_YOUR_SURE_CANCEL_TAPPED);
+		callbackManager.sendRestoreEvent(RESTORE_ARE_YOUR_SURE_CANCEL_TAPPED);
 	}
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		RequestFileResult requestFileResult = fileRequester.extractUriFromActivityResult(requestCode, resultCode, data);
-		switch (requestFileResult.result) {
+		switch (requestFileResult.getResult()) {
 			case FileSharingHelper.REQUEST_RESULT_CANCELED:
 				break;
 			case FileSharingHelper.REQUEST_RESULT_FAILED:
 				view.showErrorLoadingFileDialog();
 				break;
 			case FileSharingHelper.REQUEST_RESULT_OK:
-				loadEncryptedKeyStore(requestFileResult.fileUri);
+				loadEncryptedKeyStore(requestFileResult.getFileUri());
 				break;
 		}
 	}
@@ -78,7 +78,7 @@ public class UploadQRPresenterImpl extends BaseChildPresenterImpl<UploadQRView> 
 
 	@Override
 	public void onBackClicked() {
-		callbackManager.sendRestoreEvents(RESTORE_UPLOAD_QR_CODE_BACK_TAPPED);
+		callbackManager.sendRestoreEvent(RESTORE_UPLOAD_QR_CODE_BACK_TAPPED);
 		getParentPresenter().previousStep();
 	}
 }

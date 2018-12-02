@@ -17,7 +17,6 @@ import kin.core.exception.TransactionFailedException;
 public class ErrorUtil {
 
 	// Error messages
-	private static final String USER_NOT_FOUND_ON_ECOSYSTEM_SERVER = "User not found on the Ecosystem server";
 	private static final String THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR = "The Ecosystem server returned an error. See underlying Error for details";
 	private static final String ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR = "Ecosystem SDK encountered an unexpected error";
 	private static final String BLOCKCHAIN_ENCOUNTERED_AN_UNEXPECTED_ERROR = "Blockchain encountered an unexpected error";
@@ -40,31 +39,32 @@ public class ErrorUtil {
 	public static final int ERROR_CODE_REQUEST_TIMEOUT = 408;
 	public static final int ERROR_CODE_CONFLICT = 409;
 	public static final int ERROR_CODE_INTERNAL_SERVER_ERROR = 500;
+	public static final int ERROR_CODE_TRANSACTION_FAILED_ERROR = 700;
 
-	public static final int ERROR_CODE_USER_NOT_FOUND = 4046;
 	public static final int ERROR_CODE_EXTERNAL_ORDER_ALREADY_COMPLETED = 4091;
 
 	public static KinEcosystemException fromApiException(ApiException apiException) {
 		KinEcosystemException exception;
 		if (apiException == null) {
-			exception = createUnknownException(null);
+			exception = createUnknownServiceException(null);
 		} else {
 			final int apiCode = apiException.getCode();
 			switch (apiCode) {
 				case ERROR_CODE_BAD_REQUEST:
 				case ERROR_CODE_UNAUTHORIZED:
 				case ERROR_CODE_NOT_FOUND:
-					if (apiException.getResponseBody() != null
-						&& apiException.getResponseBody().getCode() == ERROR_CODE_USER_NOT_FOUND) {
-						exception = new ServiceException(ServiceException.USER_NOT_FOUND,
-							USER_NOT_FOUND_ON_ECOSYSTEM_SERVER, apiException);
-						break;
-					}
 				case ERROR_CODE_CONFLICT:
 				case ERROR_CODE_INTERNAL_SERVER_ERROR:
-					exception = new ServiceException(ServiceException.SERVICE_ERROR,
-						THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR,
-						apiException);
+				case ERROR_CODE_TRANSACTION_FAILED_ERROR:
+					Error error = apiException.getResponseBody();
+					if (error != null) {
+						String msg = error.getMessage();
+						exception = new ServiceException(ServiceException.SERVICE_ERROR,
+							(msg != null && !msg.isEmpty()) ? msg : THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR,
+							apiException);
+						break;
+					}
+					exception = createUnknownServiceException(apiException);
 					break;
 				case ERROR_CODE_REQUEST_TIMEOUT:
 					exception = new ServiceException(ServiceException.TIMEOUT_ERROR, THE_OPERATION_TIMED_OUT,
@@ -75,16 +75,26 @@ public class ErrorUtil {
 						apiException);
 					break;
 				default:
-					exception = createUnknownException(apiException);
+					exception = createUnknownServiceException(apiException);
 					break;
 			}
 		}
 		return exception;
 	}
 
-	private static KinEcosystemException createUnknownException(@Nullable Throwable throwable) {
-		return new KinEcosystemException(KinEcosystemException.UNKNOWN, ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR,
-			throwable);
+	private static KinEcosystemException createUnknownServiceException(@Nullable Throwable throwable) {
+		final String msg = getMessage(throwable);
+		return new ServiceException(ServiceException.SERVICE_ERROR, msg, throwable);
+	}
+
+	private static String getMessage(Throwable throwable) {
+		return (throwable != null && throwable.getMessage() != null) ? throwable.getMessage()
+			: getCauseOrDefault(throwable);
+	}
+
+	private static String getCauseOrDefault(Throwable throwable) {
+		return (throwable != null && throwable.getCause() != null && throwable.getCause().getMessage() != null)
+			? throwable.getCause().getMessage() : ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR;
 	}
 
 	public static ApiException createOrderTimeoutException() {

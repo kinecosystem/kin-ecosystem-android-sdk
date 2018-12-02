@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,13 +19,13 @@ import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter;
 import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
-import com.kin.ecosystem.marketplace.presenter.MarketplacePresenter;
 import com.kin.ecosystem.poll.view.PollWebViewActivity;
 import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
 import java.util.List;
 
 
 public class MarketplaceFragment extends Fragment implements IMarketplaceView {
+
 
 	public static MarketplaceFragment newInstance() {
 		return new MarketplaceFragment();
@@ -75,7 +74,7 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 
 		//Spend Recycler
 		RecyclerView spendRecycler = root.findViewById(R.id.spend_recycler);
-		spendRecycler.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+		spendRecycler.setLayoutManager(new HorizontalLayoutManager(getContext()));
 		spendRecycler.addItemDecoration(itemDecoration);
 		spendRecyclerAdapter = new SpendRecyclerAdapter();
 		spendRecyclerAdapter.bindToRecyclerView(spendRecycler);
@@ -88,7 +87,7 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 
 		//Earn Recycler
 		RecyclerView earnRecycler = root.findViewById(R.id.earn_recycler);
-		earnRecycler.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+		earnRecycler.setLayoutManager(new HorizontalLayoutManager(getContext()));
 		earnRecycler.addItemDecoration(itemDecoration);
 		earnRecyclerAdapter = new EarnRecyclerAdapter();
 		earnRecyclerAdapter.bindToRecyclerView(earnRecycler);
@@ -155,22 +154,32 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 
 	@Override
 	public void notifyEarnItemRemoved(int index) {
-		earnRecyclerAdapter.itemRemoved(index);
+		earnRecyclerAdapter.notifyItemRemoved(index);
 	}
 
 	@Override
 	public void notifyEarnItemInserted(int index) {
-		earnRecyclerAdapter.itemInserted(index);
+		earnRecyclerAdapter.notifyItemInserted(index);
 	}
 
 	@Override
 	public void notifySpendItemRemoved(int index) {
-		spendRecyclerAdapter.itemRemoved(index);
+		spendRecyclerAdapter.notifyItemRemoved(index);
 	}
 
 	@Override
 	public void notifySpendItemInserted(int index) {
-		spendRecyclerAdapter.itemInserted(index);
+		spendRecyclerAdapter.notifyItemInserted(index);
+	}
+
+	@Override
+	public void notifySpendItemRangRemoved(int fromIndex, int size) {
+		spendRecyclerAdapter.notifyItemRangeRemoved(fromIndex, size);
+	}
+
+	@Override
+	public void notifyEarnItemRangRemoved(int fromIndex, int size) {
+		earnRecyclerAdapter.notifyItemRangeRemoved(fromIndex, size);
 	}
 
 	@Override
