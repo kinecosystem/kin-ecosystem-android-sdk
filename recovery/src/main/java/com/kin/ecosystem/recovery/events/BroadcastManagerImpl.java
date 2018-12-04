@@ -14,7 +14,7 @@ import java.lang.annotation.RetentionPolicy;
 
 public class BroadcastManagerImpl implements BroadcastManager {
 
-	private final Activity activity;
+	private Activity activity;
 	private Listener listener;
 
 	private BroadcastReceiver receiver;
@@ -51,6 +51,7 @@ public class BroadcastManagerImpl implements BroadcastManager {
 		if (receiver != null) {
 			LocalBroadcastManager.getInstance(activity).unregisterReceiver(receiver);
 		}
+		activity = null;
 	}
 
 	@Override
@@ -61,6 +62,8 @@ public class BroadcastManagerImpl implements BroadcastManager {
 
 	@Override
 	public void sendCallback(int resultCode, Intent data) {
-		activity.setResult(resultCode, data);
+		if (activity != null) {
+			activity.setResult(resultCode, data);
+		}
 	}
 }

@@ -22,10 +22,10 @@ import java.math.BigDecimal;
 
 public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements IEcosystemPresenter {
 
-	public static final String KEY_SCREEN_ID = "screen_id";
+	private static final String KEY_SCREEN_ID = "screen_id";
 	private @ScreenId
 	int visibleScreen = NONE;
-	private final INavigator navigator;
+	private INavigator navigator;
 	private final SettingsDataSource settingsDataSource;
 	private final BlockchainSource blockchainSource;
 
@@ -85,6 +85,8 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 	public void onDetach() {
 		super.onDetach();
 		removeBalanceObserver();
+		navigator = null;
+
 	}
 
 	private void addBalanceObserver() {

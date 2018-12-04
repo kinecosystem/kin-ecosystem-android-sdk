@@ -32,11 +32,11 @@ import java.math.BigDecimal;
 public class SettingsPresenter extends BasePresenter<ISettingsView> implements ISettingsPresenter {
 
 	private static final String TAG = SettingsPresenter.class.getSimpleName();
-	private final BackupManager backupManager;
 	private final SettingsDataSource settingsDataSource;
 	private final BlockchainSource blockchainSource;
 	private final EventLogger eventLogger;
 	private final AccountManager accountManager;
+	private BackupManager backupManager;
 
 	private Observer<Balance> balanceObserver;
 	private Balance currentBalance;
@@ -67,6 +67,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 		super.onDetach();
 		removeBalanceObserver();
 		backupManager.release();
+		backupManager = null;
 	}
 
 	private void addBalanceObserver() {
@@ -105,6 +106,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 	private void removeBalanceObserver() {
 		if (balanceObserver != null) {
 			blockchainSource.removeBalanceObserver(balanceObserver, false);
+			balanceObserver = null;
 		}
 	}
 

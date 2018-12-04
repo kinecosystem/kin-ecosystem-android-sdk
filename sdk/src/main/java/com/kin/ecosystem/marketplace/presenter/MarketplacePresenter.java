@@ -48,8 +48,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private final OfferDataSource offerRepository;
 	private final OrderDataSource orderRepository;
 	private final BlockchainSource blockchainSource;
-	private final INavigator navigator;
 	private final EventLogger eventLogger;
+	private INavigator navigator;
 
 	private List<Offer> spendList;
 	private List<Offer> earnList;
@@ -203,7 +203,11 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void release() {
-		orderRepository.removeOrderObserver(orderObserver);
+		if(orderObserver != null) {
+			orderRepository.removeOrderObserver(orderObserver);
+			orderObserver = null;
+		}
+		navigator = null;
 		earnList = null;
 		spendList = null;
 	}

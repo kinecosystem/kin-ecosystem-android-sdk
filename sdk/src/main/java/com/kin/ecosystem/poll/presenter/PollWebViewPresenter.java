@@ -108,6 +108,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 	private void release() {
 		if (openOrderObserver != null) {
 			orderRepository.getOpenOrder().removeObserver(openOrderObserver);
+			openOrderObserver = null;
 		}
 	}
 

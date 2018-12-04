@@ -59,6 +59,17 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 	}
 
 	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		if (marketplacePresenter != null) {
+			marketplacePresenter.onDetach();
+			marketplacePresenter = null;
+		}
+		earnRecyclerAdapter = null;
+		spendRecyclerAdapter = null;
+	}
+
+	@Override
 	public void attachPresenter(IMarketplacePresenter presenter) {
 		marketplacePresenter = presenter;
 	}
