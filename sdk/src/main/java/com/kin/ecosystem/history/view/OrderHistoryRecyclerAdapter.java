@@ -80,11 +80,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
     protected ViewHolder createBaseViewHolder(View view) {
         return new ViewHolder(view);
     }
-
-    public void release() {
-
-    }
-
+    
 	class ViewHolder extends AbstractBaseViewHolder<Order> {
 
         private static final String PLUS_SIGN = "+";
