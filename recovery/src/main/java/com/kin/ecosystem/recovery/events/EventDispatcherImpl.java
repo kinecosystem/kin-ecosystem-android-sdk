@@ -87,8 +87,8 @@ public class EventDispatcherImpl implements EventDispatcher {
 	@Override
 	public void release() {
 		// Safe unregister
+		unregister();
 		if (broadcastManager != null) {
-			unregister();
 			broadcastManager.release();
 			broadcastManager = null;
 		}
