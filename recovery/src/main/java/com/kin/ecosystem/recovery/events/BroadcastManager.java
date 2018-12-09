@@ -19,4 +19,6 @@ public interface BroadcastManager {
 
 	void sendCallback(int resultCode, Intent data);
 
+	void release();
+
 }
