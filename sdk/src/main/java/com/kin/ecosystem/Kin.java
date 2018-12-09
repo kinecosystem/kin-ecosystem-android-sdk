@@ -2,6 +2,7 @@ package com.kin.ecosystem;
 
 import static com.kin.ecosystem.common.exception.ClientException.ACCOUNT_NOT_LOGGED_IN;
 import static com.kin.ecosystem.common.exception.ClientException.BAD_CONFIGURATION;
+import static com.kin.ecosystem.common.exception.ClientException.SDK_NOT_STARTED;
 import static com.kin.ecosystem.core.accountmanager.AccountManager.ERROR;
 
 import android.app.Activity;
@@ -200,9 +201,19 @@ public class Kin {
 	private static void init(@NonNull SignInData signInData, final KinCallback<Void> loginCallback) {
 		String publicAddress = null;
 		try {
-			BlockchainSourceImpl.getInstance().createAccount();
-			publicAddress = getPublicAddress();
-		} catch (final BlockchainException exception) {
+			checkInstanceNotNull();
+			try {
+				BlockchainSourceImpl.getInstance().createAccount();
+				publicAddress = getPublicAddress();
+			} catch (final BlockchainException exception) {
+				instance.executorsUtil.mainThread().execute(new Runnable() {
+					@Override
+					public void run() {
+						loginCallback.onFailure(exception);
+					}
+				});
+			}
+		} catch (final ClientException exception) {
 			instance.executorsUtil.mainThread().execute(new Runnable() {
 				@Override
 				public void run() {
@@ -278,12 +289,20 @@ public class Kin {
 		}
 	}
 
+	private static void checkInstanceNotNull() throws ClientException {
+		if (isInstanceNull()) {
+			throw ErrorUtil.getClientException(SDK_NOT_STARTED, null);
+		}
+	}
+
 	/**
 	 * Launch Kin Marketplace if the user is activated, otherwise it will launch Welcome to Kin page.
 	 *
 	 * @param activity the activity user can go back to.
+	 * @throws ClientException - sdk not initialized or account not logged in.
 	 */
 	public static void launchMarketplace(@NonNull final Activity activity) throws ClientException {
+		checkInstanceNotNull();
 		checkAccountIsLoggedIn();
 		eventLogger.send(EntrypointButtonTapped.create());
 		boolean isAccountCreated = AccountManagerImpl.getInstance().isAccountCreated();
@@ -306,8 +325,10 @@ public class Kin {
 
 	/**
 	 * @return The account public address
+	 * @throws ClientException - sdk not initialized or account not found.
 	 */
-	public static String getPublicAddress() throws BlockchainException {
+	public static String getPublicAddress() throws BlockchainException, ClientException {
+		checkInstanceNotNull();
 		return BlockchainSourceImpl.getInstance().getPublicAddress();
 	}
 
@@ -315,8 +336,10 @@ public class Kin {
 	 * Get the cached balance, can be different from the current balance on the network.
 	 *
 	 * @return balance amount
+	 * @throws ClientException - sdk not initialized or account not logged in.
 	 */
 	public static Balance getCachedBalance() throws ClientException {
+		checkInstanceNotNull();
 		checkAccountIsLoggedIn();
 		return BlockchainSourceImpl.getInstance().getBalance();
 	}
@@ -325,8 +348,10 @@ public class Kin {
 	 * Get the current account balance from the network.
 	 *
 	 * @param callback balance amount
+	 * @throws ClientException - sdk not initialized or account not logged in.
 	 */
 	public static void getBalance(@NonNull final KinCallback<Balance> callback) throws ClientException {
+		checkInstanceNotNull();
 		checkAccountIsLoggedIn();
 		BlockchainSourceImpl.getInstance().getBalance(callback);
 	}
@@ -338,8 +363,11 @@ public class Kin {
 	 * Take in consideration that on adding this observer, a live network connection will be open to the blockchain
 	 * network, In order to close the connection use {@link #removeBalanceObserver(Observer)} with the same observer. If
 	 * no other observers on this connection, the connection will be closed.
+	 *
+	 * @throws ClientException - sdk not initialized.
 	 */
-	public static void addBalanceObserver(@NonNull final Observer<Balance> observer) {
+	public static void addBalanceObserver(@NonNull final Observer<Balance> observer) throws ClientException {
+		checkInstanceNotNull();
 		BlockchainSourceImpl.getInstance().addBalanceObserver(observer, true);
 
 	}
@@ -347,8 +375,11 @@ public class Kin {
 	/**
 	 * Remove the balance observer, this method will close the live network connection to the blockchain network
 	 * if there is no more observers.
+	 *
+	 * @throws ClientException - sdk not initialized.
 	 */
-	public static void removeBalanceObserver(@NonNull final Observer<Balance> observer) {
+	public static void removeBalanceObserver(@NonNull final Observer<Balance> observer) throws ClientException {
+		checkInstanceNotNull();
 		BlockchainSourceImpl.getInstance().removeBalanceObserver(observer, true);
 	}
 
@@ -358,9 +389,11 @@ public class Kin {
 	 *
 	 * @param offerJwt Represents the offer in a JWT manner.
 	 * @param callback {@link OrderConfirmation} The result will be a failure or a success with a jwt confirmation.
+	 * @throws ClientException - sdk not initialized or account not logged in.
 	 */
 	public static void purchase(String offerJwt, @Nullable KinCallback<OrderConfirmation> callback)
 		throws ClientException {
+		checkInstanceNotNull();
 		checkAccountIsLoggedIn();
 		OrderRepository.getInstance().purchase(offerJwt, callback);
 	}
@@ -372,9 +405,11 @@ public class Kin {
 	 * @param offerJwt The offer details represented in a JWT manner.
 	 * @param callback After validating the info and sending the payment to the user, you will receive {@link
 	 * OrderConfirmation}, with the jwtConfirmation and you can validate the order when the order status is completed.
+	 * @throws ClientException - sdk not initialized or account not logged in.
 	 */
 	public static void requestPayment(String offerJwt, @Nullable KinCallback<OrderConfirmation> callback)
 		throws ClientException {
+		checkInstanceNotNull();
 		checkAccountIsLoggedIn();
 		OrderRepository.getInstance().requestPayment(offerJwt, callback);
 	}
@@ -385,9 +420,11 @@ public class Kin {
 	 *
 	 * @param offerJwt Represents a 'Pay to user' offer in a JWT manner.
 	 * @param callback {@link OrderConfirmation} The result will be a failure or a success with a jwt confirmation.
+	 * @throws ClientException - sdk not initialized or account not logged in.
 	 */
 	public static void payToUser(String offerJwt, @Nullable KinCallback<OrderConfirmation> callback)
 		throws ClientException {
+		checkInstanceNotNull();
 		checkAccountIsLoggedIn();
 		//pay to user has a similar flow like purchase (spend), the only different is the expected input JWT.
 		OrderRepository.getInstance().purchase(offerJwt, callback);
@@ -400,8 +437,11 @@ public class Kin {
 	 *
 	 * @param userId The user id to check
 	 * @param callback The result will be a {@link Boolean}
+	 * @throws ClientException - sdk not initialized.
 	 */
-	public static void hasAccount(@NonNull String userId, @NonNull KinCallback<Boolean> callback) {
+	public static void hasAccount(@NonNull String userId, @NonNull final KinCallback<Boolean> callback)
+		throws ClientException {
+		checkInstanceNotNull();
 		AuthRepository.getInstance().hasAccount(userId, callback);
 	}
 
@@ -410,9 +450,11 @@ public class Kin {
 	 * This information could be used for re-engaging users, provide specific experience for users who never earn before etc.
 	 *
 	 * @param callback The result will be a {@link UserStats}
+	 * @throws ClientException - sdk not initialized or account not logged in.
 	 */
 	public static void userStats(@NonNull KinCallback<UserStats> callback)
 		throws ClientException {
+		checkInstanceNotNull();
 		checkAccountIsLoggedIn();
 		AuthRepository.getInstance().userStats(callback);
 	}
@@ -421,22 +463,33 @@ public class Kin {
 	 * Returns a {@link OrderConfirmation}, with the order status and a jwtConfirmation if the order is completed.
 	 *
 	 * @param offerID The offerID that this order created from
+	 * @throws ClientException - sdk not initialized.
 	 */
-	public static void getOrderConfirmation(@NonNull String offerID, @NonNull KinCallback<OrderConfirmation> callback) {
+	public static void getOrderConfirmation(@NonNull String offerID, @NonNull KinCallback<OrderConfirmation> callback)
+		throws ClientException {
+		checkInstanceNotNull();
 		OrderRepository.getInstance().getExternalOrderStatus(offerID, callback);
 	}
 
 	/**
 	 * Add a native offer {@link Observer} to receive a trigger when you native offers on Kin Marketplace are clicked.
+	 *
+	 * @throws ClientException - sdk not initialized.
 	 */
-	public static void addNativeOfferClickedObserver(@NonNull Observer<NativeOfferClickEvent> observer) {
+	public static void addNativeOfferClickedObserver(@NonNull Observer<NativeOfferClickEvent> observer)
+		throws ClientException {
+		checkInstanceNotNull();
 		OfferRepository.getInstance().addNativeOfferClickedObserver(observer);
 	}
 
 	/**
 	 * Remove the callback if you no longer want to get triggered when your offer on Kin marketplace are clicked.
+	 *
+	 * @throws ClientException - sdk not initialized.
 	 */
-	public static void removeNativeOfferClickedObserver(@NonNull Observer<NativeOfferClickEvent> observer) {
+	public static void removeNativeOfferClickedObserver(@NonNull Observer<NativeOfferClickEvent> observer)
+		throws ClientException {
+		checkInstanceNotNull();
 		OfferRepository.getInstance().removeNativeOfferClickedObserver(observer);
 	}
 
@@ -447,8 +500,11 @@ public class Kin {
 	 * @param nativeOffer The spend or earn offer you want to add to the spend list.
 	 * @param dismissOnTap An indication if the sdk should close the marketplace when this offer tapped.
 	 * @return true if the offer added successfully, the list was changed.
+	 * @throws ClientException - sdk not initialized.
 	 */
-	public static boolean addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissOnTap) {
+	public static boolean addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissOnTap)
+		throws ClientException {
+		checkInstanceNotNull();
 		return OfferRepository.getInstance().addNativeOffer(nativeOffer, dismissOnTap);
 	}
 
@@ -457,8 +513,10 @@ public class Kin {
 	 *
 	 * @param nativeOffer The spend or earn offer you want to remove from the spend list.
 	 * @return true if the offer removed successfully, the list was changed.
+	 * @throws ClientException - sdk not initialized.
 	 */
-	public static boolean removeNativeOffer(@NonNull NativeOffer nativeOffer) {
+	public static boolean removeNativeOffer(@NonNull NativeOffer nativeOffer) throws ClientException {
+		checkInstanceNotNull();
 		return OfferRepository.getInstance().removeNativeOffer(nativeOffer);
 	}
 }

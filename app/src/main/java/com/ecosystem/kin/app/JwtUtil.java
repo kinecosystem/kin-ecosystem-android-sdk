@@ -96,13 +96,13 @@ public class JwtUtil {
             privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(bytes));
 
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            showSnackbar("ClientException  " + e.getMessage(), true);();
 
         } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
+            showSnackbar("ClientException  " + e.getMessage(), true);();
 
         } catch (NoSuchProviderException e) {
-            e.printStackTrace();
+            showSnackbar("ClientException  " + e.getMessage(), true);();
         }
         return privateKey;
     }
