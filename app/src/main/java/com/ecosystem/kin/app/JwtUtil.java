@@ -95,14 +95,8 @@ public class JwtUtil {
             keyFactory = KeyFactory.getInstance(ALGORITHM_RSA, SECURITY_PROVIDER_BC);
             privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(bytes));
 
-        } catch (NoSuchAlgorithmException e) {
-            showSnackbar("ClientException  " + e.getMessage(), true);();
-
-        } catch (InvalidKeySpecException e) {
-            showSnackbar("ClientException  " + e.getMessage(), true);();
-
-        } catch (NoSuchProviderException e) {
-            showSnackbar("ClientException  " + e.getMessage(), true);();
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchProviderException e) {
+            e.printStackTrace();
         }
         return privateKey;
     }
