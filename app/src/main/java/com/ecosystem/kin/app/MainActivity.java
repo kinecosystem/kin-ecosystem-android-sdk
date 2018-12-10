@@ -20,6 +20,7 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.ecosystem.kin.app.model.SignInRepo;
+import com.kin.ecosystem.EcosystemExperience;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
@@ -162,10 +163,24 @@ public class MainActivity extends AppCompatActivity {
 				openKinMarketplace();
 			}
 		});
+		findViewById(R.id.launch_orderHistory).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				launchExperience(EcosystemExperience.ORDER_HISTORY);
+			}
+		});
 		((TextView) findViewById(R.id.sample_app_version))
 			.setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
 		addNativeOffer();
 		addNativeOfferClickedObserver();
+	}
+
+	private void launchExperience(@EcosystemExperience final int experience) {
+		try {
+			Kin.launchEcosystem(MainActivity.this, experience);
+		} catch (ClientException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void addNativeOffer() {

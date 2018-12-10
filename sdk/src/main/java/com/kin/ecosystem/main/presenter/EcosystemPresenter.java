@@ -1,6 +1,7 @@
 package com.kin.ecosystem.main.presenter;
 
 
+import static com.kin.ecosystem.Kin.KEY_ECOSYSTEM_EXPERIENCE;
 import static com.kin.ecosystem.main.ScreenId.MARKETPLACE;
 import static com.kin.ecosystem.main.ScreenId.NONE;
 import static com.kin.ecosystem.main.ScreenId.ORDER_HISTORY;
@@ -9,6 +10,7 @@ import static com.kin.ecosystem.main.Title.ORDER_HISTORY_TITLE;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import com.kin.ecosystem.EcosystemExperience;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.model.Balance;
@@ -24,22 +26,25 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 
 	private static final String KEY_SCREEN_ID = "screen_id";
 	private @ScreenId
-	int visibleScreen = NONE;
-	private INavigator navigator;
+	int visibleScreen;
+	private @EcosystemExperience
+	int experience;
 	private final SettingsDataSource settingsDataSource;
 	private final BlockchainSource blockchainSource;
+	private INavigator navigator;
 
 	private Observer<Balance> balanceObserver;
 	private Balance currentBalance;
 
 	public EcosystemPresenter(@NonNull IEcosystemView view, @NonNull SettingsDataSource settingsDataSource,
 		@NonNull final BlockchainSource blockchainSource,
-		@NonNull INavigator navigator, Bundle savedInstanceState) {
+		@NonNull INavigator navigator, Bundle savedInstanceState, Bundle extras) {
 		this.view = view;
 		this.settingsDataSource = settingsDataSource;
 		this.blockchainSource = blockchainSource;
 		this.navigator = navigator;
 		this.currentBalance = blockchainSource.getBalance();
+		this.experience = getExperience(extras);
 		this.visibleScreen = getVisibleScreen(savedInstanceState);
 
 		this.view.attachPresenter(this);
@@ -49,25 +54,41 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 		return savedInstanceState != null ? savedInstanceState.getInt(KEY_SCREEN_ID, NONE) : NONE;
 	}
 
+	private int getExperience(Bundle extras) {
+		return extras != null ? extras.getInt(KEY_ECOSYSTEM_EXPERIENCE, EcosystemExperience.MARKETPLACE)
+			: EcosystemExperience.MARKETPLACE;
+	}
+
 	@Override
 	public void onAttach(IEcosystemView view) {
 		super.onAttach(view);
-		navigateToVisibleScreen(visibleScreen);
+		if (experience == EcosystemExperience.ORDER_HISTORY) {
+			experience = EcosystemExperience.MARKETPLACE;
+			launchOrderHistory();
+		} else {
+			navigateToVisibleScreen(visibleScreen);
+		}
+	}
+
+	private void launchOrderHistory() {
+		if (view != null) {
+			navigator.navigateToOrderHistory(false, true);
+		}
 	}
 
 	private void navigateToVisibleScreen(int visibleScreen) {
 		if (view != null) {
 			switch (visibleScreen) {
 				case ORDER_HISTORY:
-					if(navigator != null) {
-						navigator.navigateToOrderHistory(false);
+					if (navigator != null) {
+						navigator.navigateToOrderHistory(false, false);
 					}
 					break;
 				case MARKETPLACE:
 				case NONE:
 				default:
-					if(navigator != null) {
-						navigator.navigateToMarketplace();
+					if (navigator != null) {
+						navigator.navigateToMarketplace(false);
 					}
 					break;
 
@@ -135,7 +156,7 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 	@Override
 	public void balanceItemClicked() {
 		if (view != null && visibleScreen != ORDER_HISTORY && navigator != null) {
-			navigator.navigateToOrderHistory(false);
+			navigator.navigateToOrderHistory(false, false);
 		}
 	}
 
@@ -173,7 +194,7 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 
 	@Override
 	public void settingsMenuClicked() {
-		if(navigator != null) {
+		if (navigator != null) {
 			navigator.navigateToSettings();
 		}
 	}

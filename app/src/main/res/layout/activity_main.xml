@@ -76,11 +76,11 @@
 
     <Button
         android:id="@+id/launch_marketplace"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/kinecosystem_block_margin"
-        android:layout_marginStart="@dimen/kinecosystem_margin_large"
-        android:layout_marginEnd="@dimen/kinecosystem_margin_large"
+        android:layout_marginStart="@dimen/kinrecovery_margin_main"
+        android:layout_marginEnd="@dimen/kinecosystem_block_margin"
         android:layout_gravity="bottom"
         android:background="@drawable/button_bg_white_rounded"
         android:text="@string/kin_marketplace_title"
@@ -88,8 +88,27 @@
         android:textColor="@color/colorPrimary"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/native_spend_button"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/launch_orderHistory"
+        app:layout_constraintHorizontal_weight="0.5"
         app:layout_constraintStart_toStartOf="parent"/>
+
+    <Button
+        android:id="@+id/launch_orderHistory"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/kinecosystem_block_margin"
+        android:layout_marginStart="@dimen/kinecosystem_block_margin"
+        android:layout_marginEnd="@dimen/kinrecovery_margin_main"
+        android:layout_gravity="bottom"
+        android:background="@drawable/button_bg_white_rounded"
+        android:text="Order History"
+        android:textAllCaps="false"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/native_spend_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="0.5"
+        app:layout_constraintStart_toEndOf="@id/launch_marketplace"/>
 
     <TextView
         android:id="@+id/native_spend_button"

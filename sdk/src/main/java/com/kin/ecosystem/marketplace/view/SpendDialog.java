@@ -58,7 +58,7 @@ public class SpendDialog extends BottomDialog<ISpendDialogPresenter> implements 
 
     @Override
     public void navigateToOrderHistory() {
-        navigator.navigateToOrderHistory(true);
+        navigator.navigateToOrderHistory(true, false);
     }
 
     @Override
