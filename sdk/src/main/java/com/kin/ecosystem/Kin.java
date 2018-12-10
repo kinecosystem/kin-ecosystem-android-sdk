@@ -3,7 +3,6 @@ package com.kin.ecosystem;
 import static com.kin.ecosystem.common.exception.ClientException.ACCOUNT_NOT_LOGGED_IN;
 import static com.kin.ecosystem.common.exception.ClientException.BAD_CONFIGURATION;
 import static com.kin.ecosystem.common.exception.ClientException.SDK_NOT_STARTED;
-import static com.kin.ecosystem.core.accountmanager.AccountManager.ERROR;
 
 import android.app.Activity;
 import android.content.Context;
@@ -19,13 +18,13 @@ import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.common.model.WhitelistData;
 import com.kin.ecosystem.core.Logger;
-import com.kin.ecosystem.core.accountmanager.AccountManager;
 import com.kin.ecosystem.core.accountmanager.AccountManagerImpl;
 import com.kin.ecosystem.core.accountmanager.AccountManagerLocal;
 import com.kin.ecosystem.core.bi.EventLogger;
@@ -44,6 +43,7 @@ import com.kin.ecosystem.core.data.offer.OfferRepository;
 import com.kin.ecosystem.core.data.order.OrderLocalData;
 import com.kin.ecosystem.core.data.order.OrderRemoteData;
 import com.kin.ecosystem.core.data.order.OrderRepository;
+import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.SignInData;
 import com.kin.ecosystem.core.network.model.SignInData.SignInTypeEnum;
 import com.kin.ecosystem.core.util.DeviceUtils;
@@ -175,13 +175,13 @@ public class Kin {
 
 	public static void login(@NonNull WhitelistData whitelistData, KinCallback<Void> loginCallback) {
 		SignInData signInData = getWhiteListSignInData(whitelistData);
-		init(signInData, loginCallback);
+		internalLogin(signInData, loginCallback);
 
 	}
 
 	public static void login(@NonNull String jwt, KinCallback<Void> loginCallback) {
 		SignInData signInData = getJwtSignInData(jwt);
-		init(signInData, loginCallback);
+		internalLogin(signInData, loginCallback);
 	}
 
 	private static SignInData getWhiteListSignInData(@NonNull final WhitelistData whitelistData) {
@@ -198,7 +198,7 @@ public class Kin {
 			.jwt(jwt);
 	}
 
-	private static void init(@NonNull SignInData signInData, final KinCallback<Void> loginCallback) {
+	private static void internalLogin(@NonNull SignInData signInData, final KinCallback<Void> loginCallback) {
 		String publicAddress = null;
 		try {
 			checkInstanceNotNull();
@@ -239,44 +239,33 @@ public class Kin {
 		}
 		BlockchainSourceImpl.getInstance().setAppID(appID);
 
-		if (!AccountManagerImpl.getInstance().isAccountCreated()) {
-			AccountManagerImpl.getInstance().start();
-			AccountManagerImpl.getInstance().addAccountStateObserver(new Observer<Integer>() {
-				@Override
-				public void onChanged(Integer value) {
-					switch (value) {
-						case AccountManager.PENDING_CREATION:
-							isAccountLoggedIn = true;
-							break;
-						case AccountManager.CREATION_COMPLETED:
-							instance.executorsUtil.mainThread().execute(new Runnable() {
-								@Override
-								public void run() {
-									loginCallback.onResponse(null);
-								}
-							});
-							break;
-						case ERROR:
-							instance.executorsUtil.mainThread().execute(new Runnable() {
-								@Override
-								public void run() {
-									loginCallback.onFailure(AccountManagerImpl.getInstance().getError());
-								}
-							});
-							break;
+		AuthRepository.getInstance().getAuthToken(new KinCallback<AuthToken>() {
+			@Override
+			public void onResponse(AuthToken response) {
+				isAccountLoggedIn = true;
+				instance.executorsUtil.mainThread().execute(new Runnable() {
+					@Override
+					public void run() {
+						loginCallback.onResponse(null);
 					}
+				});
+
+				if (!AccountManagerImpl.getInstance().isAccountCreated()) {
+					AccountManagerImpl.getInstance().start();
 				}
-			});
-		} else {
-			isAccountLoggedIn = true;
-			instance.executorsUtil.mainThread().execute(new Runnable() {
-				@Override
-				public void run() {
-					loginCallback.onResponse(null);
-				}
-			});
-			OfferRepository.getInstance().getOffers(null);
-		}
+			}
+
+			@Override
+			public void onFailure(final KinEcosystemException exception) {
+				isAccountLoggedIn = false;
+				instance.executorsUtil.mainThread().execute(new Runnable() {
+					@Override
+					public void run() {
+						loginCallback.onFailure(exception);
+					}
+				});
+			}
+		});
 	}
 
 	private static boolean isInstanceNull() {

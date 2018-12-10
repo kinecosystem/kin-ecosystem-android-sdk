@@ -3,14 +3,14 @@ package com.kin.ecosystem.core.data.auth;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.ObservableData;
-import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.core.network.ApiException;
-import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.SignInData;
+import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.network.model.UserProperties;
 import com.kin.ecosystem.core.util.DateUtil;
 import com.kin.ecosystem.core.util.ErrorUtil;
@@ -196,22 +196,30 @@ public class AuthRepository implements AuthDataSource {
 
 	@Override
 	public void getAuthToken(@Nullable final KinCallback<AuthToken> callback) {
-		remoteData.getAuthToken(new Callback<AuthToken, ApiException>() {
-			@Override
-			public void onResponse(AuthToken authToken) {
-				setAuthToken(authToken);
-				if (callback != null) {
-					callback.onResponse(cachedAuthToken);
-				}
+		if(!isAuthTokenExpired(cachedAuthToken)){
+			setAuthToken(cachedAuthToken);
+			if (callback != null) {
+				callback.onResponse(cachedAuthToken);
 			}
+		} else {
+			remoteData.getAuthToken(new Callback<AuthToken, ApiException>() {
+				@Override
+				public void onResponse(AuthToken authToken) {
+					setAuthToken(authToken);
+					if (callback != null) {
+						callback.onResponse(cachedAuthToken);
+					}
+				}
 
-			@Override
-			public void onFailure(ApiException exception) {
-				if (callback != null) {
-					callback.onFailure(ErrorUtil.fromApiException(exception));
+				@Override
+				public void onFailure(ApiException exception) {
+					if (callback != null) {
+						callback.onFailure(ErrorUtil.fromApiException(exception));
+					}
 				}
-			}
-		});
+			});
+		}
+
 	}
 
 	private void postAppID(@Nullable String appID) {

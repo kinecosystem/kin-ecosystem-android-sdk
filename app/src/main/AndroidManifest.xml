@@ -16,7 +16,7 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <meta-data android:name="com.kin.ecosystem.sdk.EnvironmentName" android:value="@string/kinecosystem_environment_beta"/>
-        <!--<meta-data android:name="com.kin.ecosystem.sdk.EnvironmentName" android:value="prod"/>-->
+        <!--<meta-data android:name="com.kin.ecosystem.sdk.EnvironmentName" android:value="@string/kinecosystem_environment_production"/>-->
 
         <provider
             android:authorities="${applicationId}.MySampleProvider"
