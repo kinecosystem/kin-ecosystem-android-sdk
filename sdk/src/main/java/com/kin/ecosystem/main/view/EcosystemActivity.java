@@ -287,10 +287,18 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 
 	@Override
 	protected void onDestroy() {
-		super.onDestroy();
-		ecosystemPresenter.onDetach();
+		if(marketplacePresenter != null) {
+			marketplacePresenter.onDetach();
+			marketplacePresenter = null;
+		}
+		if(ecosystemPresenter != null) {
+			ecosystemPresenter.onDetach();
+			ecosystemPresenter = null;
+		}
 		if (balancePresenter != null) {
 			balancePresenter.onDetach();
+			balancePresenter = null;
 		}
+		super.onDestroy();
 	}
 }
