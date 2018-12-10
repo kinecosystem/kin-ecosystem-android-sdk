@@ -48,8 +48,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private final OfferDataSource offerRepository;
 	private final OrderDataSource orderRepository;
 	private final BlockchainSource blockchainSource;
-	private final INavigator navigator;
 	private final EventLogger eventLogger;
+	private INavigator navigator;
 
 	private List<Offer> spendList;
 	private List<Offer> earnList;
@@ -136,38 +136,42 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private void removeOfferFromList(String offerId, OfferType offerType) {
 		if (offerType == OfferType.EARN) {
-			for (int i = 0; i < earnList.size(); i++) {
-				Offer offer = earnList.get(i);
-				if (offer.getId().equals(offerId)) {
-					earnList.remove(i);
-					notifyEarnItemRemoved(i);
-					updateEarnTitle();
-					return;
+			if(earnList != null) {
+				for (int i = 0; i < earnList.size(); i++) {
+					Offer offer = earnList.get(i);
+					if (offer.getId().equals(offerId)) {
+						earnList.remove(i);
+						notifyEarnItemRemoved(i);
+						updateEarnTitle();
+						return;
+					}
 				}
 			}
 		} else {
-			for (int i = 0; i < spendList.size(); i++) {
-				Offer offer = spendList.get(i);
-				if (offer.getId().equals(offerId)) {
-					spendList.remove(i);
-					notifySpendItemRemoved(i);
-					updateSpendTitle();
-					return;
+			if(spendList != null) {
+				for (int i = 0; i < spendList.size(); i++) {
+					Offer offer = spendList.get(i);
+					if (offer.getId().equals(offerId)) {
+						spendList.remove(i);
+						notifySpendItemRemoved(i);
+						updateSpendTitle();
+						return;
+					}
 				}
 			}
 		}
 	}
 
 	private void updateEarnTitle() {
-		boolean isEarnListEmpty = earnList.isEmpty();
-		if (view != null) {
+		if (view != null && earnList != null) {
+			boolean isEarnListEmpty = earnList.isEmpty();
 			view.updateEarnSubtitle(isEarnListEmpty);
 		}
 	}
 
 	private void updateSpendTitle() {
-		boolean isSpendListEmpty = spendList.isEmpty();
-		if (view != null) {
+		if (view != null && spendList != null) {
+			boolean isSpendListEmpty = spendList.isEmpty();
 			view.updateSpendSubtitle(isSpendListEmpty);
 		}
 	}
@@ -203,7 +207,11 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void release() {
-		orderRepository.removeOrderObserver(orderObserver);
+		if(orderObserver != null) {
+			orderRepository.removeOrderObserver(orderObserver);
+			orderObserver = null;
+		}
+		navigator = null;
 		earnList = null;
 		spendList = null;
 	}

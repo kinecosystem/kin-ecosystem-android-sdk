@@ -146,21 +146,23 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
 
 	@Override
 	public void close() {
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				webViewContainer.removeView(webView);
-				webView.release();
-			}
-		});
 		finish();
 	}
 
 	@Override
 	protected void onDestroy() {
+		releaseWebView();
+		if (pollWebViewPresenter != null) {
+			pollWebViewPresenter.onDetach();
+			pollWebViewPresenter = null;
+		}
 		super.onDestroy();
-		close();
-		pollWebViewPresenter.onDetach();
+
+	}
+
+	private void releaseWebView() {
+		webViewContainer.removeView(webView);
+		webView.release();
 	}
 
 	public static class PollBundle {

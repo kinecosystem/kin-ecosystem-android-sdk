@@ -33,4 +33,6 @@ public interface EventDispatcher {
 	void sendCallback(int resultCode, Intent data);
 
 	void unregister();
+
+	void release();
 }

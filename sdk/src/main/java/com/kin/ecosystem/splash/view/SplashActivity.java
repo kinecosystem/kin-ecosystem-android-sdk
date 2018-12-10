@@ -179,7 +179,10 @@ public class SplashActivity extends KinEcosystemBaseActivity implements ISplashV
 
 	@Override
 	protected void onDestroy() {
+		if(splashPresenter != null) {
+			splashPresenter.onDetach();
+			splashPresenter = null;
+		}
 		super.onDestroy();
-		splashPresenter.onDetach();
 	}
 }

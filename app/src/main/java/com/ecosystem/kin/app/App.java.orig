@@ -18,6 +18,7 @@ public class App extends Application {
 
     private static final String TAG = "SampleApp";
 
+<<<<<<< HEAD
     @Override
     public void onCreate() {
         super.onCreate();
@@ -26,12 +27,6 @@ public class App extends Application {
     }
 
     private void initSDK() {
-		if (LeakCanary.isInAnalyzerProcess(this)) {
-			// This process is dedicated to LeakCanary for heap analysis.
-			// You should not init your app in this process.
-			return;
-		}
-		LeakCanary.install(this);
         try {
             Kin.initialize(getApplicationContext());
         } catch (ClientException e) {
@@ -84,5 +79,55 @@ public class App extends Application {
     public static String getApiKey() {
         return BuildConfig.SAMPLE_API_KEY;
     }
+=======
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		if (LeakCanary.isInAnalyzerProcess(this)) {
+			// This process is dedicated to LeakCanary for heap analysis.
+			// You should not init your app in this process.
+			return;
+		}
+		LeakCanary.install(this);
+		Fabric.with(this, new Crashlytics());
+
+		KinEnvironment environment = Environment.getBeta();
+
+		if (BuildConfig.IS_JWT_REGISTRATION) {
+			/**
+			 * SignInData should be created with registration JWT {see https://jwt.io/} created securely by server side
+			 * In the the this example {@link SignInRepo#getJWT} generate the JWT locally.
+			 * DO NOT!!!! use this approach in your real app.
+			 * */
+			String jwt = SignInRepo.getJWT(this);
+
+			try {
+				Kin.start(getApplicationContext(), jwt, environment);
+			} catch (ClientException | BlockchainException e) {
+				e.printStackTrace();
+			}
+		} else {
+			/** Use {@link WhitelistData} for small scale testing */
+			WhitelistData whitelistData = SignInRepo.getWhitelistSignInData(this, getAppId(), getApiKey());
+			try {
+				Kin.start(getApplicationContext(), whitelistData, environment);
+			} catch (ClientException | BlockchainException e) {
+				e.printStackTrace();
+			}
+		}
+
+		Kin.enableLogs(true);
+	}
+
+	@NonNull
+	private static String getAppId() {
+		return BuildConfig.SAMPLE_APP_ID;
+	}
+
+	@NonNull
+	private static String getApiKey() {
+		return BuildConfig.SAMPLE_API_KEY;
+	}
+>>>>>>> ceab3f68773e539267bb73bd4c9d0bedbfe27ad3
 
 }
