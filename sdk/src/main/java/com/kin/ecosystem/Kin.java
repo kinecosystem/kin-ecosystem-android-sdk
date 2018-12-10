@@ -200,7 +200,7 @@ public class Kin {
 	 * Launch Kin Marketplace if the user is activated, otherwise it will launch Welcome to Kin page.
 	 *
 	 * @param activity the activity user can go back to.
-	 * @deprecated Please use #launchEcosystem
+	 * @deprecated Please use {@link Kin#launchEcosystem}
 	 */
 	@Deprecated
 	public static void launchMarketplace(@NonNull final Activity activity) throws ClientException {
@@ -209,6 +209,13 @@ public class Kin {
 		launchEcosystem(activity, EcosystemExperience.MARKETPLACE);
 	}
 
+	/**
+	 * Launch a specific experience in KinEcosystem if the user is activated,
+	 * otherwise it will launch Welcome to Kin page and then the experience.
+	 *
+	 * @param activity the activity user can go back to.
+	 * @param experience should be one of {@link EcosystemExperience}
+	 */
 	public static void launchEcosystem(@NonNull final Activity activity, @EcosystemExperience final int experience)
 		throws ClientException {
 		checkInstanceNotNull();

@@ -146,7 +146,7 @@ The following sections show how to implement some primary APIs using the Kin Eco
 
 * [Creating a Pay To User Offer](docs/PEER_TO_PEER.md)
 
-* [Displaying the Kin Marketplace Offer Wall](docs/DISPLAY_MARKETPLACE.md)
+* [Displaying the Kin Marketplace Offer Wall](docs/DISPLAY_EXPERIENCE.md)
 
 * [Adding Native Offer to Marketplace Offer Wall](docs/ADD_NATIVE_OFFER_TO_MARKETPLACE.md)
 
