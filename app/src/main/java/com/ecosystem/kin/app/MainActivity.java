@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
 		findViewById(R.id.launch_marketplace).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				openKinMarketplace();
+				launchExperience(EcosystemExperience.MARKETPLACE);
 			}
 		});
 		findViewById(R.id.launch_orderHistory).setOnClickListener(new OnClickListener() {
@@ -383,14 +383,6 @@ public class MainActivity extends AppCompatActivity {
 	private void setBalanceWithAmount(Balance balance) {
 		int balanceValue = balance.getAmount().intValue();
 		balanceView.setText(getString(R.string.get_balance_d, balanceValue));
-	}
-
-	private void openKinMarketplace() {
-		try {
-			Kin.launchMarketplace(MainActivity.this);
-		} catch (ClientException e) {
-			e.printStackTrace();
-		}
 	}
 
 	private void createNativeSpendOffer() {
