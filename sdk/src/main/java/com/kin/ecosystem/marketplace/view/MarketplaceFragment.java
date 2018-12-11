@@ -44,25 +44,26 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 		@Nullable Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.kinecosystem_fragment_marketplce, container, false);
 		initViews(root);
+		marketplacePresenter.onAttach(this);
 		return root;
 	}
+
 	@Override
 	public void onStart() {
 		super.onStart();
-		marketplacePresenter.onAttach(this);
+		marketplacePresenter.onStart();
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-		marketplacePresenter.onDetach();
+		marketplacePresenter.onStop();
 	}
 
 	@Override
 	public void onDestroy() {
 		if (marketplacePresenter != null) {
 			marketplacePresenter.onDetach();
-			marketplacePresenter = null;
 		}
 		earnRecyclerAdapter = null;
 		spendRecyclerAdapter = null;
