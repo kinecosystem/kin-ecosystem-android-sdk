@@ -327,16 +327,15 @@ public class BlockchainSourceImpl implements BlockchainSource {
 						completedPayment.postValue(PaymentConverter.toPayment(data, orderID, accountPublicAddress));
 						Logger.log(new Log().withTag(TAG).put("completedPayment order id", orderID));
 					}
-					// UpdateBalance if there is no balance sse open connection.
-					if (balanceObserversCount == 0) {
-						final double prevBalance = balance.getValue().getAmount().doubleValue();
-						getBalance(new KinCallbackAdapter<Balance>() {
-							@Override
-							public void onResponse(Balance response) {
-								eventLogger.send(KinBalanceUpdated.create(prevBalance));
-							}
-						});
-					}
+
+					// UpdateBalance
+					final double prevBalance = balance.getValue().getAmount().doubleValue();
+					getBalance(new KinCallbackAdapter<Balance>() {
+						@Override
+						public void onResponse(Balance response) {
+							eventLogger.send(KinBalanceUpdated.create(prevBalance));
+						}
+					});
 				}
 			});
 	}
