@@ -62,9 +62,6 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 
 	@Override
 	public void onDestroy() {
-		if (marketplacePresenter != null) {
-			marketplacePresenter.onDetach();
-		}
 		earnRecyclerAdapter = null;
 		spendRecyclerAdapter = null;
 		super.onDestroy();
