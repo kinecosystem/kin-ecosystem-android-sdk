@@ -57,10 +57,11 @@ public class MainActivity extends AppCompatActivity {
 
 	private String userID;
 	private String publicAddress;
+	private String spendOfferID = "";
 
 
 	private int getRandomID() {
-		return new Random().nextInt((9999 - 1) + 1) + 1;
+		return new Random().nextInt((999999 - 1) + 1) + 1;
 	}
 
 	private NativeOffer nativeOffer;
@@ -379,7 +380,8 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void createNativeSpendOffer() {
-		String offerJwt = JwtUtil.generateSpendOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID);
+		spendOfferID = String.valueOf(getRandomID());
+		String offerJwt = JwtUtil.generateSpendOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID, spendOfferID);
 		Log.d(TAG, "createNativeSpendOffer: " + offerJwt);
 		try {
 			Kin.purchase(offerJwt, getNativeSpendOrderConfirmationCallback());
@@ -476,6 +478,8 @@ public class MainActivity extends AppCompatActivity {
 					getBalance();
 					showSnackbar("Succeed to create native spend", false);
 					Log.d(TAG, "Jwt confirmation: \n" + orderConfirmation.getJwtConfirmation());
+					getOrderConfirmation(spendOfferID);
+					spendOfferID = "";
 					enableView(nativeSpendTextView, true);
 				}
 
