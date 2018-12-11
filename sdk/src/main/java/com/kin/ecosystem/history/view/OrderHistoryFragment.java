@@ -40,7 +40,6 @@ public class OrderHistoryFragment extends Fragment implements IOrderHistoryView 
 	public void onDestroy() {
 		if (orderHistoryPresenter != null) {
 			orderHistoryPresenter.onDetach();
-			orderHistoryPresenter = null;
 		}
 		orderHistoryRecyclerAdapter = null;
 		super.onDestroy();
