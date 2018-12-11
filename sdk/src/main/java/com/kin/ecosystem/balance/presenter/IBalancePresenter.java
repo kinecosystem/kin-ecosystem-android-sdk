@@ -11,6 +11,10 @@ public interface IBalancePresenter extends IBasePresenter<IBalanceView> {
 		void onClick();
 	}
 
+	void onStart();
+
+	void onStop();
+
 	void balanceClicked();
 
 	void setClickListener(BalanceClickListener balanceClickListener);

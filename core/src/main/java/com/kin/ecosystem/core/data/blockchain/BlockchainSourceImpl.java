@@ -160,8 +160,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private void initBalance() {
 		balance.postValue(getBalance());
-		getBalance(new KinCallbackAdapter<Balance>() {
-		});
+		getBalance(null);
 	}
 
 	@Override
@@ -203,12 +202,25 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		});
 	}
 
+	@Override
+	public void reconnectBalanceConnection() {
+		synchronized (balanceObserversLock) {
+			if (balanceObserversCount > 0) {
+				if(balanceRegistration != null) {
+					balanceRegistration.remove();
+				}
+				startBalanceListener();
+			}
+		}
+	}
+
 	@VisibleForTesting
 	void setBalance(final kin.core.Balance balanceObj) {
 		Balance balanceTemp = balance.getValue();
 		// if the values are not equals so we need to update,
 		// no need to update for equal values.
 		if (balanceTemp.getAmount().compareTo(balanceObj.value()) != 0) {
+			eventLogger.send(KinBalanceUpdated.create(balanceTemp.getAmount().doubleValue()));
 			Logger.log(new Log().withTag(TAG).text("setBalance: Balance changed, should get update"));
 			balanceTemp.setAmount(balanceObj.value());
 			balance.postValue(balanceTemp);
@@ -242,9 +254,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			.addBalanceListener(new EventListener<kin.core.Balance>() {
 				@Override
 				public void onEvent(kin.core.Balance data) {
-					final double prevBalance = balance.getValue().getAmount().doubleValue();
 					setBalance(data);
-					eventLogger.send(KinBalanceUpdated.create(prevBalance));
 				}
 			});
 	}
@@ -315,16 +325,9 @@ public class BlockchainSourceImpl implements BlockchainSource {
 						completedPayment.postValue(PaymentConverter.toPayment(data, orderID, accountPublicAddress));
 						Logger.log(new Log().withTag(TAG).put("completedPayment order id", orderID));
 					}
-					// UpdateBalance if there is no balance sse open connection.
-					if (balanceObserversCount == 0) {
-						final double prevBalance = balance.getValue().getAmount().doubleValue();
-						getBalance(new KinCallbackAdapter<Balance>() {
-							@Override
-							public void onResponse(Balance response) {
-								eventLogger.send(KinBalanceUpdated.create(prevBalance));
-							}
-						});
-					}
+
+					// UpdateBalance
+					getBalance(null);
 				}
 			});
 	}
