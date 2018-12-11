@@ -89,6 +89,8 @@ public class BalancePresenterTest extends BaseTestClass {
 
 		balancePresenter.onAttach(balanceView);
 		verify(balanceView).setWelcomeSubtitle();
+
+		balancePresenter.onStart();
 		verify(blockchainSource).addBalanceObserver(balanceObserverCaptor.capture(), sseCaptor.capture());
 		verify(orderRepository).addOrderObserver(orderObserverCaptor.capture());
 		assertTrue(sseCaptor.getValue());
@@ -96,12 +98,13 @@ public class BalancePresenterTest extends BaseTestClass {
 
 	@After
 	public void tearDown() throws Exception {
-		balancePresenter.onDetach();
+		balancePresenter.onStop();
 		verify(blockchainSource).removeBalanceObserver(balanceObserverCaptor.getValue(), true);
 		verify(orderRepository).removeOrderObserver(orderObserverCaptor.getValue());
+
+		balancePresenter.onDetach();
 		assertNull(balancePresenter.getView());
 	}
-
 
 	@Test
 	public void test_Balance_Clicked() throws Exception {

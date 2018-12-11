@@ -7,6 +7,10 @@ import com.kin.ecosystem.main.view.IEcosystemView;
 
 public interface IEcosystemPresenter extends IBasePresenter<IEcosystemView> {
 
+	void onStart();
+
+	void onStop();
+
 	void balanceItemClicked();
 
 	void backButtonPressed();
@@ -17,7 +21,6 @@ public interface IEcosystemPresenter extends IBasePresenter<IEcosystemView> {
 
 	void onMenuInitialized();
 
-	void onStart();
 
 	void onSaveInstanceState(Bundle outState);
 }

@@ -7,6 +7,10 @@ import com.kin.ecosystem.marketplace.view.IMarketplaceView;
 
 public interface IMarketplacePresenter extends IBasePresenter<IMarketplaceView> {
 
+    void onStart();
+
+    void onStop();
+
     void getOffers();
 
     void onItemClicked(int position, OfferType offerType);

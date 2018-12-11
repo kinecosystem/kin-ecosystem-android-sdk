@@ -98,7 +98,13 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 
 	@Override
 	public void onStart() {
+		blockchainSource.reconnectBalanceConnection();
 		updateMenuSettingsIcon();
+	}
+
+	@Override
+	public void onStop() {
+		removeBalanceObserver();
 	}
 
 	@Override
@@ -111,7 +117,6 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 		super.onDetach();
 		removeBalanceObserver();
 		navigator = null;
-
 	}
 
 	private void addBalanceObserver() {
