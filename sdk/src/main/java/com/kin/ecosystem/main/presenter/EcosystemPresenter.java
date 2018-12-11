@@ -22,10 +22,10 @@ import java.math.BigDecimal;
 
 public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements IEcosystemPresenter {
 
-	public static final String KEY_SCREEN_ID = "screen_id";
+	private static final String KEY_SCREEN_ID = "screen_id";
 	private @ScreenId
 	int visibleScreen = NONE;
-	private final INavigator navigator;
+	private INavigator navigator;
 	private final SettingsDataSource settingsDataSource;
 	private final BlockchainSource blockchainSource;
 
@@ -59,12 +59,16 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 		if (view != null) {
 			switch (visibleScreen) {
 				case ORDER_HISTORY:
-					navigator.navigateToOrderHistory(false);
+					if(navigator != null) {
+						navigator.navigateToOrderHistory(false);
+					}
 					break;
 				case MARKETPLACE:
 				case NONE:
 				default:
-					navigator.navigateToMarketplace();
+					if(navigator != null) {
+						navigator.navigateToMarketplace();
+					}
 					break;
 
 			}
@@ -73,7 +77,13 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 
 	@Override
 	public void onStart() {
+		blockchainSource.reconnectBalanceConnection();
 		updateMenuSettingsIcon();
+	}
+
+	@Override
+	public void onStop() {
+		removeBalanceObserver();
 	}
 
 	@Override
@@ -85,6 +95,7 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 	public void onDetach() {
 		super.onDetach();
 		removeBalanceObserver();
+		navigator = null;
 	}
 
 	private void addBalanceObserver() {
@@ -128,7 +139,7 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 
 	@Override
 	public void balanceItemClicked() {
-		if (view != null && visibleScreen != ORDER_HISTORY) {
+		if (view != null && visibleScreen != ORDER_HISTORY && navigator != null) {
 			navigator.navigateToOrderHistory(false);
 		}
 	}
@@ -167,7 +178,9 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 
 	@Override
 	public void settingsMenuClicked() {
-		navigator.navigateToSettings();
+		if(navigator != null) {
+			navigator.navigateToSettings();
+		}
 	}
 
 	@Override

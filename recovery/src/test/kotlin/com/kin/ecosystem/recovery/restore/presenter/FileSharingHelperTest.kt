@@ -39,7 +39,7 @@ class FileSharingHelperTest {
     @Test
     fun `request image file with title, android os above and equal to KITKAT`() {
         val title = "incredible title"
-        setFinalStatic(Build.VERSION::class.java!!.getField(SDK_INT), 19)
+        setFinalStatic(Build.VERSION::class.java.getField(SDK_INT), 19)
         fileSharingHelper.requestImageFile(title)
         verify(fragment).startActivityForResult(intentCaptor.capture(), any())
         val intent = intentCaptor.firstValue
@@ -58,7 +58,7 @@ class FileSharingHelperTest {
     @Test
     fun `request image file with title, android os below KITKAT`() {
         val title = "incredible title"
-        setFinalStatic(Build.VERSION::class.java!!.getField(SDK_INT), 18)
+        setFinalStatic(Build.VERSION::class.java.getField(SDK_INT), 18)
         fileSharingHelper.requestImageFile(title)
         verify(fragment).startActivityForResult(intentCaptor.capture(), any())
         val intent = intentCaptor.firstValue
@@ -107,7 +107,7 @@ class FileSharingHelperTest {
     fun setFinalStatic(field: Field, newValue: Any) {
         field.isAccessible = true
 
-        val modifiersField = Field::class.java!!.getDeclaredField("modifiers")
+        val modifiersField = Field::class.java.getDeclaredField("modifiers")
         modifiersField.isAccessible = true
         modifiersField.setInt(field, field.modifiers and Modifier.FINAL.inv())
 

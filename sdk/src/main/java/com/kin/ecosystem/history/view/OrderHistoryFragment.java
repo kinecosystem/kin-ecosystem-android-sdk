@@ -37,9 +37,12 @@ public class OrderHistoryFragment extends Fragment implements IOrderHistoryView 
 	}
 
 	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		orderHistoryPresenter.onDetach();
+	public void onDestroy() {
+		if (orderHistoryPresenter != null) {
+			orderHistoryPresenter.onDetach();
+		}
+		orderHistoryRecyclerAdapter = null;
+		super.onDestroy();
 	}
 
 	protected void initViews(View root) {
@@ -62,18 +65,24 @@ public class OrderHistoryFragment extends Fragment implements IOrderHistoryView 
 
 	@Override
 	public void updateOrderHistoryList(List<Order> orders) {
-		orderHistoryRecyclerAdapter.setNewData(orders);
-		orderHistoryRecyclerAdapter.notifyDataSetChanged();
+		if(orderHistoryRecyclerAdapter != null) {
+			orderHistoryRecyclerAdapter.setNewData(orders);
+			orderHistoryRecyclerAdapter.notifyDataSetChanged();
+		}
 	}
 
 	@Override
 	public void onItemInserted() {
-		orderHistoryRecyclerAdapter.notifyItemInserted(0);
+		if(orderHistoryRecyclerAdapter != null) {
+			orderHistoryRecyclerAdapter.notifyItemInserted(0);
+		}
 	}
 
 	@Override
 	public void onItemUpdated(int index) {
-		orderHistoryRecyclerAdapter.notifyItemChanged(index);
+		if(orderHistoryRecyclerAdapter != null) {
+			orderHistoryRecyclerAdapter.notifyItemChanged(index);
+		}
 	}
 
 	@Override

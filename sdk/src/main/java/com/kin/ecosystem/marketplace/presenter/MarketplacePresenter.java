@@ -48,8 +48,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private final OfferDataSource offerRepository;
 	private final OrderDataSource orderRepository;
 	private final BlockchainSource blockchainSource;
-	private final INavigator navigator;
 	private final EventLogger eventLogger;
+	private INavigator navigator;
 
 	private List<Offer> spendList;
 	private List<Offer> earnList;
@@ -77,10 +77,30 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	@Override
 	public void onAttach(IMarketplaceView view) {
 		super.onAttach(view);
+		eventLogger.send(MarketplacePageViewed.create());
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		navigator = null;
+	}
+
+	@Override
+	public void onStart() {
 		getCachedOffers();
 		getOffers();
 		listenToOrders();
-		eventLogger.send(MarketplacePageViewed.create());
+	}
+
+	@Override
+	public void onStop() {
+		if(orderObserver != null) {
+			orderRepository.removeOrderObserver(orderObserver);
+			orderObserver = null;
+		}
+		earnList = null;
+		spendList = null;
 	}
 
 	private void getCachedOffers() {
@@ -116,22 +136,24 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void listenToOrders() {
-		orderObserver = new Observer<Order>() {
-			@Override
-			public void onChanged(Order order) {
-				switch (order.getStatus()) {
-					case PENDING:
-						removeOfferFromList(order.getOfferId(), order.getOfferType());
-						break;
-					case FAILED:
-					case COMPLETED:
-						getOffers();
-						break;
-				}
+		if(orderObserver != null) {
+			orderObserver = new Observer<Order>() {
+				@Override
+				public void onChanged(Order order) {
+					switch (order.getStatus()) {
+						case PENDING:
+							removeOfferFromList(order.getOfferId(), order.getOfferType());
+							break;
+						case FAILED:
+						case COMPLETED:
+							getOffers();
+							break;
+					}
 
-			}
-		};
-		orderRepository.addOrderObserver(orderObserver);
+				}
+			};
+			orderRepository.addOrderObserver(orderObserver);
+		}
 	}
 
 	private void removeOfferFromList(String offerId, OfferType offerType) {
@@ -198,18 +220,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		if (view != null) {
 			view.notifySpendItemInserted(index);
 		}
-	}
-
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		release();
-	}
-
-	private void release() {
-		orderRepository.removeOrderObserver(orderObserver);
-		earnList = null;
-		spendList = null;
 	}
 
 	@Override
