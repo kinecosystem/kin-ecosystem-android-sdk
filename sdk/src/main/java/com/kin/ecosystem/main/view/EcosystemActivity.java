@@ -83,8 +83,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		IBalanceView balanceView = findViewById(R.id.balance_view);
-		balancePresenter = new BalancePresenter(balanceView, EventLoggerImpl.getInstance(),
-			BlockchainSourceImpl.getInstance(), OrderRepository.getInstance());
+		balancePresenter = new BalancePresenter(balanceView, EventLoggerImpl.getInstance(), BlockchainSourceImpl.getInstance(), OrderRepository.getInstance());
 		balancePresenter.setClickListener(new BalanceClickListener() {
 			@Override
 			public void onClick() {
@@ -100,6 +99,13 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	protected void onStart() {
 		super.onStart();
 		ecosystemPresenter.onStart();
+		balancePresenter.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		balancePresenter.onStop();
 	}
 
 	@Override

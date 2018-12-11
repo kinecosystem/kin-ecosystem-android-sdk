@@ -77,6 +77,7 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 
 	@Override
 	public void onStart() {
+		blockchainSource.reconnectBalanceConnection();
 		updateMenuSettingsIcon();
 	}
 

@@ -28,7 +28,7 @@ public class App extends Application {
 		LeakCanary.install(this);
 		Fabric.with(this, new Crashlytics());
 
-		KinEnvironment environment = Environment.getBeta();
+		KinEnvironment environment = Environment.getProduction();
 
 		if (BuildConfig.IS_JWT_REGISTRATION) {
 			/**

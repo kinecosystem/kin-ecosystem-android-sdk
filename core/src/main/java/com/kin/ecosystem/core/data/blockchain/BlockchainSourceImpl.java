@@ -203,6 +203,18 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		});
 	}
 
+	@Override
+	public void reconnectBalanceConnection() {
+		synchronized (balanceObserversLock) {
+			if (balanceObserversCount == 0) {
+				if(balanceRegistration != null) {
+					balanceRegistration.remove();
+				}
+				startBalanceListener();
+			}
+		}
+	}
+
 	@VisibleForTesting
 	void setBalance(final kin.core.Balance balanceObj) {
 		Balance balanceTemp = balance.getValue();
