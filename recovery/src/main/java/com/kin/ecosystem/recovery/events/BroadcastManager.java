@@ -13,12 +13,10 @@ public interface BroadcastManager {
 	}
 	void register(@NonNull final Listener listener, @ActionName final String actionName);
 
-	void unregister();
+	void unregisterAll();
 
 	void sendEvent(Intent data, @ActionName final String actionName);
 
 	void sendCallback(int resultCode, Intent data);
-
-	void release();
 
 }

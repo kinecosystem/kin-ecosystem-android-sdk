@@ -10,15 +10,13 @@ import android.support.annotation.StringDef;
 import android.support.v4.content.LocalBroadcastManager;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BroadcastManagerImpl implements BroadcastManager {
 
-	private Activity activity;
-	private Listener listener;
-
-	private BroadcastReceiver receiver;
-
-
+	private final Activity activity;
+	private final List<BroadcastReceiver> receiversList;
 
 	static final String ACTION_EVENTS_BACKUP = "ACTION_EVENTS_BACKUP";
 	static final String ACTION_EVENTS_RESTORE = "ACTION_EVENTS_RESTORE";
@@ -31,46 +29,38 @@ public class BroadcastManagerImpl implements BroadcastManager {
 
 	public BroadcastManagerImpl(@NonNull Activity activity) {
 		this.activity = activity;
+		receiversList = new ArrayList<>();
 	}
 
 	@Override
 	public void register(@NonNull final Listener listener, @ActionName final String actionName) {
-		this.listener = listener;
-		receiver = new BroadcastReceiver() {
+		BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent data) {
-				BroadcastManagerImpl.this.listener.onReceive(data);
+				listener.onReceive(data);
 			}
 		};
-		LocalBroadcastManager.getInstance(activity).registerReceiver(receiver, new IntentFilter(actionName));
+		receiversList.add(broadcastReceiver);
+		LocalBroadcastManager.getInstance(activity).registerReceiver(broadcastReceiver, new IntentFilter(actionName));
 	}
 
 	@Override
-	public void unregister() {
-		if (receiver != null && activity != null) {
-			LocalBroadcastManager.getInstance(activity).unregisterReceiver(receiver);
+	public void unregisterAll() {
+		if (!receiversList.isEmpty()) {
+			for (BroadcastReceiver receiver : receiversList) {
+				LocalBroadcastManager.getInstance(activity).unregisterReceiver(receiver);
+			}
 		}
 	}
 
 	@Override
 	public void sendEvent(Intent data, @ActionName final String actionName) {
-		if(activity != null) {
-			data.setAction(actionName);
-			LocalBroadcastManager.getInstance(activity).sendBroadcast(data);
-		}
+		data.setAction(actionName);
+		LocalBroadcastManager.getInstance(activity).sendBroadcast(data);
 	}
 
 	@Override
 	public void sendCallback(int resultCode, Intent data) {
-		if (activity != null) {
-			activity.setResult(resultCode, data);
-		}
-	}
-
-	@Override
-	public void release() {
-		// Safe unregister
-		unregister();
-		activity = null;
+		activity.setResult(resultCode, data);
 	}
 }

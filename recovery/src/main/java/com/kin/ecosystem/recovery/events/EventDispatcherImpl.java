@@ -37,7 +37,8 @@ public class EventDispatcherImpl implements EventDispatcher {
 	@Nullable
 	private RestoreEvents restoreEvents;
 
-	private BroadcastManager broadcastManager;
+	@NonNull
+	private final BroadcastManager broadcastManager;
 	private Listener broadcastListener;
 
 	public EventDispatcherImpl(@NonNull final BroadcastManager broadcastManager) {
@@ -62,50 +63,34 @@ public class EventDispatcherImpl implements EventDispatcher {
 
 	@Override
 	public void sendEvent(@EventType final int eventType, final int eventID) {
-		if (broadcastManager != null) {
-			Intent data = new Intent();
-			data.putExtra(EXTRA_KEY_EVENT_TYPE, eventType);
-			data.putExtra(EXTRA_KEY_EVENT_ID, eventID);
-			broadcastManager.sendEvent(data, eventType == BACKUP_EVENTS ? ACTION_EVENTS_BACKUP : ACTION_EVENTS_RESTORE);
-		}
+		Intent data = new Intent();
+		data.putExtra(EXTRA_KEY_EVENT_TYPE, eventType);
+		data.putExtra(EXTRA_KEY_EVENT_ID, eventID);
+		broadcastManager.sendEvent(data, eventType == BACKUP_EVENTS ? ACTION_EVENTS_BACKUP : ACTION_EVENTS_RESTORE);
 	}
 
 	@Override
 	public void sendCallback(int resultCode, Intent data) {
-		if (broadcastManager != null) {
-			broadcastManager.sendCallback(resultCode, data);
-		}
+		broadcastManager.sendCallback(resultCode, data);
 	}
 
 	@Override
 	public void unregister() {
-		if (broadcastListener != null && broadcastManager != null) {
-			broadcastManager.unregister();
-		}
-	}
-
-	@Override
-	public void release() {
-		// Safe unregister
-		unregister();
-		if (broadcastManager != null) {
-			broadcastManager.release();
-			broadcastManager = null;
+		if (broadcastListener != null) {
+			broadcastManager.unregisterAll();
 		}
 	}
 
 	private void registerBroadcastListener(@ActionName final String actionName) {
-		if (broadcastManager != null) {
-			if (broadcastListener == null) {
-				broadcastListener = new Listener() {
-					@Override
-					public void onReceive(Intent data) {
-						parseData(data);
-					}
-				};
-			}
-			broadcastManager.register(broadcastListener, actionName);
+		if (broadcastListener == null) {
+			broadcastListener = new Listener() {
+				@Override
+				public void onReceive(Intent data) {
+					parseData(data);
+				}
+			};
 		}
+		broadcastManager.register(broadcastListener, actionName);
 	}
 
 	private void parseData(Intent data) {
