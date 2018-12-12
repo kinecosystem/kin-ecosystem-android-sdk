@@ -60,7 +60,7 @@ public class SplashPresenterTest extends BaseTestClass {
 	public void setUp() throws Exception {
 		super.setUp();
 		MockitoAnnotations.initMocks(this);
-		when(extras.getInt(Kin.KEY_ECOSYSTEM_EXPERIENCE)).thenReturn(EcosystemExperience.MARKETPLACE);
+		when(extras.getInt(Kin.KEY_ECOSYSTEM_EXPERIENCE, EcosystemExperience.NONE)).thenReturn(EcosystemExperience.MARKETPLACE);
 		splashPresenter = new SplashPresenter(accountManager, eventLogger, timer, extras);
 		splashPresenter.onAttach(splashView);
 		assertNotNull(splashPresenter.getView());

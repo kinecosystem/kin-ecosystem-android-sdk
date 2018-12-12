@@ -67,8 +67,8 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 	}
 
 	private int getExperience(Bundle extras) {
-		return extras != null ? extras.getInt(KEY_ECOSYSTEM_EXPERIENCE, EcosystemExperience.MARKETPLACE)
-			: EcosystemExperience.MARKETPLACE;
+		return extras != null ? extras.getInt(KEY_ECOSYSTEM_EXPERIENCE, EcosystemExperience.NONE)
+			: EcosystemExperience.NONE;
 	}
 
 	@Override
