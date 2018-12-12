@@ -11,6 +11,7 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.SOURCE)
 public @interface EcosystemExperience {
 
-	int MARKETPLACE = 0x00000000;
-	int ORDER_HISTORY = 0x00000001;
+	int NONE = 0x00000001;
+	int MARKETPLACE = 0x00000002;
+	int ORDER_HISTORY = 0x00000003;
 }

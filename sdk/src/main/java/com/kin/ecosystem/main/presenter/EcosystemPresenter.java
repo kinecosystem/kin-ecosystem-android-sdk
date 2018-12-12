@@ -2,9 +2,6 @@ package com.kin.ecosystem.main.presenter;
 
 
 import static com.kin.ecosystem.Kin.KEY_ECOSYSTEM_EXPERIENCE;
-import static com.kin.ecosystem.main.ScreenId.MARKETPLACE;
-import static com.kin.ecosystem.main.ScreenId.NONE;
-import static com.kin.ecosystem.main.ScreenId.ORDER_HISTORY;
 import static com.kin.ecosystem.main.Title.MARKETPLACE_TITLE;
 import static com.kin.ecosystem.main.Title.ORDER_HISTORY_TITLE;
 
@@ -64,7 +61,7 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 	}
 
 	private int getVisibleScreen(Bundle savedInstanceState) {
-		return savedInstanceState != null ? savedInstanceState.getInt(KEY_SCREEN_ID, NONE) : NONE;
+		return savedInstanceState != null ? savedInstanceState.getInt(KEY_SCREEN_ID, ScreenId.NONE) : ScreenId.NONE;
 	}
 
 	private void processIntentExtras(Bundle extras) {
@@ -75,15 +72,15 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 	}
 
 	private int getExperience(Bundle extras) {
-		return extras != null ? extras.getInt(KEY_ECOSYSTEM_EXPERIENCE, EcosystemExperience.MARKETPLACE)
-			: EcosystemExperience.MARKETPLACE;
+		return extras != null ? extras.getInt(KEY_ECOSYSTEM_EXPERIENCE, EcosystemExperience.NONE)
+			: EcosystemExperience.NONE;
 	}
 
 	@Override
 	public void onAttach(IEcosystemView view) {
 		super.onAttach(view);
 		if (experience == EcosystemExperience.ORDER_HISTORY) {
-			experience = EcosystemExperience.MARKETPLACE;
+			experience = EcosystemExperience.NONE;
 			launchOrderHistory();
 		} else {
 			navigateToVisibleScreen(visibleScreen);
@@ -99,13 +96,13 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 	private void navigateToVisibleScreen(int visibleScreen) {
 		if (view != null) {
 			switch (visibleScreen) {
-				case ORDER_HISTORY:
+				case ScreenId.ORDER_HISTORY:
 					if (navigator != null) {
 						navigator.navigateToOrderHistory(false);
 					}
 					break;
-				case MARKETPLACE:
-				case NONE:
+				case ScreenId.MARKETPLACE:
+				case ScreenId.NONE:
 				default:
 					if (navigator != null) {
 						navigator.navigateToMarketplace(false);
@@ -181,7 +178,7 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 
 	@Override
 	public void balanceItemClicked() {
-		if (view != null && visibleScreen != ORDER_HISTORY && navigator != null) {
+		if (view != null && visibleScreen != ScreenId.ORDER_HISTORY && navigator != null) {
 			navigator.navigateToOrderHistory(false);
 		}
 	}
@@ -198,10 +195,10 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 		visibleScreen = id;
 		@Title final int title;
 		switch (id) {
-			case ORDER_HISTORY:
+			case ScreenId.ORDER_HISTORY:
 				title = ORDER_HISTORY_TITLE;
 				break;
-			case MARKETPLACE:
+			case ScreenId.MARKETPLACE:
 			default:
 				title = MARKETPLACE_TITLE;
 				break;
