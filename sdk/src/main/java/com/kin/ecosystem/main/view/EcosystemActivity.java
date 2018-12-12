@@ -8,7 +8,6 @@ import static com.kin.ecosystem.main.Title.ORDER_HISTORY_TITLE;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager.BackStackEntry;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
@@ -84,7 +83,8 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		IBalanceView balanceView = findViewById(R.id.balance_view);
-		balancePresenter = new BalancePresenter(balanceView, EventLoggerImpl.getInstance(), BlockchainSourceImpl.getInstance(), OrderRepository.getInstance());
+		balancePresenter = new BalancePresenter(balanceView, EventLoggerImpl.getInstance(),
+			BlockchainSourceImpl.getInstance(), OrderRepository.getInstance());
 		balancePresenter.setClickListener(new BalanceClickListener() {
 			@Override
 			public void onClick() {
@@ -177,7 +177,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 		marketplacePresenter = getMarketplacePresenter(marketplaceFragment);
 
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-		if(addAnimation) {
+		if (addAnimation) {
 			transaction.setCustomAnimations(
 				R.anim.kinrecovery_slide_in_left,
 				R.anim.kinecosystem_slide_out_right,
@@ -213,11 +213,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	}
 
 	@Override
-	public void navigateToOrderHistory(boolean isFirstSpendOrder, boolean launchMarketplaceToStack) {
-		if(launchMarketplaceToStack) {
-			addMarketplaceToStack();
-		}
-
+	public void navigateToOrderHistory(boolean isFirstSpendOrder) {
 		OrderHistoryFragment orderHistoryFragment = (OrderHistoryFragment) getSupportFragmentManager()
 			.findFragmentByTag(ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG);
 		boolean shouldAddToBackStack = true;
@@ -248,10 +244,6 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 		transaction.commit();
 
 		setVisibleScreen(ORDER_HISTORY);
-	}
-
-	private void addMarketplaceToStack() {
-
 	}
 
 	@Override
@@ -312,11 +304,11 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 
 	@Override
 	protected void onDestroy() {
-		if(marketplacePresenter != null) {
+		if (marketplacePresenter != null) {
 			marketplacePresenter.onDetach();
 			marketplacePresenter = null;
 		}
-		if(ecosystemPresenter != null) {
+		if (ecosystemPresenter != null) {
 			ecosystemPresenter.onDetach();
 			ecosystemPresenter = null;
 		}

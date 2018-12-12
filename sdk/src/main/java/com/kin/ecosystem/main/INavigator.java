@@ -4,7 +4,7 @@ public interface INavigator {
 
 	void navigateToMarketplace(boolean addAnimation);
 
-	void navigateToOrderHistory(boolean isFirstSpendOrder, boolean launchMarketplaceToStack);
+	void navigateToOrderHistory(boolean isFirstSpendOrder);
 
 	void navigateToSettings();
 
