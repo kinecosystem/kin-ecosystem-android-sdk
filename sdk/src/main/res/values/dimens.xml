@@ -10,4 +10,5 @@
     <dimen name="kinecosystem_text_box_radius">5dp</dimen>
     <dimen name="kinecosystem_menu_info_margin">2dp</dimen>
     <dimen name="kinecosystem_info_dot_radius">8dp</dimen>
+    <dimen name="kinecosystem_radius_size">2dp</dimen>
 </resources>

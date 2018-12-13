@@ -3,6 +3,6 @@
 
     <solid android:color="@color/kinecosystem_gray_light"/>
 
-    <corners android:radius="2dp"/>
+    <corners android:radius="@dimen/kinecosystem_radius_size"/>
 
 </shape>
