@@ -11,20 +11,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.transformation.RoundedCornersTransformation;
 import com.squareup.picasso.Picasso;
 
 class BaseViewHolder<T> extends RecyclerView.ViewHolder {
 
-    /**
-     * Views indexed with their IDs
-     */
-    private final SparseArray<View> views;
+	/**
+	 * Views indexed with their IDs
+	 */
+	private final SparseArray<View> views;
 
-    BaseViewHolder(View view) {
-        super(view);
-        views = new SparseArray<>();
-    }
+	BaseViewHolder(View view) {
+		super(view);
+		views = new SparseArray<>();
+	}
 
 	/**
 	 * @param viewId
@@ -66,7 +67,7 @@ class BaseViewHolder<T> extends RecyclerView.ViewHolder {
 
 	/**
 	 * @param viewId The view id.
-	 * @param value  The text to put in the text view.
+	 * @param value The text to put in the text view.
 	 */
 	protected void setText(@IdRes int viewId, CharSequence value) {
 		TextView view = getView(viewId);
@@ -75,9 +76,6 @@ class BaseViewHolder<T> extends RecyclerView.ViewHolder {
 
 	/**
 	 * Set spannable test for text font manipulation.
-	 *
-	 * @param viewId
-	 * @param spannable
 	 */
 	protected void setSpannableText(@IdRes int viewId, Spannable spannable) {
 		TextView view = getView(viewId);
@@ -86,9 +84,6 @@ class BaseViewHolder<T> extends RecyclerView.ViewHolder {
 
 	/**
 	 * Set the color of the test
-	 *
-	 * @param viewId
-	 * @param color
 	 */
 	protected void setTextColor(@IdRes int viewId, @ColorInt int color) {
 		TextView view = getView(viewId);
@@ -97,9 +92,6 @@ class BaseViewHolder<T> extends RecyclerView.ViewHolder {
 
 	/**
 	 * Set a image resource.
-	 *
-	 * @param viewId
-	 * @param imageResId
 	 */
 	protected void setImageResource(@IdRes int viewId, @DrawableRes int imageResId) {
 		ImageView view = getView(viewId);
@@ -108,21 +100,18 @@ class BaseViewHolder<T> extends RecyclerView.ViewHolder {
 
 	/**
 	 * Load image from url and set to src.
-	 *
-	 * @param viewId
-	 * @param imageURL
-	 * @param width
-	 * @param height
 	 */
-    protected void setImageUrlResized(@IdRes int viewId, String imageURL, int width, int height) {
-        ImageView view = getView(viewId);
-        if (view != null) {
-            Picasso.get()
-                .load(Uri.parse(imageURL))
-                .transform(new RoundedCornersTransformation(5, 0))
-                .resize(width, height)
-                .centerCrop()
-                .into(view);
-        }
-    }
+	protected void setImageUrlResized(@IdRes int viewId, String imageURL, int width, int height) {
+		ImageView view = getView(viewId);
+		if (view != null) {
+			Picasso.get()
+				.load(Uri.parse(imageURL))
+				.placeholder(R.drawable.kinecosystem_item_bg_placeholder)
+				.transform(new RoundedCornersTransformation(
+					view.getContext().getResources().getDimensionPixelSize(R.dimen.kinecosystem_radius_size), 0))
+				.resize(width, height)
+				.centerCrop()
+				.into(view);
+		}
+	}
 }
