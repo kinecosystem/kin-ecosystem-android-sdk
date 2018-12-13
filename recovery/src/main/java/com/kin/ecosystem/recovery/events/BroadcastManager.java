@@ -9,8 +9,8 @@ public interface BroadcastManager {
 	interface Listener {
 
 		void onReceive(Intent data);
-
 	}
+
 	void register(@NonNull final Listener listener, @ActionName final String actionName);
 
 	void unregisterAll();
