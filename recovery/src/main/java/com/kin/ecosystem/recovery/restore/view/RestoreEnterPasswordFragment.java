@@ -4,6 +4,8 @@ package com.kin.ecosystem.recovery.restore.view;
 import static com.kin.ecosystem.recovery.restore.presenter.RestorePresenterImpl.KEY_ACCOUNT_KEY;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,8 +19,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import com.kin.ecosystem.recovery.BackupManager;
 import com.kin.ecosystem.recovery.R;
-import com.kin.ecosystem.recovery.backup.view.TextWatcherAdapter;
-import com.kin.ecosystem.recovery.backup.view.TextWatcherAdapter.TextChangeListener;
+import com.kin.ecosystem.recovery.backup.view.AbstractTextWatcher;
 import com.kin.ecosystem.recovery.base.BaseToolbarActivity;
 import com.kin.ecosystem.recovery.base.KeyboardHandler;
 import com.kin.ecosystem.recovery.events.BroadcastManagerImpl;
@@ -32,12 +33,14 @@ import com.kin.ecosystem.recovery.widget.PasswordEditText;
 public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnterPasswordView {
 
 	public static final int VIEW_MIN_DELAY_MILLIS = 50;
+	public static final int TEXT_CHANGED_DELAY_MILLIS = 500;
 
 	private RestoreEnterPasswordPresenter presenter;
 	private KeyboardHandler keyboardHandler;
 	private Button doneBtn;
 	private TextView contentText;
 	private PasswordEditText password;
+	private Handler handler;
 
 	public static RestoreEnterPasswordFragment newInstance(String keystoreData,
 		@NonNull KeyboardHandler keyboardHandler) {
@@ -65,6 +68,7 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 
 		String keystoreData = extractKeyStoreData(savedInstanceState);
 		injectPresenter(keystoreData);
+		handler = new Handler(Looper.getMainLooper());
 		return root;
 	}
 
@@ -118,13 +122,17 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 				presenter.restoreClicked(password.getText());
 			}
 		});
-
-		password.addTextChangedListener(new TextWatcherAdapter(new TextChangeListener() {
+		password.addTextChangedListener(new AbstractTextWatcher() {
 			@Override
-			public void afterTextChanged(Editable editable) {
-				presenter.onPasswordChanged(editable.toString());
+			public void afterTextChanged(final Editable editable) {
+				handler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						presenter.onPasswordChanged(editable.toString());
+					}
+				}, TEXT_CHANGED_DELAY_MILLIS);
 			}
-		}));
+		});
 		password.postDelayed(new Runnable() {
 			@Override
 			public void run() {
@@ -162,5 +170,12 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 		contentText.setText(R.string.kinrecovery_restore_invalid_qr);
 		contentText.setTextColor(ContextCompat.getColor(getContext(), R.color.kinrecovery_red));
 		password.setFrameBackgroundColor(R.color.kinrecovery_red);
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		handler.removeCallbacksAndMessages(null);
 	}
 }

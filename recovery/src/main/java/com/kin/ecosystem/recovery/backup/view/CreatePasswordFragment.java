@@ -2,6 +2,8 @@ package com.kin.ecosystem.recovery.backup.view;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,7 +21,6 @@ import com.kin.ecosystem.recovery.BackupManager;
 import com.kin.ecosystem.recovery.R;
 import com.kin.ecosystem.recovery.backup.presenter.CreatePasswordPresenter;
 import com.kin.ecosystem.recovery.backup.presenter.CreatePasswordPresenterImpl;
-import com.kin.ecosystem.recovery.backup.view.TextWatcherAdapter.TextChangeListener;
 import com.kin.ecosystem.recovery.base.KeyboardHandler;
 import com.kin.ecosystem.recovery.events.BroadcastManagerImpl;
 import com.kin.ecosystem.recovery.events.CallbackManager;
@@ -27,6 +28,8 @@ import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
 import com.kin.ecosystem.recovery.widget.PasswordEditText;
 
 public class CreatePasswordFragment extends Fragment implements CreatePasswordView {
+
+	private final static long TEXT_CHANGED_DELAY_MILLIS = 500;
 
 	public static CreatePasswordFragment newInstance(@NonNull final BackupNavigator nextStepListener,
 		@NonNull final KeyboardHandler keyboardHandler) {
@@ -43,6 +46,7 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 	private PasswordEditText enterPassEditText;
 	private PasswordEditText confirmPassEditText;
 	private Button nextButton;
+	private Handler handler;
 
 	@Nullable
 	@Override
@@ -54,6 +58,7 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 			new CallbackManager(new EventDispatcherImpl(new BroadcastManagerImpl(getActivity()))), nextStepListener,
 			BackupManager.getKeyStoreProvider());
 		createPasswordPresenter.onAttach(this);
+		handler = new Handler(Looper.getMainLooper());
 		return root;
 	}
 
@@ -105,24 +110,36 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 	}
 
 	private void initEnterPasswordText() {
-		enterPassEditText.addTextChangedListener(new TextWatcherAdapter(new TextChangeListener() {
+		enterPassEditText.addTextChangedListener(new AbstractTextWatcher() {
 			@Override
-			public void afterTextChanged(Editable editable) {
-				createPasswordPresenter.enterPasswordChanged(editable.toString(), confirmPassEditText.getText());
+			public void afterTextChanged(final Editable editable) {
+				handler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						createPasswordPresenter
+							.enterPasswordChanged(editable.toString(), confirmPassEditText.getText());
+					}
+				}, TEXT_CHANGED_DELAY_MILLIS);
 			}
-		}));
+		});
 		enterPassEditText.setFrameBackgroundColor(R.color.kinrecovery_gray);
 		openKeyboard(enterPassEditText);
 	}
 
 	private void initConfirmPassword() {
-		confirmPassEditText.addTextChangedListener(new TextWatcherAdapter(new TextChangeListener() {
+		confirmPassEditText.addTextChangedListener(new AbstractTextWatcher() {
 			@Override
-			public void afterTextChanged(Editable editable) {
-				createPasswordPresenter.confirmPasswordChanged(enterPassEditText.getText(),
-					editable.toString());
+			public void afterTextChanged(final Editable editable) {
+				handler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						createPasswordPresenter.confirmPasswordChanged(enterPassEditText.getText(),
+							editable.toString());
+					}
+				}, TEXT_CHANGED_DELAY_MILLIS);
 			}
-		}));
+		});
+
 		confirmPassEditText.setFrameBackgroundColor(R.color.kinrecovery_gray);
 	}
 
@@ -204,5 +221,12 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 			.setNegativeButton(R.string.kinrecovery_cancel, null)
 			.create()
 			.show();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		handler.removeCallbacksAndMessages(null);
 	}
 }
