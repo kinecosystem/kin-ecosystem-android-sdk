@@ -205,7 +205,6 @@ public class Kin {
 	@Deprecated
 	public static void launchMarketplace(@NonNull final Activity activity) throws ClientException {
 		checkInstanceNotNull();
-		instance.eventLogger.send(EntrypointButtonTapped.create());
 		launchEcosystem(activity, EcosystemExperience.MARKETPLACE);
 	}
 
