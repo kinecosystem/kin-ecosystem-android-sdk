@@ -7,10 +7,10 @@ import com.kin.ecosystem.core.util.DeviceUtils;
 
 class EarnRecyclerAdapter extends OfferRecyclerAdapter {
 
-    private static final float IMAGE_WIDTH_RATIO = 0.388f;
+    private static final float IMAGE_WIDTH_TO_SCREEN_RATIO = 0.388f;
     private static final float IMAGE_HEIGHT_RATIO = 0.714f;
 
-	private static final float IMAGE_WIDTH_XX_RES_RATIO = 0.333f;
+	private static final float IMAGE_WIDTH_XX_RES_TO_SCREEN_RATIO = 0.333f;
 	private static final float IMAGE_HEIGHT_XX_RES_RATIO = 0.664f;
 
     EarnRecyclerAdapter() {
@@ -19,7 +19,7 @@ class EarnRecyclerAdapter extends OfferRecyclerAdapter {
 
 	@Override
 	protected float getImageWidthToScreenRatio() {
-		return DeviceUtils.isDensity(XXHDPI) ? IMAGE_WIDTH_XX_RES_RATIO : IMAGE_WIDTH_RATIO;
+		return DeviceUtils.isDensity(XXHDPI) ? IMAGE_WIDTH_XX_RES_TO_SCREEN_RATIO : IMAGE_WIDTH_TO_SCREEN_RATIO;
 	}
 
 	@Override
