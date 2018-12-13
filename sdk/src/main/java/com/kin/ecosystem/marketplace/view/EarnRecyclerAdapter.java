@@ -11,7 +11,6 @@ class EarnRecyclerAdapter extends OfferRecyclerAdapter {
     private static final float IMAGE_HEIGHT_RATIO = 0.714f;
 
 	private static final float IMAGE_WIDTH_XX_RES_TO_SCREEN_RATIO = 0.333f;
-	private static final float IMAGE_HEIGHT_XX_RES_RATIO = 0.664f;
 
     EarnRecyclerAdapter() {
         super(R.layout.kinecosystem_earn_recycler_item);
@@ -24,6 +23,6 @@ class EarnRecyclerAdapter extends OfferRecyclerAdapter {
 
 	@Override
 	protected float getImageHeightRatio() {
-		return DeviceUtils.isDensity(XXHDPI) ? IMAGE_HEIGHT_XX_RES_RATIO : IMAGE_HEIGHT_RATIO;
+		return IMAGE_HEIGHT_RATIO;
 	}
 }
