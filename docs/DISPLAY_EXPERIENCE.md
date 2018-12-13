@@ -6,11 +6,11 @@ You may choose to add your custom Earn and Spend offers to the Kin Marketplace s
 
 *To display the Kin Marketplace offer wall:*
 
-Call `Kin.launchExperience(activity, EcosystemExperience.MARKETPLACE)`.
+Call `Kin.launchEcosystem(activity, EcosystemExperience.MARKETPLACE)`.
 
 ```java
 try {
-         Kin.launchExperience(MainActivity.this, EcosystemExperience.MARKETPLACE);
+         Kin.launchEcosystem(MainActivity.this, EcosystemExperience.MARKETPLACE);
           } catch (ClientException e) {
             //
       }
@@ -21,15 +21,15 @@ Use this option to launch the Ecosystem experience right into the users’ order
 
 *To display the Order History Page:*
 
-Call `Kin.launchExperience(activity, EcosystemExperience.ORDER_HISTORY)`.
+Call `Kin.launchEcosystem(activity, EcosystemExperience.ORDER_HISTORY)`.
 
 ```java
 try {
-         Kin.launchExperience(MainActivity.this, EcosystemExperience.ORDER_HISTORY);
+         Kin.launchEcosystem(MainActivity.this, EcosystemExperience.ORDER_HISTORY);
           } catch (ClientException e) {
             //
       }
 ```
 
->**NOTE:** The launchExperience function is not a one-time initialization function, you must call it each time you want to display a feature in KinEcosystem side.
+>**NOTE:** The launchEcosystem function is not a one-time initialization function, you must call it each time you want to display a feature in KinEcosystem side.
 
