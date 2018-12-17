@@ -42,20 +42,18 @@ public class ConfigurationImpl implements Configuration {
 	private static final Object apiClientLock = new Object();
 	private static ApiClient defaultApiClient;
 
-	private KinEnvironment kinEnvironment;
-	private final Configuration.Local localData;
+	private final KinEnvironment kinEnvironment;
 	private static volatile ConfigurationImpl instance;
 
-	private ConfigurationImpl(@NonNull Configuration.Local local) {
-		this.localData = local;
-		this.kinEnvironment = local.getEnvironment();
+	private ConfigurationImpl(@NonNull String environmentName) {
+		this.kinEnvironment = getEnvironmentByName(environmentName);
 	}
 
-	public static void init(@NonNull Configuration.Local local) {
+	public static void init(@NonNull String environmentName) {
 		if (instance == null) {
 			synchronized (ConfigurationImpl.class) {
 				if (instance == null) {
-					instance = new ConfigurationImpl(local);
+					instance = new ConfigurationImpl(environmentName);
 				}
 			}
 		}
@@ -121,16 +119,7 @@ public class ConfigurationImpl implements Configuration {
 
 	@Override
 	public KinEnvironment getEnvironment() {
-		if (kinEnvironment == null) {
-			kinEnvironment = localData.getEnvironment();
-		}
 		return kinEnvironment;
-	}
-
-	@Override
-	public void setEnvironment(String environment) {
-		kinEnvironment = getEnvironmentByName(environment);
-		localData.setEnvironment(kinEnvironment);
 	}
 
 	private KinEnvironment getEnvironmentByName(String environment) {

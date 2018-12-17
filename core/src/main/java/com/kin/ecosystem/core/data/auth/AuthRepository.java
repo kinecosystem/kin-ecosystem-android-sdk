@@ -196,30 +196,22 @@ public class AuthRepository implements AuthDataSource {
 
 	@Override
 	public void getAuthToken(@Nullable final KinCallback<AuthToken> callback) {
-		if(!isAuthTokenExpired(cachedAuthToken)){
-			setAuthToken(cachedAuthToken);
-			if (callback != null) {
-				callback.onResponse(cachedAuthToken);
+		remoteData.getAuthToken(new Callback<AuthToken, ApiException>() {
+			@Override
+			public void onResponse(AuthToken authToken) {
+				setAuthToken(authToken);
+				if (callback != null) {
+					callback.onResponse(cachedAuthToken);
+				}
 			}
-		} else {
-			remoteData.getAuthToken(new Callback<AuthToken, ApiException>() {
-				@Override
-				public void onResponse(AuthToken authToken) {
-					setAuthToken(authToken);
-					if (callback != null) {
-						callback.onResponse(cachedAuthToken);
-					}
-				}
 
-				@Override
-				public void onFailure(ApiException exception) {
-					if (callback != null) {
-						callback.onFailure(ErrorUtil.fromApiException(exception));
-					}
+			@Override
+			public void onFailure(ApiException exception) {
+				if (callback != null) {
+					callback.onFailure(ErrorUtil.fromApiException(exception));
 				}
-			});
-		}
-
+			}
+		});
 	}
 
 	private void postAppID(@Nullable String appID) {

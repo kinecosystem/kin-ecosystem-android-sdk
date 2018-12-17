@@ -25,7 +25,6 @@ import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.Observer;
-import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.exception.ServiceException;
@@ -195,11 +194,13 @@ public class MainActivity extends AppCompatActivity {
 			Kin.login(jwt, new KinCallback<Void>() {
 				@Override
 				public void onResponse(Void response) {
+					showSnackbar("login succeed jwt", false);
 					Log.d(TAG, "JWT onResponse: login");
 				}
 
 				@Override
 				public void onFailure(KinEcosystemException exception) {
+					showSnackbar("login failed jwt", true);
 					Log.e(TAG, "JWT onFailure: " + exception.getMessage());
 				}
 			});
@@ -209,11 +210,13 @@ public class MainActivity extends AppCompatActivity {
 			Kin.login(whitelistData, new KinCallback<Void>() {
 				@Override
 				public void onResponse(Void response) {
+					showSnackbar("login succeed whitelist", false);
 					Log.d(TAG, "WhiteList onResponse: login");
 				}
 
 				@Override
 				public void onFailure(KinEcosystemException exception) {
+					showSnackbar("login failed whitelist", true);
 					Log.e(TAG, "WhiteList onFailure: " + exception.getMessage());
 				}
 			});
@@ -373,22 +376,19 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void getPublicAddress() {
+
 		try {
-			try {
-				publicAddress = Kin.getPublicAddress();
-			} catch (ClientException e) {
-				showSnackbar("ClientException  " + e.getMessage(), true);
-				e.printStackTrace();
-			}
-			int blueColor = ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark);
-			publicAddressTextArea.getBackground().setColorFilter(blueColor, Mode.SRC_ATOP);
-			showPublicAddressTextView.setText(R.string.copy_public_address);
-			publicAddressTextArea.setText(publicAddress);
-		} catch (BlockchainException e) {
+			publicAddress = Kin.getPublicAddress();
+		} catch (ClientException e) {
+			showSnackbar("ClientException  " + e.getMessage(), true);
 			//Account could not be found
 			publicAddressTextArea.setText(e.getMessage());
 			e.printStackTrace();
 		}
+		int blueColor = ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark);
+		publicAddressTextArea.getBackground().setColorFilter(blueColor, Mode.SRC_ATOP);
+		showPublicAddressTextView.setText(R.string.copy_public_address);
+		publicAddressTextArea.setText(publicAddress);
 	}
 
 	private void copyToClipboard(CharSequence textToCopy, String paramName) {

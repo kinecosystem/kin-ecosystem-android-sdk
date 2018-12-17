@@ -37,7 +37,6 @@ import com.kin.ecosystem.core.data.auth.AuthRepository;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceLocal;
 import com.kin.ecosystem.core.data.internal.ConfigurationImpl;
-import com.kin.ecosystem.core.data.internal.ConfigurationLocal;
 import com.kin.ecosystem.core.data.offer.OfferRemoteData;
 import com.kin.ecosystem.core.data.offer.OfferRepository;
 import com.kin.ecosystem.core.data.order.OrderLocalData;
@@ -86,6 +85,13 @@ public class Kin {
 		return instance;
 	}
 
+	/**
+	 * Initialize the sdk with all the resources to start, this function isn't doing a network calls at all.
+	 * In order to recover from process restart all the activities in our side should call this method in onCreate.
+	 *
+	 * @param appContext application context.
+	 * @throws ClientException - The sdk could not be initiated.
+	 */
 	public synchronized static void initialize(Context appContext) throws ClientException {
 		if (isInstanceNull()) {
 			instance = getInstance();
@@ -96,8 +102,7 @@ public class Kin {
 			loadDefaultsFromMetadata(appContext);
 
 			//Set Environment
-			ConfigurationImpl.init(ConfigurationLocal.getInstance(appContext));
-			ConfigurationImpl.getInstance().setEnvironment(environmentName);
+			ConfigurationImpl.init(environmentName);
 			KinEnvironment kinEnvironment = ConfigurationImpl.getInstance().getEnvironment();
 			eventLogger = EventLoggerImpl.getInstance();
 			final String networkUrl = kinEnvironment.getBlockchainNetworkUrl();
@@ -174,12 +179,25 @@ public class Kin {
 		Logger.enableLogs(enableLogs);
 	}
 
+	/**
+	 * In order to use all the other features in Kin Ecosystem, you should login the user first.
+	 * The whitelist option should be use only for quick integration and testing, not in production.
+	 *
+	 * @param whitelistData data for login
+	 * @param loginCallback a login callback whether login succeed or not.
+	 */
 	public static void login(@NonNull WhitelistData whitelistData, KinCallback<Void> loginCallback) {
 		SignInData signInData = getWhiteListSignInData(whitelistData);
 		internalLogin(signInData, loginCallback);
-
 	}
 
+	/**
+	 * In order to use all the other features in Kin Ecosystem, you should login the user first.
+	 * This option should be use in production.
+	 *
+	 * @param jwt data for login, please refer to <a href="README.md#generating-the-jwt-token">Generating the jwt token</a> and see more info.
+	 * @param loginCallback a login callback whether login succeed or not.
+	 */
 	public static void login(@NonNull String jwt, KinCallback<Void> loginCallback) {
 		SignInData signInData = getJwtSignInData(jwt);
 		internalLogin(signInData, loginCallback);
@@ -235,6 +253,7 @@ public class Kin {
 				@Override
 				public void onChanged(String appID) {
 					BlockchainSourceImpl.getInstance().setAppID(appID);
+					AuthRepository.getInstance().getAppID().removeObserver(this);
 				}
 			});
 		}
@@ -339,11 +358,16 @@ public class Kin {
 
 	/**
 	 * @return The account public address
-	 * @throws ClientException - sdk not initialized or account not found.
+	 * @throws ClientException - sdk not initialized or account not logged in.
 	 */
-	public static String getPublicAddress() throws BlockchainException, ClientException {
+	public static String getPublicAddress() throws ClientException {
 		checkInstanceNotNull();
-		return BlockchainSourceImpl.getInstance().getPublicAddress();
+		checkAccountIsLoggedIn();
+		try {
+			return BlockchainSourceImpl.getInstance().getPublicAddress();
+		} catch (BlockchainException e) {
+			throw ErrorUtil.getClientException(ACCOUNT_NOT_LOGGED_IN, e);
+		}
 	}
 
 	/**

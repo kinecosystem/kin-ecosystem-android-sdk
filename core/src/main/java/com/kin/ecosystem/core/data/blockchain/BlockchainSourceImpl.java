@@ -111,8 +111,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			try {
 				// Create new account
 				account = kinClient.addAccount();
-				activeAccountIndex = 0;
-				local.setAccountIndex(0);
+				setAccountIndex(0);
 			} catch (CreateAccountException e) {
 				throw ErrorUtil.getBlockchainException(e);
 			}
@@ -136,24 +135,26 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	public void sendTransaction(@NonNull final String publicAddress, @NonNull final BigDecimal amount,
 		@NonNull final String orderID, @NonNull final String offerID) {
-		eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offerID, orderID));
-		account.sendTransaction(publicAddress, amount, generateMemo(orderID)).run(
-			new ResultCallback<TransactionId>() {
-				@Override
-				public void onResult(TransactionId result) {
-					eventLogger
-						.send(SpendTransactionBroadcastToBlockchainSucceeded.create(result.id(), offerID, orderID));
-					Logger.log(new Log().withTag(TAG).put("sendTransaction onResult", result.id()));
-				}
+		if (account != null) {
+			eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offerID, orderID));
+			account.sendTransaction(publicAddress, amount, generateMemo(orderID)).run(
+				new ResultCallback<TransactionId>() {
+					@Override
+					public void onResult(TransactionId result) {
+						eventLogger
+							.send(SpendTransactionBroadcastToBlockchainSucceeded.create(result.id(), offerID, orderID));
+						Logger.log(new Log().withTag(TAG).put("sendTransaction onResult", result.id()));
+					}
 
-				@Override
-				public void onError(Exception e) {
-					eventLogger
-						.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
-					completedPayment.postValue(new Payment(orderID, false, e));
-					Logger.log(new Log().withTag(TAG).put("sendTransaction onError", e.getMessage()));
-				}
-			});
+					@Override
+					public void onError(Exception e) {
+						eventLogger
+							.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
+						completedPayment.postValue(new Payment(orderID, false, e));
+						Logger.log(new Log().withTag(TAG).put("sendTransaction onError", e.getMessage()));
+					}
+				});
+		}
 	}
 
 	@SuppressLint("DefaultLocale")
@@ -164,9 +165,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 
 	private void initBalance() {
-		if (balanceObserversCount > 0) {
-			startBalanceListener();
-		}
+		reconnectBalanceConnection();
 		balance.postValue(getBalance());
 		getBalance(null);
 	}
@@ -225,9 +224,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	public void reconnectBalanceConnection() {
 		synchronized (balanceObserversLock) {
 			if (balanceObserversCount > 0) {
-				if (balanceRegistration != null) {
-					balanceRegistration.remove();
-				}
+				removeRegistration(balanceRegistration);
 				startBalanceListener();
 			}
 		}
@@ -399,18 +396,17 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	public void updateActiveAccount(int accountIndex) throws BlockchainException {
 		if (activeAccountIndex != accountIndex && accountIndex != -1) {
-			local.setAccountIndex(accountIndex);
+			setAccountIndex(accountIndex);
 			createKinAccountIfNeeded();
-
-			synchronized (balanceObserversLock) {
-				removeRegistration(balanceRegistration);
-				if (balanceObserversCount > 0) {
-					startBalanceListener();
-				}
-			}
+			reconnectBalanceConnection();
 			//trigger balance update
 			getBalance(null);
 		}
+	}
+
+	private void setAccountIndex(int accountIndex) {
+		activeAccountIndex = accountIndex;
+		local.setAccountIndex(accountIndex);
 	}
 
 	private void decrementPaymentCount() {
