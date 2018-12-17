@@ -682,7 +682,7 @@ public class OrdersApi {
 			localVarQueryParams.addAll(apiClient.parameterToPair("origin", origin));
 		}
 		if (offerId != null) {
-			localVarQueryParams.addAll(apiClient.parameterToPair("offerId", offerId));
+			localVarQueryParams.addAll(apiClient.parameterToPair("offer_id", offerId));
 		}
 		if (limit != null) {
 			localVarQueryParams.addAll(apiClient.parameterToPair("limit", limit));

@@ -4,7 +4,7 @@ The Kin Marketplace offer wall displays built-in offers, which are served by the
 
 You can also choose to display a banner for your custom offer in the Kin Marketplace offer wall. This serves as additional "real estate" in which to let the user know about custom offers within your app. When the user clicks on your custom Spend or Earn offer in the Kin Marketplace, your app will be notified, and then you can continues to manage the offer with your own logig and UX/UI flow.
 
->**NOTE:** You will need to actively launch the Kin Marketplace offer wall so your user can see the offers you added to it. See [Displaying the Kin Marketplace Offer Wall](DISPLAY_MARKETPLACE.md) for more details.
+>**NOTE:** You will need to actively launch the Kin Marketplace offer wall so your user can see the offers you added to it. See [Displaying the Kin Marketplace Offer Wall](DISPLAY_EXPERIENCE.md) for more details.
 
 *To add a custom Spend or Earn offer to the Kin Marketplace:*
 

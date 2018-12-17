@@ -1,5 +1,6 @@
 package com.kin.ecosystem.splash.view;
 
+import static com.kin.ecosystem.Kin.KEY_ECOSYSTEM_EXPERIENCE;
 import static com.kin.ecosystem.splash.presenter.ISplashPresenter.SOMETHING_WENT_WRONG;
 import static com.kin.ecosystem.splash.presenter.ISplashPresenter.TRY_AGAIN;
 
@@ -15,6 +16,7 @@ import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.kin.ecosystem.EcosystemExperience;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.KinEcosystemBaseActivity;
 import com.kin.ecosystem.core.accountmanager.AccountManagerImpl;
@@ -42,8 +44,9 @@ public class SplashActivity extends KinEcosystemBaseActivity implements ISplashV
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		attachPresenter(new SplashPresenter(AccountManagerImpl.getInstance(),
-			EventLoggerImpl.getInstance(), new Timer()));
+		setContentView(R.layout.kinecosystem_activity_splash);
+		attachPresenter(new SplashPresenter(AccountManagerImpl.getInstance(), EventLoggerImpl.getInstance(), new Timer(), getIntent().getExtras()));
+		initViews();
 		initAnimations();
 		setBackButtonListener();
 		setLetsGetStartedButtonListener();
@@ -114,8 +117,9 @@ public class SplashActivity extends KinEcosystemBaseActivity implements ISplashV
 	}
 
 	@Override
-	public void navigateToMarketPlace() {
+	public void navigateToEcosystemActivity(@EcosystemExperience final int experience) {
 		Intent marketplaceIntent = new Intent(this, EcosystemActivity.class);
+		marketplaceIntent.putExtra(KEY_ECOSYSTEM_EXPERIENCE, experience);
 		startActivity(marketplaceIntent);
 		finish();
 	}

@@ -93,13 +93,21 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 		});
 		ecosystemPresenter = new EcosystemPresenter(this,
 			new SettingsDataSourceImpl(new SettingsDataSourceLocal(getApplicationContext())),
-			BlockchainSourceImpl.getInstance(), this, savedInstanceState);
+			BlockchainSourceImpl.getInstance(), this, savedInstanceState, getIntent().getExtras());
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
 		ecosystemPresenter.onStart();
+		balancePresenter.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		ecosystemPresenter.onStop();
+		balancePresenter.onStop();
 	}
 
 	@Override
@@ -160,7 +168,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	}
 
 	@Override
-	public void navigateToMarketplace() {
+	public void navigateToMarketplace(boolean addAnimation) {
 		MarketplaceFragment marketplaceFragment = getSavedMarketplaceFragment();
 		if (marketplaceFragment == null) {
 			marketplaceFragment = MarketplaceFragment.newInstance();
@@ -168,8 +176,15 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 
 		marketplacePresenter = getMarketplacePresenter(marketplaceFragment);
 
-		getSupportFragmentManager().beginTransaction()
-			.replace(R.id.fragment_frame, marketplaceFragment, ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG)
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		if (addAnimation) {
+			transaction.setCustomAnimations(
+				R.anim.kinrecovery_slide_in_left,
+				R.anim.kinecosystem_slide_out_right,
+				0,
+				0);
+		}
+		transaction.replace(R.id.fragment_frame, marketplaceFragment, ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG)
 			.commit();
 
 		setVisibleScreen(MARKETPLACE);
@@ -278,20 +293,22 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 					} else {
 						marketplaceFragment.attachPresenter(marketplacePresenter);
 					}
+				} else {
+					navigateToMarketplace(true);
 				}
+				getSupportFragmentManager().popBackStackImmediate();
+				setVisibleScreen(MARKETPLACE);
 			}
-			getSupportFragmentManager().popBackStackImmediate();
-			setVisibleScreen(MARKETPLACE);
 		}
 	}
 
 	@Override
 	protected void onDestroy() {
-		if(marketplacePresenter != null) {
+		if (marketplacePresenter != null) {
 			marketplacePresenter.onDetach();
 			marketplacePresenter = null;
 		}
-		if(ecosystemPresenter != null) {
+		if (ecosystemPresenter != null) {
 			ecosystemPresenter.onDetach();
 			ecosystemPresenter = null;
 		}

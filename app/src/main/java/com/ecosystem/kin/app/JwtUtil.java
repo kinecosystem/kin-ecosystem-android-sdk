@@ -47,10 +47,10 @@ public class JwtUtil {
             .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
     }
 
-    static String generateSpendOfferExampleJWT(String appID, String userID) {
+    static String generateSpendOfferExampleJWT(String appID, String userID, String offerID) {
         return getBasicJWT(appID)
             .setSubject(JWT_SUBJECT_SPEND)
-            .claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject())
+            .claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject(offerID))
             .claim(JWT_CLAIM_OBJECT_SENDER_PART, new JWTSenderPart(userID, "Bought a sticker", "Lion sticker"))
             .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
     }
@@ -102,8 +102,12 @@ public class JwtUtil {
     }
 
     private static JWTOfferPart createOfferPartExampleObject() {
-        int randomID = new Random().nextInt((9999 - 1) + 1) + 1;
+        int randomID = new Random().nextInt((999999 - 1) + 1) + 1;
         return new JWTOfferPart(String.valueOf(randomID), 10);
+    }
+
+    private static JWTOfferPart createOfferPartExampleObject(String offerId) {
+        return new JWTOfferPart(offerId, 10);
     }
 
     private static class JWTOfferPart {

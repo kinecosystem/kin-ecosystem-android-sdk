@@ -51,6 +51,11 @@ public interface BlockchainSource {
 	void getBalance(@Nullable final KinCallback<Balance> callback);
 
 	/**
+	 * Reconnect the balance connection, due to connection lose.
+	 */
+	void reconnectBalanceConnection();
+
+	/**
 	 * Add balance observer in order to start receive balance updates
 	 * @param startSSE true will keep a connection on account balance updates from the blockchain network
 	 */

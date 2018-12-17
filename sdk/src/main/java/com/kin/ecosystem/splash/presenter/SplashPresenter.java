@@ -1,13 +1,14 @@
 package com.kin.ecosystem.splash.presenter;
 
+import static com.kin.ecosystem.Kin.KEY_ECOSYSTEM_EXPERIENCE;
 import static com.kin.ecosystem.core.accountmanager.AccountManager.CREATION_COMPLETED;
 import static com.kin.ecosystem.core.accountmanager.AccountManager.ERROR;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import com.kin.ecosystem.EcosystemExperience;
 import com.kin.ecosystem.base.BasePresenter;
-import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
-import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.accountmanager.AccountManager;
@@ -16,7 +17,6 @@ import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.BackButtonOnWelcomeScreenPageTapped;
 import com.kin.ecosystem.core.bi.events.WelcomeScreenButtonTapped;
 import com.kin.ecosystem.core.bi.events.WelcomeScreenPageViewed;
-import com.kin.ecosystem.core.data.auth.AuthDataSource;
 import com.kin.ecosystem.splash.view.ISplashView;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -32,6 +32,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 	private final AccountManager accountManager;
 	private final EventLogger eventLogger;
 	private final Timer timer;
+	private @EcosystemExperience final int nextExperience;
 
 	private final Observer<Integer> accountStateObserver = new Observer<Integer>() {
 		@Override
@@ -42,7 +43,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 				cancelTimeoutTask();
 
 				if (value == CREATION_COMPLETED) {
-					navigateToMarketplace();
+					navigateToExperience();
 				} else {
 					Logger.log(new Log().withTag(TAG).text("accountStateObserver -> showTryAgainLater"));
 					showTryAgainLater();
@@ -58,10 +59,16 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 
 	public SplashPresenter(@NonNull AccountManager accountManager,
 		@NonNull EventLogger eventLogger,
-		@NonNull Timer timer) {
+		@NonNull Timer timer, Bundle extras) {
 		this.accountManager = accountManager;
 		this.eventLogger = eventLogger;
 		this.timer = timer;
+		this.nextExperience = getExperience(extras);
+	}
+
+	private int getExperience(Bundle extras) {
+		return extras != null ? extras.getInt(KEY_ECOSYSTEM_EXPERIENCE, EcosystemExperience.NONE)
+			: EcosystemExperience.NONE;
 	}
 
 	@Override
@@ -99,7 +106,7 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 				accountManager.retry();
 			}
 		} else {
-			navigateToMarketplace();
+			navigateToExperience();
 		}
 	}
 
@@ -152,11 +159,11 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 		}
 	}
 
-	private void navigateToMarketplace() {
+	private void navigateToExperience() {
 		if (accountManager.isAccountCreated() && animationEnded) {
 			if (view != null) {
-				Logger.log(new Log().withTag(TAG).text("navigateToMarketPlace"));
-				view.navigateToMarketPlace();
+				Logger.log(new Log().withTag(TAG).text("navigateToEcosystemActivity: " + nextExperience));
+				view.navigateToEcosystemActivity(nextExperience);
 			}
 		}
 	}
@@ -172,6 +179,6 @@ public class SplashPresenter extends BasePresenter<ISplashView> implements ISpla
 	@Override
 	public void onAnimationEnded() {
 		animationEnded = true;
-		navigateToMarketplace();
+		navigateToExperience();
 	}
 }
