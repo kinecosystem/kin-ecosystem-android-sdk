@@ -92,12 +92,8 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 			@Override
 			public void onFailure(KinEcosystemException exception) {
 				showToast(SOMETHING_WENT_WRONG);
-				try {
-					String errorMsg = ((ApiException) exception.getCause()).getResponseBody().getMessage();
-					eventLogger.send(EarnOrderCreationFailed.create(errorMsg, offerID));
-				} catch (ClassCastException e) {
-					eventLogger.send(EarnOrderCreationFailed.create(exception.getMessage(), offerID));
-				}
+				String errorMsg = exception.getMessage();
+				eventLogger.send(EarnOrderCreationFailed.create(errorMsg, offerID));
 				closeView();
 			}
 		});
@@ -112,6 +108,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 	private void release() {
 		if (openOrderObserver != null) {
 			orderRepository.getOpenOrder().removeObserver(openOrderObserver);
+			openOrderObserver = null;
 		}
 	}
 

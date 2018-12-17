@@ -6,14 +6,17 @@ import static com.kin.ecosystem.main.Title.MARKETPLACE_TITLE;
 import static com.kin.ecosystem.main.Title.ORDER_HISTORY_TITLE;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager.BackStackEntry;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.balance.presenter.BalancePresenter;
 import com.kin.ecosystem.balance.presenter.IBalancePresenter;
@@ -43,14 +46,13 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 
 	public static final String ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG = "ecosystem_marketplace_fragment_tag";
 	public static final String ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG = "ecosystem_order_history_fragment_tag";
-	public static final int ALPHA_255 = 255;
-	public static final int ALPHA_0 = 0;
+	public static final String MARKETPLACE_TO_ORDER_HISTORY = "marketplace_to_order_history";
 
 	private IBalancePresenter balancePresenter;
 	private IEcosystemPresenter ecosystemPresenter;
 	private IMarketplacePresenter marketplacePresenter;
 
-	private Menu menu;
+	private View actionView;
 
 	@Override
 	protected int getLayoutRes() {
@@ -91,47 +93,60 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 		});
 		ecosystemPresenter = new EcosystemPresenter(this,
 			new SettingsDataSourceImpl(new SettingsDataSourceLocal(getApplicationContext())),
-			BlockchainSourceImpl.getInstance(), this);
+			BlockchainSourceImpl.getInstance(), this, savedInstanceState, getIntent().getExtras());
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
 		ecosystemPresenter.onStart();
+		balancePresenter.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		ecosystemPresenter.onStop();
+		balancePresenter.onStop();
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		ecosystemPresenter.onSaveInstanceState(outState);
+		super.onSaveInstanceState(outState);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.kinecosystem_menu_marketplace, menu);
-		this.menu = menu;
+		setupActionView(menu);
 		ecosystemPresenter.onMenuInitialized();
 		return true;
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle item selection
-		int itemId = item.getItemId();
-		if (itemId == R.id.menu_settings) {
-			ecosystemPresenter.settingsMenuClicked();
-			return true;
-		} else {
-			return super.onOptionsItemSelected(item);
+	private void setupActionView(final Menu menu) {
+		final MenuItem settingsItem = menu.findItem(R.id.menu_settings);
+		if (settingsItem != null) {
+			actionView = MenuItemCompat.getActionView(settingsItem);
+			actionView.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					ecosystemPresenter.settingsMenuClicked();
+				}
+			});
 		}
 	}
 
 	@Override
 	public void showMenuTouchIndicator(boolean isVisible) {
-		if (menu != null) {
-			final MenuItem settingsItem = menu.findItem(R.id.menu_settings);
-			if (settingsItem != null) {
-				LayerDrawable icon = (LayerDrawable) settingsItem.getIcon();
-				Drawable touchIndicator = icon.findDrawableByLayerId(R.id.ic_info_dot);
+		if (actionView != null) {
+			ImageView infoBadge = actionView.findViewById(R.id.ic_info_dot);
+			if (infoBadge != null) {
 				if (isVisible) {
-					touchIndicator.setAlpha(ALPHA_255);
+					infoBadge.setVisibility(View.VISIBLE);
 				} else {
-					touchIndicator.setAlpha(ALPHA_0);
+					infoBadge.setVisibility(View.GONE);
 				}
 			}
 		}
@@ -153,20 +168,31 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	}
 
 	@Override
-	public void navigateToMarketplace() {
-		MarketplaceFragment marketplaceFragment = (MarketplaceFragment) getSupportFragmentManager()
-			.findFragmentByTag(ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG);
+	public void navigateToMarketplace(boolean addAnimation) {
+		MarketplaceFragment marketplaceFragment = getSavedMarketplaceFragment();
 		if (marketplaceFragment == null) {
 			marketplaceFragment = MarketplaceFragment.newInstance();
 		}
 
 		marketplacePresenter = getMarketplacePresenter(marketplaceFragment);
 
-		getSupportFragmentManager().beginTransaction()
-			.replace(R.id.fragment_frame, marketplaceFragment, ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG)
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		if (addAnimation) {
+			transaction.setCustomAnimations(
+				R.anim.kinrecovery_slide_in_left,
+				R.anim.kinecosystem_slide_out_right,
+				0,
+				0);
+		}
+		transaction.replace(R.id.fragment_frame, marketplaceFragment, ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG)
 			.commit();
 
 		setVisibleScreen(MARKETPLACE);
+	}
+
+	private MarketplaceFragment getSavedMarketplaceFragment() {
+		return (MarketplaceFragment) getSupportFragmentManager()
+			.findFragmentByTag(ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG);
 	}
 
 	private IMarketplacePresenter getMarketplacePresenter(MarketplaceFragment marketplaceFragment) {
@@ -190,9 +216,11 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 	public void navigateToOrderHistory(boolean isFirstSpendOrder) {
 		OrderHistoryFragment orderHistoryFragment = (OrderHistoryFragment) getSupportFragmentManager()
 			.findFragmentByTag(ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG);
-
+		boolean shouldAddToBackStack = true;
 		if (orderHistoryFragment == null) {
 			orderHistoryFragment = OrderHistoryFragment.newInstance();
+		} else {
+			shouldAddToBackStack = false;
 		}
 
 		new OrderHistoryPresenter(orderHistoryFragment,
@@ -201,14 +229,19 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 			EventLoggerImpl.getInstance(),
 			isFirstSpendOrder);
 
-		getSupportFragmentManager().beginTransaction()
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
 			.setCustomAnimations(
 				R.anim.kinecosystem_slide_in_right,
 				R.anim.kinecosystem_slide_out_left,
 				R.anim.kinrecovery_slide_in_left,
 				R.anim.kinecosystem_slide_out_right)
-			.replace(R.id.fragment_frame, orderHistoryFragment, ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG)
-			.addToBackStack(null).commit();
+			.replace(R.id.fragment_frame, orderHistoryFragment, ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG);
+
+		if (shouldAddToBackStack) {
+			transaction.addToBackStack(MARKETPLACE_TO_ORDER_HISTORY);
+		}
+
+		transaction.commit();
 
 		setVisibleScreen(ORDER_HISTORY);
 	}
@@ -249,17 +282,40 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 			super.onBackPressed();
 			overridePendingTransition(0, R.anim.kinecosystem_slide_out_right);
 		} else {
-			getSupportFragmentManager().popBackStackImmediate();
-			setVisibleScreen(MARKETPLACE);
+			BackStackEntry entry = getSupportFragmentManager().getBackStackEntryAt(count - 1);
+			if (entry != null && entry.getName().equals(MARKETPLACE_TO_ORDER_HISTORY)) {
+				// After pressing back from OrderHistory, should put the attrs again.
+				// This is the only fragment that should set presenter again on back.
+				MarketplaceFragment marketplaceFragment = getSavedMarketplaceFragment();
+				if (marketplaceFragment != null) {
+					if (marketplacePresenter == null) {
+						getMarketplacePresenter(marketplaceFragment);
+					} else {
+						marketplaceFragment.attachPresenter(marketplacePresenter);
+					}
+				} else {
+					navigateToMarketplace(true);
+				}
+				getSupportFragmentManager().popBackStackImmediate();
+				setVisibleScreen(MARKETPLACE);
+			}
 		}
 	}
 
 	@Override
 	protected void onDestroy() {
-		super.onDestroy();
-		ecosystemPresenter.onDetach();
+		if (marketplacePresenter != null) {
+			marketplacePresenter.onDetach();
+			marketplacePresenter = null;
+		}
+		if (ecosystemPresenter != null) {
+			ecosystemPresenter.onDetach();
+			ecosystemPresenter = null;
+		}
 		if (balancePresenter != null) {
 			balancePresenter.onDetach();
+			balancePresenter = null;
 		}
+		super.onDestroy();
 	}
 }

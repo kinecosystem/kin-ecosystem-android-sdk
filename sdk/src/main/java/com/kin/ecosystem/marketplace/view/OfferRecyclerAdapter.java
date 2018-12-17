@@ -1,6 +1,5 @@
 package com.kin.ecosystem.marketplace.view;
 
-import static com.kin.ecosystem.core.util.DeviceUtils.DensityDpi.XXHDPI;
 import static com.kin.ecosystem.core.util.StringUtil.getAmountFormatted;
 
 import android.content.Context;
@@ -15,21 +14,13 @@ import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.marketplace.view.OfferRecyclerAdapter.ViewHolder;
 
-class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
-
-    private static final float NORMAL_WIDTH_RATIO = 0.38f;
-    private static final float NORMAL_HEIGHT_RATIO = 0.25f;
-    private static final float HIGH_RES_HEIGHT_RATIO = 0.28f;
+abstract class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
 
     private static final String KIN = " Kin";
 
-    protected float getImageWidthRatio() {
-        return NORMAL_WIDTH_RATIO;
-    }
+    abstract float getImageWidthToScreenRatio();
 
-    protected float getImageHeightRatio() {
-        return DeviceUtils.isDensity(XXHDPI) ? HIGH_RES_HEIGHT_RATIO : NORMAL_HEIGHT_RATIO;
-    }
+    abstract float getImageHeightRatio();
 
     OfferRecyclerAdapter(@LayoutRes int layoutResID) {
         super(layoutResID);
@@ -60,8 +51,8 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
 
         @Override
         protected void init(Context context) {
-            imageWidth = (int) (DeviceUtils.getScreenWidth() * getImageWidthRatio());
-            imageHeight = (int) (DeviceUtils.getScreenWidth() * getImageHeightRatio());
+            imageWidth = (int) (DeviceUtils.getScreenWidth() * getImageWidthToScreenRatio());
+            imageHeight = (int) (imageWidth * getImageHeightRatio());
         }
 
         @Override

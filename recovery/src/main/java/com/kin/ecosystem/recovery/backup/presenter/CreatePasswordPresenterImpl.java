@@ -1,46 +1,39 @@
 package com.kin.ecosystem.recovery.backup.presenter;
 
-import static com.kin.ecosystem.recovery.backup.view.BackupNextStepListener.KEY_ACCOUNT_KEY;
-import static com.kin.ecosystem.recovery.backup.view.BackupNextStepListener.STEP_CLOSE;
-import static com.kin.ecosystem.recovery.backup.view.BackupNextStepListener.STEP_SAVE_AND_SHARE;
-import static com.kin.ecosystem.recovery.events.EventDispatcherImpl.BACKUP_CREATE_PASSWORD_PAGE_VIEWED;
 
-import android.os.Bundle;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_CREATE_PASSWORD_PAGE_NEXT_TAPPED;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_CREATE_PASSWORD_PAGE_VIEWED;
+
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
-import com.kin.ecosystem.recovery.backup.view.BackupNextStepListener;
+import com.kin.ecosystem.recovery.backup.view.BackupNavigator;
 import com.kin.ecosystem.recovery.backup.view.CreatePasswordView;
 import com.kin.ecosystem.recovery.base.BasePresenterImpl;
 import com.kin.ecosystem.recovery.events.CallbackManager;
-import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
 import com.kin.ecosystem.recovery.exception.BackupException;
 
 public class CreatePasswordPresenterImpl extends BasePresenterImpl<CreatePasswordView> implements
 	CreatePasswordPresenter {
 
-	private final BackupNextStepListener backupNextStepListener;
+	private final BackupNavigator backupNavigator;
 	private final KeyStoreProvider keyStoreProvider;
 	private final CallbackManager callbackManager;
+
 	private boolean isPasswordRulesOK = false;
 	private boolean isPasswordsMatches = false;
 	private boolean isIUnderstandChecked = false;
 
-	public CreatePasswordPresenterImpl(@NonNull final CallbackManager callbackManager, @NonNull final BackupNextStepListener backupNextStepListener, @NonNull final
-	KeyStoreProvider keyStoreProvider) {
-		this.callbackManager = callbackManager;
-		this.backupNextStepListener = backupNextStepListener;
+	public CreatePasswordPresenterImpl(@NonNull final CallbackManager callbackManager,
+		@NonNull final BackupNavigator backupNavigator, @NonNull final KeyStoreProvider keyStoreProvider) {
+		this.backupNavigator = backupNavigator;
 		this.keyStoreProvider = keyStoreProvider;
-	}
-
-	@Override
-	public void onAttach(CreatePasswordView view) {
-		super.onAttach(view);
-		callbackManager.sendBackupEvents(BACKUP_CREATE_PASSWORD_PAGE_VIEWED);
+		this.callbackManager = callbackManager;
+		this.callbackManager.sendBackupEvent(BACKUP_CREATE_PASSWORD_PAGE_VIEWED);
 	}
 
 	@Override
 	public void onBackClicked() {
-		backupNextStepListener.setStep(STEP_CLOSE, null);
+		backupNavigator.closeFlow();
 	}
 
 	@Override
@@ -53,7 +46,7 @@ public class CreatePasswordPresenterImpl extends BasePresenterImpl<CreatePasswor
 			checkConfirmPassword(password, confirmPassword);
 		} else {
 			isPasswordRulesOK = false;
-			if (password.length() == 0) {
+			if (password.isEmpty()) {
 				if (view != null) {
 					view.resetEnterPasswordField();
 					view.resetConfirmPasswordField();
@@ -69,7 +62,7 @@ public class CreatePasswordPresenterImpl extends BasePresenterImpl<CreatePasswor
 	}
 
 	private void checkConfirmPassword(String password, String confirmPassword) {
-		if (password.length() > 0 && confirmPassword.length() > 0) {
+		if (!password.isEmpty() && !confirmPassword.isEmpty()) {
 			if (password.equals(confirmPassword)) {
 				isPasswordsMatches = true;
 				if (view != null) {
@@ -103,15 +96,14 @@ public class CreatePasswordPresenterImpl extends BasePresenterImpl<CreatePasswor
 
 	@Override
 	public void nextButtonClicked(String password) {
+		callbackManager.sendBackupEvent(BACKUP_CREATE_PASSWORD_PAGE_NEXT_TAPPED);
 		exportAccount(password);
 	}
 
 	private void exportAccount(String password) {
 		try {
-			final String key = keyStoreProvider.exportAccount(password);
-			final Bundle data = new Bundle();
-			data.putString(KEY_ACCOUNT_KEY, key);
-			backupNextStepListener.setStep(STEP_SAVE_AND_SHARE, data);
+			final String accountKey = keyStoreProvider.exportAccount(password);
+			backupNavigator.navigateToSaveAndSharePage(accountKey);
 		} catch (BackupException e) {
 			if (view != null) {
 				view.showBackupFailed();

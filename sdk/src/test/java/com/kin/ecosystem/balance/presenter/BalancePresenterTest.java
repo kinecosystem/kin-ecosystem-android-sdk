@@ -9,6 +9,7 @@ import static com.kin.ecosystem.balance.presenter.BalancePresenter.SPEND;
 import static com.kin.ecosystem.main.ScreenId.MARKETPLACE;
 import static com.kin.ecosystem.main.ScreenId.ORDER_HISTORY;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.inOrder;
@@ -65,6 +66,9 @@ public class BalancePresenterTest extends BaseTestClass {
 	private ArgumentCaptor<Observer<Balance>> balanceObserverCaptor;
 
 	@Captor
+	private ArgumentCaptor<Boolean> sseCaptor;
+
+	@Captor
 	private ArgumentCaptor<Observer<Order>> orderObserverCaptor;
 
 	@Mock
@@ -85,18 +89,22 @@ public class BalancePresenterTest extends BaseTestClass {
 
 		balancePresenter.onAttach(balanceView);
 		verify(balanceView).setWelcomeSubtitle();
-		verify(blockchainSource).addBalanceObserverAndStartListen(balanceObserverCaptor.capture());
+
+		balancePresenter.onStart();
+		verify(blockchainSource).addBalanceObserver(balanceObserverCaptor.capture(), sseCaptor.capture());
 		verify(orderRepository).addOrderObserver(orderObserverCaptor.capture());
+		assertTrue(sseCaptor.getValue());
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		balancePresenter.onDetach();
-		verify(blockchainSource).removeBalanceObserver(balanceObserverCaptor.getValue());
+		balancePresenter.onStop();
+		verify(blockchainSource).removeBalanceObserver(balanceObserverCaptor.getValue(), true);
 		verify(orderRepository).removeOrderObserver(orderObserverCaptor.getValue());
+
+		balancePresenter.onDetach();
 		assertNull(balancePresenter.getView());
 	}
-
 
 	@Test
 	public void test_Balance_Clicked() throws Exception {

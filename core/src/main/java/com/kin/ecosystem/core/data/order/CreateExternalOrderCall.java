@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
+import com.kin.ecosystem.common.exception.ServiceException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.SpendOrderCompletionSubmitted;
@@ -16,6 +17,7 @@ import com.kin.ecosystem.core.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
+import com.kin.ecosystem.core.network.model.Order.Status;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
 import java.math.BigDecimal;
@@ -199,13 +201,29 @@ class CreateExternalOrderCall extends Thread {
 		orderRepository.getOrder(orderID, new KinCallback<Order>() {
 			@Override
 			public void onResponse(final Order order) {
-				runOnMainThread(new Runnable() {
-					@Override
-					public void run() {
-						externalOrderCallbacks
-							.onOrderConfirmed(((JWTBodyPaymentConfirmationResult) order.getResult()).getJwt(), order);
-					}
-				});
+				switch (order.getStatus()) {
+					case COMPLETED:
+						runOnMainThread(new Runnable() {
+							@Override
+							public void run() {
+								externalOrderCallbacks
+									.onOrderConfirmed(((JWTBodyPaymentConfirmationResult) order.getResult()).getJwt(),
+										order);
+							}
+						});
+						break;
+					case FAILED:
+						String errorMessage = "External Order Failed";
+						if (order.getError() != null) {
+							errorMessage = order.getError().getMessage();
+						}
+						ServiceException serviceException = new ServiceException(ServiceException.ORDER_FAILED,
+							errorMessage, null);
+						onFailure(serviceException);
+						break;
+					case DELAYED:
+						return;// if delayed there will be additional retries will eventually either call onResponse or onFailure
+				}
 			}
 
 			@Override

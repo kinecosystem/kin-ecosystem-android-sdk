@@ -1,18 +1,34 @@
 package com.kin.ecosystem.recovery.events;
 
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_COMPLETED_PAGE_VIEWED;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_CREATE_PASSWORD_PAGE_BACK_TAPPED;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_CREATE_PASSWORD_PAGE_NEXT_TAPPED;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_CREATE_PASSWORD_PAGE_VIEWED;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_QR_CODE_PAGE_VIEWED;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_QR_PAGE_BACK_TAPPED;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_QR_PAGE_QR_SAVED_TAPPED;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_QR_PAGE_SEND_QR_TAPPED;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_WELCOME_PAGE_BACK_TAPPED;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_WELCOME_PAGE_START_TAPPED;
+import static com.kin.ecosystem.recovery.events.BackupEventCode.BACKUP_WELCOME_PAGE_VIEWED;
 import static com.kin.ecosystem.recovery.events.BroadcastManagerImpl.ACTION_EVENTS_BACKUP;
 import static com.kin.ecosystem.recovery.events.BroadcastManagerImpl.ACTION_EVENTS_RESTORE;
+import static com.kin.ecosystem.recovery.events.RestoreEventCode.RESTORE_ARE_YOUR_SURE_CANCEL_TAPPED;
+import static com.kin.ecosystem.recovery.events.RestoreEventCode.RESTORE_ARE_YOUR_SURE_OK_TAPPED;
+import static com.kin.ecosystem.recovery.events.RestoreEventCode.RESTORE_PASSWORD_DONE_TAPPED;
+import static com.kin.ecosystem.recovery.events.RestoreEventCode.RESTORE_PASSWORD_ENTRY_PAGE_BACK_TAPPED;
+import static com.kin.ecosystem.recovery.events.RestoreEventCode.RESTORE_PASSWORD_ENTRY_PAGE_VIEWED;
+import static com.kin.ecosystem.recovery.events.RestoreEventCode.RESTORE_UPLOAD_QR_CODE_BACK_TAPPED;
+import static com.kin.ecosystem.recovery.events.RestoreEventCode.RESTORE_UPLOAD_QR_CODE_BUTTON_TAPPED;
+import static com.kin.ecosystem.recovery.events.RestoreEventCode.RESTORE_UPLOAD_QR_CODE_PAGE_VIEWED;
 
 import android.content.Intent;
-import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.recovery.BackupEvents;
 import com.kin.ecosystem.recovery.RestoreEvents;
 import com.kin.ecosystem.recovery.events.BroadcastManager.Listener;
 import com.kin.ecosystem.recovery.events.BroadcastManagerImpl.ActionName;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 public class EventDispatcherImpl implements EventDispatcher {
 
@@ -21,38 +37,8 @@ public class EventDispatcherImpl implements EventDispatcher {
 	@Nullable
 	private RestoreEvents restoreEvents;
 
-	@NonNull
-	private final BroadcastManager broadcastManager;
+	private BroadcastManager broadcastManager;
 	private Listener broadcastListener;
-
-	//Backup Events Code
-	public static final int BACKUP_WELCOME_PAGE_VIEWED = 70000;
-	public static final int BACKUP_CREATE_PASSWORD_PAGE_VIEWED = 70001;
-	public static final int BACKUP_QR_CODE_PAGE_VIEWED = 70002;
-	public static final int BACKUP_COMPLETED_PAGE_VIEWED = 70003;
-
-	@IntDef({BACKUP_WELCOME_PAGE_VIEWED, BACKUP_CREATE_PASSWORD_PAGE_VIEWED, BACKUP_QR_CODE_PAGE_VIEWED,
-		BACKUP_COMPLETED_PAGE_VIEWED})
-	@Retention(RetentionPolicy.SOURCE)
-	@interface BackupEventCode {
-
-	}
-
-	//Restore Events Code
-	public static final int RESTORE_UPLOAD_QR_CODE_PAGE_VIEWED = 80000;
-	public static final int RESTORE_UPLOAD_QR_CODE_BUTTON_TAPPED = 80001;
-	public static final int RESTORE_ARE_YOUR_SURE_CANCEL_TAPPED = 80002;
-	public static final int RESTORE_PASSWORD_ENTRY_PAGE_VIEWED = 80003;
-	public static final int RESTORE_PASSWORD_DONE_TAPPED = 80004;
-
-
-	@IntDef({RESTORE_UPLOAD_QR_CODE_PAGE_VIEWED, RESTORE_UPLOAD_QR_CODE_BUTTON_TAPPED,
-		RESTORE_ARE_YOUR_SURE_CANCEL_TAPPED,
-		RESTORE_PASSWORD_ENTRY_PAGE_VIEWED, RESTORE_PASSWORD_DONE_TAPPED})
-	@Retention(RetentionPolicy.SOURCE)
-	@interface RestoreEventCode {
-
-	}
 
 	public EventDispatcherImpl(@NonNull final BroadcastManager broadcastManager) {
 		this.broadcastManager = broadcastManager;
@@ -76,34 +62,50 @@ public class EventDispatcherImpl implements EventDispatcher {
 
 	@Override
 	public void sendEvent(@EventType final int eventType, final int eventID) {
-		Intent data = new Intent();
-		data.putExtra(EXTRA_KEY_EVENT_TYPE, eventType);
-		data.putExtra(EXTRA_KEY_EVENT_ID, eventID);
-		broadcastManager.sendEvent(data, eventType == BACKUP_EVENTS ? ACTION_EVENTS_BACKUP : ACTION_EVENTS_RESTORE);
+		if (broadcastManager != null) {
+			Intent data = new Intent();
+			data.putExtra(EXTRA_KEY_EVENT_TYPE, eventType);
+			data.putExtra(EXTRA_KEY_EVENT_ID, eventID);
+			broadcastManager.sendEvent(data, eventType == BACKUP_EVENTS ? ACTION_EVENTS_BACKUP : ACTION_EVENTS_RESTORE);
+		}
 	}
 
 	@Override
 	public void sendCallback(int resultCode, Intent data) {
-		broadcastManager.sendCallback(resultCode, data);
+		if (broadcastManager != null) {
+			broadcastManager.sendCallback(resultCode, data);
+		}
 	}
 
 	@Override
 	public void unregister() {
-		if (broadcastListener != null) {
+		if (broadcastListener != null && broadcastManager != null) {
 			broadcastManager.unregister();
 		}
 	}
 
-	private void registerBroadcastListener(@ActionName final String actionName) {
-		if (broadcastListener == null) {
-			broadcastListener = new Listener() {
-				@Override
-				public void onReceive(Intent data) {
-					parseData(data);
-				}
-			};
+	@Override
+	public void release() {
+		// Safe unregister
+		unregister();
+		if (broadcastManager != null) {
+			broadcastManager.release();
+			broadcastManager = null;
 		}
-		broadcastManager.register(broadcastListener, actionName);
+	}
+
+	private void registerBroadcastListener(@ActionName final String actionName) {
+		if (broadcastManager != null) {
+			if (broadcastListener == null) {
+				broadcastListener = new Listener() {
+					@Override
+					public void onReceive(Intent data) {
+						parseData(data);
+					}
+				};
+			}
+			broadcastManager.register(broadcastListener, actionName);
+		}
 	}
 
 	private void parseData(Intent data) {
@@ -124,11 +126,32 @@ public class EventDispatcherImpl implements EventDispatcher {
 				case BACKUP_WELCOME_PAGE_VIEWED:
 					backupEvents.onBackupWelcomePageViewed();
 					break;
+				case BACKUP_WELCOME_PAGE_BACK_TAPPED:
+					backupEvents.onBackupWelcomePageBackButtonTapped();
+					break;
+				case BACKUP_WELCOME_PAGE_START_TAPPED:
+					backupEvents.onBackupStartButtonTapped();
+					break;
 				case BACKUP_CREATE_PASSWORD_PAGE_VIEWED:
 					backupEvents.onBackupCreatePasswordPageViewed();
 					break;
+				case BACKUP_CREATE_PASSWORD_PAGE_BACK_TAPPED:
+					backupEvents.onBackupCreatePasswordBackButtonTapped();
+					break;
+				case BACKUP_CREATE_PASSWORD_PAGE_NEXT_TAPPED:
+					backupEvents.onBackupCreatePasswordNextButtonTapped();
+					break;
 				case BACKUP_QR_CODE_PAGE_VIEWED:
 					backupEvents.onBackupQrCodePageViewed();
+					break;
+				case BACKUP_QR_PAGE_BACK_TAPPED:
+					backupEvents.onBackupQrCodeBackButtonTapped();
+					break;
+				case BACKUP_QR_PAGE_QR_SAVED_TAPPED:
+					backupEvents.onBackupQrCodeMyQrCodeButtonTapped();
+					break;
+				case BACKUP_QR_PAGE_SEND_QR_TAPPED:
+					backupEvents.onBackupQrCodeSendButtonTapped();
 					break;
 				case BACKUP_COMPLETED_PAGE_VIEWED:
 					backupEvents.onBackupCompletedPageViewed();
@@ -146,6 +169,9 @@ public class EventDispatcherImpl implements EventDispatcher {
 				case RESTORE_UPLOAD_QR_CODE_BUTTON_TAPPED:
 					restoreEvents.onRestoreUploadQrCodeButtonTapped();
 					break;
+				case RESTORE_UPLOAD_QR_CODE_BACK_TAPPED:
+					restoreEvents.onRestoreUploadQrCodeBackButtonTapped();
+					break;
 				case RESTORE_ARE_YOUR_SURE_CANCEL_TAPPED:
 					restoreEvents.onRestoreAreYouSureCancelButtonTapped();
 					break;
@@ -155,6 +181,13 @@ public class EventDispatcherImpl implements EventDispatcher {
 				case RESTORE_PASSWORD_DONE_TAPPED:
 					restoreEvents.onRestorePasswordDoneButtonTapped();
 					break;
+				case RESTORE_ARE_YOUR_SURE_OK_TAPPED:
+					restoreEvents.onRestoreAreYouSureOkButtonTapped();
+					break;
+				case RESTORE_PASSWORD_ENTRY_PAGE_BACK_TAPPED:
+					restoreEvents.onRestorePasswordEntryBackButtonTapped();
+					break;
+
 			}
 		}
 	}

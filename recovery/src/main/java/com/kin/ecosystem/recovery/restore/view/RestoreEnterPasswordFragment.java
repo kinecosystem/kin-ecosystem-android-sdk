@@ -1,6 +1,8 @@
 package com.kin.ecosystem.recovery.restore.view;
 
 
+import static com.kin.ecosystem.recovery.restore.presenter.RestorePresenterImpl.KEY_ACCOUNT_KEY;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +15,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import com.kin.ecosystem.recovery.BackupManager;
 import com.kin.ecosystem.recovery.R;
 import com.kin.ecosystem.recovery.backup.view.TextWatcherAdapter;
 import com.kin.ecosystem.recovery.backup.view.TextWatcherAdapter.TextChangeListener;
@@ -28,10 +31,10 @@ import com.kin.ecosystem.recovery.widget.PasswordEditText;
 
 public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnterPasswordView {
 
-	private static final String BUNDLE_KEY_KEYSTORE = "BUNDLE_KEY_KEYSTORE";
+	public static final int VIEW_MIN_DELAY_MILLIS = 50;
+
 	private RestoreEnterPasswordPresenter presenter;
 	private KeyboardHandler keyboardHandler;
-	private View root;
 	private Button doneBtn;
 	private TextView contentText;
 	private PasswordEditText password;
@@ -42,13 +45,13 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 		fragment.setKeyboardHandler(keyboardHandler);
 		if (keystoreData != null) {
 			Bundle bundle = new Bundle();
-			bundle.putString(BUNDLE_KEY_KEYSTORE, keystoreData);
+			bundle.putString(KEY_ACCOUNT_KEY, keystoreData);
 			fragment.setArguments(bundle);
 		}
 		return fragment;
 	}
 
-	private void setKeyboardHandler(@NonNull KeyboardHandler keyboardHandler) {
+	public void setKeyboardHandler(@NonNull KeyboardHandler keyboardHandler) {
 		this.keyboardHandler = keyboardHandler;
 	}
 
@@ -65,6 +68,12 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 		return root;
 	}
 
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		presenter.onSaveInstanceState(outState);
+		super.onSaveInstanceState(outState);
+	}
+
 	@NonNull
 	private String extractKeyStoreData(@Nullable Bundle savedInstanceState) {
 		String keystoreData;
@@ -72,7 +81,7 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 		if (bundle == null) {
 			throw new IllegalStateException("Bundle is null, can't extract required keystore data.");
 		}
-		keystoreData = bundle.getString(BUNDLE_KEY_KEYSTORE);
+		keystoreData = bundle.getString(KEY_ACCOUNT_KEY);
 		if (keystoreData == null) {
 			throw new IllegalStateException("Can't find keystore data inside Bundle.");
 		}
@@ -81,7 +90,8 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 
 	private void injectPresenter(String keystoreData) {
 		presenter = new RestoreEnterPasswordPresenterImpl(
-			new CallbackManager(new EventDispatcherImpl(new BroadcastManagerImpl(getActivity()))), keystoreData);
+			new CallbackManager(new EventDispatcherImpl(new BroadcastManagerImpl(getActivity()))), keystoreData,
+			BackupManager.getKeyStoreProvider());
 		presenter.onAttach(this, ((RestoreActivity) getActivity()).getPresenter());
 	}
 
@@ -99,7 +109,6 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 	}
 
 	private void initViews(View root) {
-		this.root = root;
 		password = root.findViewById(R.id.kinrecovery_password_edit);
 		contentText = root.findViewById(R.id.kinrecovery_password_recovery_text);
 		doneBtn = root.findViewById(R.id.kinrecovery_password_recovery_btn);
@@ -116,7 +125,12 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 				presenter.onPasswordChanged(editable.toString());
 			}
 		}));
-		openKeyboard(password);
+		password.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				openKeyboard(password);
+			}
+		}, VIEW_MIN_DELAY_MILLIS);
 	}
 
 	private void openKeyboard(View view) {

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,13 +19,13 @@ import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter;
 import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
-import com.kin.ecosystem.marketplace.presenter.MarketplacePresenter;
 import com.kin.ecosystem.poll.view.PollWebViewActivity;
 import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
 import java.util.List;
 
 
 public class MarketplaceFragment extends Fragment implements IMarketplaceView {
+
 
 	public static MarketplaceFragment newInstance() {
 		return new MarketplaceFragment();
@@ -45,22 +44,31 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 		@Nullable Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.kinecosystem_fragment_marketplce, container, false);
 		initViews(root);
+		marketplacePresenter.onAttach(this);
 		return root;
 	}
+
 	@Override
 	public void onStart() {
 		super.onStart();
-		marketplacePresenter.onAttach(this);
+		marketplacePresenter.onStart();
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-		marketplacePresenter.onDetach();
+		marketplacePresenter.onStop();
 	}
 
 	@Override
-	public void attachPresenter(MarketplacePresenter presenter) {
+	public void onDestroyView() {
+		earnRecyclerAdapter = null;
+		spendRecyclerAdapter = null;
+		super.onDestroyView();
+	}
+
+	@Override
+	public void attachPresenter(IMarketplacePresenter presenter) {
 		marketplacePresenter = presenter;
 	}
 
@@ -75,7 +83,7 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 
 		//Spend Recycler
 		RecyclerView spendRecycler = root.findViewById(R.id.spend_recycler);
-		spendRecycler.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+		spendRecycler.setLayoutManager(new HorizontalLayoutManager(getContext()));
 		spendRecycler.addItemDecoration(itemDecoration);
 		spendRecyclerAdapter = new SpendRecyclerAdapter();
 		spendRecyclerAdapter.bindToRecyclerView(spendRecycler);
@@ -85,11 +93,10 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 				marketplacePresenter.onItemClicked(position, OfferType.SPEND);
 			}
 		});
-		spendRecyclerAdapter.setEmptyView(new OffersEmptyView(getContext()));
 
 		//Earn Recycler
 		RecyclerView earnRecycler = root.findViewById(R.id.earn_recycler);
-		earnRecycler.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+		earnRecycler.setLayoutManager(new HorizontalLayoutManager(getContext()));
 		earnRecycler.addItemDecoration(itemDecoration);
 		earnRecyclerAdapter = new EarnRecyclerAdapter();
 		earnRecyclerAdapter.bindToRecyclerView(earnRecycler);
@@ -99,7 +106,6 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 				marketplacePresenter.onItemClicked(position, OfferType.EARN);
 			}
 		});
-		earnRecyclerAdapter.setEmptyView(new OffersEmptyView(getContext()));
 
 	}
 
@@ -112,6 +118,12 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 	@Override
 	public void setEarnList(List<Offer> earnList) {
 		earnRecyclerAdapter.setNewData(earnList);
+	}
+
+	@Override
+	public void setupEmptyItemView() {
+		spendRecyclerAdapter.setEmptyView(new OffersEmptyView(getContext()));
+		earnRecyclerAdapter.setEmptyView(new OffersEmptyView(getContext()));
 	}
 
 	@Override
@@ -151,22 +163,32 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 
 	@Override
 	public void notifyEarnItemRemoved(int index) {
-		earnRecyclerAdapter.itemRemoved(index);
+		earnRecyclerAdapter.notifyItemRemoved(index);
 	}
 
 	@Override
 	public void notifyEarnItemInserted(int index) {
-		earnRecyclerAdapter.itemInserted(index);
+		earnRecyclerAdapter.notifyItemInserted(index);
 	}
 
 	@Override
 	public void notifySpendItemRemoved(int index) {
-		spendRecyclerAdapter.itemRemoved(index);
+		spendRecyclerAdapter.notifyItemRemoved(index);
 	}
 
 	@Override
 	public void notifySpendItemInserted(int index) {
-		spendRecyclerAdapter.itemInserted(index);
+		spendRecyclerAdapter.notifyItemInserted(index);
+	}
+
+	@Override
+	public void notifySpendItemRangRemoved(int fromIndex, int size) {
+		spendRecyclerAdapter.notifyItemRangeRemoved(fromIndex, size);
+	}
+
+	@Override
+	public void notifyEarnItemRangRemoved(int fromIndex, int size) {
+		earnRecyclerAdapter.notifyItemRangeRemoved(fromIndex, size);
 	}
 
 	@Override

@@ -72,6 +72,16 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 		this.view.attachPresenter(this);
 	}
 
+	@Override
+	public void onStart() {
+		addObservers();
+	}
+
+	@Override
+	public void onStop() {
+		removeObservers();
+	}
+
 	private void createBalanceObserver() {
 		balanceObserver = new Observer<Balance>() {
 			@Override
@@ -167,7 +177,13 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 	public void onAttach(IBalanceView view) {
 		super.onAttach(view);
 		showWelcomeToKin();
-		addObservers();
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		balanceObserver = null;
+		orderObserver = null;
 	}
 
 	private void showWelcomeToKin() {
@@ -178,18 +194,12 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 
 	private void addObservers() {
 		orderRepository.addOrderObserver(orderObserver);
-		blockchainSource.addBalanceObserverAndStartListen(balanceObserver);
-	}
-
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		removeObservers();
+		blockchainSource.addBalanceObserver(balanceObserver, true);
 	}
 
 	private void removeObservers() {
 		orderRepository.removeOrderObserver(orderObserver);
-		blockchainSource.removeBalanceObserver(balanceObserver);
+		blockchainSource.removeBalanceObserver(balanceObserver, true);
 	}
 
 	@Override

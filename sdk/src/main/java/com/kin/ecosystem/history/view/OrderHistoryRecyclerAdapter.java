@@ -81,7 +81,7 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
         return new ViewHolder(view);
     }
 
-    class ViewHolder extends AbstractBaseViewHolder<Order> {
+	class ViewHolder extends AbstractBaseViewHolder<Order> {
 
         private static final String PLUS_SIGN = "+";
         private static final String MINUS_SIGN = "-";
@@ -126,7 +126,10 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
         }
 
         private void setSubtitle(Order item) {
-            StringBuilder subTitle = new StringBuilder(item.getDescription());
+            StringBuilder subTitle = new StringBuilder();
+            if (!TextUtils.isEmpty(item.getDescription())) {
+                subTitle.append(item.getDescription());
+            }
             String dateString = item.getCompletionDate();
             if (dateString != null && !TextUtils.isEmpty(dateString)) {
                 dateString = getDateFormatted(dateString);

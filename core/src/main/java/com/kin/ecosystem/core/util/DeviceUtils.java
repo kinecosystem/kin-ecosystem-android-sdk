@@ -43,7 +43,7 @@ public class DeviceUtils {
         int dpi = displayMetrics.densityDpi;
         if (dpi <= DENSITY_HIGH) {
             densityDpi = HDPI;
-        } else if (dpi >= DENSITY_XHIGH && dpi <= DENSITY_XXHIGH) {
+        } else if (dpi >= DENSITY_XHIGH && dpi < DENSITY_XXHIGH) {
             densityDpi = XHDPI;
         } else {
             densityDpi = XXHDPI;

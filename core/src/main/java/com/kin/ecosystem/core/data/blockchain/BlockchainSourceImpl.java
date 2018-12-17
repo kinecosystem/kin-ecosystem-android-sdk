@@ -160,8 +160,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private void initBalance() {
 		balance.postValue(getBalance());
-		getBalance(new KinCallbackAdapter<Balance>() {
-		});
+		getBalance(null);
 	}
 
 	@Override
@@ -203,12 +202,25 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		});
 	}
 
+	@Override
+	public void reconnectBalanceConnection() {
+		synchronized (balanceObserversLock) {
+			if (balanceObserversCount > 0) {
+				if(balanceRegistration != null) {
+					balanceRegistration.remove();
+				}
+				startBalanceListener();
+			}
+		}
+	}
+
 	@VisibleForTesting
 	void setBalance(final kin.core.Balance balanceObj) {
 		Balance balanceTemp = balance.getValue();
 		// if the values are not equals so we need to update,
 		// no need to update for equal values.
 		if (balanceTemp.getAmount().compareTo(balanceObj.value()) != 0) {
+			eventLogger.send(KinBalanceUpdated.create(balanceTemp.getAmount().doubleValue()));
 			Logger.log(new Log().withTag(TAG).text("setBalance: Balance changed, should get update"));
 			balanceTemp.setAmount(balanceObj.value());
 			balance.postValue(balanceTemp);
@@ -217,24 +229,22 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
-	public void addBalanceObserver(@NonNull Observer<Balance> observer) {
+	public void addBalanceObserver(@NonNull Observer<Balance> observer, boolean startSSE) {
 		balance.addObserver(observer);
 		observer.onChanged(balance.getValue());
+
+		if (startSSE) {
+			incrementBalanceSSECount();
+		}
 	}
 
-	@Override
-	public void addBalanceObserverAndStartListen(@NonNull Observer<Balance> observer) {
-		addBalanceObserver(observer);
-		Logger.log(new Log().withTag(TAG).put("addBalanceObserverAndStartListen count", balanceObserversCount));
-		incrementBalanceCount();
-	}
-
-	private void incrementBalanceCount() {
+	private void incrementBalanceSSECount() {
 		synchronized (balanceObserversLock) {
 			if (balanceObserversCount == 0) {
 				startBalanceListener();
 			}
 			balanceObserversCount++;
+			Logger.log(new Log().withTag(TAG).put("incrementBalanceSSECount count", balanceObserversCount));
 		}
 	}
 
@@ -244,37 +254,31 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			.addBalanceListener(new EventListener<kin.core.Balance>() {
 				@Override
 				public void onEvent(kin.core.Balance data) {
-					final double prevBalance = balance.getValue().getAmount().doubleValue();
 					setBalance(data);
-					eventLogger.send(KinBalanceUpdated.create(prevBalance));
 				}
 			});
 	}
 
 	@Override
-	public void removeBalanceObserver(@NonNull Observer<Balance> observer) {
+	public void removeBalanceObserver(@NonNull Observer<Balance> observer, boolean stopSSE) {
 		Logger.log(new Log().withTag(TAG).text("removeBalanceObserver"));
 		balance.removeObserver(observer);
+		if (stopSSE) {
+			decrementBalanceSSECount();
+		}
 	}
 
-
-	public void removeBalanceObserverAndStopListen(@NonNull Observer<Balance> observer) {
-		removeBalanceObserver(observer);
-		decrementBalanceCount();
-	}
-
-	private void decrementBalanceCount() {
+	private void decrementBalanceSSECount() {
 		synchronized (balanceObserversLock) {
 			if (balanceObserversCount > 0) {
 				balanceObserversCount--;
 			}
+			Logger.log(new Log().withTag(TAG).put("decrementBalanceSSECount: count", balanceObserversCount));
 
 			if (balanceObserversCount == 0) {
 				removeRegistration(balanceRegistration);
-				Logger.log(new Log().withTag(TAG).text("decrementBalanceCount: removeRegistration"));
 			}
 		}
-		Logger.log(new Log().withTag(TAG).put("decrementBalanceCount: count", balanceObserversCount));
 	}
 
 
@@ -321,16 +325,9 @@ public class BlockchainSourceImpl implements BlockchainSource {
 						completedPayment.postValue(PaymentConverter.toPayment(data, orderID, accountPublicAddress));
 						Logger.log(new Log().withTag(TAG).put("completedPayment order id", orderID));
 					}
-					// UpdateBalance if there is no balance sse open connection.
-					if (balanceObserversCount == 0) {
-						final double prevBalance = balance.getValue().getAmount().doubleValue();
-						getBalance(new KinCallbackAdapter<Balance>() {
-							@Override
-							public void onResponse(Balance response) {
-								eventLogger.send(KinBalanceUpdated.create(prevBalance));
-							}
-						});
-					}
+
+					// UpdateBalance
+					getBalance(null);
 				}
 			});
 	}
@@ -377,9 +374,13 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	public void updateActiveAccount(int accountIndex) throws BlockchainException {
 		local.setAccountIndex(accountIndex);
 		createKinAccountIfNeeded();
-
-		balanceRegistration.remove();
-		startBalanceListener();
+		
+		synchronized (balanceObserversLock) {
+			removeRegistration(balanceRegistration);
+			if (balanceObserversCount > 0) {
+				startBalanceListener();
+			}
+		}
 		//trigger balance update
 		getBalance(null);
 	}
@@ -397,6 +398,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	private void removeRegistration(ListenerRegistration listenerRegistration) {
+		Logger.log(new Log().withTag(TAG).text("removeRegistration"));
 		if (listenerRegistration != null) {
 			listenerRegistration.remove();
 		}
