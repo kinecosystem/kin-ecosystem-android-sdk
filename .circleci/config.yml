@@ -18,7 +18,7 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}
+          - v1-dependencies-jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}-{{ checksum  "core/build.gradle" }}-{{ checksum  "sdk/build.gradle" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
@@ -29,12 +29,12 @@ jobs:
       - save_cache:
           paths:
             - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}
+          key: v1-dependencies-jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}-{{ checksum  "core/build.gradle" }}-{{ checksum  "sdk/build.gradle" }}
 
       # run tests!
       - run:
           name: Build And Test
-          command: ./gradlew assemble -Pandroid.buildOnlyTargetAbi=false -Pcircleci test
+          command: ./gradlew assemble test
       # Store APK
       - store_artifacts:
                 path: app/build/outputs/apk/
