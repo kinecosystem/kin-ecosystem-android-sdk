@@ -20,6 +20,7 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.ecosystem.kin.app.model.SignInRepo;
+import com.kin.ecosystem.EcosystemExperience;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
@@ -57,10 +58,11 @@ public class MainActivity extends AppCompatActivity {
 
 	private String userID;
 	private String publicAddress;
+	private String spendOfferID = "";
 
 
 	private int getRandomID() {
-		return new Random().nextInt((9999 - 1) + 1) + 1;
+		return new Random().nextInt((999999 - 1) + 1) + 1;
 	}
 
 	private NativeOffer nativeOffer;
@@ -159,13 +161,27 @@ public class MainActivity extends AppCompatActivity {
 		findViewById(R.id.launch_marketplace).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				openKinMarketplace();
+				launchExperience(EcosystemExperience.MARKETPLACE);
+			}
+		});
+		findViewById(R.id.launch_orderHistory).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				launchExperience(EcosystemExperience.ORDER_HISTORY);
 			}
 		});
 		((TextView) findViewById(R.id.sample_app_version))
 			.setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
 		addNativeOffer();
 		addNativeOfferClickedObserver();
+	}
+
+	private void launchExperience(@EcosystemExperience final int experience) {
+		try {
+			Kin.launchEcosystem(MainActivity.this, experience);
+		} catch (ClientException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void addNativeOffer() {
@@ -370,16 +386,9 @@ public class MainActivity extends AppCompatActivity {
 		balanceView.setText(getString(R.string.get_balance_d, balanceValue));
 	}
 
-	private void openKinMarketplace() {
-		try {
-			Kin.launchMarketplace(MainActivity.this);
-		} catch (ClientException e) {
-			e.printStackTrace();
-		}
-	}
-
 	private void createNativeSpendOffer() {
-		String offerJwt = JwtUtil.generateSpendOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID);
+		spendOfferID = String.valueOf(getRandomID());
+		String offerJwt = JwtUtil.generateSpendOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID, spendOfferID);
 		Log.d(TAG, "createNativeSpendOffer: " + offerJwt);
 		try {
 			Kin.purchase(offerJwt, getNativeSpendOrderConfirmationCallback());
@@ -476,6 +485,8 @@ public class MainActivity extends AppCompatActivity {
 					getBalance();
 					showSnackbar("Succeed to create native spend", false);
 					Log.d(TAG, "Jwt confirmation: \n" + orderConfirmation.getJwtConfirmation());
+					getOrderConfirmation(spendOfferID);
+					spendOfferID = "";
 					enableView(nativeSpendTextView, true);
 				}
 

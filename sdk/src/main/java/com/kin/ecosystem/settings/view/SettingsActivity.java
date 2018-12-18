@@ -140,6 +140,17 @@ public class SettingsActivity extends BaseToolbarActivity implements ISettingsVi
 	}
 
 	@Override
+	protected void onDestroy() {
+		if (settingsPresenter != null) {
+			settingsPresenter.onDetach();
+			settingsPresenter = null;
+		}
+		backupItem = null;
+		restoreItem = null;
+		super.onDestroy();
+	}
+
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		settingsPresenter.onActivityResult(requestCode, resultCode, data);

@@ -13,6 +13,11 @@ public class DateUtil {
     private static DateFormat utcDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.US);
     private static TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
 
+	static {
+		utcDateFormat.setTimeZone(utcTimeZone);
+
+	}
+
     public static String getDateFormatted(String dateStr) {
         Date date = getDateFromUTCString(dateStr);
         if(date != null){
@@ -23,7 +28,6 @@ public class DateUtil {
     }
 
     public static Date getDateFromUTCString(String dateStr) {
-        utcDateFormat.setTimeZone(utcTimeZone);
         try {
             return utcDateFormat.parse(dateStr);
         } catch (ParseException e) {

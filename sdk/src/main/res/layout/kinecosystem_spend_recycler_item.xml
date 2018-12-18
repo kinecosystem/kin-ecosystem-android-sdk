@@ -11,7 +11,7 @@
         android:id="@+id/image"
         android:layout_width="300dp"
         android:layout_height="90dp"
-        android:background="@drawable/kinecosystem_item_bg_placeholder"/>
+        tools:background="@drawable/kinecosystem_item_bg_placeholder"/>
 
     <FrameLayout
         android:id="@+id/earn_title_container"

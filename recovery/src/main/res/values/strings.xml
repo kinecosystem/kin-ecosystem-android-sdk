@@ -33,7 +33,7 @@
     <string name="kinrecovery_backup_description">Backing up your current balance will allow\nyou to recover it in case you switch phones,\n delete the app or clear your data.</string>
     <string name="kinrecovery_keep_your_kin_safe">Keep your Kin Safe</string>
     <string name="kinrecovery_let_s_go">Let\'s Go</string>
-    <string name="kinrecovery_create_password_description">Create a strong password to backup your Kin\nPassword must include the following:\n(9 character, 1 upper case, 1 special character \"#,!,@\", 1 digit)</string>
+    <string name="kinrecovery_create_password_description">Create a strong password to backup your Kin\nPassword must include the following:\n(9 characters, 1 upper case, 1 special character \"#,!,@\", 1 digit)</string>
     <string name="kinrecovery_confirm_password">Confirm Password</string>
     <string name="kinrecovery_next">Next</string>
     <string name="kinrecovery_i_understand_password_description">I understand this password is required to restore\nmy Kin and it can\'t be recovered if lost.</string>

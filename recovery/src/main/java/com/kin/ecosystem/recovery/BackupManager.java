@@ -54,7 +54,7 @@ public final class BackupManager {
 	}
 
 	public void release() {
-		this.callbackManager.unregisterCallbacksAndEvents();
+		this.callbackManager.release();
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
