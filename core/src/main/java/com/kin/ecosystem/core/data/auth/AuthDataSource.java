@@ -40,6 +40,8 @@ public interface AuthDataSource {
 
 		void setSignInData(@NonNull final SignInData signInData);
 
+		SignInData getSignInData();
+
 		void setAuthToken(@NonNull final AuthToken authToken);
 
 		String getAppId();
@@ -51,6 +53,7 @@ public interface AuthDataSource {
 		String getEcosystemUserID();
 
 		AuthToken getAuthTokenSync();
+
 	}
 
 	interface Remote {

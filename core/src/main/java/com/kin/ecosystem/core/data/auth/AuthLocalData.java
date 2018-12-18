@@ -61,6 +61,23 @@ public class AuthLocalData implements AuthDataSource.Local {
 	}
 
 	@Override
+	public SignInData getSignInData() {
+		final String deviceID = signInSharedPreferences.getString(DEVICE_ID_KEY, null);
+		final String publicAddress = signInSharedPreferences.getString(PUBLIC_ADDRESS_KEY, null);
+		final String signInType = signInSharedPreferences.getString(TYPE_KEY, null);
+		final String jwt = signInSharedPreferences.getString(JWT_KEY, null);
+		final String userID = signInSharedPreferences.getString(USER_ID_KEY, null);
+		final String appID = signInSharedPreferences.getString(APP_ID_KEY, null);
+		if (deviceID != null && publicAddress != null && signInType != null && jwt != null && userID != null
+			&& appID != null) {
+			return new SignInData().deviceId(deviceID).walletAddress(publicAddress)
+				.signInType(SignInTypeEnum.fromValue(signInType)).userId(userID).appId(appID);
+		} else {
+			return null;
+		}
+	}
+
+	@Override
 	public void setAuthToken(@NonNull final AuthToken authToken) {
 		Editor editor = signInSharedPreferences.edit();
 		editor.putString(TOKEN_KEY, authToken.getToken());

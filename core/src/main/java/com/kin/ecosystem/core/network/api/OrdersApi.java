@@ -12,7 +12,7 @@ package com.kin.ecosystem.core.network.api;/*
 
 
 import com.google.gson.reflect.TypeToken;
-import com.kin.ecosystem.core.Configuration;
+import com.kin.ecosystem.core.data.internal.ConfigurationImpl;
 import com.kin.ecosystem.core.network.ApiCallback;
 import com.kin.ecosystem.core.network.ApiClient;
 import com.kin.ecosystem.core.network.ApiException;
@@ -43,7 +43,7 @@ public class OrdersApi {
 	private ApiClient apiClient;
 
 	public OrdersApi() {
-		this(Configuration.getDefaultApiClient());
+		this(ConfigurationImpl.getInstance().getDefaultApiClient());
 	}
 
 	public OrdersApi(ApiClient apiClient) {

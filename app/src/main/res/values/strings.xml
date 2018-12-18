@@ -18,4 +18,5 @@
     <string name="enter_the_recipient_user_id">Enter the recipient user id:</string>
     <string name="pay">Pay</string>
     <string name="native_offer_content_activity">Native Offer Content Activity</string>
+    <string name="account_not_logged_in">Account is not logged in</string>
 </resources>

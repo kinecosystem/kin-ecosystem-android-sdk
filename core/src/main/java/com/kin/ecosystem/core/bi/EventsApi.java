@@ -1,7 +1,7 @@
 package com.kin.ecosystem.core.bi;
 
 import com.google.gson.reflect.TypeToken;
-import com.kin.ecosystem.core.Configuration;
+import com.kin.ecosystem.core.data.internal.ConfigurationImpl;
 import com.kin.ecosystem.core.network.ApiCallback;
 import com.kin.ecosystem.core.network.ApiClient;
 import com.kin.ecosystem.core.network.ApiException;
@@ -21,7 +21,7 @@ class EventsApi {
 	 * Constructor for EventsApi
 	 */
 	EventsApi() {
-		apiClient = new ApiClient(Configuration.getEnvironment().getBiUrl());
+		apiClient = new ApiClient(ConfigurationImpl.getInstance().getEnvironment().getBiUrl());
 	}
 
 	/**
