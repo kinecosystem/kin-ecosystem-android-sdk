@@ -52,6 +52,7 @@ import kin.core.ServiceProvider;
 public class Kin {
 
 	private static final String KIN_ECOSYSTEM_STORE_PREFIX_KEY = "kinecosystem_store";
+	public static final String KEY_ECOSYSTEM_EXPERIENCE = "ecosystem_experience";
 	private static volatile Kin instance;
 
 	private final ExecutorsUtil executorsUtil;
@@ -199,25 +200,47 @@ public class Kin {
 	 * Launch Kin Marketplace if the user is activated, otherwise it will launch Welcome to Kin page.
 	 *
 	 * @param activity the activity user can go back to.
+	 * @deprecated Please use {@link Kin#launchEcosystem}
 	 */
+	@Deprecated
 	public static void launchMarketplace(@NonNull final Activity activity) throws ClientException {
+		checkInstanceNotNull();
+		launchEcosystem(activity, EcosystemExperience.MARKETPLACE);
+	}
+
+	/**
+	 * Launch a specific experience in KinEcosystem if the user is activated,
+	 * otherwise it will launch Welcome to Kin page and then the experience.
+	 *
+	 * @param activity the activity user can go back to.
+	 * @param experience should be one of {@link EcosystemExperience}
+	 */
+	public static void launchEcosystem(@NonNull final Activity activity, @EcosystemExperience final int experience)
+		throws ClientException {
 		checkInstanceNotNull();
 		instance.eventLogger.send(EntrypointButtonTapped.create());
 		boolean isAccountCreated = AccountManagerImpl.getInstance().isAccountCreated();
 		if (isAccountCreated) {
-			navigateToMarketplace(activity);
+			navigateToExperience(activity, experience);
 		} else {
-			navigateToSplash(activity);
+			navigateToSplash(activity, experience);
 		}
 	}
 
-	private static void navigateToSplash(@NonNull final Activity activity) {
-		activity.startActivity(new Intent(activity, SplashActivity.class));
-		activity.overridePendingTransition(R.anim.kinecosystem_slide_in_right, R.anim.kinecosystem_slide_out_left);
+	private static void navigateToSplash(@NonNull final Activity activity, @EcosystemExperience final int experience) {
+		Intent splashIntent = new Intent(activity, SplashActivity.class);
+		launchIntent(activity, splashIntent, experience);
 	}
 
-	private static void navigateToMarketplace(@NonNull final Activity activity) {
-		activity.startActivity(new Intent(activity, EcosystemActivity.class));
+	private static void navigateToExperience(@NonNull final Activity activity, @EcosystemExperience final int experience) {
+		Intent marketplaceIntent = new Intent(activity, EcosystemActivity.class);
+		launchIntent(activity, marketplaceIntent, experience);
+	}
+
+	private static void launchIntent(@NonNull Activity activity, Intent intentToLaunch,
+		@EcosystemExperience final int experience) {
+		intentToLaunch.putExtra(KEY_ECOSYSTEM_EXPERIENCE, experience);
+		activity.startActivity(intentToLaunch);
 		activity.overridePendingTransition(R.anim.kinecosystem_slide_in_right, R.anim.kinecosystem_slide_out_left);
 	}
 
@@ -319,7 +342,6 @@ public class Kin {
 	 *
 	 * @param userId The user id to check
 	 * @param callback The result will be a {@link Boolean}
-	 * @throws ClientException
 	 */
 	public static void hasAccount(@NonNull String userId, @NonNull KinCallback<Boolean> callback)
 		throws ClientException {
@@ -331,8 +353,8 @@ public class Kin {
 	/**
 	 * Get user's stats which include history information such as number of Earn/Spend orders completed by the user or last earn/spend dates.
 	 * This information could be used for re-engaging users, provide specific experience for users who never earn before etc.
+	 *
 	 * @param callback The result will be a {@link UserStats}
-	 * @throws ClientException
 	 */
 	public static void userStats(@NonNull KinCallback<UserStats> callback)
 		throws ClientException {

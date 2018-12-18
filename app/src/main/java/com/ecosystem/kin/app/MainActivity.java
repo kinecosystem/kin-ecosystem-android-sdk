@@ -20,6 +20,7 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.ecosystem.kin.app.model.SignInRepo;
+import com.kin.ecosystem.EcosystemExperience;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
@@ -160,13 +161,27 @@ public class MainActivity extends AppCompatActivity {
 		findViewById(R.id.launch_marketplace).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				openKinMarketplace();
+				launchExperience(EcosystemExperience.MARKETPLACE);
+			}
+		});
+		findViewById(R.id.launch_orderHistory).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				launchExperience(EcosystemExperience.ORDER_HISTORY);
 			}
 		});
 		((TextView) findViewById(R.id.sample_app_version))
 			.setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
 		addNativeOffer();
 		addNativeOfferClickedObserver();
+	}
+
+	private void launchExperience(@EcosystemExperience final int experience) {
+		try {
+			Kin.launchEcosystem(MainActivity.this, experience);
+		} catch (ClientException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void addNativeOffer() {
@@ -369,14 +384,6 @@ public class MainActivity extends AppCompatActivity {
 	private void setBalanceWithAmount(Balance balance) {
 		int balanceValue = balance.getAmount().intValue();
 		balanceView.setText(getString(R.string.get_balance_d, balanceValue));
-	}
-
-	private void openKinMarketplace() {
-		try {
-			Kin.launchMarketplace(MainActivity.this);
-		} catch (ClientException e) {
-			e.printStackTrace();
-		}
 	}
 
 	private void createNativeSpendOffer() {
