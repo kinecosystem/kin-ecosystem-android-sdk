@@ -10,6 +10,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "${KIN_ECOSYSTEM_CORE_VERSION_NAME}"
+        consumerProguardFiles 'proguard-rules.pro'
     }
 
     sourceSets {

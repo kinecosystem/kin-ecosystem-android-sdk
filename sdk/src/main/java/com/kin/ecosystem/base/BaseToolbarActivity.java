@@ -2,20 +2,16 @@ package com.kin.ecosystem.base;
 
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import com.kin.ecosystem.R;
 
 
-public abstract class BaseToolbarActivity extends AppCompatActivity {
+public abstract class BaseToolbarActivity extends KinEcosystemBaseActivity {
 
     protected static final int EMPTY_TITLE = -1;
-
-    protected abstract @LayoutRes int getLayoutRes();
 
     protected abstract @StringRes int getTitleRes();
 
@@ -23,15 +19,12 @@ public abstract class BaseToolbarActivity extends AppCompatActivity {
 
     protected abstract View.OnClickListener getNavigationClickListener();
 
-    protected abstract void initViews();
     private Toolbar topToolBar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getLayoutRes());
         setupToolbar();
-        initViews();
     }
 
     private void setupToolbar() {

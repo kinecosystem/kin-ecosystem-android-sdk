@@ -3,14 +3,14 @@ package com.kin.ecosystem.core.data.auth;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.ObservableData;
-import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.core.network.ApiException;
-import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.SignInData;
+import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.network.model.UserProperties;
 import com.kin.ecosystem.core.util.DateUtil;
 import com.kin.ecosystem.core.util.ErrorUtil;
@@ -33,6 +33,8 @@ public class AuthRepository implements AuthDataSource {
 		@NonNull AuthDataSource.Remote remote) {
 		this.localData = local;
 		this.remoteData = remote;
+		this.cachedSignInData = local.getSignInData();
+		this.cachedAuthToken = local.getAuthTokenSync();
 	}
 
 	public static void init(@NonNull AuthDataSource.Local localData,

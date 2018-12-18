@@ -38,4 +38,8 @@
     <string name="kinecosystem_could_not_restore_the_wallet">Could not restore the wallet, try again later.</string>
 
 
+    <!--Environments-->
+    <string name="kinecosystem_environment_beta">beta</string>
+    <string name="kinecosystem_environment_production">prod</string>
+
 </resources>
