@@ -5,12 +5,19 @@ import android.support.annotation.Nullable;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
+import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
 import kin.core.KinAccount;
 
 public interface BlockchainSource {
+
+	/**
+	 * Create account if there is no accounts in local
+	 * @throws BlockchainException could not load the account, or could not create a new account.
+	 */
+	void createAccount() throws BlockchainException;
 
 	/**
 	 * Getting the current account.
@@ -63,7 +70,7 @@ public interface BlockchainSource {
 	/**
 	 * @return the public address of the initiated account
 	 */
-	String getPublicAddress();
+	String getPublicAddress() throws ClientException, BlockchainException;
 
 	/**
 	 * @return the public address of the account with {@param accountIndex}

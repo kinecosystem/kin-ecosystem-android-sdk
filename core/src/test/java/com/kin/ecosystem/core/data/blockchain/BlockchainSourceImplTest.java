@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -13,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainFailed;
@@ -67,9 +70,6 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 	@Mock
 	private Request<kin.core.Balance> getBalanceReq;
 
-	@Captor
-	private ArgumentCaptor<ResultCallback<kin.core.Balance>> getBalanceCaptor;
-
 	@Mock
 	private kin.core.Balance balanceObj;
 
@@ -84,23 +84,10 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 		when(kinClient.addAccount()).thenReturn(kinAccount);
 		when(kinAccount.blockchainEvents()).thenReturn(blockchainEvents);
 		when(kinAccount.getBalance()).thenReturn(getBalanceReq);
-		when(balanceObj.value()).thenReturn(new BigDecimal(20));
 		when(kinAccount.getPublicAddress()).thenReturn(PUBLIC_ADDRESS);
 		doNothing().when(kinAccount).activateSync();
 
-
 		resetInstance();
-
-		// Account Creation
-		verify(kinClient).addAccount();
-
-		// init Balance
-		verify(getBalanceReq).run(getBalanceCaptor.capture());
-		getBalanceCaptor.getValue().onResult(balanceObj);
-		verify(local).setBalance(balanceObj.value().intValue());
-
-		when(kinClient.getAccount(0)).thenReturn(kinAccount);
-		balance = new Balance();
 	}
 
 
@@ -113,11 +100,26 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 	}
 
 	@Test
-	public void init_once_and_one_account() throws Exception {
+	public void kinClient_has_no_account_do_not_init_account() {
+		verify(kinClient, never()).hasAccount();
+		verify(kinClient, never()).getAccount(anyInt());
+	}
+
+	@Test
+	public void kinClient_has_account_init_account_with_correct_index() throws Exception {
+		when(local.getAccountIndex()).thenReturn(11);
+		when(kinClient.hasAccount()).thenReturn(true);
+		resetInstance();
+		blockchainSource.createAccount();
+		verify(kinClient).getAccount(11);
+	}
+
+	@Test
+	public void init_once_local_getAccountIndex_called_once(){
 		BlockchainSourceImpl.init(eventLogger, kinClient, local);
 		BlockchainSourceImpl.init(eventLogger, kinClient, local);
 		assertEquals(blockchainSource, BlockchainSourceImpl.getInstance());
-		verify(kinClient).addAccount();
+		verify(local).getAccountIndex();
 	}
 
 	@Test
@@ -127,8 +129,20 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 	}
 
 	@Test
-	public void get_public_address() {
-		assertEquals(PUBLIC_ADDRESS, blockchainSource.getPublicAddress());
+	public void get_public_address() throws BlockchainException {
+		String address = null;
+		blockchainSource.createAccount();
+		try {
+			address = blockchainSource.getPublicAddress();
+		} catch (BlockchainException e) {
+			e.printStackTrace();
+		}
+		assertEquals(PUBLIC_ADDRESS, address);
+	}
+
+	@Test(expected = BlockchainException.class)
+	public void get_public_address_account_not_found() throws BlockchainException {
+		blockchainSource.getPublicAddress();
 	}
 
 	@Test
@@ -143,7 +157,8 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 	}
 
 	@Test
-	public void send_transaction_succeeded() throws InterruptedException {
+	public void send_transaction_succeeded() throws BlockchainException {
+		blockchainSource.createAccount();
 		String toAddress = "some_pub_address";
 		final BigDecimal amount = new BigDecimal(10);
 		final String orderID = "someID";
@@ -168,7 +183,8 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 	}
 
 	@Test
-	public void send_transaction_failed() {
+	public void send_transaction_failed() throws BlockchainException {
+		blockchainSource.createAccount();
 		String toAddress = "some_pub_address";
 		BigDecimal amount = new BigDecimal(10);
 		final String orderID = "someID";
@@ -200,7 +216,9 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 	}
 
 	@Test
-	public void add_balance_observer_get_onChanged() {
+	public void add_balance_observer_get_onChanged() throws BlockchainException {
+		when(local.getBalance()).thenReturn(20);
+		blockchainSource.createAccount();
 		kin.core.Balance innerBalance = mock(kin.core.Balance.class);
 		blockchainSource.addBalanceObserver(new Observer<Balance>() {
 			@Override
@@ -233,6 +251,7 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 
 	@Test
 	public void add_balance_observer_and_start_listen() throws Exception {
+		blockchainSource.createAccount();
 		ArgumentCaptor<EventListener<kin.core.Balance>> balanceEventListener = forClass(EventListener.class);
 
 		blockchainSource.addBalanceObserver(new Observer<Balance>() {

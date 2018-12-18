@@ -2,7 +2,7 @@
 Most of the errors are derived from the `KinEcosystemException` exception, Exception has an error code - `getCode()` and a detailed message - `getMessage()`.
 
 * #### **ClientException** - Represents an error in local client SDK, error code might be:
-    * `SDK_NOT_STARTED` - SDK method was called before init (`start`) method was called. see [Initialize Android SDK](INITALIZE_SDK_AND_CREATE_ACCOUNT.md).
+    * `ACCOUNT_NOT_LOGGED_IN` - Account is not logged in, use (`Kin.login(…)`) method first. see [Create Account](CREATE_ACCOUNT.md).
     * `BAD_CONFIGURATION` - Bad or missing configuration parameters.
     * `INTERNAL_INCONSISTENCY` - Some unexpected error occurred internally.
 

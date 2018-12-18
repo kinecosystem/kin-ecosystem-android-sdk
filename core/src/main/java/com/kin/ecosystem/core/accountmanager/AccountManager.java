@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -15,6 +16,8 @@ public interface AccountManager {
 	int REQUIRE_TRUSTLINE = 0x00000003;
 	int CREATION_COMPLETED = 0x00000004;
 	int ERROR = 0x00000005;
+
+
 
 	@IntDef({REQUIRE_CREATION,
 		PENDING_CREATION,
@@ -40,6 +43,8 @@ public interface AccountManager {
 	void addAccountStateObserver(@NonNull final Observer<Integer> observer);
 
 	void removeAccountStateObserver(@NonNull final Observer<Integer> observer);
+
+	KinEcosystemException getError();
 
 	interface Local {
 
