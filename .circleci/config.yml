@@ -37,7 +37,7 @@ jobs:
           command: ./gradlew test
       - run:
           name: Build apks
-          command: ./gradlew clean assemble -Pcircleci --no-daemon --stacktrace
+          command: ./gradlew clean assemble -Pcircleci --stacktrace
       # Store APK
       - store_artifacts:
                 path: app/build/outputs/apk/
