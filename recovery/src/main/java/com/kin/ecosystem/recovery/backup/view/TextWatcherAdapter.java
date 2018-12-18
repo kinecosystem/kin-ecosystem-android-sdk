@@ -29,6 +29,7 @@ public class TextWatcherAdapter implements TextWatcher {
 
 	@Override
 	public void afterTextChanged(final Editable editable) {
+		removeCallbacks();
 		mainThreadHandler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
@@ -37,8 +38,12 @@ public class TextWatcherAdapter implements TextWatcher {
 		}, DELAY_MILLIS);
 	}
 
-	public void release() {
+	private void removeCallbacks() {
 		mainThreadHandler.removeCallbacksAndMessages(null);
+	}
+
+	public void release() {
+		removeCallbacks();
 	}
 
 	public interface TextChangeListener {

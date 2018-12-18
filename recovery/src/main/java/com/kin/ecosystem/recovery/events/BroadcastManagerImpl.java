@@ -29,7 +29,7 @@ public class BroadcastManagerImpl implements BroadcastManager {
 
 	public BroadcastManagerImpl(@NonNull Activity activity) {
 		this.activity = activity;
-		receiversList = new ArrayList<>();
+		this.receiversList = new ArrayList<>();
 	}
 
 	@Override
