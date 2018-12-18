@@ -30,8 +30,8 @@ And for Production use: `@string/kinecosystem_environment_production` as value.
 >* In order to switch between environments, you’ll need to clear the application cache.
 
 ## Initialize The SDK ##
-Kin Ecosystem SDK must be initialized before any interaction with the SDK, in order to do that you should call first:
-```Kin.initialize(getApplicationContext())```
+Kin Ecosystem SDK must be initialized before any interaction with the SDK, in order to do that you should call ```Kin.initialize(getApplicationContext())``` first.
+
 
    >**NOTE** `initialize` method does not perform any network calls and it's a synchronous method, so you will get an exception if something went wrong.
 

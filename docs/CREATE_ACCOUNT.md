@@ -1,13 +1,15 @@
 ### Creating a User’s Kin Account ###
 
 If your app presents Kin Spend and Earn offers to your users, then each user needs a Kin wallet and account in order to take advantage of those offers.
-During initialization and before any other Kin sdk API calls, your app must call the SDK’s `Kin.initialize(…)`.
-If that user already has a Kin account, the function only accesses the existing account. Otherwise, the function creates a new wallet and account for the user.
 
-*To create or access a user’s Kin account:* 
+>**NOTE:** Kin Ecosystem SDK must be initialized before any interaction with the SDK, in order to do that you should call `Kin.initialize(…)` first.
+
+
+*To create or access a user’s Kin account:*
 
 Call `Kin.login(…)`, passing the user’s unique ID and your chosen authentication credentials (either whitelist or JWT credentials).
 You can add a `KinCallback` and get a response when the user is logged in, and you can start send transactions and get information regarding the account balance, status etc.
+If that user already has a Kin account, the function only accesses the existing account. Otherwise, the function creates a new wallet and account for the user.
 
 **Whitelist mode:**
 ```java

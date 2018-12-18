@@ -475,10 +475,7 @@ public class Kin {
 	 *
 	 * @param userId The user id to check
 	 * @param callback The result will be a {@link Boolean}
-<<<<<<< HEAD
 	 * @throws ClientException - sdk not initialized.
-=======
->>>>>>> b22a6d0f951cf7bf0f5e5f34492ce1dd040623fc
 	 */
 	public static void hasAccount(@NonNull String userId, @NonNull final KinCallback<Boolean> callback)
 		throws ClientException {
@@ -491,10 +488,7 @@ public class Kin {
 	 * This information could be used for re-engaging users, provide specific experience for users who never earn before etc.
 	 *
 	 * @param callback The result will be a {@link UserStats}
-<<<<<<< HEAD
 	 * @throws ClientException - sdk not initialized or account not logged in.
-=======
->>>>>>> b22a6d0f951cf7bf0f5e5f34492ce1dd040623fc
 	 */
 	public static void userStats(@NonNull KinCallback<UserStats> callback)
 		throws ClientException {

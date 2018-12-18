@@ -1,9 +1,8 @@
 package com.kin.ecosystem.core.util;
 
-public class Validator {
+import com.kin.ecosystem.core.data.internal.EnvironmentName;
 
-	private static final String BETA = "beta";
-	private static final String PRODUCTION = "prod";
+public class Validator {
 
 	public static void checkNotNull(Object obj, String paramName) {
 		if (obj == null) {
@@ -12,6 +11,6 @@ public class Validator {
 	}
 
 	public static boolean isEnvironmentName(String environmentName) {
-		return environmentName.equals(BETA) || environmentName.equals(PRODUCTION);
+		return environmentName.equals(EnvironmentName.BETA) || environmentName.equals(EnvironmentName.PRODUCTION);
 	}
 }

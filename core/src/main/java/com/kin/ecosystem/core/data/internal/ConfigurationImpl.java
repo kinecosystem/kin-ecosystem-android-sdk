@@ -122,11 +122,11 @@ public class ConfigurationImpl implements Configuration {
 		return kinEnvironment;
 	}
 
-	private KinEnvironment getEnvironmentByName(String environment) {
+	private KinEnvironment getEnvironmentByName(@EnvironmentName String environment) {
 		switch (environment) {
-			case "prod":
+			case EnvironmentName.PRODUCTION:
 				return Environment.getProduction();
-			case "beta":
+			case EnvironmentName.BETA:
 				return Environment.getBeta();
 			default:
 				throw new IllegalArgumentException("Environment name: " + environment + "is not valid,"
