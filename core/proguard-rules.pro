@@ -12,9 +12,9 @@
 -dontwarn sun.misc.**
 
 # Application classes that will be serialized/deserialized over Gson
--keepclassmembers enum com.kin.ecosystem.** { *; }
--keep class com.kin.ecosystem.bi.** { *; }
--keep class com.kin.ecosystem.network.model.** { *; }
+-keepclassmembers enum com.kin.ecosystem.core.** { *; }
+-keep class com.kin.ecosystem.core.bi.** { *; }
+-keep class com.kin.ecosystem.core.network.model.** { *; }
 
 # Prevent proguard from stripping interface information from TypeAdapterFactory,
 # JsonSerializer, JsonDeserializer instances (so they can be used in @JsonAdapter)
