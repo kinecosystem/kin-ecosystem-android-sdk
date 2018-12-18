@@ -59,7 +59,6 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
     init {
         this.view = view
         this.gson = Gson()
-
         this.view.attachPresenter(this)
     }
 
@@ -94,7 +93,7 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
     }
 
     private fun hasOffers(offerList: OfferList?): Boolean {
-        return offerList != null && offerList.offers != null
+        return !(offerList == null || offerList.offers == null)
     }
 
     private fun setCachedOfferLists(cachedOfferList: OfferList) {
@@ -127,6 +126,9 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
                     when (order.status) {
                         Order.Status.PENDING -> removeOfferFromList(order.offerId, order.offerType)
                         Order.Status.FAILED, Order.Status.COMPLETED -> getOffers()
+                        else -> {
+                            // no-op
+                        }
                     }
 
                 }
@@ -137,11 +139,11 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
 
     private fun removeOfferFromList(offerId: String, offerType: OfferType) {
         if (offerType == OfferType.EARN) {
-            if (earnList != null) {
-                for (i in earnList!!.indices) {
-                    val offer = earnList!![i]
+            earnList?.let {
+                for (i in it.indices) {
+                    val offer = it[i]
                     if (offer.id == offerId) {
-                        earnList!!.removeAt(i)
+                        it.removeAt(i)
                         notifyEarnItemRemoved(i)
                         updateEarnTitle()
                         return
@@ -149,11 +151,11 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
                 }
             }
         } else {
-            if (spendList != null) {
-                for (i in spendList!!.indices) {
-                    val offer = spendList!![i]
+            spendList?.let {
+                for (i in it.indices) {
+                    val offer = it[i]
                     if (offer.id == offerId) {
-                        spendList!!.removeAt(i)
+                        it.removeAt(i)
                         notifySpendItemRemoved(i)
                         updateSpendTitle()
                         return
@@ -178,31 +180,24 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
     }
 
     private fun notifyEarnItemRemoved(index: Int) {
-        if (view != null) {
-            view.notifyEarnItemRemoved(index)
-        }
+        view?.notifyEarnItemRemoved(index)
     }
 
     private fun notifyEarnItemInserted(index: Int) {
-        if (view != null) {
-            view.notifyEarnItemInserted(index)
-        }
+        view?.notifyEarnItemInserted(index)
+
     }
 
     private fun notifySpendItemRemoved(index: Int) {
-        if (view != null) {
-            view.notifySpendItemRemoved(index)
-        }
+        view?.notifySpendItemRemoved(index)
     }
 
     private fun notifySpendItemInserted(index: Int) {
-        if (view != null) {
-            view.notifySpendItemInserted(index)
-        }
+        view?.notifySpendItemInserted(index)
     }
 
     override fun getOffers() {
-        this.offerRepository.getOffers(object : KinCallback<OfferList> {
+        offerRepository.getOffers(object : KinCallback<OfferList> {
             override fun onResponse(offerList: OfferList) {
                 setupEmptyItemView()
                 syncOffers(offerList)
@@ -217,9 +212,7 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
     }
 
     private fun setupEmptyItemView() {
-        if (view != null) {
-            view.setupEmptyItemView()
-        }
+        view?.setupEmptyItemView()
     }
 
     private fun syncOffers(offerList: OfferList) {
@@ -230,10 +223,10 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
             OfferListUtil.splitOffersByType(offerList.offers, newEarnOffers, newSpendOffers)
 
             
-            if (earnList == null) {
+            earnList ?: run {
                 earnList = ArrayList()
             }
-            if (spendList == null) {
+            earnList ?: run {
                 spendList = ArrayList()
             }
             syncList(newEarnOffers, earnList!!, OfferType.EARN)
@@ -243,7 +236,7 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
 
     private fun syncList(newList: List<Offer>, oldList: MutableList<Offer>, offerType: OfferType) {
         // check if offer should be removed (index changed / removed from list).
-        if (newList.size > 0) {
+        if (newList.isNotEmpty()) {
             for (i in oldList.indices) {
                 val offer = oldList[i]
                 val index = newList.indexOf(offer)
@@ -282,11 +275,11 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
     }
 
     private fun notifyItemRangRemoved(fromIndex: Int, size: Int, offerType: OfferType) {
-        if (view != null) {
+        view?.let {
             if (isSpend(offerType)) {
-                view.notifySpendItemRangRemoved(fromIndex, size)
+                it.notifySpendItemRangRemoved(fromIndex, size)
             } else {
-                view.notifyEarnItemRangRemoved(fromIndex, size)
+                it.notifyEarnItemRangRemoved(fromIndex, size)
             }
         }
     }
@@ -329,14 +322,14 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
             if (onExternalItemClicked(offer)) {
                 return
             }
-            if (this.view != null) {
+            view?.let {
                 val pollBundle = PollBundle()
                         .setJsonData(offer.content)
                         .setOfferID(offer.id)
                         .setContentType(offer.contentType.value)
                         .setAmount(offer.amount!!)
                         .setTitle(offer.title)
-                this.view.showOfferActivity(pollBundle)
+                it.showOfferActivity(pollBundle)
             }
         } else {
             offer = spendList!![position]
@@ -375,27 +368,24 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
     }
 
     private fun closeMarketplace() {
-        navigator!!.close()
+        navigator?.close()
     }
 
     private fun sendEranOfferTapped(offer: Offer) {
         val offerType: EarnOfferTapped.OfferType
         try {
             offerType = EarnOfferTapped.OfferType.fromValue(offer.contentType.value)
-            val amount = offer.amount as Double
+            val amount = offer.amount.toDouble()
             eventLogger.send(EarnOfferTapped.create(offerType, amount, offer.id))
-        } catch (ex: IllegalArgumentException) {
+        } catch (ex: IllegalArgumentException ) {
             //TODO: add general error event
-        } catch (ex: NullPointerException) {
-        }
-
+        } catch (ex: NullPointerException) { }
     }
 
     private fun sendSpendOfferTapped(offer: Offer) {
-        val amount = offer.amount as Double
+        val amount = offer.amount.toDouble()
         val contentType = offer.contentType
-        eventLogger.send(SpendOfferTapped.create(amount, offer.id,
-                if (contentType == ContentTypeEnum.EXTERNAL) Origin.EXTERNAL else Origin.MARKETPLACE))
+        eventLogger.send(SpendOfferTapped.create(amount, offer.id, if (contentType == ContentTypeEnum.EXTERNAL) Origin.EXTERNAL else Origin.MARKETPLACE))
     }
 
     private fun nativeSpendOfferClicked(offer: Offer, dismissMarketplace: Boolean) {
@@ -424,29 +414,20 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
     }
 
     private fun showSpendDialog(offerInfo: OfferInfo, offer: Offer) {
-        if (this.view != null) {
-            this.view.showSpendDialog(createSpendDialogPresenter(offerInfo, offer))
-        }
+        view?.showSpendDialog(createSpendDialogPresenter(offerInfo, offer))
     }
 
-    private fun createSpendDialogPresenter(offerInfo: OfferInfo,
-                                           offer: Offer): ISpendDialogPresenter {
+    private fun createSpendDialogPresenter(offerInfo: OfferInfo, offer: Offer): ISpendDialogPresenter {
         return SpendDialogPresenter(offerInfo, offer, blockchainSource, orderRepository, eventLogger)
     }
 
     private fun deserializeOfferInfo(content: String): OfferInfo? {
-        try {
-            return gson.fromJson<OfferInfo>(content, OfferInfo::class.java!!)
-        } catch (t: JsonSyntaxException) {
-            return null
-        }
-
+        return try { gson.fromJson<OfferInfo>(content, OfferInfo::class.java) }
+               catch (t: JsonSyntaxException) { null }
     }
 
     private fun showToast(@Message msg: Int) {
-        if (view != null) {
-            view.showToast(msg)
-        }
+        view?.showToast(msg)
     }
 
     companion object {

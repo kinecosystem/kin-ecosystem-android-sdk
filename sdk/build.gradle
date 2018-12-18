@@ -26,7 +26,7 @@ dependencies {
     implementation devDependencies.recyclerView_v7
     implementation devDependencies.constraintLayout
     implementation devDependencies.picasso
-    implementation testingDependencies.kotlin
+    implementation devDependencies.kotlin
 
     testImplementation project(':test-base')
     testImplementation testingDependencies.junit

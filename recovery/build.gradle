@@ -30,7 +30,7 @@ dependencies {
     androidTestImplementation testingDependencies.androidTestRunner
     androidTestImplementation testingDependencies.hamcrest
 
-    testImplementation testingDependencies.kotlin
+    testImplementation devDependencies.kotlin
     testImplementation testingDependencies.mockitoKotlin
     testImplementation testingDependencies.junit
     testImplementation testingDependencies.mockito
