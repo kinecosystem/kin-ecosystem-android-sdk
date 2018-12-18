@@ -17,7 +17,7 @@ package com.kin.ecosystem.core.network.api;
 import static com.kin.ecosystem.core.network.ApiClient.PATCH;
 
 import com.google.gson.reflect.TypeToken;
-import com.kin.ecosystem.core.Configuration;
+import com.kin.ecosystem.core.data.internal.ConfigurationImpl;
 import com.kin.ecosystem.core.network.ApiCallback;
 import com.kin.ecosystem.core.network.ApiClient;
 import com.kin.ecosystem.core.network.ApiException;
@@ -45,7 +45,7 @@ public class AuthApi {
 	private ApiClient apiClient;
 
 	public AuthApi() {
-		this(Configuration.getDefaultApiClient());
+		this(ConfigurationImpl.getInstance().getDefaultApiClient());
 	}
 
 	public AuthApi(ApiClient apiClient) {

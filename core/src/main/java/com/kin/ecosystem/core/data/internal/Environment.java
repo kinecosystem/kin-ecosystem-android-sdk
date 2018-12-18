@@ -1,9 +1,9 @@
-package com.kin.ecosystem;
+package com.kin.ecosystem.core.data.internal;
 
 
 import com.kin.ecosystem.common.KinEnvironment;
 
-public class Environment implements KinEnvironment {
+class Environment implements KinEnvironment {
 
 	private static final Environment PRODUCTION = new Environment(
 		"https://horizon-kin-ecosystem.kininfrastructure.com/",
@@ -75,6 +75,8 @@ public class Environment implements KinEnvironment {
 	public String getBiUrl() {
 		return biUrl;
 	}
+
+
 
 	public static KinEnvironment getProduction() {
 		return PRODUCTION;

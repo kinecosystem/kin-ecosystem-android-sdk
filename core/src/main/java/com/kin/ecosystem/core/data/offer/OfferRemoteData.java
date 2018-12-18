@@ -43,6 +43,7 @@ public class OfferRemoteData implements OfferDataSource.Remote {
                         @Override
                         public void run() {
                             callback.onFailure(e);
+                            e.printStackTrace();
                         }
                     });
                 }

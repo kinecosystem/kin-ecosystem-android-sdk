@@ -34,7 +34,9 @@ import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.NativeSpendOfferBuilder;
 import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.common.model.UserStats;
+import com.kin.ecosystem.common.model.WhitelistData;
 import java.util.Random;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -85,12 +87,14 @@ public class MainActivity extends AppCompatActivity {
 			.image("https://cdn.kinecosystem.com/thumbnails/offers/spend_offer_smplapp.png")
 			.build();
 	}
+
 	private boolean addNativeSpendOrder = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
 		userID = SignInRepo.getUserId(getApplicationContext());
 		containerLayout = findViewById(R.id.container);
 		balanceView = findViewById(R.id.get_balance);
@@ -150,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 
+		login();
 		final TextView userIdTextView = findViewById(R.id.user_id_textview);
 		userIdTextView.setText(getString(R.string.user_id, userID));
 		userIdTextView.setOnClickListener(new OnClickListener() {
@@ -172,8 +177,54 @@ public class MainActivity extends AppCompatActivity {
 		});
 		((TextView) findViewById(R.id.sample_app_version))
 			.setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
-		addNativeOffer();
-		addNativeOfferClickedObserver();
+	}
+
+
+	private void login() {
+		if (BuildConfig.IS_JWT_REGISTRATION) {
+			/**
+			 * SignInData should be created with registration JWT {see https://jwt.io/} created securely by server side
+			 * In the the this example {@link SignInRepo#getJWT} generate the JWT locally.
+			 * DO NOT!!!! use this approach in your real app.
+			 * */
+			String jwt = SignInRepo.getJWT(this);
+
+			Kin.login(jwt, new KinCallback<Void>() {
+				@Override
+				public void onResponse(Void response) {
+					showSnackbar("login succeed jwt", false);
+					Log.d(TAG, "JWT onResponse: login");
+
+					addNativeOffer();
+					addNativeOfferClickedObserver();
+				}
+
+				@Override
+				public void onFailure(KinEcosystemException exception) {
+					showSnackbar("login failed jwt", true);
+					Log.e(TAG, "JWT onFailure: " + exception.getMessage());
+				}
+			});
+		} else {
+			/** Use {@link WhitelistData} for small scale testing */
+			WhitelistData whitelistData = SignInRepo.getWhitelistSignInData(this, getAppId(), getApiKey());
+			Kin.login(whitelistData, new KinCallback<Void>() {
+				@Override
+				public void onResponse(Void response) {
+					showSnackbar("login succeed whitelist", false);
+					Log.d(TAG, "WhiteList onResponse: login");
+
+					addNativeOffer();
+					addNativeOfferClickedObserver();
+				}
+
+				@Override
+				public void onFailure(KinEcosystemException exception) {
+					showSnackbar("login failed whitelist", true);
+					Log.e(TAG, "WhiteList onFailure: " + exception.getMessage());
+				}
+			});
+		}
 	}
 
 	private void launchExperience(@EcosystemExperience final int experience) {
@@ -185,10 +236,10 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void addNativeOffer() {
-		if(nativeOffer != null) {
+		if (nativeOffer != null) {
 			removeNativeOffer(nativeOffer);
 		}
-		if(addNativeSpendOrder){
+		if (addNativeSpendOrder) {
 			nativeOffer = getNativeSpendOffer();
 			addNativeOffer(nativeOffer, true);
 		} else {
@@ -197,8 +248,8 @@ public class MainActivity extends AppCompatActivity {
 
 		}
 		addNativeSpendOrder = !addNativeSpendOrder;
-  }
-  
+	}
+
 	private void showUserStats(final View v) {
 		try {
 			Kin.userStats(new KinCallback<UserStats>() {
@@ -246,23 +297,23 @@ public class MainActivity extends AppCompatActivity {
 					Log.d(TAG, "Balance - " + value.getAmount().intValue());
 				}
 			};
-
 			try {
 				Kin.addBalanceObserver(balanceObserver);
 			} catch (ClientException e) {
+				showSnackbar("ClientException  " + e.getMessage(), true);
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	private void removeBalanceObserver() {
 		try {
 			Kin.removeBalanceObserver(balanceObserver);
-			balanceObserver = null;
 		} catch (ClientException e) {
+			showSnackbar("ClientException  " + e.getMessage(), true);
 			e.printStackTrace();
 		}
+		balanceObserver = null;
 	}
 
 	// Use this method to remove the nativeSpendOffer you added
@@ -270,8 +321,11 @@ public class MainActivity extends AppCompatActivity {
 		try {
 			if (Kin.removeNativeOffer(nativeOffer)) {
 				showSnackbar("Native offer removed", false);
+			} else {
+				showSnackbar("Could not removed native offer", true);
 			}
 		} catch (ClientException e) {
+			showSnackbar("ClientException  " + e.getMessage(), true);
 			e.printStackTrace();
 		}
 	}
@@ -280,7 +334,8 @@ public class MainActivity extends AppCompatActivity {
 		try {
 			Kin.addNativeOfferClickedObserver(getNativeOfferClickedObserver());
 		} catch (ClientException e) {
-			showSnackbar("Could not add native offer callback", true);
+			showSnackbar("ClientException  " + e.getMessage(), true);
+			e.printStackTrace();
 		}
 	}
 
@@ -296,11 +351,13 @@ public class MainActivity extends AppCompatActivity {
 					if (nativeOfferClickEvent.isDismissOnTap()) {
 						new AlertDialog.Builder(MainActivity.this)
 							.setTitle("Native Offer (" + nativeOffer.getTitle() + ")")
-							.setMessage("You tapped on a native " + nativeOffer.getOfferType() + " offer and the observer was notified.")
+							.setMessage("You tapped on a native " + nativeOffer.getOfferType()
+								+ " offer and the observer was notified.")
 							.show();
 					} else {
 						Intent nativeOfferIntent = NativeOfferActivity
-							.createIntent(MainActivity.this, nativeOffer.getTitle(), nativeOffer.getOfferType().toString());
+							.createIntent(MainActivity.this, nativeOffer.getTitle(),
+								nativeOffer.getOfferType().toString());
 						startActivity(nativeOfferIntent);
 					}
 				}
@@ -313,24 +370,29 @@ public class MainActivity extends AppCompatActivity {
 		try {
 			if (Kin.addNativeOffer(nativeOffer, dismissMarketPlaceOnTap)) {
 				showToast("Native offer added");
+			} else {
+				showToast("Could not add native offer");
 			}
 		} catch (ClientException e) {
+			showSnackbar("ClientException  " + e.getMessage(), true);
 			e.printStackTrace();
-			showToast("Could not add native offer");
 		}
 	}
 
 	private void getPublicAddress() {
+
 		try {
 			publicAddress = Kin.getPublicAddress();
-			int blueColor = ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark);
-			publicAddressTextArea.getBackground().setColorFilter(blueColor, Mode.SRC_ATOP);
-			showPublicAddressTextView.setText(R.string.copy_public_address);
-			publicAddressTextArea.setText(publicAddress);
 		} catch (ClientException e) {
+			showSnackbar("ClientException  " + e.getMessage(), true);
+			//Account could not be found
+			publicAddressTextArea.setText(e.getMessage());
 			e.printStackTrace();
 		}
-
+		int blueColor = ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark);
+		publicAddressTextArea.getBackground().setColorFilter(blueColor, Mode.SRC_ATOP);
+		showPublicAddressTextView.setText(R.string.copy_public_address);
+		publicAddressTextArea.setText(publicAddress);
 	}
 
 	private void copyToClipboard(CharSequence textToCopy, String paramName) {
@@ -355,6 +417,7 @@ public class MainActivity extends AppCompatActivity {
 				Balance cachedBalance = Kin.getCachedBalance();
 				setBalanceWithAmount(cachedBalance);
 			} catch (ClientException e) {
+				showSnackbar("ClientException  " + e.getMessage(), true);
 				e.printStackTrace();
 			}
 
@@ -373,7 +436,7 @@ public class MainActivity extends AppCompatActivity {
 			});
 		} catch (ClientException e) {
 			setBalanceFailed();
-			e.printStackTrace();
+			showSnackbar("ClientException  " + e.getMessage(), true);
 		}
 	}
 
@@ -393,6 +456,7 @@ public class MainActivity extends AppCompatActivity {
 		try {
 			Kin.purchase(offerJwt, getNativeSpendOrderConfirmationCallback());
 		} catch (ClientException e) {
+			showSnackbar("ClientException  " + e.getMessage(), true);
 			e.printStackTrace();
 		}
 	}
@@ -402,6 +466,7 @@ public class MainActivity extends AppCompatActivity {
 		try {
 			Kin.requestPayment(offerJwt, getNativeEarnOrderConfirmationCallback());
 		} catch (ClientException e) {
+			showSnackbar("ClientException  " + e.getMessage(), true);
 			e.printStackTrace();
 		}
 	}
@@ -411,6 +476,7 @@ public class MainActivity extends AppCompatActivity {
 		try {
 			Kin.payToUser(offerJwt, getNativePayToUserOrderConfirmationCallback());
 		} catch (ClientException e) {
+			showSnackbar("ClientException  " + e.getMessage(), true);
 			e.printStackTrace();
 		}
 	}
@@ -442,8 +508,8 @@ public class MainActivity extends AppCompatActivity {
 							}
 						});
 					} catch (ClientException e) {
+						showSnackbar("ClientException  " + e.getMessage(), true);
 						e.printStackTrace();
-						enableView(v, true);
 					}
 
 				} else {
@@ -472,6 +538,7 @@ public class MainActivity extends AppCompatActivity {
 					}
 				});
 			} catch (ClientException e) {
+				showSnackbar("ClientException  " + e.getMessage(), true);
 				e.printStackTrace();
 			}
 		}
@@ -566,6 +633,16 @@ public class MainActivity extends AppCompatActivity {
 		snackbar.show();
 	}
 
+	@NonNull
+	public static String getAppId() {
+		return BuildConfig.SAMPLE_APP_ID;
+	}
+
+	@NonNull
+	public static String getApiKey() {
+		return BuildConfig.SAMPLE_API_KEY;
+	}
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -576,7 +653,8 @@ public class MainActivity extends AppCompatActivity {
 			Kin.removeNativeOffer(nativeOffer);
 			Kin.removeNativeOfferClickedObserver(nativeOfferClickedObserver);
 		} catch (ClientException e) {
-			Log.d(TAG, "onDestroy: Failed to remove native offer clicked observer");
+			showSnackbar("ClientException  " + e.getMessage(), true);
+			e.printStackTrace();
 		}
 	}
 }
