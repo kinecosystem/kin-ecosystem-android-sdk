@@ -223,7 +223,7 @@ public class Kin {
 			checkInstanceNotNull();
 			try {
 				BlockchainSourceImpl.getInstance().createAccount();
-				publicAddress = getPublicAddress();
+				publicAddress = BlockchainSourceImpl.getInstance().getPublicAddress();
 			} catch (final BlockchainException exception) {
 				instance.executorsUtil.mainThread().execute(new Runnable() {
 					@Override
