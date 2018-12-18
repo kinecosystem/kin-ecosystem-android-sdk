@@ -177,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
 		});
 		((TextView) findViewById(R.id.sample_app_version))
 			.setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
-		addNativeOfferClickedObserver();
 	}
 
 
@@ -193,9 +192,11 @@ public class MainActivity extends AppCompatActivity {
 			Kin.login(jwt, new KinCallback<Void>() {
 				@Override
 				public void onResponse(Void response) {
-					addNativeOffer();
 					showSnackbar("login succeed jwt", false);
 					Log.d(TAG, "JWT onResponse: login");
+
+					addNativeOffer();
+					addNativeOfferClickedObserver();
 				}
 
 				@Override
@@ -210,9 +211,11 @@ public class MainActivity extends AppCompatActivity {
 			Kin.login(whitelistData, new KinCallback<Void>() {
 				@Override
 				public void onResponse(Void response) {
-					addNativeOffer();
 					showSnackbar("login succeed whitelist", false);
 					Log.d(TAG, "WhiteList onResponse: login");
+
+					addNativeOffer();
+					addNativeOfferClickedObserver();
 				}
 
 				@Override
