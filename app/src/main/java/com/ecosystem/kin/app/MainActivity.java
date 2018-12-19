@@ -650,8 +650,12 @@ public class MainActivity extends AppCompatActivity {
 		nativeEarnOrderConfirmationCallback = null;
 		payToUserOrderConfirmationCallback = null;
 		try {
-			Kin.removeNativeOffer(nativeOffer);
-			Kin.removeNativeOfferClickedObserver(nativeOfferClickedObserver);
+			if (nativeOffer != null) {
+				Kin.removeNativeOffer(nativeOffer);
+			}
+			if(nativeOfferClickedObserver != null) {
+				Kin.removeNativeOfferClickedObserver(nativeOfferClickedObserver);
+			}
 		} catch (ClientException e) {
 			showSnackbar("ClientException  " + e.getMessage(), true);
 			e.printStackTrace();
