@@ -99,7 +99,12 @@ public interface BlockchainSource {
 	 */
 	KeyStoreProvider getKeyStoreProvider();
 
-	void updateActiveAccount(int accountIndex);
+	/**
+	 * Update the activated account
+	 * @param accountIndex the new account to load
+	 * @return true if switch was succeed
+	 */
+	boolean updateActiveAccount(int accountIndex);
 
 	interface Local {
 

@@ -394,14 +394,16 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
-	public void updateActiveAccount(int accountIndex) {
+	public boolean updateActiveAccount(int accountIndex) {
 		if (activeAccountIndex != accountIndex && accountIndex != -1 && accountIndex < kinClient.getAccountCount()) {
 			setAccountIndex(accountIndex);
 			account = kinClient.getAccount(activeAccountIndex);
 			reconnectBalanceConnection();
 			//trigger balance update
 			getBalance(null);
+			return true;
 		}
+		return false;
 	}
 
 	private void setAccountIndex(int accountIndex) {
