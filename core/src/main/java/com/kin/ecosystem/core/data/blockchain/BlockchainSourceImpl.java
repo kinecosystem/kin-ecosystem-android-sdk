@@ -394,10 +394,10 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
-	public void updateActiveAccount(int accountIndex) throws BlockchainException {
-		if (activeAccountIndex != accountIndex && accountIndex != -1) {
+	public void updateActiveAccount(int accountIndex) {
+		if (activeAccountIndex != accountIndex && accountIndex != -1 && accountIndex < kinClient.getAccountCount()) {
 			setAccountIndex(accountIndex);
-			createKinAccountIfNeeded();
+			account = kinClient.getAccount(activeAccountIndex);
 			reconnectBalanceConnection();
 			//trigger balance update
 			getBalance(null);
