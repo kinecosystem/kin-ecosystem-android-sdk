@@ -186,15 +186,12 @@ public class AccountManagerImpl implements AccountManager {
 		authRepository.updateWalletAddress(address, new KinCallback<Boolean>() {
 			@Override
 			public void onResponse(Boolean response) {
-				try {
-					//switch to the new KinAccount
-					blockchainSource.updateActiveAccount(accountIndex);
-				} catch (BlockchainException e) {
-					callback.onFailure(ErrorUtil.getBlockchainException(e));
-					return;
+				//switch to the new KinAccount
+				if(blockchainSource.updateActiveAccount(accountIndex)) {
+					callback.onResponse(response);
+				} else {
+					callback.onFailure(ErrorUtil.createAccountCannotLoadedException(accountIndex));
 				}
-				Logger.log(new Log().withTag(TAG).put("switchAccount", "ended successfully"));
-				callback.onResponse(response);
 			}
 
 			@Override
