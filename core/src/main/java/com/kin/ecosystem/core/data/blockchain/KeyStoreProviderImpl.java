@@ -36,8 +36,13 @@ public class KeyStoreProviderImpl implements KeyStoreProvider {
 		if (kinAccount != null) {
 			try {
 				return kinAccount.export(password);
-			} catch (CryptoException e) {
-				throw new BackupException(CODE_BACKUP_FAILED, "Could not export account see underlying exception", e);
+			}
+			catch (Exception e) {
+				if (e instanceof CryptoException) {
+					throw new BackupException(CODE_BACKUP_FAILED, "Could not export account see underlying exception", e);
+				}
+
+				throw new BackupException(CODE_BACKUP_FAILED, e.getMessage(), e);
 			}
 		} else {
 			throw new BackupException(CODE_UNEXPECTED, "KinAccount could not be null");
@@ -63,7 +68,8 @@ public class KeyStoreProviderImpl implements KeyStoreProvider {
 				throw new BackupException(CODE_UNEXPECTED, "Could not find the imported account");
 			}
 
-		} catch (CryptoException e) {
+		}
+		catch (CryptoException e) {
 			throw new BackupException(CODE_RESTORE_FAILED, "Could not import the account");
 		} catch (CreateAccountException e) {
 			throw new BackupException(CODE_RESTORE_FAILED, "Could not create the account");
