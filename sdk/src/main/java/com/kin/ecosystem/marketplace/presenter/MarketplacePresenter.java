@@ -17,6 +17,7 @@ import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.BackButtonOnMarketplacePageTapped;
 import com.kin.ecosystem.core.bi.events.EarnOfferTapped;
+import com.kin.ecosystem.core.bi.events.GeneralEcosystemSdkError;
 import com.kin.ecosystem.core.bi.events.MarketplacePageViewed;
 import com.kin.ecosystem.core.bi.events.NotEnoughKinPageViewed;
 import com.kin.ecosystem.core.bi.events.SpendOfferTapped;
@@ -55,6 +56,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private List<Offer> earnList;
 
 	private Observer<Order> orderObserver;
+	private boolean isListsAdded;
 
 
 	private long lastClickTime = NOT_FOUND;
@@ -125,6 +127,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		if (this.view != null) {
 			this.view.setEarnList(earnList);
 			this.view.setSpendList(spendList);
+			isListsAdded = true;
 
 			if (!earnList.isEmpty()) {
 				updateEarnTitle();
@@ -343,46 +346,59 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 		final Offer offer;
 		if (offerType == OfferType.EARN) {
-			offer = earnList.get(position);
-			sendEranOfferTapped(offer);
-			if (onExternalItemClicked(offer)) {
-				return;
-			}
-			if (this.view != null) {
-				PollBundle pollBundle = new PollBundle()
-					.setJsonData(offer.getContent())
-					.setOfferID(offer.getId())
-					.setContentType(offer.getContentType().getValue())
-					.setAmount(offer.getAmount())
-					.setTitle(offer.getTitle());
-				this.view.showOfferActivity(pollBundle);
+			if(earnList != null) {
+				offer = earnList.get(position);
+				sendEranOfferTapped(offer);
+				if (onExternalItemClicked(offer)) {
+					return;
+				}
+				if (this.view != null) {
+					PollBundle pollBundle = new PollBundle()
+						.setJsonData(offer.getContent())
+						.setOfferID(offer.getId())
+						.setContentType(offer.getContentType().getValue())
+						.setAmount(offer.getAmount())
+						.setTitle(offer.getTitle());
+					this.view.showOfferActivity(pollBundle);
+				}
+			} else {
+				sendSdkError("MarketplacePresenter earnList is null, offer position is: " + position + ", isListsAdded: " + isListsAdded);
 			}
 		} else {
-			offer = spendList.get(position);
-			sendSpendOfferTapped(offer);
-			if (onExternalItemClicked(offer)) {
-				return;
-			}
-			int balance = blockchainSource.getBalance().getAmount().intValue();
-			final BigDecimal amount = new BigDecimal(offer.getAmount());
+			if(spendList != null) {
+				offer = spendList.get(position);
+				sendSpendOfferTapped(offer);
+				if (onExternalItemClicked(offer)) {
+					return;
+				}
+				int balance = blockchainSource.getBalance().getAmount().intValue();
+				final BigDecimal amount = new BigDecimal(offer.getAmount());
 
-			if (balance < amount.intValue()) {
-				eventLogger.send(NotEnoughKinPageViewed.create());
-				showToast(NOT_ENOUGH_KIN);
-				return;
-			}
+				if (balance < amount.intValue()) {
+					eventLogger.send(NotEnoughKinPageViewed.create());
+					showToast(NOT_ENOUGH_KIN);
+					return;
+				}
 
-			OfferInfo offerInfo = deserializeOfferInfo(offer.getContent());
-			if (offerInfo != null) {
-				showSpendDialog(offerInfo, offer);
-			} else {
-				showSomethingWentWrong();
+				OfferInfo offerInfo = deserializeOfferInfo(offer.getContent());
+				if (offerInfo != null) {
+					showSpendDialog(offerInfo, offer);
+				} else {
+					showSomethingWentWrong();
+				}
+			} else  {
+				sendSdkError("MarketplacePresenter spendList is null, offer position is: " + position + ", isListsAdded: " + isListsAdded);
 			}
 		}
 	}
 
+	private void sendSdkError(String msg) {
+		eventLogger.send(GeneralEcosystemSdkError.create(msg));
+	}
+
 	private boolean isFastClicks() {
 		if(lastClickTime == NOT_FOUND) {
+			lastClickTime = System.currentTimeMillis();
 			return false;
 		}
 
