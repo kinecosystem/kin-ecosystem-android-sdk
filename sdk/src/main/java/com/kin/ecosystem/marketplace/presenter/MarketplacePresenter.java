@@ -393,7 +393,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void sendSdkError(String msg) {
-		eventLogger.send(GeneralEcosystemSdkError.create(msg));
+		if(eventLogger != null) {
+			eventLogger.send(GeneralEcosystemSdkError.create(msg));
+		}
 	}
 
 	private boolean isFastClicks() {
