@@ -456,6 +456,11 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		return navigator;
 	}
 
+	@Override
+	public void setNavigator(INavigator navigator) {
+		this.navigator = navigator;
+	}
+
 	private void showSpendDialog(@NonNull final OfferInfo offerInfo, @NonNull final Offer offer) {
 		if (this.view != null) {
 			this.view.showSpendDialog(createSpendDialogPresenter(offerInfo, offer));
