@@ -149,7 +149,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 							getOffers();
 							break;
 					}
-
 				}
 			};
 			orderRepository.addOrderObserver(orderObserver);
@@ -455,6 +454,11 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	@Override
 	public INavigator getNavigator() {
 		return navigator;
+	}
+
+	@Override
+	public void setNavigator(INavigator navigator) {
+		this.navigator = navigator;
 	}
 
 	private void showSpendDialog(@NonNull final OfferInfo offerInfo, @NonNull final Offer offer) {

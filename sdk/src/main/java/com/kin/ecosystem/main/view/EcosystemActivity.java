@@ -174,7 +174,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 			marketplaceFragment = MarketplaceFragment.newInstance();
 		}
 
-		marketplacePresenter = getMarketplacePresenter(marketplaceFragment);
+		attachMarketplacePresenter(marketplaceFragment);
 
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		if (addAnimation) {
@@ -195,13 +195,17 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 			.findFragmentByTag(ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG);
 	}
 
-	private IMarketplacePresenter getMarketplacePresenter(MarketplaceFragment marketplaceFragment) {
+	private IMarketplacePresenter attachMarketplacePresenter(MarketplaceFragment marketplaceFragment) {
 		if (marketplacePresenter == null) {
 			marketplacePresenter = new MarketplacePresenter(marketplaceFragment, OfferRepository.getInstance(),
 				OrderRepository.getInstance(),
 				BlockchainSourceImpl.getInstance(),
 				this,
 				EventLoggerImpl.getInstance());
+		} else {
+			//Presenter already created, just attach view and navigator.
+			marketplacePresenter.setNavigator(this);
+			marketplaceFragment.attachPresenter(marketplacePresenter);
 		}
 
 		return marketplacePresenter;
@@ -288,11 +292,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 				// This is the only fragment that should set presenter again on back.
 				MarketplaceFragment marketplaceFragment = getSavedMarketplaceFragment();
 				if (marketplaceFragment != null) {
-					if (marketplacePresenter == null) {
-						getMarketplacePresenter(marketplaceFragment);
-					} else {
-						marketplaceFragment.attachPresenter(marketplacePresenter);
-					}
+					attachMarketplacePresenter(marketplaceFragment);
 				} else {
 					navigateToMarketplace(true);
 				}
@@ -304,10 +304,6 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 
 	@Override
 	protected void onDestroy() {
-		if (marketplacePresenter != null) {
-			marketplacePresenter.onDetach();
-			marketplacePresenter = null;
-		}
 		if (ecosystemPresenter != null) {
 			ecosystemPresenter.onDetach();
 			ecosystemPresenter = null;
