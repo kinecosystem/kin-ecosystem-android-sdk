@@ -204,7 +204,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 				EventLoggerImpl.getInstance());
 		} else {
 			//Presenter already created, just attach view
-			marketplacePresenter.onAttach(marketplaceFragment);
+			marketplaceFragment.attachPresenter(marketplacePresenter);
 		}
 
 		return marketplacePresenter;
