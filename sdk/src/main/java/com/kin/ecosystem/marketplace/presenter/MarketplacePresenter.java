@@ -149,7 +149,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 							getOffers();
 							break;
 					}
-
 				}
 			};
 			orderRepository.addOrderObserver(orderObserver);
