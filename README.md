@@ -140,7 +140,7 @@ The Sample App Gradle build loads the ```credential.properties``` setting and us
 ```groovy
  dependencies {
      ...
-     implementation 'com.github.kinfoundation.kin-ecosystem-android-sdk:sdk:0.3.0'
+     implementation 'com.github.kinfoundation.kin-ecosystem-android-sdk:sdk:0.3.1'
 
  }
 ```
