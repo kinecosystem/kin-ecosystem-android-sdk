@@ -17,16 +17,19 @@ import com.kin.ecosystem.core.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
-import com.kin.ecosystem.core.network.model.Order.Status;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import kin.core.exception.InsufficientKinException;
 
 class CreateExternalOrderCall extends Thread {
 
+	private static final int SSE_TIMEOUT = 15000; // 15 seconds
 	private final OrderDataSource orderRepository;
 	private final BlockchainSource blockchainSource;
 	private final String orderJwt;
@@ -78,11 +81,20 @@ class CreateExternalOrderCall extends Thread {
 			return;
 		}
 
+		//Create SSE timeout timer, so we can schedule timed task.
+		final Timer sseTimeoutTimer = new Timer();
+		final AtomicBoolean isTimeoutTaskCanceled = new AtomicBoolean(false);
+
 		//Listen for payments, make sure the transaction succeed.
 		final Observer<Payment> paymentObserver = new Observer<Payment>() {
 			@Override
 			public void onChanged(final Payment payment) {
 				if (isPaymentOrderEquals(payment, openOrder.getId())) {
+					//Cancel SSE timeout task
+					if(!isTimeoutTaskCanceled.getAndSet(true)) {
+						sseTimeoutTimer.cancel();
+					}
+
 					if (payment.isSucceed()) {
 						getOrder(payment.getOrderID());
 					} else {
@@ -112,6 +124,20 @@ class CreateExternalOrderCall extends Thread {
 					blockchainSource.sendTransaction(openOrder.getBlockchainData().getRecipientAddress(),
 						new BigDecimal(openOrder.getAmount()), openOrder.getId(), openOrder.getOfferId());
 				}
+
+				// Schedule sse timeout task
+				sseTimeoutTimer.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						// TimerTask runs on a BG thread of the timer.
+						if(!isTimeoutTaskCanceled.getAndSet(true)) {
+							// Timeout should be fulfilled, remove payment observer and start server polling for order.
+							blockchainSource.removePaymentObserver(paymentObserver);
+							getOrder(openOrder.getId());
+							sseTimeoutTimer.cancel(); // Clear queue so it can be GC
+						}
+					}
+				}, SSE_TIMEOUT);
 			}
 
 			@Override
@@ -222,7 +248,8 @@ class CreateExternalOrderCall extends Thread {
 						onFailure(serviceException);
 						break;
 					case DELAYED:
-						return;// if delayed there will be additional retries will eventually either call onResponse or onFailure
+						// if delayed there will be additional retries will eventually either call onResponse or onFailure
+						break;
 				}
 			}
 
