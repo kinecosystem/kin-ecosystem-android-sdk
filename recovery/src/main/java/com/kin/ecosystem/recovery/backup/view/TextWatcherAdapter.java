@@ -5,16 +5,13 @@ import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import com.kin.ecosystem.recovery.Validator;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class TextWatcherAdapter implements TextWatcher {
 
+	private final static long DELAY_MILLIS = 500;
+
 	private final Handler mainThreadHandler;
 	private final TextChangeListener listener;
-
-	private Timer timer = new Timer();
-	private final static long DELAY = 500; // milliseconds
 
 	public TextWatcherAdapter(final TextChangeListener textChangeListener) {
 		Validator.checkNotNull(textChangeListener, "listener");
@@ -32,22 +29,21 @@ public class TextWatcherAdapter implements TextWatcher {
 
 	@Override
 	public void afterTextChanged(final Editable editable) {
-		timer.cancel();
-		timer = new Timer();
-		timer.schedule(
-			new TimerTask() {
-				@Override
-				public void run() {
-					mainThreadHandler.post(new Runnable() {
-						@Override
-						public void run() {
-							listener.afterTextChanged(editable);
-						}
-					});
-				}
-			},
-			DELAY
-		);
+		removeCallbacks();
+		mainThreadHandler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				listener.afterTextChanged(editable);
+			}
+		}, DELAY_MILLIS);
+	}
+
+	private void removeCallbacks() {
+		mainThreadHandler.removeCallbacksAndMessages(null);
+	}
+
+	public void release() {
+		removeCallbacks();
 	}
 
 	public interface TextChangeListener {
