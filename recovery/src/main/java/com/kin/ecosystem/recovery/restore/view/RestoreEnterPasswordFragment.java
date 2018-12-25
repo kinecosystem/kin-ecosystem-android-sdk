@@ -38,6 +38,7 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 	private Button doneBtn;
 	private TextView contentText;
 	private PasswordEditText password;
+	private TextWatcherAdapter textWatcherAdapter;
 
 	public static RestoreEnterPasswordFragment newInstance(String keystoreData,
 		@NonNull KeyboardHandler keyboardHandler) {
@@ -118,13 +119,14 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 				presenter.restoreClicked(password.getText());
 			}
 		});
-
-		password.addTextChangedListener(new TextWatcherAdapter(new TextChangeListener() {
+		textWatcherAdapter = new TextWatcherAdapter(new TextChangeListener() {
 			@Override
 			public void afterTextChanged(Editable editable) {
 				presenter.onPasswordChanged(editable.toString());
 			}
-		}));
+		});
+
+		password.addTextChangedListener(textWatcherAdapter);
 		password.postDelayed(new Runnable() {
 			@Override
 			public void run() {
@@ -162,5 +164,12 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 		contentText.setText(R.string.kinrecovery_restore_invalid_qr);
 		contentText.setTextColor(ContextCompat.getColor(getContext(), R.color.kinrecovery_red));
 		password.setFrameBackgroundColor(R.color.kinrecovery_red);
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		textWatcherAdapter.release();
 	}
 }

@@ -45,6 +45,7 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
     private val isFastClicks: Boolean
         get() {
             if (lastClickTime == NOT_FOUND.toLong()) {
+                lastClickTime = System.currentTimeMillis()
                 return false
             }
 
@@ -120,21 +121,22 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
     }
 
     private fun listenToOrders() {
-        if (orderObserver != null) {
-            orderObserver = object : Observer<Order>() {
-                override fun onChanged(order: Order) {
-                    when (order.status) {
-                        Order.Status.PENDING -> removeOfferFromList(order.offerId, order.offerType)
-                        Order.Status.FAILED, Order.Status.COMPLETED -> getOffers()
-                        else -> {
-                            // no-op
-                        }
-                    }
-
-                }
-            }
-            orderRepository.addOrderObserver(orderObserver!!)
+        orderObserver?.let {
+            orderRepository.removeOrderObserver(it)
         }
+        orderObserver = object : Observer<Order>() {
+            override fun onChanged(order: Order) {
+                when (order.status) {
+                    Order.Status.PENDING -> removeOfferFromList(order.offerId, order.offerType)
+                    Order.Status.FAILED, Order.Status.COMPLETED -> getOffers()
+                    else -> {
+                        // no-op
+                    }
+                }
+
+            }
+        }
+        orderRepository.addOrderObserver(orderObserver!!)
     }
 
     private fun removeOfferFromList(offerId: String, offerType: OfferType) {
@@ -237,12 +239,12 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
     private fun syncList(newList: List<Offer>, oldList: MutableList<Offer>, offerType: OfferType) {
         // check if offer should be removed (index changed / removed from list).
         if (newList.isNotEmpty()) {
-            for (i in oldList.indices) {
-                val offer = oldList[i]
-                val index = newList.indexOf(offer)
-                if (index == NOT_FOUND || index != i) {
-                    oldList.removeAt(i)
-                    notifyItemRemoved(i, offerType)
+            val iterator = oldList.iterator()
+            iterator.withIndex().forEach {
+                val index = newList.indexOf(it.value)
+                if (index == NOT_FOUND || index != it.index) {
+                    iterator.remove()
+                    notifyItemRemoved(it.index, offerType)
                 }
             }
 
@@ -315,42 +317,46 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
             return
         }
 
-        val offer: Offer
         if (offerType == OfferType.EARN) {
-            offer = earnList!![position]
-            sendEranOfferTapped(offer)
-            if (onExternalItemClicked(offer)) {
-                return
+            earnList?.let {
+                val offer = it[position]
+                sendEranOfferTapped(offer)
+                if (onExternalItemClicked(offer)) {
+                    return
+                }
+                view?.let { view ->
+                    val pollBundle = PollBundle()
+                            .setJsonData(offer.content)
+                            .setOfferID(offer.id)
+                            .setContentType(offer.contentType.value)
+                            .setAmount(offer.amount!!)
+                            .setTitle(offer.title)
+                    view.showOfferActivity(pollBundle)
+                }
             }
-            view?.let {
-                val pollBundle = PollBundle()
-                        .setJsonData(offer.content)
-                        .setOfferID(offer.id)
-                        .setContentType(offer.contentType.value)
-                        .setAmount(offer.amount!!)
-                        .setTitle(offer.title)
-                it.showOfferActivity(pollBundle)
-            }
+
         } else {
-            offer = spendList!![position]
-            sendSpendOfferTapped(offer)
-            if (onExternalItemClicked(offer)) {
-                return
-            }
-            val balance = blockchainSource!!.balance.amount.toInt()
-            val amount = BigDecimal(offer.amount!!)
+            spendList?.let {
+                val offer = it[position]
+                sendSpendOfferTapped(offer)
+                if (onExternalItemClicked(offer)) {
+                    return
+                }
+                val balance = blockchainSource!!.balance.amount.toInt()
+                val amount = BigDecimal(offer.amount!!)
 
-            if (balance < amount.toInt()) {
-                eventLogger.send(NotEnoughKinPageViewed.create())
-                showToast(NOT_ENOUGH_KIN)
-                return
-            }
+                if (balance < amount.toInt()) {
+                    eventLogger.send(NotEnoughKinPageViewed.create())
+                    showToast(NOT_ENOUGH_KIN)
+                    return
+                }
 
-            val offerInfo = deserializeOfferInfo(offer.content)
-            if (offerInfo != null) {
-                showSpendDialog(offerInfo, offer)
-            } else {
-                showSomethingWentWrong()
+                val offerInfo = deserializeOfferInfo(offer.content)
+                if (offerInfo != null) {
+                    showSpendDialog(offerInfo, offer)
+                } else {
+                    showSomethingWentWrong()
+                }
             }
         }
     }
@@ -411,6 +417,10 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
 
     override fun getNavigator(): INavigator? {
         return navigator
+    }
+
+    override fun setNavigator(navigator: INavigator?) {
+        this.navigator = navigator
     }
 
     private fun showSpendDialog(offerInfo: OfferInfo, offer: Offer) {

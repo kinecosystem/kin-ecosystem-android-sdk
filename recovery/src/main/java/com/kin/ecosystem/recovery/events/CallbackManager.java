@@ -18,7 +18,7 @@ public class CallbackManager {
 	@Nullable
 	private RestoreCallback restoreCallback;
 
-	private EventDispatcher eventDispatcher;
+	private final EventDispatcher eventDispatcher;
 
 	// Request Code
 	public static final int REQ_CODE_BACKUP = 9000;
@@ -45,15 +45,17 @@ public class CallbackManager {
 	}
 
 	public void setBackupEvents(@Nullable BackupEvents backupEvents) {
-		if(eventDispatcher != null) {
-			this.eventDispatcher.setBackupEvents(backupEvents);
-		}
+		this.eventDispatcher.setBackupEvents(backupEvents);
 	}
 
 	public void setRestoreEvents(@Nullable RestoreEvents restoreEvents) {
-		if(eventDispatcher != null) {
-			this.eventDispatcher.setRestoreEvents(restoreEvents);
-		}
+		this.eventDispatcher.setRestoreEvents(restoreEvents);
+	}
+
+	public void unregisterCallbacksAndEvents() {
+		this.eventDispatcher.unregister();
+		this.backupCallback = null;
+		this.restoreCallback = null;
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -65,23 +67,17 @@ public class CallbackManager {
 	}
 
 	public void sendRestoreSuccessResult(int accountIndex) {
-		if(eventDispatcher != null) {
-			Intent intent = new Intent();
-			intent.putExtra(EXTRA_KEY_IMPORTED_ACCOUNT_INDEX, accountIndex);
-			eventDispatcher.sendCallback(RES_CODE_SUCCESS, intent);
-		}
+		Intent intent = new Intent();
+		intent.putExtra(EXTRA_KEY_IMPORTED_ACCOUNT_INDEX, accountIndex);
+		eventDispatcher.sendCallback(RES_CODE_SUCCESS, intent);
 	}
 
 	public void sendBackupSuccessResult() {
-		if(eventDispatcher != null) {
-			eventDispatcher.sendCallback(RES_CODE_SUCCESS, null);
-		}
+		eventDispatcher.sendCallback(RES_CODE_SUCCESS, null);
 	}
 
 	public void sendCancelledResult() {
-		if(eventDispatcher != null) {
-			eventDispatcher.sendCallback(RES_CODE_CANCEL, null);
-		}
+		eventDispatcher.sendCallback(RES_CODE_CANCEL, null);
 	}
 
 	private void handleRestoreResult(int resultCode, Intent data) {
@@ -136,30 +132,10 @@ public class CallbackManager {
 	}
 
 	public void sendBackupEvent(@BackupEventCode int eventCode) {
-		if(eventDispatcher != null) {
-			eventDispatcher.sendEvent(EventDispatcher.BACKUP_EVENTS, eventCode);
-		}
+		eventDispatcher.sendEvent(EventDispatcher.BACKUP_EVENTS, eventCode);
 	}
 
 	public void sendRestoreEvent(@RestoreEventCode int eventCode) {
-		if(eventDispatcher != null) {
-			eventDispatcher.sendEvent(EventDispatcher.RESTORE_EVENTS, eventCode);
-		}
-	}
-
-	public void release() {
-		unregisterCallbacksAndEvents();
-		if(eventDispatcher != null) {
-			eventDispatcher.release();
-			eventDispatcher = null;
-		}
-	}
-
-	private void unregisterCallbacksAndEvents() {
-		if(eventDispatcher != null) {
-			this.eventDispatcher.unregister();
-		}
-		this.backupCallback = null;
-		this.restoreCallback = null;
+		eventDispatcher.sendEvent(EventDispatcher.RESTORE_EVENTS, eventCode);
 	}
 }

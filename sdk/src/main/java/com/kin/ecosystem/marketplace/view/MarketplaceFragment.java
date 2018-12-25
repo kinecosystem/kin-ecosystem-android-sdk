@@ -22,6 +22,7 @@ import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
 import com.kin.ecosystem.poll.view.PollWebViewActivity;
 import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 
 public class MarketplaceFragment extends Fragment implements IMarketplaceView {
@@ -62,6 +63,9 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 
 	@Override
 	public void onDestroyView() {
+		if(marketplacePresenter != null) {
+			marketplacePresenter.onDetach();
+		}
 		earnRecyclerAdapter = null;
 		spendRecyclerAdapter = null;
 		super.onDestroyView();

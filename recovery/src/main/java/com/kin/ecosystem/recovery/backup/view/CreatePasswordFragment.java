@@ -36,6 +36,9 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 		return fragment;
 	}
 
+	private TextWatcherAdapter confirmPassTextWatcherAdapter;
+	private TextWatcherAdapter enterPassTextWatcherAdapter;
+
 	private BackupNavigator nextStepListener;
 	private KeyboardHandler keyboardHandler;
 	private CreatePasswordPresenter createPasswordPresenter;
@@ -105,24 +108,28 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 	}
 
 	private void initEnterPasswordText() {
-		enterPassEditText.addTextChangedListener(new TextWatcherAdapter(new TextChangeListener() {
+		enterPassTextWatcherAdapter = new TextWatcherAdapter(new TextChangeListener() {
 			@Override
 			public void afterTextChanged(Editable editable) {
-				createPasswordPresenter.enterPasswordChanged(editable.toString(), confirmPassEditText.getText());
+				createPasswordPresenter
+					.enterPasswordChanged(editable.toString(), confirmPassEditText.getText());
 			}
-		}));
+		});
+		enterPassEditText.addTextChangedListener(enterPassTextWatcherAdapter);
 		enterPassEditText.setFrameBackgroundColor(R.color.kinrecovery_gray);
 		openKeyboard(enterPassEditText);
 	}
 
 	private void initConfirmPassword() {
-		confirmPassEditText.addTextChangedListener(new TextWatcherAdapter(new TextChangeListener() {
+		confirmPassTextWatcherAdapter = new TextWatcherAdapter(new TextChangeListener() {
 			@Override
 			public void afterTextChanged(Editable editable) {
 				createPasswordPresenter.confirmPasswordChanged(enterPassEditText.getText(),
 					editable.toString());
 			}
-		}));
+		});
+		confirmPassEditText.addTextChangedListener(confirmPassTextWatcherAdapter);
+
 		confirmPassEditText.setFrameBackgroundColor(R.color.kinrecovery_gray);
 	}
 
@@ -204,5 +211,13 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 			.setNegativeButton(R.string.kinrecovery_cancel, null)
 			.create()
 			.show();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		confirmPassTextWatcherAdapter.release();
+		enterPassTextWatcherAdapter.release();
 	}
 }
