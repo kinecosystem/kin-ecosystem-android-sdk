@@ -245,7 +245,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 			transaction.addToBackStack(MARKETPLACE_TO_ORDER_HISTORY);
 		}
 
-		transaction.commit();
+		transaction.commitAllowingStateLoss();
 
 		setVisibleScreen(ORDER_HISTORY);
 	}
