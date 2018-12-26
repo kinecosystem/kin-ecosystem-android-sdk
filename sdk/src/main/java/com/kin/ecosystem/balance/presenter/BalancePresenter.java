@@ -66,8 +66,6 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 		this.eventLogger = eventLogger;
 		this.blockchainSource = blockchainSource;
 		this.orderRepository = orderRepository;
-		createBalanceObserver();
-		createOrderObserver();
 
 		this.view.attachPresenter(this);
 	}
@@ -193,13 +191,24 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 	}
 
 	private void addObservers() {
+		removeObservers();
+		createObservers();
 		orderRepository.addOrderObserver(orderObserver);
 		blockchainSource.addBalanceObserver(balanceObserver, true);
 	}
 
+	private void createObservers() {
+		createBalanceObserver();
+		createOrderObserver();
+	}
+
 	private void removeObservers() {
-		orderRepository.removeOrderObserver(orderObserver);
-		blockchainSource.removeBalanceObserver(balanceObserver, true);
+		if (orderObserver != null) {
+			orderRepository.removeOrderObserver(orderObserver);
+		}
+		if (balanceObserver != null) {
+			blockchainSource.removeBalanceObserver(balanceObserver, true);
+		}
 	}
 
 	@Override

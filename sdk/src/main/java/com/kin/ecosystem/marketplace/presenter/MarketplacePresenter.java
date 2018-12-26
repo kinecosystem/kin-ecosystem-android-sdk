@@ -61,6 +61,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private long lastClickTime = NOT_FOUND;
 	private final Gson gson;
+	private ISpendDialogPresenter spendDialogPresenter;
 
 	public MarketplacePresenter(@NonNull final IMarketplaceView view, @NonNull final OfferDataSource offerRepository,
 		@NonNull final OrderDataSource orderRepository, @Nullable final BlockchainSource blockchainSource,
@@ -99,6 +100,14 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		spendList = null;
 	}
 
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		if(spendDialogPresenter != null) {
+			spendDialogPresenter.onDetach();
+		}
+	}
+
 	private void getCachedOffers() {
 		OfferList cachedOfferList = offerRepository.getCachedOfferList();
 		setCachedOfferLists(cachedOfferList);
@@ -134,22 +143,24 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private void listenToOrders() {
 		if(orderObserver != null) {
-			orderObserver = new Observer<Order>() {
-				@Override
-				public void onChanged(Order order) {
-					switch (order.getStatus()) {
-						case PENDING:
-							removeOfferFromList(order.getOfferId(), order.getOfferType());
-							break;
-						case FAILED:
-						case COMPLETED:
-							getOffers();
-							break;
-					}
-				}
-			};
-			orderRepository.addOrderObserver(orderObserver);
+			orderRepository.removeOrderObserver(orderObserver);
 		}
+
+		orderObserver = new Observer<Order>() {
+			@Override
+			public void onChanged(Order order) {
+				switch (order.getStatus()) {
+					case PENDING:
+						removeOfferFromList(order.getOfferId(), order.getOfferType());
+						break;
+					case FAILED:
+					case COMPLETED:
+						getOffers();
+						break;
+				}
+			}
+		};
+		orderRepository.addOrderObserver(orderObserver);
 	}
 
 	private void removeOfferFromList(String offerId, OfferType offerType) {
@@ -474,8 +485,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void showSpendDialog(@NonNull final OfferInfo offerInfo, @NonNull final Offer offer) {
-		if (this.view != null) {
-			this.view.showSpendDialog(createSpendDialogPresenter(offerInfo, offer));
+		if (view != null) {
+			spendDialogPresenter = createSpendDialogPresenter(offerInfo, offer);
+			view.showSpendDialog(spendDialogPresenter);
 		}
 	}
 

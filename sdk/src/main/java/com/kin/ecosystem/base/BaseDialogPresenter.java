@@ -2,7 +2,7 @@ package com.kin.ecosystem.base;
 
 public class BaseDialogPresenter<T extends IBottomDialog> extends BasePresenter<T> {
 
-    protected boolean isDismissed;
+    private boolean isDismissed;
 
     @Override
     public void onAttach(T view) {
@@ -12,8 +12,8 @@ public class BaseDialogPresenter<T extends IBottomDialog> extends BasePresenter<
 
     @Override
     public void onDetach() {
+        closeDialog();
         super.onDetach();
-        isDismissed = true;
     }
 
     protected void closeDialog() {
