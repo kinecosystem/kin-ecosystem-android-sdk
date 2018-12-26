@@ -134,7 +134,6 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 	public void onDetach() {
 		super.onDetach();
 		removeBalanceObserver();
-		navigator = null;
 	}
 
 	private void addBalanceObserver() {
