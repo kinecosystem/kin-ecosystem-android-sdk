@@ -86,19 +86,19 @@ class Environment implements KinEnvironment {
 
 
 
-	public static KinEnvironment getProduction() {
+	static KinEnvironment getProduction() {
 		return PRODUCTION;
 	}
 
-	public static KinEnvironment getPlayground() {
+	static KinEnvironment getPlayground() {
 		return PLAYGROUND;
 	}
 
-	public static KinEnvironment getBeta() {
+	static KinEnvironment getBeta() {
 		return BETA;
 	}
 
-	public static KinEnvironment getTest() {
+	static KinEnvironment getTest() {
 		return TEST;
 	}
 }

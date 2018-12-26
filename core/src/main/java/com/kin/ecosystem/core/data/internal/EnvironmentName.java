@@ -11,6 +11,7 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.SOURCE)
 public @interface EnvironmentName {
 
+	String TEST = "test";
 	String BETA = "beta";
 	String PRODUCTION = "prod";
 }
