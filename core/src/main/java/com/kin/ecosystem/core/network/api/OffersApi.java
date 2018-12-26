@@ -8,19 +8,13 @@ import com.kin.ecosystem.core.network.ApiClient;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.ApiResponse;
 import com.kin.ecosystem.core.network.Pair;
-import com.kin.ecosystem.core.network.ProgressRequestBody.ProgressRequestListener;
-import com.kin.ecosystem.core.network.ProgressResponseBody;
-import com.kin.ecosystem.core.network.ProgressResponseBody.ProgressListener;
 import com.kin.ecosystem.core.network.model.OfferList;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import okhttp3.Call;
-import okhttp3.Interceptor;
-import okhttp3.Response;
 
 
 public class OffersApi {
@@ -50,12 +44,10 @@ public class OffersApi {
      * @param limit                   maximum number of items in a list (optional)
      * @param after                   cursor that points to the end of the page of data that has been returned (optional)
      * @param before                  cursor that points to the start of the page of data that has been returned (optional)
-     * @param progressListener        Progress listener
-     * @param progressRequestListener Progress request listener
      * @return Call to execute
      * @throws ApiException If fail to serialize the request body object
      */
-    public Call getOffersCall(String X_REQUEST_ID, Integer limit, String after, String before, final ProgressListener progressListener, final ProgressRequestListener progressRequestListener) throws ApiException {
+    public Call getOffersCall(String X_REQUEST_ID, Integer limit, String after, String before) throws ApiException {
         Object localVarPostBody = null;
 
         // create path and map variables
@@ -88,24 +80,12 @@ public class OffersApi {
         final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
         localVarHeaderParams.put("Content-Type", localVarContentType);
 
-        if (progressListener != null) {
-            apiClient.addNetworkInterceptor(new Interceptor() {
-                @Override
-                public Response intercept(Chain chain) throws IOException {
-                    Response originalResponse = chain.proceed(chain.request());
-                    return originalResponse.newBuilder()
-                            .body(new ProgressResponseBody(originalResponse.body(), progressListener))
-                            .build();
-                }
-            });
-        }
-
         String[] localVarAuthNames = new String[]{};
-        return apiClient.buildCall(localVarPath, ApiClient.GET, localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+        return apiClient.buildCall(localVarPath, ApiClient.GET, localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames);
     }
 
     @SuppressWarnings("rawtypes")
-    private Call getOffersValidateBeforeCall(String X_REQUEST_ID, Integer limit, String after, String before, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestListener progressRequestListener) throws ApiException {
+    private Call getOffersValidateBeforeCall(String X_REQUEST_ID, Integer limit, String after, String before) throws ApiException {
 
 
         // verify the required parameter 'X_REQUEST_ID' is set
@@ -113,9 +93,7 @@ public class OffersApi {
             throw new ApiException("Missing the required parameter 'X_REQUEST_ID' when calling getOffers(Async)");
         }
 
-
-        Call call = getOffersCall(X_REQUEST_ID, limit, after, before, progressListener, progressRequestListener);
-        return call;
+        return getOffersCall(X_REQUEST_ID, limit, after, before);
 
 
     }
@@ -148,7 +126,7 @@ public class OffersApi {
      * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
      */
     public ApiResponse<OfferList> getOffersWithHttpInfo(String X_REQUEST_ID, Integer limit, String after, String before) throws ApiException {
-        Call call = getOffersValidateBeforeCall(X_REQUEST_ID, limit, after, before, null, null);
+        Call call = getOffersValidateBeforeCall(X_REQUEST_ID, limit, after, before);
         Type localVarReturnType = new TypeToken<OfferList>() {
         }.getType();
         return apiClient.execute(call, localVarReturnType);
@@ -168,26 +146,7 @@ public class OffersApi {
      */
     public Call getOffersAsync(String X_REQUEST_ID, Integer limit, String after, String before, final ApiCallback<OfferList> callback) throws ApiException {
 
-        ProgressResponseBody.ProgressListener progressListener = null;
-        ProgressRequestListener progressRequestListener = null;
-
-        if (callback != null) {
-            progressListener = new ProgressResponseBody.ProgressListener() {
-                @Override
-                public void update(long bytesRead, long contentLength, boolean done) {
-                    callback.onDownloadProgress(bytesRead, contentLength, done);
-                }
-            };
-
-            progressRequestListener = new ProgressRequestListener() {
-                @Override
-                public void onRequestProgress(long bytesWritten, long contentLength, boolean done) {
-                    callback.onUploadProgress(bytesWritten, contentLength, done);
-                }
-            };
-        }
-
-        Call call = getOffersValidateBeforeCall(X_REQUEST_ID, limit, after, before, progressListener, progressRequestListener);
+        Call call = getOffersValidateBeforeCall(X_REQUEST_ID, limit, after, before);
         Type localVarReturnType = new TypeToken<OfferList>() {
         }.getType();
         apiClient.executeAsync(call, localVarReturnType, callback);

@@ -83,12 +83,6 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	@Override
-	public void onDetach() {
-		super.onDetach();
-		navigator = null;
-	}
-
-	@Override
 	public void onStart() {
 		getCachedOffers();
 		getOffers();

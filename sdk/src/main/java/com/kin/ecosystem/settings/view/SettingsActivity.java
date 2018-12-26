@@ -143,10 +143,7 @@ public class SettingsActivity extends BaseToolbarActivity implements ISettingsVi
 	protected void onDestroy() {
 		if (settingsPresenter != null) {
 			settingsPresenter.onDetach();
-			settingsPresenter = null;
 		}
-		backupItem = null;
-		restoreItem = null;
 		super.onDestroy();
 	}
 
