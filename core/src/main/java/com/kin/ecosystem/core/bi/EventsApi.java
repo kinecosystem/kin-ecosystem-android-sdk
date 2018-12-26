@@ -56,13 +56,12 @@ class EventsApi {
 
 		return apiClient
 			.buildCall(localVarPath, ApiClient.POST, localVarQueryParams, localVarCollectionQueryParams, localVarPostBody,
-				localVarHeaderParams, localVarFormParams, null, null);
+				localVarHeaderParams, localVarFormParams, null);
 	}
 
 	@SuppressWarnings("rawtypes")
 	private Call sendEventValidateBeforeCall(Event event) throws ApiException {
-		Call call = sendEventCall(event);
-		return call;
+		return sendEventCall(event);
 	}
 
 	/**
