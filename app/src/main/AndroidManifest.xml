@@ -39,6 +39,16 @@
             </intent-filter>
         </activity>
 
+        <service
+            android:name=".AccountInfoServiceImpl"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="kin.transfer.info"/>
+            </intent-filter>
+        </service>
+
+
+
         <activity android:name=".NativeOfferActivity" />
 
         <meta-data
