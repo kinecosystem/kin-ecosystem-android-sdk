@@ -4,30 +4,31 @@
 
     <application>
         <activity
-            android:label="@string/kinecosystem_welcome_to_kin"
             android:name=".splash.view.SplashActivity"
+            android:label="@string/kinecosystem_welcome_to_kin"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing"
-            android:theme="@style/KinecosysNoActionBar"/>
-
+            android:theme="@style/KinecosysNoActionBar"
+            android:windowSoftInputMode="adjustNothing" />
         <activity
-            android:label="@string/kinecosystem_kin_marketplace"
             android:name=".main.view.EcosystemActivity"
+            android:label="@string/kinecosystem_kin_marketplace"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing"
-            android:theme="@style/KinecosysNoActionBar"/>
-
+            android:theme="@style/KinecosysNoActionBar"
+            android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".poll.view.PollWebViewActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/KinecosysNoActionBar"/>
-
+            android:theme="@style/KinecosysNoActionBar" />
         <activity
             android:name=".settings.view.SettingsActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing"
-            android:theme="@style/KinecosysNoActionBar"/>
-
+            android:theme="@style/KinecosysNoActionBar"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".transfer.AccountInfoActivity"
+            android:screenOrientation="portrait"
+            android:exported="true"
+            android:theme="@style/KinecosysNoActionBar" />
     </application>
 
 </manifest>

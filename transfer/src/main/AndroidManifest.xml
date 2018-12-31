@@ -1,18 +1,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.kin.ecosystem.transfer" >
+    package="com.kin.ecosystem.transfer">
+
     <application>
+
         <provider
-            android:authorities="${applicationId}.AccountInfoFileProvider"
+            android:name=".KinTransferAccountInfoFileProvider"
+            android:authorities="${applicationId}.KinTransferAccountInfoFileProvider"
             android:exported="false"
-            android:grantUriPermissions="true"
-            android:name=".AccountInfoFileProvider">
+            android:grantUriPermissions="true">
 
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_provider_paths"/>
+                android:resource="@xml/kin_transfer_file_provider_paths" />
         </provider>
-
-
 
     </application>
 </manifest>
