@@ -217,21 +217,10 @@ public class Kin {
 			.jwt(jwt);
 	}
 
-	private static void internalLogin(@NonNull SignInData signInData, final KinCallback<Void> loginCallback) {
-		String publicAddress = null;
+	private static void internalLogin(@NonNull final SignInData signInData, final KinCallback<Void> loginCallback) {
+
 		try {
 			checkInstanceNotNull();
-			try {
-				BlockchainSourceImpl.getInstance().createAccount();
-				publicAddress = BlockchainSourceImpl.getInstance().getPublicAddress();
-			} catch (final BlockchainException exception) {
-				instance.executorsUtil.mainThread().execute(new Runnable() {
-					@Override
-					public void run() {
-						loginCallback.onFailure(exception);
-					}
-				});
-			}
 		} catch (final ClientException exception) {
 			instance.executorsUtil.mainThread().execute(new Runnable() {
 				@Override
@@ -240,50 +229,52 @@ public class Kin {
 				}
 			});
 		}
-
-		String deviceID = AuthRepository.getInstance().getDeviceID();
-		signInData.setDeviceId(deviceID != null ? deviceID : UUID.randomUUID().toString());
-		signInData.setWalletAddress(publicAddress);
 		AuthRepository.getInstance().setSignInData(signInData);
-
-		ObservableData<String> observableData = AuthRepository.getInstance().getAppID();
-		String appID = observableData.getValue();
-		if (appID == null) {
-			observableData.addObserver(new Observer<String>() {
-				@Override
-				public void onChanged(String appID) {
-					BlockchainSourceImpl.getInstance().setAppID(appID);
-					AuthRepository.getInstance().getAppID().removeObserver(this);
-				}
-			});
-		}
-		BlockchainSourceImpl.getInstance().setAppID(appID);
-
 		AuthRepository.getInstance().getAuthToken(new KinCallback<AuthToken>() {
 			@Override
-			public void onResponse(AuthToken response) {
-				isAccountLoggedIn = true;
-				instance.executorsUtil.mainThread().execute(new Runnable() {
+			public void onResponse(AuthToken authToken) {
+				String publicAddress = null;
+				try {
+					BlockchainSourceImpl.getInstance().setAppID(authToken.getAppID());
+					BlockchainSourceImpl.getInstance().createAccount();
+					publicAddress = BlockchainSourceImpl.getInstance().getPublicAddress();
+				} catch (final BlockchainException exception) {
+					sendLoginFailed(exception, loginCallback);
+					return;
+				}
+				AccountManagerImpl.getInstance().start();
+				AuthRepository.getInstance().updateWalletAddress(publicAddress, new KinCallback<Boolean>() {
 					@Override
-					public void run() {
-						loginCallback.onResponse(null);
+					public void onResponse(Boolean response) {
+						isAccountLoggedIn = true;
+						instance.executorsUtil.mainThread().execute(new Runnable() {
+							@Override
+							public void run() {
+								loginCallback.onResponse(null);
+							}
+						});
+					}
+
+					@Override
+					public void onFailure(KinEcosystemException exception) {
+						sendLoginFailed(exception, loginCallback);
 					}
 				});
-
-				if (!AccountManagerImpl.getInstance().isAccountCreated()) {
-					AccountManagerImpl.getInstance().start();
-				}
 			}
 
 			@Override
 			public void onFailure(final KinEcosystemException exception) {
-				isAccountLoggedIn = false;
-				instance.executorsUtil.mainThread().execute(new Runnable() {
-					@Override
-					public void run() {
-						loginCallback.onFailure(exception);
-					}
-				});
+				sendLoginFailed(exception, loginCallback);
+			}
+		});
+	}
+
+	private static void sendLoginFailed(final KinEcosystemException exception, final KinCallback<Void> loginCallback) {
+		isAccountLoggedIn = false;
+		instance.executorsUtil.mainThread().execute(new Runnable() {
+			@Override
+			public void run() {
+				loginCallback.onFailure(exception);
 			}
 		});
 	}

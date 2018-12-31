@@ -2,12 +2,11 @@ package com.kin.ecosystem.core.data.auth;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
-import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.core.network.ApiException;
+import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.SignInData;
 import com.kin.ecosystem.core.network.model.UserProfile;
@@ -19,7 +18,6 @@ import java.util.Date;
 
 public class AuthRepository implements AuthDataSource {
 
-
 	private static AuthRepository instance = null;
 
 	private final AuthDataSource.Local localData;
@@ -27,7 +25,6 @@ public class AuthRepository implements AuthDataSource {
 
 	private SignInData cachedSignInData;
 	private AuthToken cachedAuthToken;
-	private ObservableData<String> appId = ObservableData.create(null);
 
 	private AuthRepository(@NonNull AuthDataSource.Local local,
 		@NonNull AuthDataSource.Remote remote) {
@@ -57,7 +54,6 @@ public class AuthRepository implements AuthDataSource {
 		cachedSignInData = signInData;
 		localData.setSignInData(signInData);
 		remoteData.setSignInData(signInData);
-		postAppID(signInData.getAppId());
 	}
 
 	@Override
@@ -66,8 +62,6 @@ public class AuthRepository implements AuthDataSource {
 		remoteData.updateWalletAddress(userProperties, new Callback<Void, ApiException>() {
 			@Override
 			public void onResponse(Void response) {
-				cachedSignInData.setWalletAddress(address);
-				setSignInData(cachedSignInData);
 				callback.onResponse(true);
 			}
 
@@ -79,9 +73,8 @@ public class AuthRepository implements AuthDataSource {
 	}
 
 	@Override
-	public ObservableData<String> getAppID() {
-		loadCachedAppIDIfNeeded();
-		return appId;
+	public String getAppID() {
+		return localData.getAppId();
 	}
 
 	@Override
@@ -97,15 +90,6 @@ public class AuthRepository implements AuthDataSource {
 	@Override
 	public String getEcosystemUserID() {
 		return localData.getEcosystemUserID();
-	}
-
-	private void loadCachedAppIDIfNeeded() {
-		if (TextUtils.isEmpty(appId.getValue())) {
-			final String localAppId = localData.getAppId();
-			if (!TextUtils.isEmpty(localAppId)) {
-				postAppID(localAppId);
-			}
-		}
 	}
 
 	@Override
@@ -149,12 +133,12 @@ public class AuthRepository implements AuthDataSource {
 			@Override
 			public void onResponse(UserProfile response) {
 				UserStats userStats = new UserStats();
-				com.kin.ecosystem.core.network.model.UserStats userNetworkrStats = response.getStats();
-				if (userNetworkrStats != null) {
-					userStats.setEarnCount(userNetworkrStats.getEarnCount().intValue());
-					userStats.setLastEarnDate(userNetworkrStats.getLastEarnDate());
-					userStats.setSpendCount(userNetworkrStats.getSpendCount().intValue());
-					userStats.setLastSpendDate(userNetworkrStats.getLastSpendDate());
+				com.kin.ecosystem.core.network.model.UserStats userNetworkStats = response.getStats();
+				if (userNetworkStats != null) {
+					userStats.setEarnCount(userNetworkStats.getEarnCount().intValue());
+					userStats.setLastEarnDate(userNetworkStats.getLastEarnDate());
+					userStats.setSpendCount(userNetworkStats.getSpendCount().intValue());
+					userStats.setLastSpendDate(userNetworkStats.getLastSpendDate());
 				}
 
 				callback.onResponse(userStats);
@@ -181,25 +165,33 @@ public class AuthRepository implements AuthDataSource {
 	}
 
 	private void refreshTokenSync() {
-		AuthToken authToken = remoteData.getAuthTokenSync();
-		if (authToken != null) {
-			setAuthToken(authToken);
+		AccountInfo accountInfo = remoteData.getAccountInfoSync();
+		if (accountInfo != null) {
+			setAccountInfo(accountInfo);
+		}
+	}
+
+	private void setAuthToken(@NonNull AuthToken authToken) {
+		cachedAuthToken = authToken;
+	}
+
+
+	private void setAccountInfo(AccountInfo accountInfo) {
+		if (accountInfo != null) {
+			localData.setAccountInfo(accountInfo);
+			AuthToken authToken = accountInfo.getAuthToken();
+			if (authToken != null) {
+				setAuthToken(authToken);
+			}
 		}
 	}
 
 	@Override
-	public void setAuthToken(@NonNull AuthToken authToken) {
-		cachedAuthToken = authToken;
-		localData.setAuthToken(authToken);
-		postAppID(authToken.getAppID());
-	}
-
-	@Override
 	public void getAuthToken(@Nullable final KinCallback<AuthToken> callback) {
-		remoteData.getAuthToken(new Callback<AuthToken, ApiException>() {
+		remoteData.getAccountInfo(new Callback<AccountInfo, ApiException>() {
 			@Override
-			public void onResponse(AuthToken authToken) {
-				setAuthToken(authToken);
+			public void onResponse(AccountInfo accountInfo) {
+				setAccountInfo(accountInfo);
 				if (callback != null) {
 					callback.onResponse(cachedAuthToken);
 				}
@@ -212,9 +204,5 @@ public class AuthRepository implements AuthDataSource {
 				}
 			}
 		});
-	}
-
-	private void postAppID(@Nullable String appID) {
-		appId.postValue(appID);
 	}
 }

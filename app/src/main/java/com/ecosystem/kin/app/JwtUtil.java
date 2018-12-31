@@ -33,6 +33,7 @@ public class JwtUtil {
     private static final String JWT_SUBJECT_PAY_TO_USER = "pay_to_user";
 
     private static final String JWT_KEY_USER_ID = "user_id";
+    private static final String JWT_KEY_DEVICE_ID = "device_id";
 
     private static final String JWT_HEADER_KID = "kid";
     private static final String JWT_HEADER_TYP = "typ";
@@ -40,10 +41,11 @@ public class JwtUtil {
     private static final String JWT = "jwt";
 
 
-    public static String generateSignInExampleJWT(String appID, String userId) {
+    public static String generateSignInExampleJWT(String appID, String userId, String deviceId) {
         return getBasicJWT(appID)
             .setSubject(JWT_SUBJECT_REGISTER)
             .claim(JWT_KEY_USER_ID, userId)
+            .claim(JWT_KEY_DEVICE_ID, deviceId)
             .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
     }
 

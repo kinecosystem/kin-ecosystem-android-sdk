@@ -1,6 +1,8 @@
 package com.kin.ecosystem.core.data.internal;
 
 
+import static com.kin.ecosystem.core.data.internal.ConfigurationImpl.API_VERSION;
+
 import com.kin.ecosystem.common.KinEnvironment;
 
 class Environment implements KinEnvironment {
@@ -9,23 +11,15 @@ class Environment implements KinEnvironment {
 		"https://horizon-kin-ecosystem.kininfrastructure.com/",
 		"Public Global Kin Ecosystem Network ; June 2018",
 		"GDF42M3IPERQCBLWFEZKQRK77JQ65SCKTU3CW36HZVCX7XX5A5QXZIVK",
-		"https://api.kinmarketplace.com/v1",
+		"https://api.kinmarketplace.com/" + API_VERSION,
 		"https://cdn.kinmarketplace.com/",
 		"https://kin-bi.appspot.com/eco_");
-
-	private static final Environment PLAYGROUND = new Environment(
-		"https://stellar.kinplayground.com",
-		"ecosystem playground",
-		"GDVIWJ2NYBCPHMGTIBO5BBZCP5QCYC4YT4VINTV5PZOSE7BAJCH5JI64",
-		"https://api.kinplayground.com/v1",
-		"https://s3.amazonaws.com/assets.kinplayground.com/web-offers/cards-based/index.html",
-		"https://kin-bi.appspot.com/eco_play_");
 
 	private static final Environment BETA = new Environment(
 		"https://horizon-playground.kininfrastructure.com",
 		"Kin Playground Network ; June 2018",
 		"GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7",
-		"http://api.kinecosystembeta.com/v1",
+		"http://api.kinecosystembeta.com/" + API_VERSION,
 		"https://s3.amazonaws.com/assets.kinecosystembeta.com/web-offers/cards-based/index.html",
 		"https://kin-bi.appspot.com/eco_play_");
 
@@ -33,7 +27,7 @@ class Environment implements KinEnvironment {
 		"https://horizon-playground.kininfrastructure.com",
 		"Kin Playground Network ; June 2018",
 		"GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7",
-		"http://api.kinecosystemtest.com/v1",
+		"https://72bf736d.ngrok.io/" + API_VERSION,
 		"https://s3.amazonaws.com/assets.kinecosystemtest.com/web-offers/cards-based/index.html",
 		"https://kin-bi.appspot.com/eco_play_");
 
@@ -88,10 +82,6 @@ class Environment implements KinEnvironment {
 
 	static KinEnvironment getProduction() {
 		return PRODUCTION;
-	}
-
-	static KinEnvironment getPlayground() {
-		return PLAYGROUND;
 	}
 
 	static KinEnvironment getBeta() {

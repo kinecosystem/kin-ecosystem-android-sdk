@@ -98,11 +98,9 @@ public class AccountManagerImpl implements AccountManager {
 
 	@Override
 	public void start() {
-		if (getKinAccount() != null) {
+		if (getKinAccount() != null && !isAccountCreated()) {
 			Logger.log(new Log().withTag(TAG).put("setAccountState", "start"));
-			if (getAccountState() != CREATION_COMPLETED) {
-				this.setAccountState(local.getAccountState());
-			}
+			this.setAccountState(local.getAccountState());
 		}
 	}
 
@@ -116,19 +114,7 @@ public class AccountManagerImpl implements AccountManager {
 				case REQUIRE_CREATION:
 					eventLogger.send(StellarAccountCreationRequested.create());
 					Logger.log(new Log().withTag(TAG).put("setAccountState", "REQUIRE_CREATION"));
-					// Trigger account creation from server side.
-					authRepository.getAuthToken(new KinCallback<AuthToken>() {
-						@Override
-						public void onResponse(AuthToken response) {
-							setAccountState(PENDING_CREATION);
-						}
-
-						@Override
-						public void onFailure(KinEcosystemException error) {
-							instance.error = error;
-							setAccountState(ERROR);
-						}
-					});
+					setAccountState(PENDING_CREATION);
 					break;
 				case PENDING_CREATION:
 					Logger.log(new Log().withTag(TAG).put("setAccountState", "PENDING_CREATION"));

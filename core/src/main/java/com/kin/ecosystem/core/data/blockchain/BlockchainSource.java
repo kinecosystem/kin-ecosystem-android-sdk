@@ -115,5 +115,9 @@ public interface BlockchainSource {
 		int getAccountIndex();
 
 		void setAccountIndex(int index);
+
+		void setAppId(@NonNull String appId);
+
+		String getAppId();
 	}
 }

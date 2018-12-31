@@ -79,6 +79,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		this.kinClient = kinClient;
 		this.local = local;
 		this.activeAccountIndex = local.getAccountIndex();
+		this.appID = local.getAppId();
 	}
 
 	public static void init(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient,
@@ -129,6 +130,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	public void setAppID(String appID) {
 		if (!TextUtils.isEmpty(appID)) {
 			this.appID = appID;
+			local.setAppId(appID);
 		}
 	}
 

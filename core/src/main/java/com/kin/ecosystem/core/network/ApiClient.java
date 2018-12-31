@@ -739,10 +739,14 @@ public class ApiClient {
 				try {
 					result = (T) handleResponse(response, returnType);
 				} catch (ApiException e) {
-					callback.onFailure(e, response.code(), response.headers().toMultimap());
+					if(call != null) {
+						callback.onFailure(e, response.code(), response.headers().toMultimap());
+					}
 					return;
 				}
-				callback.onSuccess(result, response.code(), response.headers().toMultimap());
+				if (callback != null) {
+					callback.onSuccess(result, response.code(), response.headers().toMultimap());
+				}
 			}
 		});
 	}

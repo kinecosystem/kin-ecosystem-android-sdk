@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.support.annotation.NonNull;
+import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.SignInData;
 import com.kin.ecosystem.core.network.model.SignInData.SignInTypeEnum;
@@ -47,8 +48,6 @@ public class AuthLocalData implements AuthDataSource.Local {
 	@Override
 	public void setSignInData(@NonNull final SignInData signInData) {
 		Editor editor = signInSharedPreferences.edit();
-		editor.putString(DEVICE_ID_KEY, signInData.getDeviceId());
-		editor.putString(PUBLIC_ADDRESS_KEY, signInData.getWalletAddress());
 		editor.putString(TYPE_KEY, signInData.getSignInType().getValue());
 
 		if (signInData.getSignInType() == SignInTypeEnum.JWT) {
@@ -62,23 +61,26 @@ public class AuthLocalData implements AuthDataSource.Local {
 
 	@Override
 	public SignInData getSignInData() {
-		final String deviceID = signInSharedPreferences.getString(DEVICE_ID_KEY, null);
-		final String publicAddress = signInSharedPreferences.getString(PUBLIC_ADDRESS_KEY, null);
 		final String signInType = signInSharedPreferences.getString(TYPE_KEY, null);
 		final String jwt = signInSharedPreferences.getString(JWT_KEY, null);
 		final String userID = signInSharedPreferences.getString(USER_ID_KEY, null);
 		final String appID = signInSharedPreferences.getString(APP_ID_KEY, null);
-		if (deviceID != null && publicAddress != null && signInType != null && jwt != null && userID != null
+		if (signInType != null && jwt != null && userID != null
 			&& appID != null) {
-			return new SignInData().deviceId(deviceID).walletAddress(publicAddress)
-				.signInType(SignInTypeEnum.fromValue(signInType)).userId(userID).appId(appID);
+			return new SignInData().signInType(SignInTypeEnum.fromValue(signInType)).userId(userID).appId(appID);
 		} else {
 			return null;
 		}
 	}
 
 	@Override
-	public void setAuthToken(@NonNull final AuthToken authToken) {
+	public void setAccountInfo(@NonNull AccountInfo accountInfo) {
+		if (accountInfo.getAuthToken() != null) {
+			setAuthToken(accountInfo.getAuthToken());
+		}
+	}
+
+	private void setAuthToken(@NonNull final AuthToken authToken) {
 		Editor editor = signInSharedPreferences.edit();
 		editor.putString(TOKEN_KEY, authToken.getToken());
 		editor.putString(APP_ID_KEY, authToken.getAppID());
