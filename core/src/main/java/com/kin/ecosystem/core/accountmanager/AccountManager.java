@@ -4,7 +4,6 @@ import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
-import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

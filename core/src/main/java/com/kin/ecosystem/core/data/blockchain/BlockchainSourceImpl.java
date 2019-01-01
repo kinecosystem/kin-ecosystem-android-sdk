@@ -20,6 +20,7 @@ import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainSub
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainSucceeded;
 import com.kin.ecosystem.core.bi.events.StellarKinTrustlineSetupFailed;
 import com.kin.ecosystem.core.bi.events.StellarKinTrustlineSetupSucceeded;
+import com.kin.ecosystem.core.data.auth.AuthDataSource;
 import com.kin.ecosystem.core.data.blockchain.CreateTrustLineCall.TrustlineCallback;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
@@ -43,6 +44,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	private final BlockchainSource.Local local;
 
 	private final EventLogger eventLogger;
+	private final AuthDataSource authRepository;
 
 	private final KinClient kinClient;
 	private KinAccount account;
@@ -74,19 +76,21 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	private static final int MEMO_SPLIT_LENGTH = 3;
 
 	private BlockchainSourceImpl(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient,
-		@NonNull BlockchainSource.Local local) {
+		@NonNull BlockchainSource.Local local, @NonNull AuthDataSource authRepository) {
 		this.eventLogger = eventLogger;
+		this.authRepository = authRepository;
 		this.kinClient = kinClient;
 		this.local = local;
 		this.activeAccountIndex = local.getAccountIndex();
+		this.appID = authRepository.getAppID();
 	}
 
 	public static void init(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient,
-		@NonNull BlockchainSource.Local local) {
+		@NonNull BlockchainSource.Local local, @NonNull AuthDataSource authDataSource) {
 		if (instance == null) {
 			synchronized (BlockchainSourceImpl.class) {
 				if (instance == null) {
-					instance = new BlockchainSourceImpl(eventLogger, kinClient, local);
+					instance = new BlockchainSourceImpl(eventLogger, kinClient, local, authDataSource);
 				}
 			}
 		}
@@ -126,13 +130,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
-	public void setAppID(String appID) {
-		if (!TextUtils.isEmpty(appID)) {
-			this.appID = appID;
-		}
-	}
-
-	@Override
 	public void sendTransaction(@NonNull final String publicAddress, @NonNull final BigDecimal amount,
 		@NonNull final String orderID, @NonNull final String offerID) {
 		if (account != null) {
@@ -160,7 +157,14 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@SuppressLint("DefaultLocale")
 	@VisibleForTesting
 	String generateMemo(@NonNull final String orderID) {
-		return String.format(MEMO_FORMAT, MEMO_FORMAT_VERSION, appID, orderID);
+		return String.format(MEMO_FORMAT, MEMO_FORMAT_VERSION, getAppID(), orderID);
+	}
+
+	private String getAppID() {
+		if (TextUtils.isEmpty(appID)) {
+			appID = authRepository.getAppID();
+		}
+		return appID;
 	}
 
 
@@ -435,7 +439,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	String extractOrderId(String memo) {
 		String[] memoParts = memo.split(MEMO_DELIMITER);
 		String orderID = null;
-		if (memoParts.length == MEMO_SPLIT_LENGTH && memoParts[APP_ID_INDEX].equals(appID)) {
+		if (memoParts.length == MEMO_SPLIT_LENGTH && memoParts[APP_ID_INDEX].equals(getAppID())) {
 			orderID = memoParts[ORDER_ID_INDEX];
 		}
 		return orderID;

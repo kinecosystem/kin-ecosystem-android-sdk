@@ -1,5 +1,7 @@
 package com.kin.ecosystem.core.bi;
 
+import com.kin.ecosystem.core.Log;
+import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.network.ApiException;
 import java.util.List;
 import java.util.Map;
@@ -30,29 +32,9 @@ public class EventLoggerImpl implements EventLogger {
     @Override
     public void send(Event event) {
         try {
-            eventsApi.sendEventAsync(event, new ApiCallback<String>() {
-                @Override
-                public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
-
-                }
-
-                @Override
-                public void onSuccess(String result, int statusCode, Map<String, List<String>> responseHeaders) {
-
-                }
-
-                @Override
-                public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
-
-                }
-
-                @Override
-                public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
-
-                }
-            });
+            eventsApi.sendEventAsync(event, null);
         } catch (ApiException e) {
-            e.printStackTrace();
+            Logger.log(new Log().withTag("EventLoggerImpl").text(e.getMessage()).priority(Log.ERROR));
         }
     }
 }

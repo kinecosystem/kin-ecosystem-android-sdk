@@ -29,12 +29,9 @@ public class SignInData {
     private String userId = null;
     @SerializedName("app_id")
     private String appId = null;
-    @SerializedName("device_id")
-    private String deviceId = null;
     @SerializedName("api_key")
     private String apiKey = null;
-    @SerializedName("wallet_address")
-    private String walletAddress = null;
+
 
     /**
      * Gets or Sets signInType
@@ -144,20 +141,6 @@ public class SignInData {
         this.appId = appId;
     }
 
-    public SignInData deviceId(String deviceId) {
-        this.deviceId = deviceId;
-        return this;
-    }
-
-    /**
-     * Get deviceId
-     *
-     * @return deviceId
-     **/
-    public String getDeviceId() {
-        return deviceId;
-    }
-
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
@@ -169,28 +152,6 @@ public class SignInData {
 
     public String getApiKey() {
         return this.apiKey;
-    }
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
-    }
-
-    public SignInData walletAddress(String walletAddress) {
-        this.walletAddress = walletAddress;
-        return this;
-    }
-
-
-    /**
-     * the address where earned funds will go to
-     *
-     * @return publicAddress
-     **/
-    public String getWalletAddress() {
-        return walletAddress;
-    }
-
-    public void setWalletAddress(String walletAddress) {
-        this.walletAddress = walletAddress;
     }
 
     public SignInData signInType(SignInTypeEnum signInType) {
@@ -224,15 +185,12 @@ public class SignInData {
         return this.jwt.equals(signInData.jwt) &&
             this.userId.equals(signInData.userId) &&
             this.appId.equals(signInData.appId) &&
-            this.deviceId.equals(signInData.deviceId) &&
-            this.walletAddress.equals(signInData.walletAddress) &&
             this.signInType.equals(signInData.signInType);
     }
 
     @Override
     public int hashCode() {
-        return jwt.hashCode() + userId.hashCode() + appId.hashCode() +
-            deviceId.hashCode() + walletAddress.hashCode() + signInType.hashCode();
+        return jwt.hashCode() + userId.hashCode() + appId.hashCode() + signInType.hashCode();
     }
 
     @Override
@@ -244,8 +202,6 @@ public class SignInData {
         sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
         sb.append("    appId: ").append(toIndentedString(appId)).append("\n");
         sb.append("    apiKey: ").append(toIndentedString(apiKey)).append("\n");
-        sb.append("    deviceId: ").append(toIndentedString(deviceId)).append("\n");
-        sb.append("    publicAddress: ").append(toIndentedString(walletAddress)).append("\n");
         sb.append("    signInType: ").append(toIndentedString(signInType)).append("\n");
         sb.append("}");
         return sb.toString();

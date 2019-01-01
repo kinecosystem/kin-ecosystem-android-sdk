@@ -86,7 +86,7 @@ class EventCommonDataUtil {
 				userProxy.setDigitalServiceId(new DynamicValue<String>() {
 					@Override
 					public String get() {
-						final String digitalServiceId = AuthRepository.getInstance().getAppID().getValue();
+						final String digitalServiceId = AuthRepository.getInstance().getAppID();
 						return safeguardNullString(digitalServiceId);
 					}
 				});

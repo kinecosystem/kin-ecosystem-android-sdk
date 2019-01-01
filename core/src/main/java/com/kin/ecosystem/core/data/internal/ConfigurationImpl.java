@@ -33,10 +33,12 @@ public class ConfigurationImpl implements Configuration {
 	private static final String BEARER = "Bearer ";
 	private static final String AUTHORIZATION = "Authorization";
 
+	static final String API_VERSION = "v2";
+
 	private static final int NO_TOKEN_ERROR_CODE = 666;
 	private static final String AUTH_TOKEN_COULD_NOT_BE_GENERATED = "AuthToken could not be generated";
 
-	private static final String USERS_PATH = "/v1/users";
+	private static final String USERS_PATH = "/" + API_VERSION + "/users";
 	private static final String PREFIX_ANDROID = "android ";
 
 	private static final Object apiClientLock = new Object();
@@ -53,6 +55,7 @@ public class ConfigurationImpl implements Configuration {
 		if (instance == null) {
 			synchronized (ConfigurationImpl.class) {
 				if (instance == null) {
+
 					instance = new ConfigurationImpl(environmentName);
 				}
 			}

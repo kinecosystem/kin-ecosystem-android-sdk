@@ -33,6 +33,7 @@ public class JwtUtil {
     private static final String JWT_SUBJECT_PAY_TO_USER = "pay_to_user";
 
     private static final String JWT_KEY_USER_ID = "user_id";
+    private static final String JWT_KEY_DEVICE_ID = "device_id";
 
     private static final String JWT_HEADER_KID = "kid";
     private static final String JWT_HEADER_TYP = "typ";
@@ -40,18 +41,19 @@ public class JwtUtil {
     private static final String JWT = "jwt";
 
 
-    public static String generateSignInExampleJWT(String appID, String userId) {
+    public static String generateSignInExampleJWT(String appID, String userId, String deviceId) {
         return getBasicJWT(appID)
             .setSubject(JWT_SUBJECT_REGISTER)
             .claim(JWT_KEY_USER_ID, userId)
+            .claim(JWT_KEY_DEVICE_ID, deviceId)
             .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
     }
 
-    static String generateSpendOfferExampleJWT(String appID, String userID, String offerID) {
+    static String generateSpendOfferExampleJWT(String appID, String userID, String deviceId, String offerID) {
         return getBasicJWT(appID)
             .setSubject(JWT_SUBJECT_SPEND)
             .claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject(offerID))
-            .claim(JWT_CLAIM_OBJECT_SENDER_PART, new JWTSenderPart(userID, "Bought a sticker", "Lion sticker"))
+            .claim(JWT_CLAIM_OBJECT_SENDER_PART, new JWTSenderPart(userID, deviceId, "Bought a sticker", "Lion sticker"))
             .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
     }
 
@@ -59,15 +61,15 @@ public class JwtUtil {
         return getBasicJWT(appID)
             .setSubject(JWT_SUBJECT_EARN)
             .claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject())
-            .claim(JWT_CLAIM_OBJECT_RECIPIENT_PART, new JWTRecipientPart(userID, "Received Kin", "upload profile picture"))
+            .claim(JWT_CLAIM_OBJECT_RECIPIENT_PART, new JWTRecipientPart(userID,"Received Kin", "upload profile picture"))
             .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
     }
 
-    static String generatePayToUserOfferExampleJWT(String appID, String userID, String recipientUserID) {
+    static String generatePayToUserOfferExampleJWT(String appID, String userID, String deviceId, String recipientUserID) {
         return getBasicJWT(appID)
             .setSubject(JWT_SUBJECT_PAY_TO_USER)
             .claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject())
-            .claim(JWT_CLAIM_OBJECT_SENDER_PART, new JWTSenderPart(userID, "Tip to someone", "Code review"))
+            .claim(JWT_CLAIM_OBJECT_SENDER_PART, new JWTSenderPart(userID, deviceId,"Tip to someone", "Code review"))
             .claim(JWT_CLAIM_OBJECT_RECIPIENT_PART, new JWTRecipientPart(recipientUserID, "Tip from someone", "Code review"))
             .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
     }
@@ -148,19 +150,23 @@ public class JwtUtil {
 
     private static class JWTOrderPart {
         @JsonProperty("user_id")
-        private String user_id; // Optional in case of spend order
+        private String user_id;
+        @JsonProperty("device_id")
+        private String device_id;
         @JsonProperty("title")
         private String title;
         @JsonProperty("description")
         private String description;
 
-        JWTOrderPart(String user_id, String title, String description) {
+        JWTOrderPart(String user_id, String device_id, String title, String description) {
             this.user_id = user_id;
+            this.device_id = device_id;
             this.title = title;
             this.description = description;
         }
 
-        JWTOrderPart(String title, String description) {
+        JWTOrderPart(String user_id, String title, String description) {
+			this.user_id = user_id;
             this.title = title;
             this.description = description;
         }
@@ -188,17 +194,20 @@ public class JwtUtil {
         public void setDescription(String description) {
             this.description = description;
         }
+
+        public String getDevice_id() {
+            return device_id;
+        }
+
+        public void setDevice_id(String device_id) {
+            this.device_id = device_id;
+        }
     }
 
     private static class JWTSenderPart extends JWTOrderPart {
 
-        // User Id is optional
-        JWTSenderPart(String user_id, String title, String description) {
-            super(user_id, title, description);
-        }
-
-        JWTSenderPart(String title, String description) {
-            super(title, description);
+        JWTSenderPart(String user_id, String device_id, String title, String description) {
+            super(user_id, device_id, title, description);
         }
     }
 

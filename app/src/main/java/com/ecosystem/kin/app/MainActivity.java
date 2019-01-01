@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
 	private Observer<Balance> balanceObserver;
 
 	private String userID;
+	private String deviceID;
 	private String publicAddress;
 	private String spendOfferID = "";
 
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_main);
 
 		userID = SignInRepo.getUserId(getApplicationContext());
+		deviceID = SignInRepo.getDeviceId(getApplicationContext());
 		containerLayout = findViewById(R.id.container);
 		balanceView = findViewById(R.id.get_balance);
 		nativeSpendTextView = findViewById(R.id.native_spend_button);
@@ -451,7 +453,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private void createNativeSpendOffer() {
 		spendOfferID = String.valueOf(getRandomID());
-		String offerJwt = JwtUtil.generateSpendOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID, spendOfferID);
+		String offerJwt = JwtUtil.generateSpendOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID, deviceID, spendOfferID);
 		Log.d(TAG, "createNativeSpendOffer: " + offerJwt);
 		try {
 			Kin.purchase(offerJwt, getNativeSpendOrderConfirmationCallback());
@@ -472,7 +474,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void createPayToUserOffer(String recipientUserID) {
-		String offerJwt = JwtUtil.generatePayToUserOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID, recipientUserID);
+		String offerJwt = JwtUtil.generatePayToUserOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID, deviceID, recipientUserID);
 		try {
 			Kin.payToUser(offerJwt, getNativePayToUserOrderConfirmationCallback());
 		} catch (ClientException e) {

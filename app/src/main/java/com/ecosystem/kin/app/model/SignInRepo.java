@@ -12,13 +12,14 @@ public class SignInRepo {
 
     private final static String USER_PREFERENCE_FILE_KEY = "USER_PREFERENCE_FILE_KEY";
     private final static String USER_UUID_KEY = "USER_UUID_KEY";
+    private final static String DEVICE_UUID_KEY = "DEVICE_UUID_KEY";
 
     public static WhitelistData getWhitelistSignInData(Context context, @NonNull String appId, @NonNull String apiKey) {
         return new WhitelistData(getUserId(context), appId, apiKey);
     }
 
     public static String getJWT(Context context) {
-        return JwtUtil.generateSignInExampleJWT(getAppId(), getUserId(context));
+        return JwtUtil.generateSignInExampleJWT(getAppId(), getUserId(context), getDeviceId(context));
     }
 
     @NonNull
@@ -37,6 +38,16 @@ public class SignInRepo {
         if (userID == null) {
             userID = UUID.randomUUID().toString();
             sharedPreferences.edit().putString(USER_UUID_KEY, userID).apply();
+        }
+        return userID;
+    }
+
+    public static String getDeviceId(Context context) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        String userID = sharedPreferences.getString(DEVICE_UUID_KEY, null);
+        if (userID == null) {
+            userID = UUID.randomUUID().toString();
+            sharedPreferences.edit().putString(DEVICE_UUID_KEY, userID).apply();
         }
         return userID;
     }
