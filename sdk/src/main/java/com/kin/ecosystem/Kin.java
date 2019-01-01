@@ -14,7 +14,6 @@ import android.support.annotation.Nullable;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.KinEnvironment;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
-import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
@@ -51,7 +50,6 @@ import com.kin.ecosystem.core.util.ExecutorsUtil;
 import com.kin.ecosystem.core.util.Validator;
 import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.splash.view.SplashActivity;
-import java.util.UUID;
 import kin.core.KinClient;
 import kin.core.ServiceProvider;
 
