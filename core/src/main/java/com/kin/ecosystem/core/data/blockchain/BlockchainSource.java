@@ -26,11 +26,6 @@ public interface BlockchainSource {
 	KinAccount getKinAccount();
 
 	/**
-	 * @param appID - appID - will be included in the memo for each transaction.
-	 */
-	void setAppID(String appID);
-
-	/**
 	 * Send transaction to the network
 	 *
 	 * @param publicAddress the recipient address
@@ -115,9 +110,5 @@ public interface BlockchainSource {
 		int getAccountIndex();
 
 		void setAccountIndex(int index);
-
-		void setAppId(@NonNull String appId);
-
-		String getAppId();
 	}
 }

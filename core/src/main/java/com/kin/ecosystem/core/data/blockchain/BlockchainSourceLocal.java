@@ -52,14 +52,4 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 	public void setAccountIndex(int index) {
 		blockchainSharedPreferences.edit().putInt(ACCOUNT_INDEX_KEY, index).apply();
 	}
-
-	@Override
-	public void setAppId(@NonNull String appId) {
-		blockchainSharedPreferences.edit().putString(APP_ID_KEY, appId).apply();
-	}
-
-	@Override
-	public String getAppId() {
-		return blockchainSharedPreferences.getString(APP_ID_KEY, null);
-	}
 }

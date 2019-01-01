@@ -107,16 +107,16 @@ public class Kin {
 			final String networkId = kinEnvironment.getBlockchainPassphrase();
 			final String issuer = kinEnvironment.getIssuer();
 
+			AuthRepository.init(AuthLocalData.getInstance(appContext), AuthRemoteData.getInstance(instance.executorsUtil));
+
 			KinClient kinClient = new KinClient(appContext, new ServiceProvider(networkUrl, networkId) {
 				@Override
 				protected String getIssuerAccountId() {
 					return issuer;
 				}
 			}, KIN_ECOSYSTEM_STORE_PREFIX_KEY);
-			BlockchainSourceImpl.init(eventLogger, kinClient, BlockchainSourceLocal.getInstance(appContext));
+			BlockchainSourceImpl.init(eventLogger, kinClient, BlockchainSourceLocal.getInstance(appContext), AuthRepository.getInstance());
 
-			AuthRepository
-				.init(AuthLocalData.getInstance(appContext), AuthRemoteData.getInstance(instance.executorsUtil));
 
 			EventCommonDataUtil.setBaseData(appContext);
 
@@ -233,7 +233,6 @@ public class Kin {
 			public void onResponse(AuthToken authToken) {
 				String publicAddress = null;
 				try {
-					BlockchainSourceImpl.getInstance().setAppID(authToken.getAppID());
 					BlockchainSourceImpl.getInstance().createAccount();
 					publicAddress = BlockchainSourceImpl.getInstance().getPublicAddress();
 				} catch (final BlockchainException exception) {
