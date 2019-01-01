@@ -20,6 +20,7 @@ import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainFailed;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainSucceeded;
+import com.kin.ecosystem.core.data.auth.AuthDataSource;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import kin.core.BlockchainEvents;
@@ -62,6 +63,9 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 	private BlockchainSource.Local local;
 
 	@Mock
+	private AuthDataSource authRepository;
+
+	@Mock
 	private KinAccount kinAccount;
 
 	@Mock
@@ -95,7 +99,7 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 		Field instance = BlockchainSourceImpl.class.getDeclaredField("instance");
 		instance.setAccessible(true);
 		instance.set(null, null);
-		BlockchainSourceImpl.init(eventLogger, kinClient, local);
+		BlockchainSourceImpl.init(eventLogger, kinClient, local, authRepository);
 		blockchainSource = BlockchainSourceImpl.getInstance();
 	}
 
@@ -116,15 +120,15 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 
 	@Test
 	public void init_once_local_getAccountIndex_called_once(){
-		BlockchainSourceImpl.init(eventLogger, kinClient, local);
-		BlockchainSourceImpl.init(eventLogger, kinClient, local);
+		BlockchainSourceImpl.init(eventLogger, kinClient, local, authRepository);
+		BlockchainSourceImpl.init(eventLogger, kinClient, local, authRepository);
 		assertEquals(blockchainSource, BlockchainSourceImpl.getInstance());
 		verify(local).getAccountIndex();
 	}
 
 	@Test
 	public void set_app_id_memo_generated_correctly() {
-		blockchainSource.setAppID(APP_ID);
+		when(authRepository.getAppID()).thenReturn(APP_ID);
 		assertEquals(MEMO_EXAMPLE, blockchainSource.generateMemo(ORDER_ID));
 	}
 
@@ -152,12 +156,13 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 		assertNull(blockchainSource.extractOrderId(MEMO_EXAMPLE));
 
 		// with app id
-		blockchainSource.setAppID(APP_ID);
+		when(authRepository.getAppID()).thenReturn(APP_ID);
 		assertEquals(ORDER_ID, blockchainSource.extractOrderId(MEMO_EXAMPLE));
 	}
 
 	@Test
 	public void send_transaction_succeeded() throws BlockchainException {
+		when(authRepository.getAppID()).thenReturn(APP_ID);
 		blockchainSource.createAccount();
 		String toAddress = "some_pub_address";
 		final BigDecimal amount = new BigDecimal(10);
@@ -170,7 +175,6 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 		when(kinAccount.sendTransaction(any(String.class), any(BigDecimal.class), any(String.class)))
 			.thenReturn(transactionRequest);
 
-		blockchainSource.setAppID(APP_ID);
 		blockchainSource.sendTransaction(toAddress, amount, orderID, "offerID");
 		verify(transactionRequest).run(resultCallbackArgumentCaptor.capture());
 		resultCallbackArgumentCaptor.getValue().onResult(new TransactionId() {
@@ -184,6 +188,7 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 
 	@Test
 	public void send_transaction_failed() throws BlockchainException {
+		when(authRepository.getAppID()).thenReturn(APP_ID);
 		blockchainSource.createAccount();
 		String toAddress = "some_pub_address";
 		BigDecimal amount = new BigDecimal(10);
@@ -195,7 +200,6 @@ public class BlockchainSourceImplTest extends BaseTestClass {
 		when(kinAccount.sendTransaction(any(String.class), any(BigDecimal.class), any(String.class)))
 			.thenReturn(transactionRequest);
 
-		blockchainSource.setAppID(APP_ID);
 		blockchainSource.sendTransaction(toAddress, amount, orderID, "offerID");
 		verify(transactionRequest).run(resultCallbackArgumentCaptor.capture());
 
