@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <include domain="sharedpref" path="KinKeyStore_kinecosystem_store.xml"/>
+    <include domain="sharedpref" path="auto_backup_file.xml"/>
+</full-backup-content>

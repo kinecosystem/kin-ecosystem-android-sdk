@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.ecosystem.kin.app.model.AutoBackupRepo;
 import com.ecosystem.kin.app.model.SignInRepo;
 import com.kin.ecosystem.EcosystemExperience;
 import com.kin.ecosystem.Kin;
@@ -177,6 +178,15 @@ public class MainActivity extends AppCompatActivity {
 		});
 		((TextView) findViewById(R.id.sample_app_version))
 			.setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
+
+		final TextView backupSessionsTextView = findViewById(R.id.backup_session);
+		final int numberOfBackupSessions = AutoBackupRepo.getNumberOfBackupedSessions(getApplicationContext());
+		backupSessionsTextView.setText(getString(R.string.backup_sessions, numberOfBackupSessions));
+
+		final TextView sessionsTextView = findViewById(R.id.sessions);
+		final int numberOfSessions = AutoBackupRepo.getNumberOfSessions(getApplicationContext());
+		sessionsTextView.setText(getString(R.string.sessions, numberOfSessions));
+		AutoBackupRepo.incrementNumberOfSessions(getApplicationContext());
 	}
 
 

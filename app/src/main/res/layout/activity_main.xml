@@ -10,6 +10,38 @@
     android:background="@color/colorPrimary"
     tools:context="com.ecosystem.kin.app.MainActivity">
 
+
+    <TextView
+        android:id="@+id/backup_session"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinecosystem_main_margin"
+        android:layout_marginLeft="@dimen/kinecosystem_margin_large"
+        android:layout_gravity="bottom"
+        android:gravity="center_horizontal"
+        android:text="Backup sessions:"
+        android:textAllCaps="false"
+        android:textColor="@color/kinecosystem_white"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf= "parent"
+        />
+
+    <TextView
+        android:id="@+id/sessions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinecosystem_main_margin"
+        android:layout_marginRight="@dimen/kinecosystem_margin_large"
+        android:layout_gravity="bottom"
+        android:gravity="center_horizontal"
+        android:text="Sessions:"
+        android:textAllCaps="false"
+        android:textColor="@color/kinecosystem_white"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+
     <ImageView
         android:id="@+id/logo"
         android:layout_width="wrap_content"

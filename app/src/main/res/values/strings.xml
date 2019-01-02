@@ -15,6 +15,10 @@
     <string name="get_user_stats">Get User Stats</string>
     <string name="version_name">Version: %s</string>
     <string name="user_id">User ID: %s</string>
+    <string name="backup_sessions">Backup sessions: %d</string>
+    <string name="sessions">Sessions: %d</string>
+
+
     <string name="enter_the_recipient_user_id">Enter the recipient user id:</string>
     <string name="pay">Pay</string>
     <string name="native_offer_content_activity">Native Offer Content Activity</string>
