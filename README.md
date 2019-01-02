@@ -24,6 +24,28 @@ For Beta: ("beta")
 ```
 And for Production use: `@string/kinecosystem_environment_production` as value. 
 
+## Enable Auto backup ##
+Android Auto Backup automatically backs up apps data that target and run on Android 6.0 (API level 23) and above.
+Enabling auto backup will provide better experience when user uninstall and reinstall the app.
+No extra action is needed, if auto backup is enabled and ```android:fullBackupContent``` is not defined.
+Otherwise the app module AndroidManifest.xml should include these attributes.
+```xml
+ <application
+        android:allowBackup="true"
+        tools:replace="android:allowBackup"
+        android:fullBackupContent="@xml/backup_rules">  
+</application>
+```
+and ```backup_rules.xml``` should include 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <include domain="sharedpref" path="KinKeyStore_kinecosystem_store.xml"/>
+</full-backup-content>
+```
+Auto backup is not 100% guaranteed and may not work for all users.
+To learn more on Auto Backup features and constraints see [Android Auto Backup](https://developer.android.com/guide/topics/data/autobackup) 
+
 
 >**NOTES:**
 >* When working with the Beta environment, you can only register up to 1000 users. An attempt to register additional users will result in an error.
