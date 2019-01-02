@@ -27,7 +27,7 @@ class Environment implements KinEnvironment {
 		"https://horizon-playground.kininfrastructure.com",
 		"Kin Playground Network ; June 2018",
 		"GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7",
-		"http://api.kinecosystemtest.com/" + API_VERSION,
+		"https://adf5e824.ngrok.io/" + API_VERSION,
 		"https://s3.amazonaws.com/assets.kinecosystemtest.com/web-offers/cards-based/index.html",
 		"https://kin-bi.appspot.com/eco_play_");
 

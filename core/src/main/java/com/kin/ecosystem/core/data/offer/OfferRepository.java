@@ -20,7 +20,7 @@ import java.util.HashMap;
 
 public class OfferRepository implements OfferDataSource {
 
-	private static OfferRepository instance = null;
+	private static volatile OfferRepository instance = null;
 
 	private final OfferDataSource.Remote remoteData;
 	private final OrderDataSource orderRepository;

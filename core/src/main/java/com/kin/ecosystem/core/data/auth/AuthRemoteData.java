@@ -2,18 +2,17 @@ package com.kin.ecosystem.core.data.auth;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.core.network.ApiCallback;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.api.AuthApi;
 import com.kin.ecosystem.core.network.model.AccountInfo;
-import com.kin.ecosystem.core.network.model.SignInData;
+import com.kin.ecosystem.core.network.model.JWT;
 import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.network.model.UserProperties;
+import com.kin.ecosystem.core.util.ExecutorsUtil;
 import java.util.List;
 import java.util.Map;
-import com.kin.ecosystem.common.Callback;
-import com.kin.ecosystem.core.network.model.AuthToken;
-import com.kin.ecosystem.core.util.ExecutorsUtil;
 
 public class AuthRemoteData implements AuthDataSource.Remote {
 
@@ -24,8 +23,6 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 
 	private final AuthApi authApi;
 	private final ExecutorsUtil executorsUtil;
-
-	private SignInData signInData;
 
 	private AuthRemoteData(@NonNull ExecutorsUtil executorsUtil) {
 		this.authApi = new AuthApi();
@@ -45,14 +42,9 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 	}
 
 	@Override
-	public void setSignInData(@NonNull SignInData signInData) {
-		this.signInData = signInData;
-	}
-
-	@Override
-	public void getAccountInfo(@NonNull final Callback<AccountInfo, ApiException> callback) {
+	public void getAccountInfo(@NonNull JWT jwt, @NonNull final Callback<AccountInfo, ApiException> callback) {
 		try {
-			authApi.signInAsync(signInData, "", new ApiCallback<AccountInfo>() {
+			authApi.signInAsync(jwt, "", new ApiCallback<AccountInfo>() {
 				@Override
 				public void onFailure(final ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
 					executorsUtil.mainThread().execute(new Runnable() {
@@ -85,9 +77,9 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 
 	@Override
 	@Nullable
-	public AccountInfo getAccountInfoSync() {
+	public AccountInfo getAccountInfoSync(@NonNull JWT jwt) {
 		try {
-			return authApi.signIn(signInData, "");
+			return authApi.signIn(jwt, "");
 		} catch (ApiException e) {
 			return null;
 		}

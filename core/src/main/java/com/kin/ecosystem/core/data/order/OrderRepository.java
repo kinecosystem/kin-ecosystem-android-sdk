@@ -41,7 +41,7 @@ public class OrderRepository implements OrderDataSource {
 
 	private static final String TAG = OrderRepository.class.getSimpleName();
 
-	private static OrderRepository instance = null;
+	private static volatile OrderRepository instance = null;
 	private final OrderDataSource.Local localData;
 	private final OrderDataSource.Remote remoteData;
 

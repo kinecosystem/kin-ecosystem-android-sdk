@@ -54,4 +54,8 @@ public class StringUtil {
 			return amount;
 		}
 	}
+
+	public static boolean isEmpty(String text) {
+		return text == null || text.isEmpty();
+	}
 }

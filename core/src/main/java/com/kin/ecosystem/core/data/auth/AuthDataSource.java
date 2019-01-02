@@ -4,18 +4,18 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
-import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.network.model.AuthToken;
-import com.kin.ecosystem.core.network.model.SignInData;
+import com.kin.ecosystem.core.network.model.JWT;
 import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.network.model.UserProperties;
+import org.json.JSONException;
 
 public interface AuthDataSource {
 
-	void setSignInData(@NonNull final SignInData signInData);
+	void setJWT(@NonNull final String jwt) throws JSONException;
 
 	void updateWalletAddress(String address, @NonNull final KinCallback<Boolean> callback);
 
@@ -37,9 +37,9 @@ public interface AuthDataSource {
 
 	interface Local {
 
-		void setSignInData(@NonNull final SignInData signInData);
+		void setJWT(@NonNull final String signInData) throws JSONException;
 
-		SignInData getSignInData();
+		String getJWT();
 
 		void setAccountInfo(@NonNull final AccountInfo accountInfo);
 
@@ -57,11 +57,9 @@ public interface AuthDataSource {
 
 	interface Remote {
 
-		void setSignInData(@NonNull final SignInData signInData);
+		void getAccountInfo(@NonNull JWT jwt, @NonNull final Callback<AccountInfo, ApiException> callback);
 
-		void getAccountInfo(@NonNull final Callback<AccountInfo, ApiException> callback);
-
-		AccountInfo getAccountInfoSync();
+		AccountInfo getAccountInfoSync(@NonNull JWT jwt);
 
 		void hasAccount(@NonNull String userId, @NonNull final Callback<Boolean, ApiException> callback);
 
