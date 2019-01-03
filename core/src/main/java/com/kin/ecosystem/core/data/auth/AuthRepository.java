@@ -53,7 +53,7 @@ public class AuthRepository implements AuthDataSource {
 	}
 
 	@Override
-	public void setJWT(@NonNull String jwt) throws JSONException {
+	public void setJWT(@NonNull String jwt) throws ClientException {
 		this.jwt = jwt;
 		localData.setJWT(jwt);
 	}

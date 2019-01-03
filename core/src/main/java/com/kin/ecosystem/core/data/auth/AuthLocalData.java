@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.support.annotation.NonNull;
+import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.network.model.AuthToken;
+import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.JwtDecoder;
 import org.json.JSONException;
 
@@ -21,8 +23,6 @@ public class AuthLocalData implements AuthDataSource.Local {
 	private static final String ECOSYSTEM_USER_ID_KEY = "ecosystem_user_id";
 	private static final String APP_ID_KEY = "app_id";
 	private static final String DEVICE_ID_KEY = "device_id";
-	private static final String PUBLIC_ADDRESS_KEY = "public_address";
-	private static final String TYPE_KEY = "type";
 
 	private static final String TOKEN_KEY = "token";
 	private static final String TOKEN_EXPIRATION_DATE_KEY = "token_expiration_date";
@@ -46,14 +46,23 @@ public class AuthLocalData implements AuthDataSource.Local {
 	}
 
 	@Override
-	public void setJWT(@NonNull final String jwt) throws JSONException {
+	public void setJWT(@NonNull final String jwt) throws ClientException {
 		Editor editor = signInSharedPreferences.edit();
-		JwtBody jwtBody = JwtDecoder.getJwtBody(jwt);
+		JwtBody jwtBody = null;
+		try {
+			jwtBody = JwtDecoder.getJwtBody(jwt);
+			if(jwtBody == null) {
+				throw new ClientException(ClientException.BAD_CONFIGURATION,
+					"The jwt is not in the correct format, please see more details on our documentation.", null);
+			}
+		} catch (JSONException e) {
+			throw ErrorUtil.getClientException(ClientException.BAD_CONFIGURATION, e);
+		}
 		editor.putString(JWT_KEY, jwt);
-		editor.putString(DEVICE_ID_KEY, jwtBody.getDeviceId());
-		editor.putString(USER_ID_KEY, jwtBody.getUserId());
-		editor.putString(APP_ID_KEY, jwtBody.getAppId());
-		editor.apply();
+			editor.putString(DEVICE_ID_KEY, jwtBody.getDeviceId());
+			editor.putString(USER_ID_KEY, jwtBody.getUserId());
+			editor.putString(APP_ID_KEY, jwtBody.getAppId());
+			editor.apply();
 	}
 
 	@Override

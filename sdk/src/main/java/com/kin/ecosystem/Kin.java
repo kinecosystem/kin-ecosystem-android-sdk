@@ -196,8 +196,6 @@ public class Kin {
 			AuthRepository.getInstance().setJWT(jwt);
 		} catch (final ClientException exception) {
 			sendLoginFailed(exception, loginCallback);
-		} catch (JSONException exception) {
-			sendLoginFailed(ErrorUtil.getClientException(ClientException.BAD_CONFIGURATION, exception), loginCallback);
 		}
 
 		AuthRepository.getInstance().getAuthToken(new KinCallback<AuthToken>() {

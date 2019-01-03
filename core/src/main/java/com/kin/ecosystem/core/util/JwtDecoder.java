@@ -1,5 +1,7 @@
 package com.kin.ecosystem.core.util;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Base64;
 import com.kin.ecosystem.core.data.auth.JwtBody;
 import org.json.JSONException;
@@ -11,17 +13,27 @@ public class JwtDecoder {
 	private static final String USER_ID_KEY = "user_id";
 	private static final String DEVICE_ID_KEY = "device_id";
 
-	public static JwtBody getJwtBody(String jwt) throws JSONException {
-		String header = decodeJwtBody(jwt);
-		JSONObject object = new JSONObject(header);
+	@Nullable
+	public static JwtBody getJwtBody(@NonNull String jwt) throws JSONException {
+		String body = decodeJwtBody(jwt);
+		if(StringUtil.isEmpty(body))  {
+			return  null;
+		}
+
+		JSONObject object = new JSONObject(body);
 		return new JwtBody(object.getString(ISS_KEY),
 			object.getString(USER_ID_KEY),
 			object.getString(DEVICE_ID_KEY));
 	}
 
-	private static String decodeJwtBody(String jwt) {
+	@Nullable
+	private static String decodeJwtBody(@NonNull String jwt) {
 		String[] splitJWT = jwt.split("\\.");
+		if (splitJWT.length != 3) {
+			return null;
+		}
 		String base64EncodedHeader = splitJWT[1];
 		return new String(Base64.decode(base64EncodedHeader, Base64.DEFAULT));
+
 	}
 }
