@@ -16,8 +16,8 @@ public class JwtDecoder {
 	@Nullable
 	public static JwtBody getJwtBody(@NonNull String jwt) throws JSONException {
 		String body = decodeJwtBody(jwt);
-		if(StringUtil.isEmpty(body))  {
-			return  null;
+		if (StringUtil.isEmpty(body)) {
+			return null;
 		}
 
 		JSONObject object = new JSONObject(body);
