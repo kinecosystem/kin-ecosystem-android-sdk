@@ -12,9 +12,10 @@ public class JwtDecoder {
 	private static final String ISS_KEY = "iss";
 	private static final String USER_ID_KEY = "user_id";
 	private static final String DEVICE_ID_KEY = "device_id";
+	private static final int JWT_SPLIT_PARTS_SIZE = 3;
 
 	@Nullable
-	public static JwtBody getJwtBody(@NonNull String jwt) throws JSONException {
+	public static JwtBody getJwtBody(@NonNull String jwt) throws JSONException, IllegalArgumentException {
 		String body = decodeJwtBody(jwt);
 		if (StringUtil.isEmpty(body)) {
 			return null;
@@ -29,7 +30,7 @@ public class JwtDecoder {
 	@Nullable
 	private static String decodeJwtBody(@NonNull String jwt) {
 		String[] splitJWT = jwt.split("\\.");
-		if (splitJWT.length != 3) {
+		if (splitJWT.length != JWT_SPLIT_PARTS_SIZE) {
 			return null;
 		}
 		String base64EncodedHeader = splitJWT[1];

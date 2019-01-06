@@ -55,7 +55,7 @@ public class AuthLocalData implements AuthDataSource.Local {
 				throw new ClientException(ClientException.BAD_CONFIGURATION,
 					"The jwt is not in the correct format, please see more details on our documentation.", null);
 			}
-		} catch (JSONException e) {
+		} catch (JSONException | IllegalArgumentException e) {
 			throw ErrorUtil.getClientException(ClientException.BAD_CONFIGURATION, e);
 		}
 		editor.putString(JWT_KEY, jwt);

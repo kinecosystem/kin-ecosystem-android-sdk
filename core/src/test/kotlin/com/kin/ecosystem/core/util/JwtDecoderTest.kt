@@ -25,6 +25,11 @@ class JwtDecoderTest {
         assertEquals("f7af6859-0bc1-4855-b7eb-a605847b7b95", body?.deviceId)
     }
 
+    @Test(expected = IllegalArgumentException::class)
+    fun `The string is not a jwt encoded, throw Exception`() {
+        JwtDecoder.getJwtBody("some.wrong.jwt")
+    }
+
     @Test(expected = JSONException::class)
     fun `jwt missing attrs, throw JSONException`() {
         JwtDecoder.getJwtBody(WRONG_JWT)

@@ -100,17 +100,13 @@ public class AuthRepository implements AuthDataSource {
 		if (cachedAuthToken != null) {
 			return cachedAuthToken;
 		} else {
-			if (jwt != null) {
-				AuthToken authToken = localData.getAuthTokenSync();
-				if (authToken != null && !isAuthTokenExpired(authToken)) {
-					setAuthToken(authToken);
-				} else {
-					refreshTokenSync();
-				}
-				return cachedAuthToken;
+			AuthToken authToken = localData.getAuthTokenSync();
+			if (authToken != null && !isAuthTokenExpired(authToken)) {
+				setAuthToken(authToken);
 			} else {
-				return null;
+				refreshTokenSync();
 			}
+			return cachedAuthToken;
 		}
 	}
 
