@@ -22,7 +22,6 @@ import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.common.model.UserStats;
-import com.kin.ecosystem.common.model.WhitelistData;
 import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.accountmanager.AccountManagerImpl;
 import com.kin.ecosystem.core.accountmanager.AccountManagerLocal;
@@ -42,8 +41,6 @@ import com.kin.ecosystem.core.data.order.OrderLocalData;
 import com.kin.ecosystem.core.data.order.OrderRemoteData;
 import com.kin.ecosystem.core.data.order.OrderRepository;
 import com.kin.ecosystem.core.network.model.AuthToken;
-import com.kin.ecosystem.core.network.model.SignInData;
-import com.kin.ecosystem.core.network.model.SignInData.SignInTypeEnum;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
@@ -52,6 +49,7 @@ import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.splash.view.SplashActivity;
 import kin.core.KinClient;
 import kin.core.ServiceProvider;
+import org.json.JSONException;
 
 
 public class Kin {
@@ -107,7 +105,8 @@ public class Kin {
 			final String networkId = kinEnvironment.getBlockchainPassphrase();
 			final String issuer = kinEnvironment.getIssuer();
 
-			AuthRepository.init(AuthLocalData.getInstance(appContext), AuthRemoteData.getInstance(instance.executorsUtil));
+			AuthRepository
+				.init(AuthLocalData.getInstance(appContext), AuthRemoteData.getInstance(instance.executorsUtil));
 
 			KinClient kinClient = new KinClient(appContext, new ServiceProvider(networkUrl, networkId) {
 				@Override
@@ -115,8 +114,8 @@ public class Kin {
 					return issuer;
 				}
 			}, KIN_ECOSYSTEM_STORE_PREFIX_KEY);
-			BlockchainSourceImpl.init(eventLogger, kinClient, BlockchainSourceLocal.getInstance(appContext), AuthRepository.getInstance());
-
+			BlockchainSourceImpl.init(eventLogger, kinClient, BlockchainSourceLocal.getInstance(appContext),
+				AuthRepository.getInstance());
 
 			EventCommonDataUtil.setBaseData(appContext);
 
@@ -133,7 +132,9 @@ public class Kin {
 
 			DeviceUtils.init(appContext);
 
-			eventLogger.send(KinSdkInitiated.create());
+			if (AuthRepository.getInstance().getAppID() != null) {
+				eventLogger.send(KinSdkInitiated.create());
+			}
 		}
 	}
 
@@ -179,55 +180,24 @@ public class Kin {
 
 	/**
 	 * In order to use all the other features in Kin Ecosystem, you should login the user first.
-	 * The whitelist option should be use only for quick integration and testing, not in production.
-	 *
-	 * @param whitelistData data for login
-	 * @param loginCallback a login callback whether login succeed or not.
-	 */
-	public static void login(@NonNull WhitelistData whitelistData, KinCallback<Void> loginCallback) {
-		SignInData signInData = getWhiteListSignInData(whitelistData);
-		internalLogin(signInData, loginCallback);
-	}
-
-	/**
-	 * In order to use all the other features in Kin Ecosystem, you should login the user first.
 	 * This option should be use in production.
 	 *
 	 * @param jwt data for login, please refer to <a href="README.md#generating-the-jwt-token">Generating the jwt token</a> and see more info.
 	 * @param loginCallback a login callback whether login succeed or not.
 	 */
 	public static void login(@NonNull String jwt, KinCallback<Void> loginCallback) {
-		SignInData signInData = getJwtSignInData(jwt);
-		internalLogin(signInData, loginCallback);
+		internalLogin(jwt, loginCallback);
 	}
 
-	private static SignInData getWhiteListSignInData(@NonNull final WhitelistData whitelistData) {
-		return new SignInData()
-			.signInType(SignInTypeEnum.WHITELIST)
-			.userId(whitelistData.getUserID())
-			.appId(whitelistData.getAppID())
-			.apiKey(whitelistData.getApiKey());
-	}
-
-	private static SignInData getJwtSignInData(@NonNull final String jwt) {
-		return new SignInData()
-			.signInType(SignInTypeEnum.JWT)
-			.jwt(jwt);
-	}
-
-	private static void internalLogin(@NonNull final SignInData signInData, final KinCallback<Void> loginCallback) {
+	private static void internalLogin(@NonNull final String jwt, final KinCallback<Void> loginCallback) {
 
 		try {
 			checkInstanceNotNull();
+			AuthRepository.getInstance().setJWT(jwt);
 		} catch (final ClientException exception) {
-			instance.executorsUtil.mainThread().execute(new Runnable() {
-				@Override
-				public void run() {
-					loginCallback.onFailure(exception);
-				}
-			});
+			sendLoginFailed(exception, loginCallback);
 		}
-		AuthRepository.getInstance().setSignInData(signInData);
+
 		AuthRepository.getInstance().getAuthToken(new KinCallback<AuthToken>() {
 			@Override
 			public void onResponse(AuthToken authToken) {
@@ -311,8 +281,8 @@ public class Kin {
 	 * otherwise it will launch Welcome to Kin page and then the experience.
 	 *
 	 * @param activity the activity user can go back to.
-	 * @throws ClientException - sdk not initialized or account not logged in.
 	 * @param experience should be one of {@link EcosystemExperience}
+	 * @throws ClientException - sdk not initialized or account not logged in.
 	 */
 	public static void launchEcosystem(@NonNull final Activity activity, @EcosystemExperience final int experience)
 		throws ClientException {
@@ -332,7 +302,8 @@ public class Kin {
 		launchIntent(activity, splashIntent, experience);
 	}
 
-	private static void navigateToExperience(@NonNull final Activity activity, @EcosystemExperience final int experience) {
+	private static void navigateToExperience(@NonNull final Activity activity,
+		@EcosystemExperience final int experience) {
 		Intent marketplaceIntent = new Intent(activity, EcosystemActivity.class);
 		launchIntent(activity, marketplaceIntent, experience);
 	}

@@ -34,7 +34,6 @@ import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.NativeSpendOfferBuilder;
 import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.common.model.UserStats;
-import com.kin.ecosystem.common.model.WhitelistData;
 import java.util.Random;
 
 
@@ -183,50 +182,28 @@ public class MainActivity extends AppCompatActivity {
 
 
 	private void login() {
-		if (BuildConfig.IS_JWT_REGISTRATION) {
-			/**
-			 * SignInData should be created with registration JWT {see https://jwt.io/} created securely by server side
-			 * In the the this example {@link SignInRepo#getJWT} generate the JWT locally.
-			 * DO NOT!!!! use this approach in your real app.
-			 * */
-			String jwt = SignInRepo.getJWT(this);
+		/**
+		 * SignInData should be created with registration JWT {see https://jwt.io/} created securely by server side
+		 * In the the this example {@link SignInRepo#getJWT} generate the JWT locally.
+		 * DO NOT!!!! use this approach in your real app.
+		 * */
+		String jwt = SignInRepo.getJWT(this);
+		Kin.login(jwt, new KinCallback<Void>() {
+			@Override
+			public void onResponse(Void response) {
+				showSnackbar("login succeed jwt", false);
+				Log.d(TAG, "JWT onResponse: login");
 
-			Kin.login(jwt, new KinCallback<Void>() {
-				@Override
-				public void onResponse(Void response) {
-					showSnackbar("login succeed jwt", false);
-					Log.d(TAG, "JWT onResponse: login");
+				addNativeOffer();
+				addNativeOfferClickedObserver();
+			}
 
-					addNativeOffer();
-					addNativeOfferClickedObserver();
-				}
-
-				@Override
-				public void onFailure(KinEcosystemException exception) {
-					showSnackbar("login failed jwt", true);
-					Log.e(TAG, "JWT onFailure: " + exception.getMessage());
-				}
-			});
-		} else {
-			/** Use {@link WhitelistData} for small scale testing */
-			WhitelistData whitelistData = SignInRepo.getWhitelistSignInData(this, getAppId(), getApiKey());
-			Kin.login(whitelistData, new KinCallback<Void>() {
-				@Override
-				public void onResponse(Void response) {
-					showSnackbar("login succeed whitelist", false);
-					Log.d(TAG, "WhiteList onResponse: login");
-
-					addNativeOffer();
-					addNativeOfferClickedObserver();
-				}
-
-				@Override
-				public void onFailure(KinEcosystemException exception) {
-					showSnackbar("login failed whitelist", true);
-					Log.e(TAG, "WhiteList onFailure: " + exception.getMessage());
-				}
-			});
-		}
+			@Override
+			public void onFailure(KinEcosystemException exception) {
+				showSnackbar("login failed jwt", true);
+				Log.e(TAG, "JWT onFailure: " + exception.getMessage());
+			}
+		});
 	}
 
 	private void launchExperience(@EcosystemExperience final int experience) {
@@ -638,11 +615,6 @@ public class MainActivity extends AppCompatActivity {
 	@NonNull
 	public static String getAppId() {
 		return BuildConfig.SAMPLE_APP_ID;
-	}
-
-	@NonNull
-	public static String getApiKey() {
-		return BuildConfig.SAMPLE_API_KEY;
 	}
 
 	@Override

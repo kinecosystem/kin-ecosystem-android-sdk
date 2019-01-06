@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.support.annotation.NonNull;
+import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.network.model.AuthToken;
-import com.kin.ecosystem.core.network.model.SignInData;
-import com.kin.ecosystem.core.network.model.SignInData.SignInTypeEnum;
+import com.kin.ecosystem.core.util.ErrorUtil;
+import com.kin.ecosystem.core.util.JwtDecoder;
+import org.json.JSONException;
 
 
 public class AuthLocalData implements AuthDataSource.Local {
@@ -21,8 +23,6 @@ public class AuthLocalData implements AuthDataSource.Local {
 	private static final String ECOSYSTEM_USER_ID_KEY = "ecosystem_user_id";
 	private static final String APP_ID_KEY = "app_id";
 	private static final String DEVICE_ID_KEY = "device_id";
-	private static final String PUBLIC_ADDRESS_KEY = "public_address";
-	private static final String TYPE_KEY = "type";
 
 	private static final String TOKEN_KEY = "token";
 	private static final String TOKEN_EXPIRATION_DATE_KEY = "token_expiration_date";
@@ -46,31 +46,28 @@ public class AuthLocalData implements AuthDataSource.Local {
 	}
 
 	@Override
-	public void setSignInData(@NonNull final SignInData signInData) {
+	public void setJWT(@NonNull final String jwt) throws ClientException {
 		Editor editor = signInSharedPreferences.edit();
-		editor.putString(TYPE_KEY, signInData.getSignInType().getValue());
-
-		if (signInData.getSignInType() == SignInTypeEnum.JWT) {
-			editor.putString(JWT_KEY, signInData.getJwt());
-		} else {
-			editor.putString(USER_ID_KEY, signInData.getUserId());
-			editor.putString(APP_ID_KEY, signInData.getAppId());
+		JwtBody jwtBody = null;
+		try {
+			jwtBody = JwtDecoder.getJwtBody(jwt);
+			if(jwtBody == null) {
+				throw new ClientException(ClientException.BAD_CONFIGURATION,
+					"The jwt is not in the correct format, please see more details on our documentation.", null);
+			}
+		} catch (JSONException | IllegalArgumentException e) {
+			throw ErrorUtil.getClientException(ClientException.BAD_CONFIGURATION, e);
 		}
-		editor.apply();
+		editor.putString(JWT_KEY, jwt);
+			editor.putString(DEVICE_ID_KEY, jwtBody.getDeviceId());
+			editor.putString(USER_ID_KEY, jwtBody.getUserId());
+			editor.putString(APP_ID_KEY, jwtBody.getAppId());
+			editor.apply();
 	}
 
 	@Override
-	public SignInData getSignInData() {
-		final String signInType = signInSharedPreferences.getString(TYPE_KEY, null);
-		final String jwt = signInSharedPreferences.getString(JWT_KEY, null);
-		final String userID = signInSharedPreferences.getString(USER_ID_KEY, null);
-		final String appID = signInSharedPreferences.getString(APP_ID_KEY, null);
-		if (signInType != null && jwt != null && userID != null
-			&& appID != null) {
-			return new SignInData().signInType(SignInTypeEnum.fromValue(signInType)).userId(userID).appId(appID);
-		} else {
-			return null;
-		}
+	public String getJWT() {
+		return signInSharedPreferences.getString(JWT_KEY, null);
 	}
 
 	@Override
@@ -83,8 +80,6 @@ public class AuthLocalData implements AuthDataSource.Local {
 	private void setAuthToken(@NonNull final AuthToken authToken) {
 		Editor editor = signInSharedPreferences.edit();
 		editor.putString(TOKEN_KEY, authToken.getToken());
-		editor.putString(APP_ID_KEY, authToken.getAppID());
-		editor.putString(USER_ID_KEY, authToken.getUserID());
 		editor.putString(ECOSYSTEM_USER_ID_KEY, authToken.getEcosystemUserID());
 		editor.putString(TOKEN_EXPIRATION_DATE_KEY, authToken.getExpirationDate());
 		editor.apply();
