@@ -17,7 +17,6 @@ import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.StringUtil;
 import java.util.Calendar;
 import java.util.Date;
-import org.json.JSONException;
 
 public class AuthRepository implements AuthDataSource {
 
