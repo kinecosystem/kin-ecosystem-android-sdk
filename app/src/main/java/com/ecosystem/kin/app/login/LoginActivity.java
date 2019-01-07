@@ -37,7 +37,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
 	private TextView doneBtn;
 	private TextView generateBtn;
 	private ProgressBar loader;
-	private Group userTextGroup;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,7 +44,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
 		setContentView(R.layout.activity_login);
 		constraintLayout = findViewById(R.id.container);
 		userIdEditText = findViewById(R.id.user_id_edit_text);
-		userTextGroup = findViewById(R.id.user_id_text_group);
 		loader = findViewById(R.id.loader);
 		doneBtn = findViewById(R.id.done_btn);
 		generateBtn = findViewById(R.id.generate_btn);

@@ -96,15 +96,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         />
 
-    <android.support.constraint.Group
-        android:id="@+id/user_id_text_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="false"
-        android:visibility="visible"
-        app:constraint_referenced_ids="generate_btn,user_id_input_layout,done_btn"/>
-
-
     <ProgressBar
         android:id="@+id/loader"
         android:layout_width="wrap_content"
