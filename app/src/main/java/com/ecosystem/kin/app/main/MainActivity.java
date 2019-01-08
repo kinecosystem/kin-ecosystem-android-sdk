@@ -1,4 +1,6 @@
-package com.ecosystem.kin.app;
+package com.ecosystem.kin.app.main;
+
+import static com.ecosystem.kin.app.JwtUtil.getRandomID;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,12 +15,17 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.ecosystem.kin.app.BuildConfig;
+import com.ecosystem.kin.app.JwtUtil;
+import com.ecosystem.kin.app.R;
 import com.ecosystem.kin.app.model.SignInRepo;
 import com.kin.ecosystem.EcosystemExperience;
 import com.kin.ecosystem.Kin;
@@ -34,7 +41,6 @@ import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.NativeSpendOfferBuilder;
 import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.common.model.UserStats;
-import java.util.Random;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -62,10 +68,6 @@ public class MainActivity extends AppCompatActivity {
 	private String publicAddress;
 	private String spendOfferID = "";
 
-
-	private int getRandomID() {
-		return new Random().nextInt((999999 - 1) + 1) + 1;
-	}
 
 	private NativeOffer nativeOffer;
 
@@ -155,9 +157,9 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 
-		login();
 		final TextView userIdTextView = findViewById(R.id.user_id_textview);
-		userIdTextView.setText(getString(R.string.user_id, userID));
+		SpannableString userIdSpan = getUnderlineSpan(getString(R.string.user_id, userID));
+		userIdTextView.setText(userIdSpan);
 		userIdTextView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -176,35 +178,18 @@ public class MainActivity extends AppCompatActivity {
 				launchExperience(EcosystemExperience.ORDER_HISTORY);
 			}
 		});
-		((TextView) findViewById(R.id.sample_app_version))
-			.setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
+		((TextView) findViewById(R.id.sample_app_version)).setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
+
+		addNativeOffer();
+		addNativeOfferClickedObserver();
 	}
 
-
-	private void login() {
-		/**
-		 * SignInData should be created with registration JWT {see https://jwt.io/} created securely by server side
-		 * In the the this example {@link SignInRepo#getJWT} generate the JWT locally.
-		 * DO NOT!!!! use this approach in your real app.
-		 * */
-		String jwt = SignInRepo.getJWT(this);
-		Kin.login(jwt, new KinCallback<Void>() {
-			@Override
-			public void onResponse(Void response) {
-				showSnackbar("login succeed jwt", false);
-				Log.d(TAG, "JWT onResponse: login");
-
-				addNativeOffer();
-				addNativeOfferClickedObserver();
-			}
-
-			@Override
-			public void onFailure(KinEcosystemException exception) {
-				showSnackbar("login failed jwt", true);
-				Log.e(TAG, "JWT onFailure: " + exception.getMessage());
-			}
-		});
+	private SpannableString getUnderlineSpan(String text) {
+		SpannableString content = new SpannableString(text);
+		content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+		return content;
 	}
+
 
 	private void launchExperience(@EcosystemExperience final int experience) {
 		try {
@@ -425,7 +410,8 @@ public class MainActivity extends AppCompatActivity {
 
 	private void setBalanceWithAmount(Balance balance) {
 		int balanceValue = balance.getAmount().intValue();
-		balanceView.setText(getString(R.string.get_balance_d, balanceValue));
+		SpannableString balanceSpan = getUnderlineSpan(getString(R.string.get_balance_d, balanceValue));
+		balanceView.setText(balanceSpan);
 	}
 
 	private void createNativeSpendOffer() {

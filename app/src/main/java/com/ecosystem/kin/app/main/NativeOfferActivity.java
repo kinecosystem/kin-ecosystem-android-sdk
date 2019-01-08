@@ -1,4 +1,4 @@
-package com.ecosystem.kin.app;
+package com.ecosystem.kin.app.main;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
+import com.ecosystem.kin.app.R;
 
 
 public class NativeOfferActivity extends AppCompatActivity {

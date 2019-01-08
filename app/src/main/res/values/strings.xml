@@ -1,22 +1,27 @@
 <resources>
     <string name="app_name">Kin Ecosystem - Sample App</string>
 
-    <string name="get_balance">Get Balance</string>
-    <string name="get_balance_d">Get Balance: %d</string>
-    <string name="failed_to_get_balance">Failed to get balance, try again</string>
-    <string name="kin_sdk_sample_app">Kin SDK Sample App</string>
-    <string name="show_public_address">Show Public Address</string>
-    <string name="kin_marketplace">Kin Marketplace</string>
-    <string name="native_spend_buy_a_sticker">Native Spend - Buy A Sticker</string>
-    <string name="copy_public_address">Copy Public Address</string>
-    <string name="native_earn">Native Earn</string>
+    <string name="get_balance"><u>Get Balance</u></string>
+    <string name="get_balance_d"><u>Get Balance: %d</u></string>
+    <string name="failed_to_get_balance"><u>Failed to get balance, try again</u></string>
+    <string name="show_public_address"><u>Show Public Address</u></string>
+    <string name="native_spend_buy_a_sticker"><u>Native Spend - Buy A Sticker</u></string>
+    <string name="copy_public_address"><u>Copy Public Address</u></string>
+    <string name="native_earn"><u>Native Earn</u></string>
+    <string name="pay_to_user"><u>Pay to User</u></string>
+    <string name="get_user_stats"><u>Get User Stats</u></string>
+    <string name="logout_user"><u>Logout User</u></string>
+    <string name="user_id"><u>User ID: %s</u></string>
+
     <string name="kin_marketplace_title">Kin Marketplace</string>
-    <string name="pay_to_user">Pay to User</string>
-    <string name="get_user_stats">Get User Stats</string>
+    <string name="kin_sdk_sample_app">Kin SDK Sample App</string>
+    <string name="kin_marketplace">Kin Marketplace</string>
     <string name="version_name">Version: %s</string>
-    <string name="user_id">User ID: %s</string>
     <string name="enter_the_recipient_user_id">Enter the recipient user id:</string>
     <string name="pay">Pay</string>
     <string name="native_offer_content_activity">Native Offer Content Activity</string>
     <string name="account_not_logged_in">Account is not logged in</string>
+    <string name="enter_user_id">Enter user id</string>
+    <string name="generate">Generate</string>
+    <string name="done">Done</string>
 </resources>

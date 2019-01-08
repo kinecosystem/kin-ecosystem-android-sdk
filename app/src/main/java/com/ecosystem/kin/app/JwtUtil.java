@@ -49,7 +49,7 @@ public class JwtUtil {
             .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
     }
 
-    static String generateSpendOfferExampleJWT(String appID, String userID, String deviceId, String offerID) {
+    public static String generateSpendOfferExampleJWT(String appID, String userID, String deviceId, String offerID) {
         return getBasicJWT(appID)
             .setSubject(JWT_SUBJECT_SPEND)
             .claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject(offerID))
@@ -57,7 +57,7 @@ public class JwtUtil {
             .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
     }
 
-    static String generateEarnOfferExampleJWT(String appID, String userID) {
+    public static String generateEarnOfferExampleJWT(String appID, String userID) {
         return getBasicJWT(appID)
             .setSubject(JWT_SUBJECT_EARN)
             .claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject())
@@ -65,7 +65,8 @@ public class JwtUtil {
             .signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
     }
 
-    static String generatePayToUserOfferExampleJWT(String appID, String userID, String deviceId, String recipientUserID) {
+    public static String generatePayToUserOfferExampleJWT(String appID, String userID, String deviceId,
+        String recipientUserID) {
         return getBasicJWT(appID)
             .setSubject(JWT_SUBJECT_PAY_TO_USER)
             .claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject())
@@ -104,12 +105,16 @@ public class JwtUtil {
     }
 
     private static JWTOfferPart createOfferPartExampleObject() {
-        int randomID = new Random().nextInt((999999 - 1) + 1) + 1;
+        int randomID = getRandomID();
         return new JWTOfferPart(String.valueOf(randomID), 10);
     }
 
     private static JWTOfferPart createOfferPartExampleObject(String offerId) {
         return new JWTOfferPart(offerId, 10);
+    }
+
+    public static int getRandomID() {
+        return new Random().nextInt((999999 - 1) + 1) + 1;
     }
 
     private static class JWTOfferPart {

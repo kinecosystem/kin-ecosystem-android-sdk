@@ -3,20 +3,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.ecosystem.kin.app">
 
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="false"
-        tools:replace="android:allowBackup"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:name=".App"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name=".App"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:allowBackup">
 
         <!--"test environment is only for internal usage, you should use only beta or production as you can see below"-->
-        <meta-data android:name="com.kin.ecosystem.sdk.EnvironmentName" android:value="test"/>
+        <meta-data
+            android:name="com.kin.ecosystem.sdk.EnvironmentName"
+            android:value="test"/>
 
         <!--<meta-data android:name="com.kin.ecosystem.sdk.EnvironmentName" android:value="@string/kinecosystem_environment_beta"/>-->
         <!--<meta-data android:name="com.kin.ecosystem.sdk.EnvironmentName" android:value="@string/kinecosystem_environment_production"/>-->
@@ -33,16 +35,30 @@
 
         </provider>
 
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".SplashActivity"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
         </activity>
 
-        <activity android:name=".NativeOfferActivity" />
+        <activity
+            android:name=".login.LoginActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".main.MainActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".main.NativeOfferActivity"
+            android:screenOrientation="portrait"/>
+
 
         <meta-data
             android:name="io.fabric.ApiKey"

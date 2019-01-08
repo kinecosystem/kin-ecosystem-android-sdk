@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@color/kinecosystem_white">
+
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        app:title="Login to KinEcosystem"
+        app:titleTextColor="@color/kinecosystem_white"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/kin_logo"
+        app:layout_constraintBottom_toTopOf="@id/user_id_input_layout"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"/>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/user_id_input_layout"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/kinecosystem_block_margin"
+        app:hintEnabled="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/user_id_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_user_id"
+            android:textColorHighlight="@color/colorAccent"
+            android:textColorHint="@color/gray"
+            android:textSize="16sp"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <TextView
+        android:id="@+id/generate_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinrecovery_margin_main"
+        android:layout_marginRight="@dimen/kinecosystem_block_margin"
+        android:padding="@dimen/kinecosystem_block_margin"
+        android:text="@string/generate"
+        android:textAllCaps="false"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16sp"
+        android:background="@color/kinecosystem_white"
+        app:layout_constraintEnd_toStartOf="@id/done_btn"
+        app:layout_constraintTop_toBottomOf="@id/user_id_input_layout"/>
+
+    <TextView
+        android:id="@+id/done_btn"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinrecovery_margin_main"
+        android:padding="@dimen/kinecosystem_block_margin"
+        android:text="@string/done"
+        android:textAllCaps="false"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16sp"
+        android:background="@color/kinecosystem_white"
+        app:layout_constraintEnd_toEndOf="@id/user_id_input_layout"
+        app:layout_constraintTop_toBottomOf="@id/user_id_input_layout"/>
+
+    <TextView
+        android:id="@+id/sample_app_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/kinecosystem_main_margin"
+        android:layout_marginRight="@dimen/kinecosystem_margin_large"
+        android:layout_gravity="bottom"
+        android:gravity="center_horizontal"
+        android:text="Version:"
+        android:textAllCaps="false"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <ProgressBar
+        android:id="@+id/loader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinecosystem_main_margin"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/generate_btn"/>
+
+</android.support.constraint.ConstraintLayout>
