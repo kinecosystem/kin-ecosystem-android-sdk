@@ -15,20 +15,5 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation devDependencies.constraintLayout
-    implementation devDependencies.supportAnnotations
     implementation devDependencies.appCompat_v7
-    implementation devDependencies.zxing_qr
-
-    androidTestImplementation testingDependencies.junit
-    androidTestImplementation testingDependencies.mockitoAndroid
-    androidTestImplementation testingDependencies.androidTestRunner
-    androidTestImplementation testingDependencies.hamcrest
-
-    testImplementation testingDependencies.kotlin
-    testImplementation testingDependencies.mockitoKotlin
-    testImplementation testingDependencies.junit
-    testImplementation testingDependencies.mockito
-    testImplementation testingDependencies.robolectric
-    testImplementation testingDependencies.hamcrest
 }

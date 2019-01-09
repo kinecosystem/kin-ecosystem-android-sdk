@@ -22,11 +22,6 @@ dependencies {
     api project(':common')
     implementation project(path: ':transfer')
 
-    implementation devDependencies.constraintLayout
-    implementation devDependencies.supportAnnotations
-    implementation devDependencies.appCompat_v7
-    implementation devDependencies.zxing_qr
-
     implementation devDependencies.appCompat_v7
     implementation devDependencies.recyclerView_v7
     implementation devDependencies.constraintLayout

@@ -34,7 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="@dimen/kinecosystem_transfer_header_size"
-        android:background="#d7dce9"
+        android:background="@color/kinecosystem_gray_light"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
