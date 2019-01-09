@@ -1,5 +1,7 @@
 package com.kin.ecosystem.core.data.blockchain;
 
+import static com.kin.ecosystem.core.data.blockchain.BlockchainSourceLocal.NOT_EXIST;
+
 import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,8 +26,10 @@ import com.kin.ecosystem.core.data.auth.AuthDataSource;
 import com.kin.ecosystem.core.data.blockchain.CreateTrustLineCall.TrustlineCallback;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
+import com.kin.ecosystem.core.util.StringUtil;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
+import java.util.Set;
 import kin.core.EventListener;
 import kin.core.KinAccount;
 import kin.core.KinClient;
@@ -48,7 +52,8 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private final KinClient kinClient;
 	private KinAccount account;
-	private int activeAccountIndex;
+	private String currentUserId;
+
 	private ObservableData<Balance> balance = ObservableData.create(new Balance());
 	/**
 	 * Listen for {@code completedPayment} in order to be notify about completed transaction sent to the blockchain, it
@@ -81,7 +86,8 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		this.authRepository = authRepository;
 		this.kinClient = kinClient;
 		this.local = local;
-		this.activeAccountIndex = local.getAccountIndex();
+		Logger.log(new Log().withTag(TAG).put("BlockchainSourceImpl authRepository.getEcosystemUserID()", authRepository.getEcosystemUserID()));
+		this.currentUserId = authRepository.getEcosystemUserID();
 		this.appID = authRepository.getAppID();
 	}
 
@@ -101,24 +107,79 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
-	public void createAccount() throws BlockchainException {
-		createKinAccountIfNeeded();
+	public void loadAccount(String kinUserId) throws BlockchainException {
+		migrateToMultipleUsers(kinUserId);
+		createOrLoadAccount(kinUserId);
 		initBalance();
 	}
 
-	private void createKinAccountIfNeeded() throws BlockchainException {
-		if (kinClient.hasAccount()) {
+	/**
+	 * Support backward compatibility,
+	 * load the old account and migrate to current multiple users implementation.
+	 * @param kinUserId
+	 */
+	private void migrateToMultipleUsers(String kinUserId) {
+		final int accountIndex = local.getAccountIndex();
+		if (accountIndex != NOT_EXIST && kinClient.hasAccount()) {
+			Logger.log(new Log().withTag(TAG).put("migrateToMultipleUsers user:", kinUserId));
+			KinAccount account = kinClient.getAccount(accountIndex);
+			local.setActiveUserWallet(kinUserId, account.getPublicAddress());
+			local.deleteAccountIndexKey();
+		}
+	}
+
+	private void createOrLoadAccount(String kinUserId) throws BlockchainException {
+		Set<String> wallets = local.getUserWallets(kinUserId);
+		if (kinClient.hasAccount() && wallets.size() > 0) {
+			Logger.log(new Log().withTag(TAG).text("createOrLoadAccount").put("currentUserId", currentUserId).put("kinUserId", kinUserId));
+			final String lastWalletAddress;
+			if (this.currentUserId.equals(kinUserId)) {
+				// Get last active wallet from cache
+				lastWalletAddress = local.getCurrentWalletAddress();
+			} else {
+				// Get last wallet added
+				lastWalletAddress = getLastWalletAddress(wallets);
+				this.currentUserId = kinUserId;
+			}
+
+			// Match between last wallet address to wallets on device.
+			if (!StringUtil.isEmpty(lastWalletAddress)) {
+				for (int i = 0; i < kinClient.getAccountCount(); i++) {
+					KinAccount account = kinClient.getAccount(i);
+					if (lastWalletAddress.equals(account.getPublicAddress())) {
+						this.account = account;
+						break;
+					}
+				}
+			}
+
+			// No matching found
 			if (account == null) {
-				account = kinClient.getAccount(activeAccountIndex);
+				account = createAccount();
 			}
+
 		} else {
-			try {
-				// Create new account
-				account = kinClient.addAccount();
-				setAccountIndex(0);
-			} catch (CreateAccountException e) {
-				throw ErrorUtil.getBlockchainException(e);
-			}
+			account = createAccount();
+		}
+		local.setActiveUserWallet(kinUserId, account.getPublicAddress());
+	}
+
+	@Nullable
+	private String getLastWalletAddress(Set<String> wallets) {
+		String publicAddress = null;
+		for (String wallet : wallets) {
+			publicAddress = wallet;
+		}
+		return publicAddress;
+	}
+
+	private KinAccount createAccount() throws BlockchainException {
+		try {
+			// Create new account
+			return kinClient.addAccount();
+
+		} catch (CreateAccountException e) {
+			throw ErrorUtil.getBlockchainException(e);
 		}
 	}
 
@@ -399,20 +460,15 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	@Override
 	public boolean updateActiveAccount(int accountIndex) {
-		if (activeAccountIndex != accountIndex && accountIndex != -1 && accountIndex < kinClient.getAccountCount()) {
-			setAccountIndex(accountIndex);
-			account = kinClient.getAccount(activeAccountIndex);
+		if (accountIndex != -1 && accountIndex < kinClient.getAccountCount()) {
+			account = kinClient.getAccount(accountIndex);
+			local.setActiveUserWallet(currentUserId, account.getPublicAddress());
 			reconnectBalanceConnection();
 			//trigger balance update
 			getBalance(null);
 			return true;
 		}
 		return false;
-	}
-
-	private void setAccountIndex(int accountIndex) {
-		activeAccountIndex = accountIndex;
-		local.setAccountIndex(accountIndex);
 	}
 
 	private void decrementPaymentCount() {

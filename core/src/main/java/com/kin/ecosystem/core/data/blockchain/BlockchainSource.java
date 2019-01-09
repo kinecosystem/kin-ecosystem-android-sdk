@@ -9,15 +9,17 @@ import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
+import java.util.Set;
 import kin.core.KinAccount;
 
 public interface BlockchainSource {
 
 	/**
 	 * Create account if there is no accounts in local
+	 * @param kinUserId the logged in account
 	 * @throws BlockchainException could not load the account, or could not create a new account.
 	 */
-	void createAccount() throws BlockchainException;
+	void loadAccount(String kinUserId) throws BlockchainException;
 
 	/**
 	 * Getting the current account.
@@ -109,6 +111,13 @@ public interface BlockchainSource {
 
 		int getAccountIndex();
 
-		void setAccountIndex(int index);
+		@Nullable
+		String getCurrentWalletAddress();
+
+		void setActiveUserWallet(String userId, String publicAddress);
+
+		Set<String> getUserWallets(String userId);
+
+		void deleteAccountIndexKey();
 	}
 }

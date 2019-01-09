@@ -31,10 +31,10 @@ public class EventLoggerImpl implements EventLogger {
 
     @Override
     public void send(Event event) {
-        try {
-            eventsApi.sendEventAsync(event, null);
-        } catch (ApiException e) {
-            Logger.log(new Log().withTag("EventLoggerImpl").text(e.getMessage()).priority(Log.ERROR));
-        }
+//        try {
+//            eventsApi.sendEventAsync(event, null);
+//        } catch (ApiException e) {
+//            Logger.log(new Log().withTag("EventLoggerImpl").text(e.getMessage()).priority(Log.ERROR));
+//        }
     }
 }
