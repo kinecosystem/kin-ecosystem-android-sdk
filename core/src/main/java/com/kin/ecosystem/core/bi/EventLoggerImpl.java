@@ -3,9 +3,7 @@ package com.kin.ecosystem.core.bi;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.network.ApiException;
-import java.util.List;
-import java.util.Map;
-import com.kin.ecosystem.core.network.ApiCallback;
+
 
 public class EventLoggerImpl implements EventLogger {
 
@@ -31,10 +29,10 @@ public class EventLoggerImpl implements EventLogger {
 
     @Override
     public void send(Event event) {
-//        try {
-//            eventsApi.sendEventAsync(event, null);
-//        } catch (ApiException e) {
-//            Logger.log(new Log().withTag("EventLoggerImpl").text(e.getMessage()).priority(Log.ERROR));
-//        }
+        try {
+            eventsApi.sendEventAsync(event, null);
+        } catch (ApiException e) {
+            Logger.log(new Log().withTag("EventLoggerImpl").text(e.getMessage()).priority(Log.ERROR));
+        }
     }
 }
