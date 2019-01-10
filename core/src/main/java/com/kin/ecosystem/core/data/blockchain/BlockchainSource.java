@@ -116,6 +116,7 @@ public interface BlockchainSource {
 
 		void setActiveUserWallet(String userId, String publicAddress);
 
+		@Nullable
 		Set<String> getUserWallets(String userId);
 
 		void deleteAccountIndexKey();

@@ -130,7 +130,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private void createOrLoadAccount(String kinUserId) throws BlockchainException {
 		Set<String> wallets = local.getUserWallets(kinUserId);
-		if (kinClient.hasAccount() && wallets.size() > 0) {
+		if (kinClient.hasAccount() &&  wallets != null && wallets.size() > 0) {
 			Logger.log(new Log().withTag(TAG).text("createOrLoadAccount").put("currentUserId", currentUserId).put("kinUserId", kinUserId));
 			final String lastWalletAddress;
 			if (this.currentUserId.equals(kinUserId)) {
