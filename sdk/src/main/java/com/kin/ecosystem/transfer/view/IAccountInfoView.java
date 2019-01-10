@@ -5,5 +5,8 @@ import com.kin.ecosystem.transfer.presenter.AccountInfoPresenter;
 
 public interface IAccountInfoView extends IBaseView<AccountInfoPresenter> {
     void enabledAgreeButton();
-    void closeActivity();
+
+    void close();
+
+    void updateSourceApp(String sourceApp);
 }

@@ -14,6 +14,11 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation devDependencies.appCompat_v7
+
+    testImplementation project(':test-base')
+    testImplementation testingDependencies.junit
+    testImplementation testingDependencies.mockito
+    testImplementation testingDependencies.robolectric
+    androidTestImplementation 'junit:junit:4.12'
 }
