@@ -86,7 +86,8 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		this.authRepository = authRepository;
 		this.kinClient = kinClient;
 		this.local = local;
-		Logger.log(new Log().withTag(TAG).put("BlockchainSourceImpl authRepository.getEcosystemUserID()", authRepository.getEcosystemUserID()));
+		Logger.log(new Log().withTag(TAG)
+			.put("BlockchainSourceImpl authRepository.getEcosystemUserID()", authRepository.getEcosystemUserID()));
 		this.currentUserId = authRepository.getEcosystemUserID();
 		this.appID = authRepository.getAppID();
 	}
@@ -116,7 +117,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	/**
 	 * Support backward compatibility,
 	 * load the old account and migrate to current multiple users implementation.
-	 * @param kinUserId
 	 */
 	private void migrateToMultipleUsers(String kinUserId) {
 		final int accountIndex = local.getAccountIndex();
@@ -130,25 +130,28 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private void createOrLoadAccount(String kinUserId) throws BlockchainException {
 		Set<String> wallets = local.getUserWallets(kinUserId);
-		if (kinClient.hasAccount() &&  wallets != null && wallets.size() > 0) {
-			Logger.log(new Log().withTag(TAG).text("createOrLoadAccount").put("currentUserId", currentUserId).put("kinUserId", kinUserId));
+		if (kinClient.hasAccount() && wallets != null && wallets.size() > 0) {
+			Logger.log(new Log().withTag(TAG).text("createOrLoadAccount").put("currentUserId", currentUserId)
+				.put("kinUserId", kinUserId));
 			final String lastWalletAddress;
-			if (this.currentUserId.equals(kinUserId)) {
-				// Get last active wallet from cache
-				lastWalletAddress = local.getCurrentWalletAddress();
-			} else {
-				// Get last wallet added
-				lastWalletAddress = getLastWalletAddress(wallets);
-				this.currentUserId = kinUserId;
-			}
+			if (!StringUtil.isEmpty(currentUserId)) {
+				if (currentUserId.equals(kinUserId)) {
+					// Get last active wallet from cache
+					lastWalletAddress = local.getCurrentWalletAddress();
+				} else {
+					// Get last wallet added
+					lastWalletAddress = getLastWalletAddress(wallets);
+					this.currentUserId = kinUserId;
+				}
 
-			// Match between last wallet address to wallets on device.
-			if (!StringUtil.isEmpty(lastWalletAddress)) {
-				for (int i = 0; i < kinClient.getAccountCount(); i++) {
-					KinAccount account = kinClient.getAccount(i);
-					if (lastWalletAddress.equals(account.getPublicAddress())) {
-						this.account = account;
-						break;
+				// Match between last wallet address to wallets on device.
+				if (!StringUtil.isEmpty(lastWalletAddress)) {
+					for (int i = 0; i < kinClient.getAccountCount(); i++) {
+						KinAccount account = kinClient.getAccount(i);
+						if (lastWalletAddress.equals(account.getPublicAddress())) {
+							this.account = account;
+							break;
+						}
 					}
 				}
 			}

@@ -730,7 +730,10 @@ public class ApiClient {
 		call.enqueue(new Callback() {
 			@Override
 			public void onFailure(Call call, IOException e) {
-				callback.onFailure(new ApiException(e), 0, null);
+				if(callback != null) {
+					callback.onFailure(new ApiException(e), 0, null);
+				}
+
 			}
 
 			@Override
