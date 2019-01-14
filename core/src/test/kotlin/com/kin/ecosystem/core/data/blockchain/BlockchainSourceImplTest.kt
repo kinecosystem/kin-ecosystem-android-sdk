@@ -85,7 +85,7 @@ class BlockchainSourceImplTest() : BaseTestClass() {
 
     private fun loadAccount(kinAccount: KinAccount, publicAddress: String, kinUserId: String) {
         whenever(local.getUserWallets(kinUserId)) doAnswer { linkedSetOf(publicAddress) }
-        whenever(local.currentWalletAddress) doAnswer { publicAddress }
+        whenever(local.lastWalletAddress) doAnswer { publicAddress }
 
         whenever(kinClient.getAccount(0)) doAnswer { kinAccount }
         whenever(kinClient.accountCount) doAnswer { 1 }
@@ -118,7 +118,7 @@ class BlockchainSourceImplTest() : BaseTestClass() {
     fun `accountIndex exists, migrateToMultipleUsers, found account, load relevant account`() {
         whenever(local.accountIndex) doAnswer { 0 }
         whenever(local.getUserWallets(KIN_USER_ID_A)) doAnswer { linkedSetOf(PUBLIC_ADDRESS_A) }
-        whenever(local.currentWalletAddress) doAnswer { PUBLIC_ADDRESS_A }
+        whenever(local.lastWalletAddress) doAnswer { PUBLIC_ADDRESS_A }
 
         whenever(kinClient.getAccount(0)) doAnswer { kinAccountA }
         whenever(kinClient.accountCount) doAnswer { 1 }
@@ -156,7 +156,7 @@ class BlockchainSourceImplTest() : BaseTestClass() {
         }
 
         whenever(local.getUserWallets(KIN_USER_ID_A)) doAnswer { linkedSetOf(PUBLIC_ADDRESS_A) }
-        whenever(local.currentWalletAddress) doAnswer { PUBLIC_ADDRESS_A }
+        whenever(local.lastWalletAddress) doAnswer { PUBLIC_ADDRESS_A }
 
         whenever(kinClient.getAccount(0)) doAnswer { kinAccountB }
         whenever(kinClient.getAccount(1)) doAnswer { kinAccountC }

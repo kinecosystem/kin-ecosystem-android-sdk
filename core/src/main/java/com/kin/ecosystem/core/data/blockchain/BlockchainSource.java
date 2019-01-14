@@ -9,6 +9,7 @@ import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import kin.core.KinAccount;
 
@@ -112,13 +113,14 @@ public interface BlockchainSource {
 		int getAccountIndex();
 
 		@Nullable
-		String getCurrentWalletAddress();
+		String getLastWalletAddress(String kinUserId);
 
-		void setActiveUserWallet(String userId, String publicAddress);
-
-		@Nullable
-		Set<String> getUserWallets(String userId);
+		void setActiveUserWallet(String kinUserId, String publicAddress);
 
 		void deleteAccountIndexKey();
+
+		boolean getIsMigrated();
+
+		void setDidMigrate();
 	}
 }
