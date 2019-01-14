@@ -22,8 +22,6 @@ public class JwtUtil {
 	private static final String ALGORITHM_RSA = "RSA";
 	private static final String SECURITY_PROVIDER_BC = "BC";
 
-	private static final long DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
-
 	private static final String JWT_CLAIM_OBJECT_OFFER_PART = "offer";
 	private static final String JWT_CLAIM_OBJECT_SENDER_PART = "sender"; // Should be part of native SPEND jwt
 	private static final String JWT_CLAIM_OBJECT_RECIPIENT_PART = "recipient"; // Should be part of native EARN jwt
@@ -89,7 +87,7 @@ public class JwtUtil {
 			.setHeaderParam(JWT_HEADER_TYP, JWT)
 			.setIssuedAt(new Date(new Date().getTime() - (DateUtils.HOUR_IN_MILLIS)))
 			.setIssuer(appID)
-			.setExpiration(new Date(System.currentTimeMillis() + DAY_IN_MILLISECONDS));
+			.setExpiration(new Date(System.currentTimeMillis() + DateUtils.DAY_IN_MILLIS));
 	}
 
 	@Nullable

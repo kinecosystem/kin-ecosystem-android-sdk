@@ -17,7 +17,7 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 	private static final String BALANCE_KEY = "balance_key";
 	private static final String ACCOUNT_INDEX_KEY = "account_index_key";
 	private static final String CURRENT_KIN_USER_ID = "current_kin_user_id";
-	private static final String CURRENT_WALLET_ADDRESS = "current_wallet_address";
+	private static final String IS_MIGRATED_KEY = "is_migrated_key";
 
 	private final SharedPreferences blockchainSharedPreferences;
 
@@ -51,8 +51,13 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 
 	@Nullable
 	@Override
-	public String getCurrentWalletAddress() {
-		return blockchainSharedPreferences.getString(CURRENT_WALLET_ADDRESS, null);
+	public String getLastWalletAddress(final String kinUserId) {
+		Set<String> wallets = getUserWallets(kinUserId);
+		String publicAddress = null;
+		for (String wallet : wallets) {
+			publicAddress = wallet;
+		}
+		return publicAddress;
 	}
 
 	@Override
@@ -61,22 +66,19 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 	}
 
 	@Override
-	public void setActiveUserWallet(String userId, String publicAddress) {
-		Set<String> currentWallets = getUserWallets(userId);
-		Set<String> updatedWallets = currentWallets != null ? new LinkedHashSet<>(currentWallets) : new LinkedHashSet<String>();
-		updatedWallets.remove(publicAddress); // Remove if exists
-		updatedWallets.add(publicAddress); // Add to the end
+	public void setActiveUserWallet(String kinUserId, String publicAddress) {
+		LinkedHashSet<String> currentWallets = getUserWallets(kinUserId);
+		currentWallets.remove(publicAddress); // Remove if exists
+		currentWallets.add(publicAddress); // Add to the end
 		Editor editor = blockchainSharedPreferences.edit();
-		editor.putString(CURRENT_KIN_USER_ID, userId);
-		editor.putString(CURRENT_WALLET_ADDRESS, publicAddress);
-		editor.putStringSet(userId, updatedWallets).apply();
+		editor.putString(CURRENT_KIN_USER_ID, kinUserId);
+		editor.putStringSet(kinUserId, currentWallets).apply();
 		editor.apply();
 	}
 
-	@Override
-	@Nullable
-	public Set<String> getUserWallets(String userId) {
-		return blockchainSharedPreferences.getStringSet(userId, null);
+	private LinkedHashSet<String> getUserWallets(String kinUserId) {
+		Set<String> wallets = blockchainSharedPreferences.getStringSet(kinUserId, null);
+		return wallets != null ? new LinkedHashSet<>(wallets) : new LinkedHashSet<String>();
 	}
 
 	@Override
@@ -87,5 +89,15 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 	@Override
 	public void clearCachedBalance() {
 		blockchainSharedPreferences.edit().remove(BALANCE_KEY).apply();
+	}
+
+	@Override
+	public boolean getIsMigrated() {
+		return blockchainSharedPreferences.getBoolean(IS_MIGRATED_KEY, false);
+	}
+
+	@Override
+	public void setDidMigrate() {
+		blockchainSharedPreferences.edit().putBoolean(IS_MIGRATED_KEY, true).apply();
 	}
 }
