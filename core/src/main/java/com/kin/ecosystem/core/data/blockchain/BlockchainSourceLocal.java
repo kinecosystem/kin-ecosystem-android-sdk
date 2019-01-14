@@ -83,4 +83,9 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 	public void deleteAccountIndexKey() {
 		blockchainSharedPreferences.edit().remove(ACCOUNT_INDEX_KEY).apply();
 	}
+
+	@Override
+	public void clearCachedBalance() {
+		blockchainSharedPreferences.edit().remove(BALANCE_KEY).apply();
+	}
 }

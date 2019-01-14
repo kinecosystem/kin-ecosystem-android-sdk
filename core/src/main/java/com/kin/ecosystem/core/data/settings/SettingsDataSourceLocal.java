@@ -8,8 +8,6 @@ public class SettingsDataSourceLocal implements SettingsDataSource.Local {
 
 	private static final String SETTINGS_PREF_NAME_FILE_KEY = "kinecosystem_settings_data_source";
 
-	private static final String IS_BACKED_UP_KEY = "backed_up";
-
 	private final SharedPreferences settingsDataSourceSharedPref;
 
 	public SettingsDataSourceLocal(@NonNull final Context context) {
@@ -17,12 +15,12 @@ public class SettingsDataSourceLocal implements SettingsDataSource.Local {
 	}
 
 	@Override
-	public void setIsBackedUp(boolean isBackedUp) {
-		settingsDataSourceSharedPref.edit().putBoolean(IS_BACKED_UP_KEY, isBackedUp).apply();
+	public void setIsBackedUp(final String publicAddress, boolean isBackedUp) {
+		settingsDataSourceSharedPref.edit().putBoolean(publicAddress, isBackedUp).apply();
 	}
 
 	@Override
-	public boolean isBackedUp() {
-		return settingsDataSourceSharedPref.getBoolean(IS_BACKED_UP_KEY, false);
+	public boolean isBackedUp(final String publicAddress) {
+		return settingsDataSourceSharedPref.getBoolean(publicAddress, false);
 	}
 }

@@ -9,6 +9,8 @@ import android.support.annotation.NonNull;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.exception.BlockchainException;
+import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.core.Log;
@@ -21,6 +23,7 @@ import com.kin.ecosystem.core.bi.events.BackupWalletCompleted;
 import com.kin.ecosystem.core.bi.events.RestoreWalletCompleted;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.settings.SettingsDataSource;
+import com.kin.ecosystem.core.util.StringUtil;
 import com.kin.ecosystem.recovery.BackupCallback;
 import com.kin.ecosystem.recovery.BackupManager;
 import com.kin.ecosystem.recovery.RestoreCallback;
@@ -40,6 +43,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 
 	private Observer<Balance> balanceObserver;
 	private Balance currentBalance;
+	private String publicAddress;
 
 	public SettingsPresenter(@NonNull final ISettingsView view, @NonNull final SettingsDataSource settingsDataSource,
 		@NonNull final BlockchainSource blockchainSource, @NonNull final BackupManager backupManager,
@@ -51,6 +55,11 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 		this.eventLogger = eventLogger;
 		this.accountManager = accountManager;
 		this.currentBalance = blockchainSource.getBalance();
+		try {
+			this.publicAddress = blockchainSource.getPublicAddress();
+		} catch (ClientException | BlockchainException e) {
+			// no-op, should not happen
+		}
 		registerToEvents();
 		registerToCallbacks();
 		this.view.attachPresenter(this);
@@ -88,18 +97,20 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 	}
 
 	private void updateSettingsIcon() {
-		if (!settingsDataSource.isBackedUp()) {
-			changeIconColor(ITEM_BACKUP, GRAY);
-			if (isGreaterThenZero(currentBalance)) {
-				changeTouchIndicator(ITEM_BACKUP, true);
-				removeBalanceObserver();
+		if (!StringUtil.isEmpty(publicAddress)) {
+			if (!settingsDataSource.isBackedUp(publicAddress)) {
+				changeIconColor(ITEM_BACKUP, GRAY);
+				if (isGreaterThenZero(currentBalance)) {
+					changeTouchIndicator(ITEM_BACKUP, true);
+					removeBalanceObserver();
+				} else {
+					addBalanceObserver();
+					changeTouchIndicator(ITEM_BACKUP, false);
+				}
 			} else {
-				addBalanceObserver();
+				changeIconColor(ITEM_BACKUP, BLUE);
 				changeTouchIndicator(ITEM_BACKUP, false);
 			}
-		} else {
-			changeIconColor(ITEM_BACKUP, BLUE);
-			changeTouchIndicator(ITEM_BACKUP, false);
 		}
 	}
 
@@ -194,9 +205,11 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 	}
 
 	private void onBackupSuccess() {
-		eventLogger.send(BackupWalletCompleted.create());
-		settingsDataSource.setIsBackedUp(true);
-		updateSettingsIcon();
+		if (!StringUtil.isEmpty(publicAddress)) {
+			eventLogger.send(BackupWalletCompleted.create());
+			settingsDataSource.setIsBackedUp(publicAddress, true);
+			updateSettingsIcon();
+		}
 	}
 
 	private void changeTouchIndicator(@Item final int item, final boolean isVisible) {

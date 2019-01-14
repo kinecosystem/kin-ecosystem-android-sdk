@@ -103,6 +103,8 @@ public interface BlockchainSource {
 	 */
 	boolean updateActiveAccount(int accountIndex);
 
+	void logout();
+
 	interface Local {
 
 		int getBalance();
@@ -120,5 +122,7 @@ public interface BlockchainSource {
 		Set<String> getUserWallets(String userId);
 
 		void deleteAccountIndexKey();
+
+		void clearCachedBalance();
 	}
 }

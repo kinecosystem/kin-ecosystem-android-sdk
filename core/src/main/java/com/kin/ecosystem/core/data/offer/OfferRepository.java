@@ -165,4 +165,9 @@ public class OfferRepository implements OfferDataSource {
 		final Boolean shouldDismissOnTap = nativeOfferMap.get(offerId);
 		return shouldDismissOnTap == null ? false : shouldDismissOnTap;
 	}
+
+	@Override
+	public void logout() {
+		nativeOfferList.removeAll();
+	}
 }

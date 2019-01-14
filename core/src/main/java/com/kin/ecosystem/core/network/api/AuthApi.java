@@ -449,4 +449,51 @@ public class AuthApi {
 		apiClient.executeAsync(call, callback);
 		return call;
 	}
+
+	/**
+	 * Build call for updateUser
+	 *
+	 * @return Call to execute
+	 * @throws ApiException If fail to serialize the request body object
+	 */
+	private Call logoutCall() throws ApiException {
+		// create path and map variables
+		String localVarPath = "/users/me/session";
+
+		Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+
+		final String[] localVarAccepts = {
+			"application/json"
+		};
+		final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+		if (localVarAccept != null) {
+			localVarHeaderParams.put("Accept", localVarAccept);
+		}
+
+		final String[] localVarContentTypes = {
+			"application/json"
+		};
+		final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+		localVarHeaderParams.put("Content-Type", localVarContentType);
+
+		String[] localVarAuthNames = new String[]{};
+		return apiClient
+			.buildCall(localVarPath, ApiClient.DELETE, null, null, null,
+				localVarHeaderParams, null, localVarAuthNames);
+	}
+
+	/**
+	 * Update user (asynchronously)
+	 * Update user - wallet address
+	 *
+	 * @param callback The callback to be executed when the API call finishes
+	 * @return The request call
+	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+	 */
+	public Call logoutAsync(final ApiCallback<Void> callback) throws ApiException {
+		Call call = logoutCall();
+		apiClient.executeAsync(call, callback);
+		return call;
+	}
+
 }

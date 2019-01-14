@@ -138,10 +138,11 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				if (currentUserId.equals(kinUserId)) {
 					// Get last active wallet from cache
 					lastWalletAddress = local.getCurrentWalletAddress();
+					Logger.log(new Log().withTag(TAG).text("getCurrentWalletAddress").put("lastWalletAddress", lastWalletAddress));
 				} else {
 					// Get last wallet added
 					lastWalletAddress = getLastWalletAddress(wallets);
-					this.currentUserId = kinUserId;
+					Logger.log(new Log().withTag(TAG).text("getLastWalletAddress").put("lastWalletAddress", lastWalletAddress));
 				}
 
 				// Match between last wallet address to wallets on device.
@@ -149,6 +150,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 					for (int i = 0; i < kinClient.getAccountCount(); i++) {
 						KinAccount account = kinClient.getAccount(i);
 						if (lastWalletAddress.equals(account.getPublicAddress())) {
+							Logger.log(new Log().withTag(TAG).text("createOrLoadAccount found old account").put("pubAdd", account.getPublicAddress()));
 							this.account = account;
 							break;
 						}
@@ -158,12 +160,16 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 			// No matching found
 			if (account == null) {
+				Logger.log(new Log().withTag(TAG).text("createAccount1"));
 				account = createAccount();
 			}
 
 		} else {
+			Logger.log(new Log().withTag(TAG).text("createAccount2"));
 			account = createAccount();
 		}
+		Logger.log(new Log().withTag(TAG).text("setActiveUserWallet").put("kinUserId", kinUserId).put("pubAdd", account.getPublicAddress()));
+		currentUserId = kinUserId;
 		local.setActiveUserWallet(kinUserId, account.getPublicAddress());
 	}
 
@@ -472,6 +478,16 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void logout() {
+		removeRegistration(paymentRegistration);
+		removeRegistration(balanceRegistration);
+		balance.removeAllObservers();
+		completedPayment.removeAllObservers();
+		account = null;
+		local.clearCachedBalance();
 	}
 
 	private void decrementPaymentCount() {

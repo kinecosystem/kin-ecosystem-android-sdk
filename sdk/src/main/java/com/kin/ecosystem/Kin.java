@@ -22,6 +22,7 @@ import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.common.model.UserStats;
+import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.accountmanager.AccountManagerImpl;
 import com.kin.ecosystem.core.accountmanager.AccountManagerLocal;
@@ -40,6 +41,7 @@ import com.kin.ecosystem.core.data.offer.OfferRepository;
 import com.kin.ecosystem.core.data.order.OrderLocalData;
 import com.kin.ecosystem.core.data.order.OrderRemoteData;
 import com.kin.ecosystem.core.data.order.OrderRepository;
+import com.kin.ecosystem.core.data.settings.SettingsDataSourceImpl;
 import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.core.util.ErrorUtil;
@@ -189,7 +191,6 @@ public class Kin {
 	}
 
 	private static void internalLogin(@NonNull final String jwt, final KinCallback<Void> loginCallback) {
-
 		try {
 			checkInstanceNotNull();
 			AuthRepository.getInstance().setJWT(jwt);
@@ -258,6 +259,22 @@ public class Kin {
 	private static void checkInstanceNotNull() throws ClientException {
 		if (isInstanceNull()) {
 			throw ErrorUtil.getClientException(SDK_NOT_STARTED, null);
+		}
+	}
+
+	/**
+	 * Logout from the current logged in user.
+	 *
+	 * @throws ClientException - sdk not initialized.
+	 */
+	public static void logout() throws ClientException {
+		checkInstanceNotNull();
+		if (isAccountLoggedIn) {
+			Logger.log(new Log().withTag("Kin.java").text("clearCachedBalance").put("isAccountLoggedIn", isAccountLoggedIn));
+			isAccountLoggedIn = false;
+			AuthRepository.getInstance().logout();
+			BlockchainSourceImpl.getInstance().logout();
+			OrderRepository.getInstance().logout();
 		}
 	}
 

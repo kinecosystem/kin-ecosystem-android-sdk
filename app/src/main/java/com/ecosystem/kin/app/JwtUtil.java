@@ -2,6 +2,7 @@ package com.ecosystem.kin.app;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.format.DateUtils;
 import android.util.Base64;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jsonwebtoken.JwtBuilder;
@@ -86,7 +87,7 @@ public class JwtUtil {
 	private static JwtBuilder getBasicJWT(String appID) {
 		return Jwts.builder().setHeaderParam(JWT_HEADER_KID, BuildConfig.RS512_PRIVATE_KEY_ID)
 			.setHeaderParam(JWT_HEADER_TYP, JWT)
-			.setIssuedAt(new Date())
+			.setIssuedAt(new Date(new Date().getTime() - (DateUtils.HOUR_IN_MILLIS)))
 			.setIssuer(appID)
 			.setExpiration(new Date(System.currentTimeMillis() + DAY_IN_MILLISECONDS));
 	}

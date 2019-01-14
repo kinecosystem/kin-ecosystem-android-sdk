@@ -35,9 +35,11 @@ public interface AuthDataSource {
 
 	void userStats(@NonNull final KinCallback<UserStats> callback);
 
+	void logout();
+
 	interface Local {
 
-		void setJWT(@NonNull final String signInData) throws ClientException;
+		void setJWT(@NonNull final JwtBody jwtBody);
 
 		String getJWT();
 
@@ -53,6 +55,7 @@ public interface AuthDataSource {
 
 		AuthToken getAuthTokenSync();
 
+		void logout();
 	}
 
 	interface Remote {
@@ -66,5 +69,7 @@ public interface AuthDataSource {
 		void userProfile(@NonNull final Callback<UserProfile, ApiException> callback) ;
 
 		void updateWalletAddress(@NonNull UserProperties userProperties, @NonNull final Callback<Void, ApiException> callback);
+
+		void logout(@Nullable final Callback<Void, ApiException> callback);
 	}
 }

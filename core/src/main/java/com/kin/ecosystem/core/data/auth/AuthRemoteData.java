@@ -189,4 +189,44 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 			});
 		}
 	}
+
+	@Override
+	public void logout(@Nullable final Callback<Void, ApiException> callback) {
+		try {
+			authApi.logoutAsync(new ApiCallback<Void>() {
+				@Override
+				public void onFailure(final ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+					if(callback != null) {
+						executorsUtil.mainThread().execute(new Runnable() {
+							@Override
+							public void run() {
+								callback.onFailure(e);
+							}
+						});
+					}
+				}
+
+				@Override
+				public void onSuccess(final Void result, int statusCode, Map<String, List<String>> responseHeaders) {
+					if(callback != null) {
+						executorsUtil.mainThread().execute(new Runnable() {
+							@Override
+							public void run() {
+								callback.onResponse(result);
+							}
+						});
+					}
+				}
+			});
+		} catch (final ApiException e) {
+			if(callback != null) {
+				executorsUtil.mainThread().execute(new Runnable() {
+					@Override
+					public void run() {
+						callback.onFailure(e);
+					}
+				});
+			}
+		}
+	}
 }
