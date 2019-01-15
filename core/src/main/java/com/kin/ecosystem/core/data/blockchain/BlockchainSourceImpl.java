@@ -131,7 +131,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 					Logger.log(new Log().withTag(TAG).put("migrateToMultipleUsers accountIndex", accountIndex)
 						.put("kinUserId", kinUserId));
 					account = kinClient.getAccount(accountIndex);
-					local.deleteAccountIndexKey();
+					local.removeAccountIndexKey();
 				}
 				local.setActiveUserWallet(kinUserId, account.getPublicAddress());
 			}
@@ -472,7 +472,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	public void logout() {
 		removeRegistration(paymentRegistration);
 		removeRegistration(balanceRegistration);
-		balance.removeAllObservers();
 		completedPayment.removeAllObservers();
 		account = null;
 		local.clearCachedBalance();

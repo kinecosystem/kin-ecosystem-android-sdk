@@ -72,7 +72,7 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 		currentWallets.add(publicAddress); // Add to the end
 		Editor editor = blockchainSharedPreferences.edit();
 		editor.putString(CURRENT_KIN_USER_ID, kinUserId);
-		editor.putStringSet(kinUserId, currentWallets).apply();
+		editor.putStringSet(kinUserId, currentWallets);
 		editor.apply();
 	}
 
@@ -82,7 +82,7 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 	}
 
 	@Override
-	public void deleteAccountIndexKey() {
+	public void removeAccountIndexKey() {
 		blockchainSharedPreferences.edit().remove(ACCOUNT_INDEX_KEY).apply();
 	}
 

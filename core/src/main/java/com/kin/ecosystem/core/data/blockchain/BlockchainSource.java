@@ -119,7 +119,7 @@ public interface BlockchainSource {
 
 		void setActiveUserWallet(String kinUserId, String publicAddress);
 
-		void deleteAccountIndexKey();
+		void removeAccountIndexKey();
 
 		void clearCachedBalance();
 

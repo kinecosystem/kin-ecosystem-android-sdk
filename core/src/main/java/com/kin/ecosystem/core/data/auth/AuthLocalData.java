@@ -114,7 +114,6 @@ public class AuthLocalData implements AuthDataSource.Local {
 		editor.remove(JWT_KEY);
 		editor.remove(USER_ID_KEY);
 		editor.remove(ECOSYSTEM_USER_ID_KEY);
-		editor.remove(DEVICE_ID_KEY);
 		editor.remove(TOKEN_KEY);
 		editor.remove(TOKEN_EXPIRATION_DATE_KEY);
 		editor.apply();
