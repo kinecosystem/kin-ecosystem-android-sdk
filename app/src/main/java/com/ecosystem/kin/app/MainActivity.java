@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
 			.title("Spacial one time offer")
 			.description("More details on native spend")
 			.amount(100)
-			.image("https://cdn.kinecosystem.com/thumbnails/offers/spend_offer_smplapp.png")
+			.image("https://s3.amazonaws.com/assets.kinecosystembeta.com/images/spend_test.png")
 			.build();
 	}
 
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 			.title("Get your free Kin")
 			.description("Upgrade your profile")
 			.amount(100)
-			.image("https://cdn.kinecosystem.com/thumbnails/offers/spend_offer_smplapp.png")
+			.image("https://s3.amazonaws.com/assets.kinecosystembeta.com/images/native_earn_padding.png")
 			.build();
 	}
 
