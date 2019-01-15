@@ -49,7 +49,6 @@ import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.splash.view.SplashActivity;
 import kin.core.KinClient;
 import kin.core.ServiceProvider;
-import org.json.JSONException;
 
 
 public class Kin {
@@ -203,7 +202,7 @@ public class Kin {
 			public void onResponse(AuthToken authToken) {
 				String publicAddress = null;
 				try {
-					BlockchainSourceImpl.getInstance().createAccount();
+					BlockchainSourceImpl.getInstance().loadAccount(authToken.getEcosystemUserID());
 					publicAddress = BlockchainSourceImpl.getInstance().getPublicAddress();
 				} catch (final BlockchainException exception) {
 					sendLoginFailed(exception, loginCallback);

@@ -90,7 +90,7 @@ public class AuthRepository implements AuthDataSource {
 
 	@Override
 	public String getEcosystemUserID() {
-		return localData.getEcosystemUserID();
+		return cachedAuthToken == null ? localData.getEcosystemUserID() : cachedAuthToken.getEcosystemUserID();
 	}
 
 	@Override

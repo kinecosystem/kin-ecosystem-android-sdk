@@ -427,7 +427,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void createNativeEarnOffer() {
-		String offerJwt = JwtUtil.generateEarnOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID);
+		String offerJwt = JwtUtil.generateEarnOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID, deviceID);
 		try {
 			Kin.requestPayment(offerJwt, getNativeEarnOrderConfirmationCallback());
 		} catch (ClientException e) {
