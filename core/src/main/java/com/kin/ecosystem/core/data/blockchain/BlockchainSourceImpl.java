@@ -124,8 +124,9 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			KinAccount account;
 			if(accountIndex == NOT_EXIST) {
 				account = kinClient.getAccount(0);
+				Logger.log(new Log().withTag(TAG).put("migrateToMultipleUsers accountIndex == NOT_EXIST, kinUserId", kinUserId));
 			} else {
-				Logger.log(new Log().withTag(TAG).put("migrateToMultipleUsers user:", kinUserId));
+				Logger.log(new Log().withTag(TAG).put("migrateToMultipleUsers accountIndex", accountIndex).put("kinUserId", kinUserId));
 				account = kinClient.getAccount(accountIndex);
 				local.deleteAccountIndexKey();
 			}
@@ -141,13 +142,11 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				.put("kinUserId", kinUserId));
 
 			// Match between last wallet address to wallets on device.
-			if (!StringUtil.isEmpty(lastWalletAddress)) {
-				for (int i = 0; i < kinClient.getAccountCount(); i++) {
-					KinAccount account = kinClient.getAccount(i);
-					if (lastWalletAddress.equals(account.getPublicAddress())) {
-						this.account = account;
-						break;
-					}
+			for (int i = 0; i < kinClient.getAccountCount(); i++) {
+				KinAccount account = kinClient.getAccount(i);
+				if (lastWalletAddress.equals(account.getPublicAddress())) {
+					this.account = account;
+					break;
 				}
 			}
 
