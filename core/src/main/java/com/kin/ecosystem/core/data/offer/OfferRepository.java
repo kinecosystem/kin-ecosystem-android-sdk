@@ -168,6 +168,6 @@ public class OfferRepository implements OfferDataSource {
 
 	@Override
 	public void logout() {
-		nativeOfferList.removeAll();
+		cachedOfferList.removeAll();
 	}
 }

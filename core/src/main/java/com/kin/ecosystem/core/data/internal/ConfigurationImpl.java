@@ -5,6 +5,7 @@ import static com.kin.ecosystem.core.network.ApiClient.POST;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.kin.ecosystem.common.KinEnvironment;
 import com.kin.ecosystem.core.Log;
@@ -12,9 +13,11 @@ import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
 import com.kin.ecosystem.core.network.ApiClient;
 import com.kin.ecosystem.core.network.model.AuthToken;
+import com.kin.ecosystem.core.util.StringUtil;
 import java.io.IOException;
 import java.util.Locale;
 import kin.ecosystem.core.BuildConfig;
+import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.Protocol;
@@ -84,10 +87,11 @@ public class ConfigurationImpl implements Configuration {
 						if (path.equals(USERS_PATH) && originalRequest.method().equals(POST)) {
 							return chain.proceed(originalRequest);
 						} else {
-							AuthToken authToken = AuthRepository.getInstance().getAuthTokenSync();
-							if (authToken != null) {
+
+							final String authToken = getAuthToken(originalRequest);
+							if (!StringUtil.isEmpty(authToken)) {
 								Request authorisedRequest = originalRequest.newBuilder()
-									.header(AUTHORIZATION, BEARER + authToken.getToken())
+									.header(AUTHORIZATION, BEARER + authToken)
 									.build();
 								return chain.proceed(authorisedRequest);
 							} else {
@@ -110,6 +114,20 @@ public class ConfigurationImpl implements Configuration {
 
 		addHeaders(defaultApiClient);
 		return defaultApiClient;
+	}
+
+	@Nullable
+	private String getAuthToken(Request originalRequest) {
+		AuthToken authToken = AuthRepository.getInstance().getAuthTokenSync();
+		if (authToken != null) {
+			return authToken.getToken();
+		} else {
+			Headers headers = originalRequest.headers();
+			if (headers != null) {
+				return originalRequest.headers().get(AUTHORIZATION);
+			}
+		}
+		return null;
 	}
 
 	private void addHeaders(ApiClient apiClient) {

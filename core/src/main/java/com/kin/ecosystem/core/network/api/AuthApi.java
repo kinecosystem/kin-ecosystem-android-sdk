@@ -24,6 +24,7 @@ import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.ApiResponse;
 import com.kin.ecosystem.core.network.Pair;
 import com.kin.ecosystem.core.network.model.AccountInfo;
+import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.JWT;
 import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.network.model.UserProperties;
@@ -451,12 +452,12 @@ public class AuthApi {
 	}
 
 	/**
-	 * Build call for updateUser
+	 * Build call for logout
 	 *
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 */
-	private Call logoutCall() throws ApiException {
+	private Call logoutCall(final String token) throws ApiException {
 		// create path and map variables
 		String localVarPath = "/users/me/session";
 
@@ -475,6 +476,7 @@ public class AuthApi {
 		};
 		final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 		localVarHeaderParams.put("Content-Type", localVarContentType);
+		localVarHeaderParams.put("Authorization", "Bearer " + token);
 
 		String[] localVarAuthNames = new String[]{};
 		return apiClient
@@ -483,16 +485,16 @@ public class AuthApi {
 	}
 
 	/**
-	 * Update user (asynchronously)
-	 * Update user - wallet address
+	 * Deletes the authToken.
 	 *
-	 * @param callback The callback to be executed when the API call finishes
+	 * @param authToken to delete
+	 *
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 */
-	public Call logoutAsync(final ApiCallback<Void> callback) throws ApiException {
-		Call call = logoutCall();
-		apiClient.executeAsync(call, callback);
+	public Call logoutAsync(final String authToken) throws ApiException {
+		Call call = logoutCall(authToken);
+		apiClient.executeAsync(call, null);
 		return call;
 	}
 

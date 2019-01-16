@@ -54,16 +54,17 @@ public class AuthRepository implements AuthDataSource {
 	}
 
 	@Override
-	public void setJWT(@NonNull String jwt) throws ClientException {
+	public void setJWT(@NonNull String jwt) throws ClientException, UserLoggedInException {
 		this.jwt = jwt;
-		JwtBody jwtBody = getJwtBody(jwt);
-		String currentUserID = localData.getUserID();
-		if (!StringUtil.isEmpty(currentUserID) && !currentUserID.equals(jwtBody.getUserId())) {
-			// Update server
-			remoteData.logout(null);
-		}
+		final JwtBody jwtBody = getJwtBody(jwt);
+		final String currentUserID = localData.getUserID();
 		localData.setJWT(jwtBody);
 
+		if (!StringUtil.isEmpty(currentUserID) && !currentUserID.equals(jwtBody.getUserId())) {
+			// Update server
+			remoteData.logout(cachedAuthToken.getToken());
+			throw new UserLoggedInException("Should call logout before new login");
+		}
 	}
 
 	@NonNull
@@ -175,24 +176,11 @@ public class AuthRepository implements AuthDataSource {
 
 	@Override
 	public void logout() {
-		remoteData.logout(new Callback<Void, ApiException>() {
-			@Override
-			public void onResponse(Void response) {
-				internalLogout();
-			}
-
-			@Override
-			public void onFailure(ApiException exception) {
-				internalLogout();
-			}
-		});
-
-	}
-
-	private void internalLogout() {
+		final String token = cachedAuthToken.getToken();
 		cachedAuthToken = null;
 		jwt = null;
 		localData.logout();
+		remoteData.logout(token);
 	}
 
 	private boolean isAuthTokenExpired(AuthToken authToken) {

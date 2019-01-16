@@ -33,6 +33,7 @@ import com.kin.ecosystem.core.bi.events.KinSdkInitiated;
 import com.kin.ecosystem.core.data.auth.AuthLocalData;
 import com.kin.ecosystem.core.data.auth.AuthRemoteData;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
+import com.kin.ecosystem.core.data.auth.UserLoggedInException;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceLocal;
 import com.kin.ecosystem.core.data.internal.ConfigurationImpl;
@@ -41,7 +42,6 @@ import com.kin.ecosystem.core.data.offer.OfferRepository;
 import com.kin.ecosystem.core.data.order.OrderLocalData;
 import com.kin.ecosystem.core.data.order.OrderRemoteData;
 import com.kin.ecosystem.core.data.order.OrderRepository;
-import com.kin.ecosystem.core.data.settings.SettingsDataSourceImpl;
 import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.core.util.ErrorUtil;
@@ -196,6 +196,8 @@ public class Kin {
 			AuthRepository.getInstance().setJWT(jwt);
 		} catch (final ClientException exception) {
 			sendLoginFailed(exception, loginCallback);
+		} catch (UserLoggedInException e) {
+			clearCachedData();
 		}
 
 		AuthRepository.getInstance().getAuthToken(new KinCallback<AuthToken>() {
@@ -273,9 +275,16 @@ public class Kin {
 			Logger.log(new Log().withTag("Kin.java").text("clearCachedBalance").put("isAccountLoggedIn", isAccountLoggedIn));
 			isAccountLoggedIn = false;
 			AuthRepository.getInstance().logout();
-			BlockchainSourceImpl.getInstance().logout();
-			OrderRepository.getInstance().logout();
+			clearCachedData();
 		}
+	}
+
+	/**
+	 * Clear cached old internal data
+	 */
+	private static void clearCachedData() {
+		BlockchainSourceImpl.getInstance().logout();
+		OrderRepository.getInstance().logout();
 	}
 
 	/**
