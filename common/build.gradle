@@ -8,7 +8,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "${KIN_ECOSYSTEM_COMMON_VERSION_NAME}"
+        versionName "${KIN_ECOSYSTEM_SDK_VERSION_NAME}"
     }
 
 }
