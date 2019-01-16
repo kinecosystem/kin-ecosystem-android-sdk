@@ -121,7 +121,7 @@ public interface BlockchainSource {
 
 		void removeAccountIndexKey();
 
-		void clearCachedBalance();
+		void logout();
 
 		boolean getIsMigrated();
 

@@ -472,9 +472,11 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	public void logout() {
 		removeRegistration(paymentRegistration);
 		removeRegistration(balanceRegistration);
+		paymentRegistration = null;
+		balanceRegistration = null;
 		completedPayment.removeAllObservers();
 		account = null;
-		local.clearCachedBalance();
+		local.logout();
 	}
 
 	private void decrementPaymentCount() {
