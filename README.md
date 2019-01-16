@@ -4,14 +4,14 @@
 
 The Kin Ecosystem SDK allows you to quickly and easily integrate with the Kin platform. This enables you to provide your users with new opportunities to earn and spend the Kin digital currency from inside your app or from the Kin Marketplace offer wall. For each user, the SDK will create wallet and an account on Kin blockchain. By calling the appropriate SDK functions, your application can performs earn and spend transactions. Your users can also view their account balance and their transaction history.
 
-## Playground and Production Environments ##
+## Beta and Production Environments ##
 
 The Kin Ecosystem provides two working environments:
 
 - **Beta** – a staging and testing environment using test servers and a blockchain test network.
 - **Production** – uses production servers and the main blockchain network.
 
-Use the Playground environment to develop, integrate and test your app. Transition to the Production environment when you’re ready to go live with your Kin-integrated app.
+Use the Beta environment to develop, integrate and test your app. Transition to the Production environment when you’re ready to go live with your Kin-integrated app.
 
 Add environment meta data to you manifest in application level, specifying which one you want to work with.
 For Beta: ("beta")
@@ -26,7 +26,7 @@ And for Production use: `@string/kinecosystem_environment_production` as value.
 
 
 >**NOTES:**
->* When working with the Playground environment, you can only register up to 1000 users. An attempt to register additional users will result in an error.
+>* When working with the Beta environment, you can only register up to 1000 users. An attempt to register additional users will result in an error.
 >* In order to switch between environments, you’ll need to clear the application cache.
 
 ## Initialize The SDK ##
@@ -43,7 +43,7 @@ There are 2 types of authentication:
 
 * **Whitelist authentication** – to be used for a quick first-time integration or sanity test. The authentication credentials are provided as simple appID and apiKey values. (For development and testing, you can use the default values provided in the Sample App.)
 
-    >**NOTE:** You can only use whitelist authentication for the Playground environment. The Production environment requires that you use JWT authentication.
+    >**NOTE:** You can only use whitelist authentication for the Beta environment. The Production environment requires that you use JWT authentication.
 * **JWT authentication** – a secure authentication method to be used in production. This method uses a JSON Web Token (JWT) signed by the Kin Server to authenticate the client request. You provide the Kin team with one or more public signature keys and its corresponding keyID, and you receive a JWT issuer identifier (ISS key). (See [https://jwt.io](https://jwt.io) to learn more about JWT tokens.)
 
 For both types of authentication, you supply your credentials when calling the SDK’s ```Kin.login(…)``` function for a specific user. See [Creating a User’s Kin Account](docs/CREATE_ACCOUNT.md) to learn how.

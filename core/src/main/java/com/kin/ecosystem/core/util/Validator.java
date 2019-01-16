@@ -11,6 +11,8 @@ public class Validator {
 	}
 
 	public static boolean isEnvironmentName(String environmentName) {
-		return environmentName.equals(EnvironmentName.BETA) || environmentName.equals(EnvironmentName.PRODUCTION);
+		return environmentName.equals(EnvironmentName.BETA) ||
+			environmentName.equals(EnvironmentName.TEST) ||
+			environmentName.equals(EnvironmentName.PRODUCTION);
 	}
 }

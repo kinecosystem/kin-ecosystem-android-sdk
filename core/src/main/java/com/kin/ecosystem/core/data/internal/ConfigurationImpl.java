@@ -128,6 +128,8 @@ public class ConfigurationImpl implements Configuration {
 				return Environment.getProduction();
 			case EnvironmentName.BETA:
 				return Environment.getBeta();
+			case EnvironmentName.TEST:
+				return Environment.getTest();
 			default:
 				throw new IllegalArgumentException("Environment name: " + environment + "is not valid,"
 					+ " please specify \"production\" or \"beta\"");

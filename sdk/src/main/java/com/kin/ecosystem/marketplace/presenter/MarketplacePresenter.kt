@@ -37,10 +37,11 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
     private var earnList: MutableList<Offer>? = null
 
     private var orderObserver: Observer<Order>? = null
-
+    private var isListsAdded: Boolean = false
 
     private var lastClickTime = NOT_FOUND.toLong()
     private val gson: Gson
+    private var spendDialogPresenter: ISpendDialogPresenter? = null
 
     private val isFastClicks: Boolean
         get() {
@@ -70,7 +71,7 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
 
     override fun onDetach() {
         super.onDetach()
-        navigator = null
+        spendDialogPresenter?.onDetach()
     }
 
     override fun onStart() {
@@ -80,8 +81,8 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
     }
 
     override fun onStop() {
-        if (orderObserver != null) {
-            orderRepository.removeOrderObserver(orderObserver!!)
+        orderObserver?.let {
+            orderRepository.removeOrderObserver(it)
             orderObserver = null
         }
         earnList = null
@@ -98,23 +99,23 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
     }
 
     private fun setCachedOfferLists(cachedOfferList: OfferList) {
-        if (earnList == null && spendList == null) {
-            earnList = ArrayList()
-            spendList = ArrayList()
-        }
+        earnList ?: run { earnList = ArrayList() }
+        spendList ?: run { spendList = ArrayList() }
 
         if (hasOffers(cachedOfferList)) {
             OfferListUtil.splitOffersByType(cachedOfferList.offers, earnList, spendList)
         }
 
-        if (this.view != null) {
-            this.view.setEarnList(earnList)
-            this.view.setSpendList(spendList)
+        this.view?.let {
+            it.setEarnList(earnList)
+            it.setSpendList(spendList)
+            isListsAdded = true
 
-            if (!earnList!!.isEmpty()) {
+            earnList?.isEmpty()?.not().apply {
                 updateEarnTitle()
             }
-            if (!spendList!!.isEmpty()) {
+
+            spendList?.isEmpty()?.not().apply {
                 updateSpendTitle()
             }
         }
@@ -133,7 +134,6 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
                         // no-op
                     }
                 }
-
             }
         }
         orderRepository.addOrderObserver(orderObserver!!)
@@ -225,12 +225,8 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
             OfferListUtil.splitOffersByType(offerList.offers, newEarnOffers, newSpendOffers)
 
             
-            earnList ?: run {
-                earnList = ArrayList()
-            }
-            earnList ?: run {
-                spendList = ArrayList()
-            }
+            earnList ?: run { earnList = ArrayList() }
+            spendList ?: run { spendList = ArrayList() }
             syncList(newEarnOffers, earnList!!, OfferType.EARN)
             syncList(newSpendOffers, spendList!!, OfferType.SPEND)
         }
@@ -304,18 +300,11 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
         }
     }
 
-    private fun isSpend(offerType: OfferType): Boolean {
-        return offerType == OfferType.SPEND
-    }
+    private fun isSpend(offerType: OfferType): Boolean = offerType == OfferType.SPEND
 
     override fun onItemClicked(position: Int, offerType: OfferType) {
-        if (isFastClicks) {
-            return
-        }
-
-        if (position == NOT_FOUND) {
-            return
-        }
+        if (isFastClicks) return
+        if (position == NOT_FOUND) return
 
         if (offerType == OfferType.EARN) {
             earnList?.let {
@@ -333,6 +322,8 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
                             .setTitle(offer.title)
                     view.showOfferActivity(pollBundle)
                 }
+            } ?: run {
+                sendSdkError("MarketplacePresenter earnList is null, offer position is: $position, isListsAdded: $isListsAdded")
             }
 
         } else {
@@ -357,8 +348,14 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
                 } else {
                     showSomethingWentWrong()
                 }
+            } ?: run {
+                sendSdkError("MarketplacePresenter spendList is null, offer position is: $position, isListsAdded: $isListsAdded")
             }
         }
+    }
+
+    private fun sendSdkError(msg: String) {
+        eventLogger.send(GeneralEcosystemSdkError.create(msg))
     }
 
     private fun onExternalItemClicked(offer: Offer?): Boolean {
@@ -373,9 +370,7 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
         return false
     }
 
-    private fun closeMarketplace() {
-        navigator?.close()
-    }
+    private fun closeMarketplace() = navigator?.close()
 
     private fun sendEranOfferTapped(offer: Offer) {
         val offerType: EarnOfferTapped.OfferType
@@ -403,28 +398,24 @@ class MarketplacePresenter(view: IMarketplaceView, private val offerRepository: 
                         .build())
     }
 
-    private fun showSomethingWentWrong() {
-        showToast(SOMETHING_WENT_WRONG)
-    }
+    private fun showSomethingWentWrong() = showToast(SOMETHING_WENT_WRONG)
 
-    override fun showOfferActivityFailed() {
-        showSomethingWentWrong()
-    }
 
-    override fun backButtonPressed() {
-        eventLogger.send(BackButtonOnMarketplacePageTapped.create())
-    }
+    override fun showOfferActivityFailed() = showSomethingWentWrong()
 
-    override fun getNavigator(): INavigator? {
-        return navigator
-    }
+    override fun backButtonPressed() = eventLogger.send(BackButtonOnMarketplacePageTapped.create())
+
+    override fun getNavigator(): INavigator? = navigator
 
     override fun setNavigator(navigator: INavigator?) {
         this.navigator = navigator
     }
 
     private fun showSpendDialog(offerInfo: OfferInfo, offer: Offer) {
-        view?.showSpendDialog(createSpendDialogPresenter(offerInfo, offer))
+        view?.let {
+            spendDialogPresenter = createSpendDialogPresenter(offerInfo, offer)
+            it.showSpendDialog(spendDialogPresenter)
+        }
     }
 
     private fun createSpendDialogPresenter(offerInfo: OfferInfo, offer: Offer): ISpendDialogPresenter {

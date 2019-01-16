@@ -23,21 +23,16 @@ import com.kin.ecosystem.core.network.ApiClient;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.ApiResponse;
 import com.kin.ecosystem.core.network.Pair;
-import com.kin.ecosystem.core.network.ProgressRequestBody;
-import com.kin.ecosystem.core.network.ProgressResponseBody;
 import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.SignInData;
 import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.network.model.UserProperties;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import okhttp3.Call;
-import okhttp3.Interceptor;
-import okhttp3.Response;
 
 
 public class AuthApi {
@@ -65,14 +60,10 @@ public class AuthApi {
 	 *
 	 * @param signindata (required)
 	 * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
-	 * @param progressListener Progress listener
-	 * @param progressRequestListener Progress request listener
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 */
-	public Call signInCall(SignInData signindata, String X_REQUEST_ID,
-		final ProgressResponseBody.ProgressListener progressListener,
-		final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+	public Call signInCall(SignInData signindata, String X_REQUEST_ID) throws ApiException {
 		Object localVarPostBody = signindata;
 
 		// create path and map variables
@@ -102,29 +93,15 @@ public class AuthApi {
 		final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 		localVarHeaderParams.put("Content-Type", localVarContentType);
 
-		if (progressListener != null) {
-			apiClient.addNetworkInterceptor(new Interceptor() {
-				@Override
-				public Response intercept(Interceptor.Chain chain) throws IOException {
-					Response originalResponse = chain.proceed(chain.request());
-					return originalResponse.newBuilder()
-						.body(new ProgressResponseBody(originalResponse.body(), progressListener))
-						.build();
-				}
-			});
-		}
-
 		String[] localVarAuthNames = new String[]{};
 		return apiClient
 			.buildCall(localVarPath, ApiClient.POST, localVarQueryParams, localVarCollectionQueryParams,
 				localVarPostBody,
-				localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+				localVarHeaderParams, localVarFormParams, localVarAuthNames);
 	}
 
 	@SuppressWarnings("rawtypes")
-	private Call signInValidateBeforeCall(SignInData signindata, String X_REQUEST_ID,
-		final ProgressResponseBody.ProgressListener progressListener,
-		final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+	private Call signInValidateBeforeCall(SignInData signindata, String X_REQUEST_ID) throws ApiException {
 
 		// verify the required parameter 'signindata' is set
 		if (signindata == null) {
@@ -136,7 +113,7 @@ public class AuthApi {
 			throw new ApiException("Missing the required parameter 'X_REQUEST_ID' when calling signIn(Async)");
 		}
 
-		Call call = signInCall(signindata, X_REQUEST_ID, progressListener, progressRequestListener);
+		Call call = signInCall(signindata, X_REQUEST_ID);
 		return call;
 
 
@@ -166,7 +143,7 @@ public class AuthApi {
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 */
 	public ApiResponse<AuthToken> signInWithHttpInfo(SignInData signindata, String X_REQUEST_ID) throws ApiException {
-		Call call = signInValidateBeforeCall(signindata, X_REQUEST_ID, null, null);
+		Call call = signInValidateBeforeCall(signindata, X_REQUEST_ID);
 		Type localVarReturnType = new TypeToken<AuthToken>() {
 		}.getType();
 		return apiClient.execute(call, localVarReturnType);
@@ -185,26 +162,7 @@ public class AuthApi {
 	public Call signInAsync(SignInData signindata, String X_REQUEST_ID, final ApiCallback<AuthToken> callback)
 		throws ApiException {
 
-		ProgressResponseBody.ProgressListener progressListener = null;
-		ProgressRequestBody.ProgressRequestListener progressRequestListener = null;
-
-		if (callback != null) {
-			progressListener = new ProgressResponseBody.ProgressListener() {
-				@Override
-				public void update(long bytesRead, long contentLength, boolean done) {
-					callback.onDownloadProgress(bytesRead, contentLength, done);
-				}
-			};
-
-			progressRequestListener = new ProgressRequestBody.ProgressRequestListener() {
-				@Override
-				public void onRequestProgress(long bytesWritten, long contentLength, boolean done) {
-					callback.onUploadProgress(bytesWritten, contentLength, done);
-				}
-			};
-		}
-
-		Call call = signInValidateBeforeCall(signindata, X_REQUEST_ID, progressListener, progressRequestListener);
+		Call call = signInValidateBeforeCall(signindata, X_REQUEST_ID);
 		Type localVarReturnType = new TypeToken<AuthToken>() {
 		}.getType();
 		apiClient.executeAsync(call, localVarReturnType, callback);
@@ -212,17 +170,14 @@ public class AuthApi {
 	}
 
 
-
 	/**
 	 * Build call for getUserProfile
+	 *
 	 * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
-	 * @param progressListener Progress listener
-	 * @param progressRequestListener Progress request listener
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
-
 	 */
-	public Call userProfileCall(String X_REQUEST_ID, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+	public Call userProfileCall(String X_REQUEST_ID) throws ApiException {
 		Object localVarPostBody = null;
 
 		// create path and map variables
@@ -232,9 +187,9 @@ public class AuthApi {
 		List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
 
 		Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-		if (X_REQUEST_ID != null)
+		if (X_REQUEST_ID != null) {
 			localVarHeaderParams.put("X-REQUEST-ID", apiClient.parameterToString(X_REQUEST_ID));
-
+		}
 
 		Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
@@ -242,7 +197,9 @@ public class AuthApi {
 			"application/json"
 		};
 		final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-		if (localVarAccept != null) localVarHeaderParams.put("Accept", localVarAccept);
+		if (localVarAccept != null) {
+			localVarHeaderParams.put("Accept", localVarAccept);
+		}
 
 		final String[] localVarContentTypes = {
 
@@ -250,41 +207,29 @@ public class AuthApi {
 		final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 		localVarHeaderParams.put("Content-Type", localVarContentType);
 
-		if(progressListener != null) {
-			apiClient.addNetworkInterceptor(new Interceptor() {
-				@Override
-				public Response intercept(Interceptor.Chain chain) throws IOException {
-					Response originalResponse = chain.proceed(chain.request());
-					return originalResponse.newBuilder()
-						.body(new ProgressResponseBody(originalResponse.body(), progressListener))
-						.build();
-				}
-			});
-		}
-
-		String[] localVarAuthNames = new String[] {};
-		return apiClient.buildCall(localVarPath, ApiClient.GET, localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames, progressRequestListener);
+		String[] localVarAuthNames = new String[]{};
+		return apiClient.buildCall(localVarPath, ApiClient.GET, localVarQueryParams, localVarCollectionQueryParams,
+			localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames);
 	}
 
 	@SuppressWarnings("rawtypes")
-	private Call userProfileValidateBeforeCall(String X_REQUEST_ID, final ProgressResponseBody.ProgressListener progressListener, final ProgressRequestBody.ProgressRequestListener progressRequestListener) throws ApiException {
+	private Call userProfileValidateBeforeCall(String X_REQUEST_ID) throws ApiException {
 
 		// verify the required parameter 'X_REQUEST_ID' is set
 		if (X_REQUEST_ID == null) {
 			throw new ApiException("Missing the required parameter 'X_REQUEST_ID' when calling getUserProfile(Async)");
 		}
 
-		Call call = userProfileCall( X_REQUEST_ID, progressListener, progressRequestListener);
-		return call;
+		return userProfileCall(X_REQUEST_ID);
 	}
 
 	/**
 	 * Get user profile
 	 * Get user profile
+	 *
 	 * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
 	 * @return UserProfile
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-
 	 */
 	public UserProfile userProfile(String X_REQUEST_ID) throws ApiException {
 		ApiResponse<UserProfile> resp = userProfileWithHttpInfo(X_REQUEST_ID);
@@ -294,57 +239,35 @@ public class AuthApi {
 	/**
 	 * Get user profile
 	 * Get user profile
+	 *
 	 * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
 	 * @return ApiResponse&lt;UserProfile&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
-
 	 */
 	public ApiResponse<UserProfile> userProfileWithHttpInfo(String X_REQUEST_ID) throws ApiException {
-		Call call = userProfileValidateBeforeCall(X_REQUEST_ID, null, null);
-		Type localVarReturnType = new TypeToken<UserProfile>(){}.getType();
+		Call call = userProfileValidateBeforeCall(X_REQUEST_ID);
+		Type localVarReturnType = new TypeToken<UserProfile>() {
+		}.getType();
 		return apiClient.execute(call, localVarReturnType);
 	}
 
 	/**
 	 * Get user profile (asynchronously)
 	 * Get user profile
+	 *
 	 * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
 	 * @param callback The callback to be executed when the API call finishes
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
-
 	 */
 	public Call userProfileAsync(String X_REQUEST_ID, final ApiCallback<UserProfile> callback) throws ApiException {
 
-		ProgressResponseBody.ProgressListener progressListener = null;
-		ProgressRequestBody.ProgressRequestListener progressRequestListener = null;
-
-		if (callback != null) {
-			progressListener = new ProgressResponseBody.ProgressListener() {
-				@Override
-				public void update(long bytesRead, long contentLength, boolean done) {
-					callback.onDownloadProgress(bytesRead, contentLength, done);
-				}
-			};
-
-			progressRequestListener = new ProgressRequestBody.ProgressRequestListener() {
-				@Override
-				public void onRequestProgress(long bytesWritten, long contentLength, boolean done) {
-					callback.onUploadProgress(bytesWritten, contentLength, done);
-				}
-			};
-		}
-
-		Call call = userProfileValidateBeforeCall(X_REQUEST_ID, progressListener, progressRequestListener);
-		Type localVarReturnType = new TypeToken<UserProfile>(){}.getType();
+		Call call = userProfileValidateBeforeCall(X_REQUEST_ID);
+		Type localVarReturnType = new TypeToken<UserProfile>() {
+		}.getType();
 		apiClient.executeAsync(call, localVarReturnType, callback);
 		return call;
 	}
-
-
-
-
-
 
 
 	/**
@@ -392,7 +315,7 @@ public class AuthApi {
 		return apiClient
 			.buildCall(localVarPath, ApiClient.GET, localVarQueryParams, localVarCollectionQueryParams,
 				localVarPostBody,
-				localVarHeaderParams, localVarFormParams, localVarAuthNames, null);
+				localVarHeaderParams, localVarFormParams, localVarAuthNames);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -498,7 +421,7 @@ public class AuthApi {
 		String[] localVarAuthNames = new String[]{};
 		return apiClient
 			.buildCall(localVarPath, PATCH, localVarQueryParams, localVarCollectionQueryParams, localVarPostBody,
-				localVarHeaderParams, localVarFormParams, localVarAuthNames, null);
+				localVarHeaderParams, localVarFormParams, localVarAuthNames);
 	}
 
 	@SuppressWarnings("rawtypes")
