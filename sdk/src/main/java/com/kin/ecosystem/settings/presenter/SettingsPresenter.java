@@ -20,6 +20,7 @@ import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.RecoveryBackupEvents;
 import com.kin.ecosystem.core.bi.RecoveryRestoreEvents;
 import com.kin.ecosystem.core.bi.events.BackupWalletCompleted;
+import com.kin.ecosystem.core.bi.events.GeneralEcosystemSdkError;
 import com.kin.ecosystem.core.bi.events.RestoreWalletCompleted;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.settings.SettingsDataSource;
@@ -58,7 +59,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 		try {
 			this.publicAddress = blockchainSource.getPublicAddress();
 		} catch (ClientException | BlockchainException e) {
-			// no-op, should not happen
+			eventLogger.send(GeneralEcosystemSdkError.create("SettingsPresenter blockchainSource.getPublicAddress() thrown an exception"));
 		}
 		registerToEvents();
 		registerToCallbacks();

@@ -66,7 +66,7 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 
 	@Override
 	public void setActiveUserWallet(String kinUserId, String publicAddress) {
-		List<String> currentWallets = getUserWallets(kinUserId);
+		ArrayList<String> currentWallets = getUserWallets(kinUserId);
 		currentWallets.remove(publicAddress); // Remove if exists
 		currentWallets.add(publicAddress); // Add to the end
 		Editor editor = blockchainSharedPreferences.edit();
@@ -78,7 +78,10 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 	private String createLongString(List<String> currentWallets) {
 		StringBuilder walletsStringBuilder = new StringBuilder();
 		for (int i = 0; i < currentWallets.size(); i++) {
-			walletsStringBuilder.append(currentWallets.get(i)).append(STRING_WALLETS_DELIMITER);
+			walletsStringBuilder.append(currentWallets.get(i));
+			if (i < currentWallets.size() - 1) {
+				walletsStringBuilder.append(STRING_WALLETS_DELIMITER);
+			}
 		}
 		return walletsStringBuilder.toString();
 	}

@@ -4,12 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.network.model.AuthToken;
-import com.kin.ecosystem.core.util.ErrorUtil;
-import com.kin.ecosystem.core.util.JwtDecoder;
-import org.json.JSONException;
 
 
 public class AuthLocalData implements AuthDataSource.Local {

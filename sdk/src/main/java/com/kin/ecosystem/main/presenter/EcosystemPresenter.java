@@ -13,6 +13,8 @@ import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.model.Balance;
+import com.kin.ecosystem.core.bi.EventLogger;
+import com.kin.ecosystem.core.bi.events.GeneralEcosystemSdkError;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.settings.SettingsDataSource;
 import com.kin.ecosystem.core.util.StringUtil;
@@ -33,6 +35,7 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 	private boolean isConsumedIntentExtras;
 	private final SettingsDataSource settingsDataSource;
 	private final BlockchainSource blockchainSource;
+	private final EventLogger eventLogger;
 	private INavigator navigator;
 
 	private Observer<Balance> balanceObserver;
@@ -40,17 +43,18 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 	private String publicAddress;
 
 	public EcosystemPresenter(@NonNull IEcosystemView view, @NonNull SettingsDataSource settingsDataSource,
-		@NonNull final BlockchainSource blockchainSource,
+		@NonNull final BlockchainSource blockchainSource, @NonNull EventLogger eventLogger,
 		@NonNull INavigator navigator, Bundle savedInstanceState, Bundle extras) {
 		this.view = view;
 		this.settingsDataSource = settingsDataSource;
 		this.blockchainSource = blockchainSource;
+		this.eventLogger = eventLogger;
 		this.navigator = navigator;
 		this.currentBalance = blockchainSource.getBalance();
 		try {
 			this.publicAddress = blockchainSource.getPublicAddress();
 		} catch (ClientException | BlockchainException e) {
-			// no-op, should not happen
+			eventLogger.send(GeneralEcosystemSdkError.create("EcosystemPresenter blockchainSource.getPublicAddress() thrown an exception"));
 		}
 
 		// Must come before processIntentExtras, so we can define if the intent was consumed already.

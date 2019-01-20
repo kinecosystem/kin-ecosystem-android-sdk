@@ -1,11 +1,11 @@
 package com.kin.ecosystem.core.data.internal;
 
+import static com.kin.ecosystem.core.network.ApiClient.DELETE;
 import static com.kin.ecosystem.core.network.ApiClient.POST;
 
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.kin.ecosystem.common.KinEnvironment;
 import com.kin.ecosystem.core.Log;
@@ -13,11 +13,9 @@ import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
 import com.kin.ecosystem.core.network.ApiClient;
 import com.kin.ecosystem.core.network.model.AuthToken;
-import com.kin.ecosystem.core.util.StringUtil;
 import java.io.IOException;
 import java.util.Locale;
 import kin.ecosystem.core.BuildConfig;
-import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.Protocol;
@@ -42,6 +40,7 @@ public class ConfigurationImpl implements Configuration {
 	private static final String AUTH_TOKEN_COULD_NOT_BE_GENERATED = "AuthToken could not be generated";
 
 	private static final String USERS_PATH = "/" + API_VERSION + "/users";
+	private static final String LOGOUT_PATH = "/" + API_VERSION + "/users/me/session";
 	private static final String PREFIX_ANDROID = "android ";
 
 	private static final Object apiClientLock = new Object();
@@ -83,15 +82,13 @@ public class ConfigurationImpl implements Configuration {
 					@Override
 					public Response intercept(Chain chain) throws IOException {
 						Request originalRequest = chain.request();
-						final String path = originalRequest.url().encodedPath();
-						if (path.equals(USERS_PATH) && originalRequest.method().equals(POST)) {
+						if (isCanProceed(originalRequest)) {
 							return chain.proceed(originalRequest);
 						} else {
-
-							final String authToken = getAuthToken(originalRequest);
-							if (!StringUtil.isEmpty(authToken)) {
+							AuthToken authToken = AuthRepository.getInstance().getAuthTokenSync();
+							if (authToken != null) {
 								Request authorisedRequest = originalRequest.newBuilder()
-									.header(AUTHORIZATION, BEARER + authToken)
+									.header(AUTHORIZATION, BEARER + authToken.getToken())
 									.build();
 								return chain.proceed(authorisedRequest);
 							} else {
@@ -116,18 +113,11 @@ public class ConfigurationImpl implements Configuration {
 		return defaultApiClient;
 	}
 
-	@Nullable
-	private String getAuthToken(Request originalRequest) {
-		AuthToken authToken = AuthRepository.getInstance().getAuthTokenSync();
-		if (authToken != null) {
-			return authToken.getToken();
-		} else {
-			Headers headers = originalRequest.headers();
-			if (headers != null) {
-				return originalRequest.headers().get(AUTHORIZATION);
-			}
-		}
-		return null;
+	private boolean isCanProceed(Request originalRequest) {
+		final String path = originalRequest.url().encodedPath();
+		final String method = originalRequest.method();
+		return path.equals(USERS_PATH) && method.equals(POST) ||
+			path.equals(LOGOUT_PATH) && method.equals(DELETE);
 	}
 
 	private void addHeaders(ApiClient apiClient) {

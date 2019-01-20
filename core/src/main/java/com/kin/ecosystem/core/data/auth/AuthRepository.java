@@ -53,18 +53,19 @@ public class AuthRepository implements AuthDataSource {
 		return instance;
 	}
 
+
 	@Override
-	public void setJWT(@NonNull String jwt) throws ClientException, UserLoggedInException {
-		this.jwt = jwt;
+	public boolean isSameUser(@NonNull String jwt) throws ClientException {
 		final JwtBody jwtBody = getJwtBody(jwt);
 		final String currentUserID = localData.getUserID();
-		localData.setJWT(jwtBody);
+		return StringUtil.isEmpty(currentUserID) || currentUserID.equals(jwtBody.getUserId());
+	}
 
-		if (!StringUtil.isEmpty(currentUserID) && !currentUserID.equals(jwtBody.getUserId())) {
-			// Update server
-			remoteData.logout(cachedAuthToken.getToken());
-			throw new UserLoggedInException("Should call logout before new login");
-		}
+	@Override
+	public void setJWT(@NonNull String jwt) throws ClientException {
+		this.jwt = jwt;
+		final JwtBody jwtBody = getJwtBody(jwt);
+		localData.setJWT(jwtBody);
 	}
 
 	@NonNull
@@ -177,10 +178,11 @@ public class AuthRepository implements AuthDataSource {
 	@Override
 	public void logout() {
 		final String token = cachedAuthToken.getToken();
+		remoteData.logout(token);
+
 		cachedAuthToken = null;
 		jwt = null;
 		localData.logout();
-		remoteData.logout(token);
 	}
 
 	private boolean isAuthTokenExpired(AuthToken authToken) {

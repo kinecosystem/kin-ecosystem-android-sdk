@@ -33,7 +33,6 @@ import com.kin.ecosystem.core.bi.events.KinSdkInitiated;
 import com.kin.ecosystem.core.data.auth.AuthLocalData;
 import com.kin.ecosystem.core.data.auth.AuthRemoteData;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
-import com.kin.ecosystem.core.data.auth.UserLoggedInException;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceLocal;
 import com.kin.ecosystem.core.data.internal.ConfigurationImpl;
@@ -193,17 +192,18 @@ public class Kin {
 	private static void internalLogin(@NonNull final String jwt, final KinCallback<Void> loginCallback) {
 		try {
 			checkInstanceNotNull();
+			if(!AuthRepository.getInstance().isSameUser(jwt)) {
+				logout();
+			}
 			AuthRepository.getInstance().setJWT(jwt);
 		} catch (final ClientException exception) {
 			sendLoginFailed(exception, loginCallback);
-		} catch (UserLoggedInException e) {
-			clearCachedData();
 		}
 
 		AuthRepository.getInstance().getAuthToken(new KinCallback<AuthToken>() {
 			@Override
 			public void onResponse(AuthToken authToken) {
-				String publicAddress = null;
+				String publicAddress;
 				try {
 					BlockchainSourceImpl.getInstance().loadAccount(authToken.getEcosystemUserID());
 					publicAddress = BlockchainSourceImpl.getInstance().getPublicAddress();
@@ -285,6 +285,7 @@ public class Kin {
 	private static void clearCachedData() {
 		BlockchainSourceImpl.getInstance().logout();
 		OrderRepository.getInstance().logout();
+		OfferRepository.getInstance().logout();
 	}
 
 	/**
