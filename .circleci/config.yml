@@ -24,7 +24,7 @@ jobs:
 
       - run:
           name: Approve license for build tools
-          command: --update && yes | sdkmanager --licenses
+          command: yes | sdkmanager --licenses && sdkmanager --update
 
       - run:
           name: Download Android Dependencies
