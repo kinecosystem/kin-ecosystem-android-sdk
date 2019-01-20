@@ -3,7 +3,7 @@ jobs:
   build-pull-request:
     docker:
       # specify the version you desire here
-      - image: circleci/android:api-25-alpha
+      - image: circleci/android:api-28
 
     working_directory: ~/workspace
 
@@ -21,14 +21,6 @@ jobs:
           - v1-dependencies-jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}-{{ checksum  "core/build.gradle" }}-{{ checksum  "sdk/build.gradle" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
-
-      - run:
-          name: Approve license for build tools
-          command: yes | sdkmanager --licenses
-
-      - run:
-          name: Update sdkmanager build tools
-          command: yes | sdkmanager --update || exit 0
 
       - run:
           name: Download Android Dependencies
