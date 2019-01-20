@@ -81,17 +81,6 @@ class AuthRepositoryTest : BaseTestClass() {
     }
 
     @Test
-    fun `current userID is A, set jwt with different userId - B`() {
-        expectedEx.expect(UserLoggedInException::class.java)
-        whenever(local.userID) doAnswer { USER_ID_A }
-        authRepository.setJWT(JWT_B)
-        inOrder(local, remote) {
-            verify(local).setJWT(any())
-            verify(remote).logout(any())
-        }
-    }
-
-    @Test
     fun `update wallet address correctly`() {
         val myAddress = "my_address_12"
         val updateWalletCaptor = argumentCaptor<UserProperties>()
