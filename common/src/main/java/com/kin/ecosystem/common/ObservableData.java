@@ -117,4 +117,8 @@ public class ObservableData<T> {
             observer.onChanged(value.get());
         }
     }
+
+    public void removeAllObservers() {
+        observers.getAndSet(EMPTY);
+    }
 }

@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.ecosystem.kin.app.BuildConfig;
 import com.ecosystem.kin.app.JwtUtil;
 import com.ecosystem.kin.app.R;
+import com.ecosystem.kin.app.login.LoginActivity;
 import com.ecosystem.kin.app.model.SignInRepo;
 import com.kin.ecosystem.EcosystemExperience;
 import com.kin.ecosystem.Kin;
@@ -179,9 +180,31 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 		((TextView) findViewById(R.id.sample_app_version)).setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
+		findViewById(R.id.logout_user).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				logout();
+			}
+		});
 
 		addNativeOffer();
 		addNativeOfferClickedObserver();
+	}
+
+	private void logout() {
+		try {
+			Kin.logout();
+			SignInRepo.logout(this);
+		} catch (ClientException e) {
+			e.printStackTrace();
+		}
+		navigateToLogin();
+	}
+
+	private void navigateToLogin() {
+		Intent loginIntent = new Intent(this, LoginActivity.class);
+		startActivity(loginIntent);
+		finish();
 	}
 
 	private SpannableString getUnderlineSpan(String text) {
@@ -596,11 +619,6 @@ public class MainActivity extends AppCompatActivity {
 				.setTextColor(Color.RED);
 		}
 		snackbar.show();
-	}
-
-	@NonNull
-	public static String getAppId() {
-		return BuildConfig.SAMPLE_APP_ID;
 	}
 
 	@Override

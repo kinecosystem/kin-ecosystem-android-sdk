@@ -15,6 +15,7 @@ import com.kin.ecosystem.core.network.model.OrderList;
 
 public interface OrderDataSource {
 
+    @Nullable
     OrderList getAllCachedOrderHistory();
 
     void getAllOrderHistory(@NonNull final KinCallback<OrderList> callback);
@@ -48,7 +49,9 @@ public interface OrderDataSource {
 
     void getExternalOrderStatus(@NonNull String offerID, @NonNull final KinCallback<OrderConfirmation> callback);
 
-    interface Local {
+	void logout();
+
+	interface Local {
 
         void isFirstSpendOrder(@NonNull final Callback<Boolean, Void> callback);
 

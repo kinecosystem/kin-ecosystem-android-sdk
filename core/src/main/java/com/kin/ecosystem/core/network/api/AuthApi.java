@@ -24,6 +24,7 @@ import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.ApiResponse;
 import com.kin.ecosystem.core.network.Pair;
 import com.kin.ecosystem.core.network.model.AccountInfo;
+import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.JWT;
 import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.network.model.UserProperties;
@@ -449,4 +450,52 @@ public class AuthApi {
 		apiClient.executeAsync(call, callback);
 		return call;
 	}
+
+	/**
+	 * Build call for logout
+	 *
+	 * @return Call to execute
+	 * @throws ApiException If fail to serialize the request body object
+	 */
+	private Call logoutCall(final String token) throws ApiException {
+		// create path and map variables
+		String localVarPath = "/users/me/session";
+
+		Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+
+		final String[] localVarAccepts = {
+			"application/json"
+		};
+		final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+		if (localVarAccept != null) {
+			localVarHeaderParams.put("Accept", localVarAccept);
+		}
+
+		final String[] localVarContentTypes = {
+			"application/json"
+		};
+		final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+		localVarHeaderParams.put("Content-Type", localVarContentType);
+		localVarHeaderParams.put("Authorization", "Bearer " + token);
+
+		String[] localVarAuthNames = new String[]{};
+		return apiClient
+			.buildCall(localVarPath, ApiClient.DELETE, null, null, null,
+				localVarHeaderParams, null, localVarAuthNames);
+	}
+
+	/**
+	 * Deletes the authToken.
+	 *
+	 * @param authToken to delete
+	 *
+	 * @return The request call
+	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+	 */
+	public Call logoutAsync(final String authToken) throws ApiException {
+		Call call = logoutCall(authToken);
+		apiClient.executeAsync(call, null);
+		return call;
+	}
+
 }

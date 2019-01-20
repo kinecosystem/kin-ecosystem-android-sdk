@@ -118,20 +118,23 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	 * load the old account and migrate to current multiple users implementation.
 	 */
 	private void migrateToMultipleUsers(String kinUserId) {
-		final boolean isMigrated = local.getIsMigrated();
-		if (!isMigrated && kinClient.hasAccount()) {
-			final int accountIndex = local.getAccountIndex();
-			KinAccount account;
-			if(accountIndex == NOT_EXIST) {
-				account = kinClient.getAccount(0);
-				Logger.log(new Log().withTag(TAG).put("migrateToMultipleUsers accountIndex == NOT_EXIST, kinUserId", kinUserId));
-			} else {
-				Logger.log(new Log().withTag(TAG).put("migrateToMultipleUsers accountIndex", accountIndex).put("kinUserId", kinUserId));
-				account = kinClient.getAccount(accountIndex);
-				local.deleteAccountIndexKey();
-			}
+		if (!local.getIsMigrated()) {
 			local.setDidMigrate();
-			local.setActiveUserWallet(kinUserId, account.getPublicAddress());
+			if (kinClient.hasAccount()) {
+				final int accountIndex = local.getAccountIndex();
+				KinAccount account;
+				if (accountIndex == NOT_EXIST) {
+					account = kinClient.getAccount(0);
+					Logger.log(new Log().withTag(TAG)
+						.put("migrateToMultipleUsers accountIndex == NOT_EXIST, kinUserId", kinUserId));
+				} else {
+					Logger.log(new Log().withTag(TAG).put("migrateToMultipleUsers accountIndex", accountIndex)
+						.put("kinUserId", kinUserId));
+					account = kinClient.getAccount(accountIndex);
+					local.removeAccountIndexKey();
+				}
+				local.setActiveUserWallet(kinUserId, account.getPublicAddress());
+			}
 		}
 	}
 
@@ -152,13 +155,17 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 			// No matching found
 			if (account == null) {
+				Logger.log(new Log().withTag(TAG).text("createAccount1"));
 				account = createAccount();
 			}
 
 		} else {
+			Logger.log(new Log().withTag(TAG).text("createAccount2"));
 			account = createAccount();
 		}
 
+		Logger.log(new Log().withTag(TAG).text("setActiveUserWallet").put("kinUserId", kinUserId)
+			.put("pubAdd", account.getPublicAddress()));
 		currentUserId = kinUserId;
 		local.setActiveUserWallet(kinUserId, account.getPublicAddress());
 	}
@@ -459,6 +466,17 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void logout() {
+		removeRegistration(paymentRegistration);
+		removeRegistration(balanceRegistration);
+		paymentRegistration = null;
+		balanceRegistration = null;
+		completedPayment.removeAllObservers();
+		account = null;
+		local.logout();
 	}
 
 	private void decrementPaymentCount() {

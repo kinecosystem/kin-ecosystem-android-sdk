@@ -93,7 +93,7 @@ public class EcosystemActivity extends BaseToolbarActivity implements IEcosystem
 		});
 		ecosystemPresenter = new EcosystemPresenter(this,
 			new SettingsDataSourceImpl(new SettingsDataSourceLocal(getApplicationContext())),
-			BlockchainSourceImpl.getInstance(), this, savedInstanceState, getIntent().getExtras());
+			BlockchainSourceImpl.getInstance(), EventLoggerImpl.getInstance(), this, savedInstanceState, getIntent().getExtras());
 	}
 
 	@Override

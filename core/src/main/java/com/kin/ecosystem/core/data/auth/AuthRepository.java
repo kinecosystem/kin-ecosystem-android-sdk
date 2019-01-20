@@ -14,9 +14,11 @@ import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.network.model.UserProperties;
 import com.kin.ecosystem.core.util.DateUtil;
 import com.kin.ecosystem.core.util.ErrorUtil;
+import com.kin.ecosystem.core.util.JwtDecoder;
 import com.kin.ecosystem.core.util.StringUtil;
 import java.util.Calendar;
 import java.util.Date;
+import org.json.JSONException;
 
 public class AuthRepository implements AuthDataSource {
 
@@ -51,10 +53,34 @@ public class AuthRepository implements AuthDataSource {
 		return instance;
 	}
 
+
+	@Override
+	public boolean isSameUser(@NonNull String jwt) throws ClientException {
+		final JwtBody jwtBody = getJwtBody(jwt);
+		final String currentUserID = localData.getUserID();
+		return StringUtil.isEmpty(currentUserID) || currentUserID.equals(jwtBody.getUserId());
+	}
+
 	@Override
 	public void setJWT(@NonNull String jwt) throws ClientException {
 		this.jwt = jwt;
-		localData.setJWT(jwt);
+		final JwtBody jwtBody = getJwtBody(jwt);
+		localData.setJWT(jwtBody);
+	}
+
+	@NonNull
+	private JwtBody getJwtBody(@NonNull String jwt) throws ClientException {
+		JwtBody jwtBody;
+		try {
+			jwtBody = JwtDecoder.getJwtBody(jwt);
+			if (jwtBody == null) {
+				throw new ClientException(ClientException.BAD_CONFIGURATION,
+					"The jwt is not in the correct format, please see more details on our documentation.", null);
+			}
+		} catch (JSONException | IllegalArgumentException e) {
+			throw ErrorUtil.getClientException(ClientException.BAD_CONFIGURATION, e);
+		}
+		return jwtBody;
 	}
 
 	@Override
@@ -149,6 +175,16 @@ public class AuthRepository implements AuthDataSource {
 		});
 	}
 
+	@Override
+	public void logout() {
+		final String token = cachedAuthToken.getToken();
+		remoteData.logout(token);
+
+		cachedAuthToken = null;
+		jwt = null;
+		localData.logout();
+	}
+
 	private boolean isAuthTokenExpired(AuthToken authToken) {
 		if (authToken == null) {
 			return true;
@@ -175,7 +211,6 @@ public class AuthRepository implements AuthDataSource {
 		cachedAuthToken = authToken;
 	}
 
-
 	private void setAccountInfo(AccountInfo accountInfo) {
 		if (accountInfo != null) {
 			localData.setAccountInfo(accountInfo);
@@ -189,7 +224,7 @@ public class AuthRepository implements AuthDataSource {
 	@Override
 	public void getAuthToken(@Nullable final KinCallback<AuthToken> callback) {
 		if (StringUtil.isEmpty(jwt)) {
-			if(callback != null) {
+			if (callback != null) {
 				callback.onFailure(ErrorUtil.getClientException(ClientException.ACCOUNT_NOT_LOGGED_IN, null));
 			}
 		} else {

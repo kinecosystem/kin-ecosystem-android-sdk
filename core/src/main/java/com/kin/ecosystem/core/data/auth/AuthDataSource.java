@@ -15,6 +15,8 @@ import com.kin.ecosystem.core.network.model.UserProperties;
 
 public interface AuthDataSource {
 
+	boolean isSameUser(@NonNull final String jwt) throws ClientException;
+
 	void setJWT(@NonNull final String jwt) throws ClientException;
 
 	void updateWalletAddress(String address, @NonNull final KinCallback<Boolean> callback);
@@ -35,9 +37,11 @@ public interface AuthDataSource {
 
 	void userStats(@NonNull final KinCallback<UserStats> callback);
 
+	void logout();
+
 	interface Local {
 
-		void setJWT(@NonNull final String signInData) throws ClientException;
+		void setJWT(@NonNull final JwtBody jwtBody);
 
 		String getJWT();
 
@@ -53,6 +57,7 @@ public interface AuthDataSource {
 
 		AuthToken getAuthTokenSync();
 
+		void logout();
 	}
 
 	interface Remote {
@@ -63,8 +68,11 @@ public interface AuthDataSource {
 
 		void hasAccount(@NonNull String userId, @NonNull final Callback<Boolean, ApiException> callback);
 
-		void userProfile(@NonNull final Callback<UserProfile, ApiException> callback) ;
+		void userProfile(@NonNull final Callback<UserProfile, ApiException> callback);
 
-		void updateWalletAddress(@NonNull UserProperties userProperties, @NonNull final Callback<Void, ApiException> callback);
+		void updateWalletAddress(@NonNull UserProperties userProperties,
+			@NonNull final Callback<Void, ApiException> callback);
+
+		void logout(@NonNull final String authToken);
 	}
 }

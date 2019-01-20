@@ -4,12 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.support.annotation.NonNull;
-import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.network.model.AuthToken;
-import com.kin.ecosystem.core.util.ErrorUtil;
-import com.kin.ecosystem.core.util.JwtDecoder;
-import org.json.JSONException;
 
 
 public class AuthLocalData implements AuthDataSource.Local {
@@ -46,23 +42,12 @@ public class AuthLocalData implements AuthDataSource.Local {
 	}
 
 	@Override
-	public void setJWT(@NonNull final String jwt) throws ClientException {
+	public void setJWT(@NonNull final JwtBody jwtBody) {
 		Editor editor = signInSharedPreferences.edit();
-		JwtBody jwtBody = null;
-		try {
-			jwtBody = JwtDecoder.getJwtBody(jwt);
-			if(jwtBody == null) {
-				throw new ClientException(ClientException.BAD_CONFIGURATION,
-					"The jwt is not in the correct format, please see more details on our documentation.", null);
-			}
-		} catch (JSONException | IllegalArgumentException e) {
-			throw ErrorUtil.getClientException(ClientException.BAD_CONFIGURATION, e);
-		}
-		editor.putString(JWT_KEY, jwt);
-			editor.putString(DEVICE_ID_KEY, jwtBody.getDeviceId());
-			editor.putString(USER_ID_KEY, jwtBody.getUserId());
-			editor.putString(APP_ID_KEY, jwtBody.getAppId());
-			editor.apply();
+		editor.putString(DEVICE_ID_KEY, jwtBody.getDeviceId());
+		editor.putString(USER_ID_KEY, jwtBody.getUserId());
+		editor.putString(APP_ID_KEY, jwtBody.getAppId());
+		editor.apply();
 	}
 
 	@Override
@@ -117,6 +102,17 @@ public class AuthLocalData implements AuthDataSource.Local {
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public void logout() {
+		Editor editor = signInSharedPreferences.edit();
+		editor.remove(JWT_KEY);
+		editor.remove(USER_ID_KEY);
+		editor.remove(ECOSYSTEM_USER_ID_KEY);
+		editor.remove(TOKEN_KEY);
+		editor.remove(TOKEN_EXPIRATION_DATE_KEY);
+		editor.apply();
 	}
 }
 

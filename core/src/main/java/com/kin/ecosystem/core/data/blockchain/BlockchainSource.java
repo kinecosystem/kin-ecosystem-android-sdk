@@ -104,6 +104,8 @@ public interface BlockchainSource {
 	 */
 	boolean updateActiveAccount(int accountIndex);
 
+	void logout();
+
 	interface Local {
 
 		int getBalance();
@@ -117,7 +119,9 @@ public interface BlockchainSource {
 
 		void setActiveUserWallet(String kinUserId, String publicAddress);
 
-		void deleteAccountIndexKey();
+		void removeAccountIndexKey();
+
+		void logout();
 
 		boolean getIsMigrated();
 

@@ -5,12 +5,14 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class BlockchainSourceLocal implements BlockchainSource.Local {
 
 	static final int NOT_EXIST = -1;
+	private static final String STRING_WALLETS_DELIMITER = ",";
 	private static volatile BlockchainSourceLocal instance;
 
 	private static final String BLOCKCHAIN_PREF_NAME_FILE_KEY = "kinecosystem_blockchain_source";
@@ -52,38 +54,54 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 	@Nullable
 	@Override
 	public String getLastWalletAddress(final String kinUserId) {
-		Set<String> wallets = getUserWallets(kinUserId);
-		String publicAddress = null;
-		for (String wallet : wallets) {
-			publicAddress = wallet;
-		}
-		return publicAddress;
+		ArrayList<String> wallets = getUserWallets(kinUserId);
+		return wallets.size() > 0 ? wallets.get(wallets.size() - 1) : null;
 	}
 
 	@Override
 	public int getAccountIndex() {
-		return blockchainSharedPreferences.contains(ACCOUNT_INDEX_KEY) ? blockchainSharedPreferences.getInt(ACCOUNT_INDEX_KEY, 0) : NOT_EXIST;
+		return blockchainSharedPreferences.contains(ACCOUNT_INDEX_KEY) ? blockchainSharedPreferences
+			.getInt(ACCOUNT_INDEX_KEY, 0) : NOT_EXIST;
 	}
 
 	@Override
 	public void setActiveUserWallet(String kinUserId, String publicAddress) {
-		LinkedHashSet<String> currentWallets = getUserWallets(kinUserId);
+		ArrayList<String> currentWallets = getUserWallets(kinUserId);
 		currentWallets.remove(publicAddress); // Remove if exists
 		currentWallets.add(publicAddress); // Add to the end
 		Editor editor = blockchainSharedPreferences.edit();
 		editor.putString(CURRENT_KIN_USER_ID, kinUserId);
-		editor.putStringSet(kinUserId, currentWallets).apply();
+		editor.putString(kinUserId, createLongString(currentWallets));
 		editor.apply();
 	}
 
-	private LinkedHashSet<String> getUserWallets(String kinUserId) {
-		Set<String> wallets = blockchainSharedPreferences.getStringSet(kinUserId, null);
-		return wallets != null ? new LinkedHashSet<>(wallets) : new LinkedHashSet<String>();
+	private String createLongString(List<String> currentWallets) {
+		StringBuilder walletsStringBuilder = new StringBuilder();
+		for (int i = 0; i < currentWallets.size(); i++) {
+			walletsStringBuilder.append(currentWallets.get(i));
+			if (i < currentWallets.size() - 1) {
+				walletsStringBuilder.append(STRING_WALLETS_DELIMITER);
+			}
+		}
+		return walletsStringBuilder.toString();
+	}
+
+	private ArrayList<String> getUserWallets(String kinUserId) {
+		String walletsString = blockchainSharedPreferences.getString(kinUserId, null);
+		if (walletsString != null) {
+			return new ArrayList<>(Arrays.asList(walletsString.split(STRING_WALLETS_DELIMITER)));
+		}
+		return new ArrayList<>();
 	}
 
 	@Override
-	public void deleteAccountIndexKey() {
+	public void removeAccountIndexKey() {
 		blockchainSharedPreferences.edit().remove(ACCOUNT_INDEX_KEY).apply();
+	}
+
+	@Override
+	public void logout() {
+		blockchainSharedPreferences.edit().remove(BALANCE_KEY).apply();
 	}
 
 	@Override

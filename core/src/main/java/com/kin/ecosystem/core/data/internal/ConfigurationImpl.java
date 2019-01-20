@@ -1,5 +1,6 @@
 package com.kin.ecosystem.core.data.internal;
 
+import static com.kin.ecosystem.core.network.ApiClient.DELETE;
 import static com.kin.ecosystem.core.network.ApiClient.POST;
 
 import android.os.Build;
@@ -39,6 +40,7 @@ public class ConfigurationImpl implements Configuration {
 	private static final String AUTH_TOKEN_COULD_NOT_BE_GENERATED = "AuthToken could not be generated";
 
 	private static final String USERS_PATH = "/" + API_VERSION + "/users";
+	private static final String LOGOUT_PATH = "/" + API_VERSION + "/users/me/session";
 	private static final String PREFIX_ANDROID = "android ";
 
 	private static final Object apiClientLock = new Object();
@@ -80,8 +82,7 @@ public class ConfigurationImpl implements Configuration {
 					@Override
 					public Response intercept(Chain chain) throws IOException {
 						Request originalRequest = chain.request();
-						final String path = originalRequest.url().encodedPath();
-						if (path.equals(USERS_PATH) && originalRequest.method().equals(POST)) {
+						if (isCanProceed(originalRequest)) {
 							return chain.proceed(originalRequest);
 						} else {
 							AuthToken authToken = AuthRepository.getInstance().getAuthTokenSync();
@@ -110,6 +111,13 @@ public class ConfigurationImpl implements Configuration {
 
 		addHeaders(defaultApiClient);
 		return defaultApiClient;
+	}
+
+	private boolean isCanProceed(Request originalRequest) {
+		final String path = originalRequest.url().encodedPath();
+		final String method = originalRequest.method();
+		return path.equals(USERS_PATH) && method.equals(POST) ||
+			path.equals(LOGOUT_PATH) && method.equals(DELETE);
 	}
 
 	private void addHeaders(ApiClient apiClient) {

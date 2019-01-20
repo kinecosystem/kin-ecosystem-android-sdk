@@ -7,6 +7,7 @@ import com.kin.ecosystem.core.network.ApiCallback;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.api.AuthApi;
 import com.kin.ecosystem.core.network.model.AccountInfo;
+import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.JWT;
 import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.network.model.UserProperties;
@@ -56,7 +57,8 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 				}
 
 				@Override
-				public void onSuccess(final AccountInfo result, int statusCode, Map<String, List<String>> responseHeaders) {
+				public void onSuccess(final AccountInfo result, int statusCode,
+					Map<String, List<String>> responseHeaders) {
 					executorsUtil.mainThread().execute(new Runnable() {
 						@Override
 						public void run() {
@@ -134,7 +136,8 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 				}
 
 				@Override
-				public void onSuccess(final UserProfile result, int statusCode, Map<String, List<String>> responseHeaders) {
+				public void onSuccess(final UserProfile result, int statusCode,
+					Map<String, List<String>> responseHeaders) {
 					executorsUtil.mainThread().execute(new Runnable() {
 						@Override
 						public void run() {
@@ -145,7 +148,7 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 				}
 
 			});
-		} catch (final ApiException e){
+		} catch (final ApiException e) {
 			executorsUtil.mainThread().execute(new Runnable() {
 				@Override
 				public void run() {
@@ -157,7 +160,8 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 
 
 	@Override
-	public void updateWalletAddress(@NonNull UserProperties userProperties, @NonNull final Callback<Void, ApiException> callback) {
+	public void updateWalletAddress(@NonNull UserProperties userProperties,
+		@NonNull final Callback<Void, ApiException> callback) {
 		try {
 			authApi.updateUserAsync(userProperties, new ApiCallback<Void>() {
 				@Override
@@ -187,6 +191,14 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 					callback.onFailure(e);
 				}
 			});
+		}
+	}
+
+	@Override
+	public void logout(@NonNull final String authToken) {
+		try {
+			authApi.logoutAsync(authToken);
+		} catch (ApiException ignored) {
 		}
 	}
 }

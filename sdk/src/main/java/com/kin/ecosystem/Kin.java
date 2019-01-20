@@ -22,6 +22,7 @@ import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.common.model.UserStats;
+import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.accountmanager.AccountManagerImpl;
 import com.kin.ecosystem.core.accountmanager.AccountManagerLocal;
@@ -189,9 +190,11 @@ public class Kin {
 	}
 
 	private static void internalLogin(@NonNull final String jwt, final KinCallback<Void> loginCallback) {
-
 		try {
 			checkInstanceNotNull();
+			if(!AuthRepository.getInstance().isSameUser(jwt)) {
+				logout();
+			}
 			AuthRepository.getInstance().setJWT(jwt);
 		} catch (final ClientException exception) {
 			sendLoginFailed(exception, loginCallback);
@@ -200,7 +203,7 @@ public class Kin {
 		AuthRepository.getInstance().getAuthToken(new KinCallback<AuthToken>() {
 			@Override
 			public void onResponse(AuthToken authToken) {
-				String publicAddress = null;
+				String publicAddress;
 				try {
 					BlockchainSourceImpl.getInstance().loadAccount(authToken.getEcosystemUserID());
 					publicAddress = BlockchainSourceImpl.getInstance().getPublicAddress();
@@ -259,6 +262,30 @@ public class Kin {
 		if (isInstanceNull()) {
 			throw ErrorUtil.getClientException(SDK_NOT_STARTED, null);
 		}
+	}
+
+	/**
+	 * Logout from the current logged in user.
+	 *
+	 * @throws ClientException - sdk not initialized.
+	 */
+	public static void logout() throws ClientException {
+		checkInstanceNotNull();
+		if (isAccountLoggedIn) {
+			Logger.log(new Log().withTag("Kin.java").text("logout").put("isAccountLoggedIn", isAccountLoggedIn));
+			isAccountLoggedIn = false;
+			AuthRepository.getInstance().logout();
+			clearCachedData();
+		}
+	}
+
+	/**
+	 * Clear cached old internal data
+	 */
+	private static void clearCachedData() {
+		BlockchainSourceImpl.getInstance().logout();
+		OrderRepository.getInstance().logout();
+		OfferRepository.getInstance().logout();
 	}
 
 	/**

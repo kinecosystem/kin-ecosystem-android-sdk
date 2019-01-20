@@ -68,4 +68,9 @@ public class SignInRepo {
 		}
 		return deviceId;
 	}
+
+	public static void logout(Context context) {
+		Editor editor = getSharedPreferences(context).edit();
+		editor.remove(USER_UUID_KEY).apply();
+	}
 }
