@@ -30,6 +30,9 @@ import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.EventLoggerImpl;
 import com.kin.ecosystem.core.bi.events.EntrypointButtonTapped;
 import com.kin.ecosystem.core.bi.events.KinSdkInitiated;
+import com.kin.ecosystem.core.bi.events.UserLoginFailed;
+import com.kin.ecosystem.core.bi.events.UserLoginSucceeded;
+import com.kin.ecosystem.core.bi.events.UserLogoutRequested;
 import com.kin.ecosystem.core.data.auth.AuthLocalData;
 import com.kin.ecosystem.core.data.auth.AuthRemoteData;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
@@ -200,6 +203,7 @@ public class Kin {
 			sendLoginFailed(exception, loginCallback);
 		}
 
+		eventLogger.send(UserLogoutRequested.create());
 		AuthRepository.getInstance().getAuthToken(new KinCallback<AuthToken>() {
 			@Override
 			public void onResponse(AuthToken authToken) {
@@ -215,6 +219,7 @@ public class Kin {
 				AuthRepository.getInstance().updateWalletAddress(publicAddress, new KinCallback<Boolean>() {
 					@Override
 					public void onResponse(Boolean response) {
+						eventLogger.send(UserLoginSucceeded.create());
 						isAccountLoggedIn = true;
 						instance.executorsUtil.mainThread().execute(new Runnable() {
 							@Override
@@ -239,6 +244,7 @@ public class Kin {
 	}
 
 	private static void sendLoginFailed(final KinEcosystemException exception, final KinCallback<Void> loginCallback) {
+		eventLogger.send(UserLoginFailed.create());
 		isAccountLoggedIn = false;
 		instance.executorsUtil.mainThread().execute(new Runnable() {
 			@Override
@@ -272,6 +278,7 @@ public class Kin {
 	public static void logout() throws ClientException {
 		checkInstanceNotNull();
 		if (isAccountLoggedIn) {
+			eventLogger.send(UserLogoutRequested.create());
 			Logger.log(new Log().withTag("Kin.java").text("logout").put("isAccountLoggedIn", isAccountLoggedIn));
 			isAccountLoggedIn = false;
 			AuthRepository.getInstance().logout();
