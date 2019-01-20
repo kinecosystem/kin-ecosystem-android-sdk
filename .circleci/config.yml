@@ -24,7 +24,7 @@ jobs:
 
       - run:
           name: Approve license for build tools
-          command: (echo y; echo y; echo y; echo y; echo y; echo y) | $ANDROID_HOME/tools/bin/sdkmanager --licenses
+          command: --update && yes | sdkmanager --licenses
 
       - run:
           name: Download Android Dependencies
