@@ -13,7 +13,7 @@ jobs:
       TERM: dumb
     
     steps:
-      - checkout
+      checkout:
       post:
       - cp -r licenses/. $ANDROID_HOME/licenses
 
