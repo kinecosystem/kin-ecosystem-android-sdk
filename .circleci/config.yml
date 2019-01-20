@@ -13,9 +13,8 @@ jobs:
       TERM: dumb
     
     steps:
-      checkout:
-      post:
-      - cp -r licenses/. $ANDROID_HOME/licenses
+      - checkout
+      - run: cp -r licenses/. $ANDROID_HOME/licenses
 
       # Download and cache dependencies
       - restore_cache:
