@@ -3,7 +3,7 @@ jobs:
   build-pull-request:
     docker:
       # specify the version you desire here
-      - image: circleci/android:api-25-alpha
+      - image: circleci/android:api-27-alpha
 
     working_directory: ~/workspace
 
@@ -14,7 +14,7 @@ jobs:
     
     steps:
       - checkout
-      - run: cp -r licenses/. $ANDROID_HOME/licenses
+      - run: (echo y; echo y; echo y; echo y; echo y; echo y) | $ANDROID_HOME/tools/bin/sdkmanager --licenses
 
       # Download and cache dependencies
       - restore_cache:
