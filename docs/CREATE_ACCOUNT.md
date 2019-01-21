@@ -38,7 +38,7 @@ If that user already has a Kin account, the function only accesses the existing 
 *To release access from a user’s Kin account or switch account:*
 
 Call `Kin.logout()`, this is a synchronous call means that you can call `Kin.login(…)` immediately (for switching between users).
-After calling `logout` method, you should login again inorder to interact with the SDK API's, as Kin account is required.
+After calling `logout`, you should login again in order to interact with the SDK API's, as Kin account is required.
 
 ```java
     try {

@@ -36,7 +36,7 @@ A custom Spend offer allows your users to unlock unique spend opportunities that
    }
 
    sender: {
-          user_id: string; // optional: ID of purchasing user
+          user_id: string; // A user_id of the purchasing user
           device_id: string; // A unique ID of the purchasing user device
           title: string; // order title - appears in order history
           description: string; // order desc. (in order history)
