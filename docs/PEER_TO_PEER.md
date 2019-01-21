@@ -34,6 +34,7 @@ Your app displays the offer, request user approval, and then [requests payment u
     },
     sender: {
         user_id: string; // optional: user_id who will perform the order
+        device_id: string; // A unique ID of the sender's device
         title: string; // offer title - appears in order history
         description: string; // offer description - appears in order history
     },
