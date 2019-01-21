@@ -2,6 +2,7 @@ package com.kin.ecosystem.core.data.auth;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.format.DateUtils;
 import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.exception.ClientException;
@@ -22,12 +23,14 @@ import org.json.JSONException;
 
 public class AuthRepository implements AuthDataSource {
 
+	private static final long TWO_DAYS_IN_MILLIS = 2 * DateUtils.DAY_IN_MILLIS;
 	private static volatile AuthRepository instance = null;
 
 	private final AuthDataSource.Local localData;
 	private final AuthDataSource.Remote remoteData;
 
 	private String jwt;
+	private AccountInfo cachedAccountInfo;
 	private AuthToken cachedAuthToken;
 
 	private AuthRepository(@NonNull AuthDataSource.Local local,
@@ -36,6 +39,7 @@ public class AuthRepository implements AuthDataSource {
 		this.remoteData = remote;
 		this.jwt = local.getJWT();
 		this.cachedAuthToken = local.getAuthTokenSync();
+		this.cachedAccountInfo = local.getAccountInfo();
 	}
 
 	public static void init(@NonNull AuthDataSource.Local localData,
@@ -53,12 +57,17 @@ public class AuthRepository implements AuthDataSource {
 		return instance;
 	}
 
-
 	@Override
-	public boolean isSameUser(@NonNull String jwt) throws ClientException {
+	public @UserLoginState
+	int getUserLoginState(@NonNull String jwt) throws ClientException {
 		final JwtBody jwtBody = getJwtBody(jwt);
 		final String currentUserID = localData.getUserID();
-		return StringUtil.isEmpty(currentUserID) || currentUserID.equals(jwtBody.getUserId());
+		if (StringUtil.isEmpty(currentUserID)) {
+			return UserLoginState.FIRST;
+		} else {
+			return currentUserID.equals(jwtBody.getUserId())
+				? UserLoginState.SAME_USER : UserLoginState.DIFFERENT_USER;
+		}
 	}
 
 	@Override
@@ -191,7 +200,7 @@ public class AuthRepository implements AuthDataSource {
 		} else {
 			Date expirationDate = DateUtil.getDateFromUTCString(authToken.getExpirationDate());
 			if (expirationDate != null) {
-				return Calendar.getInstance().getTimeInMillis() > expirationDate.getTime();
+				return Calendar.getInstance().getTimeInMillis() > (expirationDate.getTime() - TWO_DAYS_IN_MILLIS);
 			} else {
 				return true;
 			}
@@ -222,28 +231,34 @@ public class AuthRepository implements AuthDataSource {
 	}
 
 	@Override
-	public void getAuthToken(@Nullable final KinCallback<AuthToken> callback) {
-		if (StringUtil.isEmpty(jwt)) {
-			if (callback != null) {
-				callback.onFailure(ErrorUtil.getClientException(ClientException.ACCOUNT_NOT_LOGGED_IN, null));
+	public void getAccountInfo(@Nullable final KinCallback<AccountInfo> callback) {
+		if (cachedAccountInfo == null || isAuthTokenExpired(cachedAuthToken)) {
+			if (StringUtil.isEmpty(jwt)) {
+				if (callback != null) {
+					callback.onFailure(ErrorUtil.getClientException(ClientException.ACCOUNT_NOT_LOGGED_IN, null));
+				}
+			} else {
+				remoteData.getAccountInfo(new JWT(jwt), new Callback<AccountInfo, ApiException>() {
+					@Override
+					public void onResponse(AccountInfo accountInfo) {
+						setAccountInfo(accountInfo);
+						if (callback != null) {
+							callback.onResponse(accountInfo);
+						}
+					}
+
+					@Override
+					public void onFailure(ApiException exception) {
+						if (callback != null) {
+							callback.onFailure(ErrorUtil.fromApiException(exception));
+						}
+					}
+				});
 			}
 		} else {
-			remoteData.getAccountInfo(new JWT(jwt), new Callback<AccountInfo, ApiException>() {
-				@Override
-				public void onResponse(AccountInfo accountInfo) {
-					setAccountInfo(accountInfo);
-					if (callback != null) {
-						callback.onResponse(cachedAuthToken);
-					}
-				}
-
-				@Override
-				public void onFailure(ApiException exception) {
-					if (callback != null) {
-						callback.onFailure(ErrorUtil.fromApiException(exception));
-					}
-				}
-			});
+			if (callback != null) {
+				callback.onResponse(cachedAccountInfo);
+			}
 		}
 	}
 }

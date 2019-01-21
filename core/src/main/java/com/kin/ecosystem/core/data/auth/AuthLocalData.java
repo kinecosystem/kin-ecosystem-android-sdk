@@ -4,8 +4,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.network.model.AuthToken;
+import com.kin.ecosystem.core.network.model.User;
+import com.kin.ecosystem.core.util.StringUtil;
 
 
 public class AuthLocalData implements AuthDataSource.Local {
@@ -22,6 +25,9 @@ public class AuthLocalData implements AuthDataSource.Local {
 
 	private static final String TOKEN_KEY = "token";
 	private static final String TOKEN_EXPIRATION_DATE_KEY = "token_expiration_date";
+
+	private static final String CREATED_DATE_KEY = "created_date";
+	private static final String CURRENT_WALLET_ON_SEVER_KEY = "current_wallet_on_server";
 
 	private final SharedPreferences signInSharedPreferences;
 
@@ -58,8 +64,16 @@ public class AuthLocalData implements AuthDataSource.Local {
 	@Override
 	public void setAccountInfo(@NonNull AccountInfo accountInfo) {
 		if (accountInfo.getAuthToken() != null) {
+			setUser(accountInfo.getUser());
 			setAuthToken(accountInfo.getAuthToken());
 		}
+	}
+
+	private void setUser(User user) {
+		Editor editor = signInSharedPreferences.edit();
+		editor.putString(CREATED_DATE_KEY, user.getCreatedDate());
+		editor.putString(CURRENT_WALLET_ON_SEVER_KEY, user.getCurrentWallet());
+		editor.apply();
 	}
 
 	private void setAuthToken(@NonNull final AuthToken authToken) {
@@ -91,6 +105,31 @@ public class AuthLocalData implements AuthDataSource.Local {
 	}
 
 	@Override
+	@Nullable
+	public AccountInfo getAccountInfo() {
+		AuthToken authToken = getAuthTokenSync();
+		User user = getUser();
+
+		if(authToken != null && user != null) {
+			return new AccountInfo(authToken, user);
+		} else {
+			return null;
+		}
+	}
+
+	@Nullable
+	private User getUser() {
+		String createdDate = signInSharedPreferences.getString(CREATED_DATE_KEY, null);
+		String currentWalletOnServer = signInSharedPreferences.getString(CURRENT_WALLET_ON_SEVER_KEY, null);
+		if (!StringUtil.isEmpty(createdDate) && !StringUtil.isEmpty(currentWalletOnServer)) {
+			return new User(createdDate, currentWalletOnServer);
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	@Nullable
 	public AuthToken getAuthTokenSync() {
 		String token = signInSharedPreferences.getString(TOKEN_KEY, null);
 		String appID = signInSharedPreferences.getString(APP_ID_KEY, null);

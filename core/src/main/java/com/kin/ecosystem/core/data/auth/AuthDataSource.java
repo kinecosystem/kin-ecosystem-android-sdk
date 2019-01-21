@@ -15,7 +15,7 @@ import com.kin.ecosystem.core.network.model.UserProperties;
 
 public interface AuthDataSource {
 
-	boolean isSameUser(@NonNull final String jwt) throws ClientException;
+	@UserLoginState int getUserLoginState(@NonNull final String jwt) throws ClientException;
 
 	void setJWT(@NonNull final String jwt) throws ClientException;
 
@@ -29,7 +29,7 @@ public interface AuthDataSource {
 
 	String getEcosystemUserID();
 
-	void getAuthToken(@Nullable final KinCallback<AuthToken> callback);
+	void getAccountInfo(@Nullable final KinCallback<AccountInfo> callback);
 
 	AuthToken getAuthTokenSync();
 
@@ -55,6 +55,10 @@ public interface AuthDataSource {
 
 		String getEcosystemUserID();
 
+		@Nullable
+		AccountInfo getAccountInfo();
+
+		@Nullable
 		AuthToken getAuthTokenSync();
 
 		void logout();

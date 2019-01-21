@@ -31,11 +31,13 @@ import com.kin.ecosystem.core.bi.EventLoggerImpl;
 import com.kin.ecosystem.core.bi.events.EntrypointButtonTapped;
 import com.kin.ecosystem.core.bi.events.KinSdkInitiated;
 import com.kin.ecosystem.core.bi.events.UserLoginFailed;
+import com.kin.ecosystem.core.bi.events.UserLoginRequested;
 import com.kin.ecosystem.core.bi.events.UserLoginSucceeded;
 import com.kin.ecosystem.core.bi.events.UserLogoutRequested;
 import com.kin.ecosystem.core.data.auth.AuthLocalData;
 import com.kin.ecosystem.core.data.auth.AuthRemoteData;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
+import com.kin.ecosystem.core.data.auth.UserLoginState;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceLocal;
 import com.kin.ecosystem.core.data.internal.ConfigurationImpl;
@@ -44,7 +46,7 @@ import com.kin.ecosystem.core.data.offer.OfferRepository;
 import com.kin.ecosystem.core.data.order.OrderLocalData;
 import com.kin.ecosystem.core.data.order.OrderRemoteData;
 import com.kin.ecosystem.core.data.order.OrderRepository;
-import com.kin.ecosystem.core.network.model.AuthToken;
+import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
@@ -195,45 +197,63 @@ public class Kin {
 	private static void internalLogin(@NonNull final String jwt, final KinCallback<Void> loginCallback) {
 		try {
 			checkInstanceNotNull();
-			if(!AuthRepository.getInstance().isSameUser(jwt)) {
-				logout();
+			@UserLoginState int loginState = AuthRepository.getInstance().getUserLoginState(jwt);
+			switch (loginState) {
+				case UserLoginState.DIFFERENT_USER:
+					logout();
+				case UserLoginState.FIRST:
+					eventLogger.send(UserLoginRequested.create());
+					break;
+				case UserLoginState.SAME_USER:
+					break;
 			}
 			AuthRepository.getInstance().setJWT(jwt);
 		} catch (final ClientException exception) {
 			sendLoginFailed(exception, loginCallback);
 		}
 
-		eventLogger.send(UserLogoutRequested.create());
-		AuthRepository.getInstance().getAuthToken(new KinCallback<AuthToken>() {
+		AuthRepository.getInstance().getAccountInfo(new KinCallback<AccountInfo>() {
 			@Override
-			public void onResponse(AuthToken authToken) {
+			public void onResponse(AccountInfo accountInfo) {
 				String publicAddress;
 				try {
-					BlockchainSourceImpl.getInstance().loadAccount(authToken.getEcosystemUserID());
+					BlockchainSourceImpl.getInstance().loadAccount(accountInfo.getAuthToken().getEcosystemUserID());
 					publicAddress = BlockchainSourceImpl.getInstance().getPublicAddress();
 				} catch (final BlockchainException exception) {
 					sendLoginFailed(exception, loginCallback);
 					return;
 				}
 				AccountManagerImpl.getInstance().start();
-				AuthRepository.getInstance().updateWalletAddress(publicAddress, new KinCallback<Boolean>() {
-					@Override
-					public void onResponse(Boolean response) {
-						eventLogger.send(UserLoginSucceeded.create());
-						isAccountLoggedIn = true;
-						instance.executorsUtil.mainThread().execute(new Runnable() {
-							@Override
-							public void run() {
-								loginCallback.onResponse(null);
-							}
-						});
-					}
 
-					@Override
-					public void onFailure(KinEcosystemException exception) {
-						sendLoginFailed(exception, loginCallback);
-					}
-				});
+				// check server is synced with client, if synced -> skip updateWalletAddress
+				if (publicAddress != null && !publicAddress.equals(accountInfo.getUser().getCurrentWallet())) {
+					AuthRepository.getInstance().updateWalletAddress(publicAddress, new KinCallback<Boolean>() {
+						@Override
+						public void onResponse(Boolean response) {
+							eventLogger.send(UserLoginSucceeded.create());
+							isAccountLoggedIn = true;
+							instance.executorsUtil.mainThread().execute(new Runnable() {
+								@Override
+								public void run() {
+									loginCallback.onResponse(null);
+								}
+							});
+						}
+
+						@Override
+						public void onFailure(KinEcosystemException exception) {
+							sendLoginFailed(exception, loginCallback);
+						}
+					});
+				} else {
+					isAccountLoggedIn = true;
+					instance.executorsUtil.mainThread().execute(new Runnable() {
+						@Override
+						public void run() {
+							loginCallback.onResponse(null);
+						}
+					});
+				}
 			}
 
 			@Override
@@ -244,7 +264,7 @@ public class Kin {
 	}
 
 	private static void sendLoginFailed(final KinEcosystemException exception, final KinCallback<Void> loginCallback) {
-		eventLogger.send(UserLoginFailed.create());
+		eventLogger.send(UserLoginFailed.create(getMessage(exception)));
 		isAccountLoggedIn = false;
 		instance.executorsUtil.mainThread().execute(new Runnable() {
 			@Override
@@ -252,6 +272,10 @@ public class Kin {
 				loginCallback.onFailure(exception);
 			}
 		});
+	}
+
+	private static String getMessage(KinEcosystemException exception) {
+		return exception.getCause() != null ? exception.getCause().getMessage() : exception.getMessage();
 	}
 
 	private static boolean isInstanceNull() {
