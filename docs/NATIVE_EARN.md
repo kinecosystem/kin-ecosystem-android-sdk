@@ -35,6 +35,7 @@ Once the user has completed the task associated with the Earn offer, you request
    }
    recipient: {
           user_id: string; // user_id who will perform the order
+          device_id: string; // A unique ID of the recipient user device
           title: string; // order title - appears in order history
           description: string; // order desc. (in order history)
    }

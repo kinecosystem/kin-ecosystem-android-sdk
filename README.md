@@ -41,7 +41,7 @@ To access the Kin Ecosystem, you’ll need to obtain authentication credentials,
 
 * **JWT authentication** – a secure authentication method to be used in production. This method uses a JSON Web Token (JWT) signed by the Kin Server to authenticate the client request. You provide the Kin team with one or more public signature keys and its corresponding keyID, and you receive a JWT issuer identifier (ISS key). (See [https://jwt.io](https://jwt.io) to learn more about JWT tokens.)
 
-You supply your credentials when calling the SDK’s ```Kin.login(…)``` function for a specific user. See [Creating a User’s Kin Account](docs/CREATE_ACCOUNT.md) to learn how.
+You supply your credentials when calling the SDK’s ```Kin.login(…)``` function for a specific user. See [Creating a User’s Kin Account](docs/CREATE_ACCOUNT.md) to learn more about login and logout.
 
 ## Generating the JWT Token ##
 
@@ -87,6 +87,7 @@ This is the payload structure:
 
     // application fields
     user_id: string; // A unique ID of the end user (must only be unique among your app’s users; not globally unique)
+    device_id: string; // A unique ID of the user's device
 }
 ```
 
