@@ -222,6 +222,7 @@ public class AuthRepository implements AuthDataSource {
 
 	private void setAccountInfo(AccountInfo accountInfo) {
 		if (accountInfo != null) {
+			cachedAccountInfo = accountInfo;
 			localData.setAccountInfo(accountInfo);
 			AuthToken authToken = accountInfo.getAuthToken();
 			if (authToken != null) {

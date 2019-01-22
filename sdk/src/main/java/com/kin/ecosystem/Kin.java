@@ -53,6 +53,7 @@ import com.kin.ecosystem.core.util.ExecutorsUtil;
 import com.kin.ecosystem.core.util.Validator;
 import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.splash.view.SplashActivity;
+import java.util.concurrent.atomic.AtomicBoolean;
 import kin.core.KinClient;
 import kin.core.ServiceProvider;
 
@@ -65,7 +66,7 @@ public class Kin {
 	private static volatile Kin instance;
 
 	private static EventLogger eventLogger;
-	private static volatile boolean isAccountLoggedIn = false;
+	private static volatile AtomicBoolean isAccountLoggedIn = new AtomicBoolean(false);
 	private static volatile String environmentName;
 
 	private final ExecutorsUtil executorsUtil;
@@ -202,6 +203,7 @@ public class Kin {
 				case UserLoginState.DIFFERENT_USER:
 					logout();
 				case UserLoginState.FIRST:
+					isAccountLoggedIn.getAndSet(false);
 					eventLogger.send(UserLoginRequested.create());
 					break;
 				case UserLoginState.SAME_USER:
@@ -230,14 +232,7 @@ public class Kin {
 					AuthRepository.getInstance().updateWalletAddress(publicAddress, new KinCallback<Boolean>() {
 						@Override
 						public void onResponse(Boolean response) {
-							eventLogger.send(UserLoginSucceeded.create());
-							isAccountLoggedIn = true;
-							instance.executorsUtil.mainThread().execute(new Runnable() {
-								@Override
-								public void run() {
-									loginCallback.onResponse(null);
-								}
-							});
+							sendLoginSucceed(loginCallback);
 						}
 
 						@Override
@@ -246,13 +241,7 @@ public class Kin {
 						}
 					});
 				} else {
-					isAccountLoggedIn = true;
-					instance.executorsUtil.mainThread().execute(new Runnable() {
-						@Override
-						public void run() {
-							loginCallback.onResponse(null);
-						}
-					});
+					sendLoginSucceed(loginCallback);
 				}
 			}
 
@@ -263,9 +252,20 @@ public class Kin {
 		});
 	}
 
+	private static void sendLoginSucceed(final KinCallback<Void> loginCallback) {
+		eventLogger.send(UserLoginSucceeded.create());
+		isAccountLoggedIn.getAndSet(true);
+		instance.executorsUtil.mainThread().execute(new Runnable() {
+			@Override
+			public void run() {
+				loginCallback.onResponse(null);
+			}
+		});
+	}
+
 	private static void sendLoginFailed(final KinEcosystemException exception, final KinCallback<Void> loginCallback) {
 		eventLogger.send(UserLoginFailed.create(getMessage(exception)));
-		isAccountLoggedIn = false;
+		isAccountLoggedIn.getAndSet(false);
 		instance.executorsUtil.mainThread().execute(new Runnable() {
 			@Override
 			public void run() {
@@ -283,7 +283,7 @@ public class Kin {
 	}
 
 	private static void checkAccountIsLoggedIn() throws ClientException {
-		if (!isAccountLoggedIn) {
+		if (!isAccountLoggedIn.get()) {
 			throw ErrorUtil.getClientException(ACCOUNT_NOT_LOGGED_IN, null);
 		}
 	}
@@ -301,10 +301,9 @@ public class Kin {
 	 */
 	public static void logout() throws ClientException {
 		checkInstanceNotNull();
-		if (isAccountLoggedIn) {
+		if (isAccountLoggedIn.compareAndSet(true,false)) {
 			eventLogger.send(UserLogoutRequested.create());
 			Logger.log(new Log().withTag("Kin.java").text("logout").put("isAccountLoggedIn", isAccountLoggedIn));
-			isAccountLoggedIn = false;
 			AuthRepository.getInstance().logout();
 			clearCachedData();
 		}
