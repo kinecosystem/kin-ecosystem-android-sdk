@@ -41,4 +41,9 @@ public class AccountManagerLocal implements AccountManager.Local {
 	public void setAccountState(@AccountState int accountState) {
 		accountStateSharedPref.edit().putInt(ACCOUNT_STATE_KEY, accountState).apply();
 	}
+
+	@Override
+	public void logout() {
+		accountStateSharedPref.edit().remove(ACCOUNT_STATE_KEY).apply();
+	}
 }

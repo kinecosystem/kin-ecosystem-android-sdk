@@ -10,6 +10,10 @@ public class AccountInfo {
 	@SerializedName("user")
 	private User user;
 
+	public AccountInfo(AuthToken authToken, User user) {
+		this.authToken = authToken;
+		this.user = user;
+	}
 
 	public AuthToken getAuthToken() {
 		return authToken;
