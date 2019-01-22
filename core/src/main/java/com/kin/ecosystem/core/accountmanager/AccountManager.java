@@ -32,6 +32,8 @@ public interface AccountManager {
 
 	void retry();
 
+	void logout();
+
 	void switchAccount(int accountIndex, @NonNull final KinCallback<Boolean> callback);
 
 	@AccountState
@@ -50,5 +52,7 @@ public interface AccountManager {
 		int getAccountState();
 
 		void setAccountState(@AccountState int accountState);
+
+		void logout();
 	}
 }

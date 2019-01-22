@@ -198,7 +198,7 @@ public class Kin {
 	private static void internalLogin(@NonNull final String jwt, final KinCallback<Void> loginCallback) {
 		try {
 			checkInstanceNotNull();
-			@UserLoginState int loginState = AuthRepository.getInstance().getUserLoginState(jwt);
+			@UserLoginState final int loginState = AuthRepository.getInstance().getUserLoginState(jwt);
 			switch (loginState) {
 				case UserLoginState.DIFFERENT_USER:
 					logout();
@@ -209,51 +209,54 @@ public class Kin {
 				case UserLoginState.SAME_USER:
 					break;
 			}
+
 			AuthRepository.getInstance().setJWT(jwt);
+			AuthRepository.getInstance().getAccountInfo(new KinCallback<AccountInfo>() {
+				@Override
+				public void onResponse(AccountInfo accountInfo) {
+					String publicAddress;
+					try {
+						BlockchainSourceImpl.getInstance().loadAccount(accountInfo.getAuthToken().getEcosystemUserID());
+						publicAddress = BlockchainSourceImpl.getInstance().getPublicAddress();
+					} catch (final BlockchainException exception) {
+						sendLoginFailed(exception, loginCallback);
+						return;
+					}
+
+					// check server is synced with client, if synced -> skip updateWalletAddress
+					if (publicAddress != null && !publicAddress.equals(accountInfo.getUser().getCurrentWallet())) {
+						AuthRepository.getInstance().updateWalletAddress(publicAddress, new KinCallback<Boolean>() {
+							@Override
+							public void onResponse(Boolean response) {
+								sendLoginSucceed(loginCallback, loginState);
+							}
+
+							@Override
+							public void onFailure(KinEcosystemException exception) {
+								sendLoginFailed(exception, loginCallback);
+							}
+						});
+					} else {
+						sendLoginSucceed(loginCallback, loginState);
+					}
+				}
+
+				@Override
+				public void onFailure(final KinEcosystemException exception) {
+					sendLoginFailed(exception, loginCallback);
+				}
+			});
+
 		} catch (final ClientException exception) {
 			sendLoginFailed(exception, loginCallback);
 		}
-
-		AuthRepository.getInstance().getAccountInfo(new KinCallback<AccountInfo>() {
-			@Override
-			public void onResponse(AccountInfo accountInfo) {
-				String publicAddress;
-				try {
-					BlockchainSourceImpl.getInstance().loadAccount(accountInfo.getAuthToken().getEcosystemUserID());
-					publicAddress = BlockchainSourceImpl.getInstance().getPublicAddress();
-				} catch (final BlockchainException exception) {
-					sendLoginFailed(exception, loginCallback);
-					return;
-				}
-				AccountManagerImpl.getInstance().start();
-
-				// check server is synced with client, if synced -> skip updateWalletAddress
-				if (publicAddress != null && !publicAddress.equals(accountInfo.getUser().getCurrentWallet())) {
-					AuthRepository.getInstance().updateWalletAddress(publicAddress, new KinCallback<Boolean>() {
-						@Override
-						public void onResponse(Boolean response) {
-							sendLoginSucceed(loginCallback);
-						}
-
-						@Override
-						public void onFailure(KinEcosystemException exception) {
-							sendLoginFailed(exception, loginCallback);
-						}
-					});
-				} else {
-					sendLoginSucceed(loginCallback);
-				}
-			}
-
-			@Override
-			public void onFailure(final KinEcosystemException exception) {
-				sendLoginFailed(exception, loginCallback);
-			}
-		});
 	}
 
-	private static void sendLoginSucceed(final KinCallback<Void> loginCallback) {
-		eventLogger.send(UserLoginSucceeded.create());
+	private static void sendLoginSucceed(final KinCallback<Void> loginCallback, @UserLoginState int loginState) {
+		if (loginState != UserLoginState.SAME_USER) {
+			eventLogger.send(UserLoginSucceeded.create());
+		}
+		AccountManagerImpl.getInstance().start();
 		isAccountLoggedIn.getAndSet(true);
 		instance.executorsUtil.mainThread().execute(new Runnable() {
 			@Override
@@ -301,7 +304,7 @@ public class Kin {
 	 */
 	public static void logout() throws ClientException {
 		checkInstanceNotNull();
-		if (isAccountLoggedIn.compareAndSet(true,false)) {
+		if (isAccountLoggedIn.compareAndSet(true, false)) {
 			eventLogger.send(UserLogoutRequested.create());
 			Logger.log(new Log().withTag("Kin.java").text("logout").put("isAccountLoggedIn", isAccountLoggedIn));
 			AuthRepository.getInstance().logout();
@@ -314,6 +317,7 @@ public class Kin {
 	 */
 	private static void clearCachedData() {
 		BlockchainSourceImpl.getInstance().logout();
+		AccountManagerImpl.getInstance().logout();
 		OrderRepository.getInstance().logout();
 		OfferRepository.getInstance().logout();
 	}
