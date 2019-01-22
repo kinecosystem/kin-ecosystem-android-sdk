@@ -151,21 +151,22 @@ class AuthRepositoryTest : BaseTestClass() {
     }
 
     @Test
-    fun `get auth token, jwt is empty fail callback with exception`() {
-        val callbackCaptor: KinCallback<AuthToken> = mock()
-        authRepository.getAuthToken(callbackCaptor)
+    fun `get account info, jwt is empty fail callback with exception`() {
+        val callbackCaptor: KinCallback<AccountInfo> = mock()
+        authRepository.getAccountInfo(callbackCaptor)
         verify(callbackCaptor).onFailure(any<ClientException>())
     }
 
     @Test
-    fun `get auth token, onResponse ok`() {
-        val accountInfo = AccountInfo()
-        accountInfo.authToken = authToken;
+    fun `get account info, cached account info is null, onResponse ok`() {
+        val accountInfo: AccountInfo = mock()
         val callbackCaptor = argumentCaptor<Callback<AccountInfo, ApiException>>()
-        val callback: KinCallback<AuthToken> = mock()
+        val callback: KinCallback<AccountInfo> = mock()
+
+        whenever(local.accountInfo).thenReturn(null)
 
         authRepository.setJWT(JWT_A)
-        authRepository.getAuthToken(callback)
+        authRepository.getAccountInfo(callback)
         verify(remote).getAccountInfo(any(), callbackCaptor.capture())
         callbackCaptor.firstValue.apply {
             onResponse(accountInfo)
@@ -173,8 +174,45 @@ class AuthRepositoryTest : BaseTestClass() {
         }
     }
 
+    @Test
+    fun `get account info, cached token expired, get new from server`() {
+        val twoDaysAgo = Instant.now().minusMillis(2 * DateUtils.DAY_IN_MILLIS).toString()
+        val expiredToken =  AuthToken("authToken", twoDaysAgo, APP_ID, USER_ID_A, ECOSYSTEM_USER_ID_A)
+        val accountInfo: AccountInfo = mock()
+        accountInfo.authToken = expiredToken
+        val callbackCaptor = argumentCaptor<Callback<AccountInfo, ApiException>>()
+        val callback: KinCallback<AccountInfo> = mock()
+
+        whenever(local.authTokenSync) doAnswer { expiredToken }
+        whenever(local.accountInfo) doAnswer { accountInfo }
+        resetInstance()
+
+        authRepository.setJWT(JWT_A)
+        authRepository.getAccountInfo(callback)
+        verify(remote).getAccountInfo(any(), callbackCaptor.capture())
+        callbackCaptor.firstValue.apply {
+            onResponse(accountInfo)
+            verify(callback).onResponse(any())
+        }
+    }
+
+    @Test
+    fun `get account info, cached token is not expired, return cached value`() {
+        val accountInfo: AccountInfo = mock()
+        val callback: KinCallback<AccountInfo> = mock()
+        accountInfo.authToken = authToken
+
+        whenever(local.accountInfo) doAnswer { accountInfo }
+        resetInstance()
+
+        authRepository.setJWT(JWT_A)
+        authRepository.getAccountInfo(callback)
+        verify(remote, never()).getAccountInfo(any(), any())
+        verify(callback).onResponse(any())
+    }
+
     private fun getValidToken(appId: String, userId: String, kinUserId: String): AuthToken {
-        val tomorrow = Instant.now().plusMillis(DateUtils.DAY_IN_MILLIS).toString()
+        val tomorrow = Instant.now().plusMillis(3 * DateUtils.DAY_IN_MILLIS).toString()
         return AuthToken("authToken", tomorrow, appId, userId, kinUserId)
     }
 }

@@ -95,6 +95,13 @@ public class AccountManagerImpl implements AccountManager {
 	}
 
 	@Override
+	public void logout() {
+		accountState.removeAllObservers();
+		accountState.postValue(REQUIRE_CREATION);
+		local.logout();
+	}
+
+	@Override
 	public void start() {
 		if (getKinAccount() != null && !isAccountCreated()) {
 			Logger.log(new Log().withTag(TAG).put("setAccountState", "start"));
