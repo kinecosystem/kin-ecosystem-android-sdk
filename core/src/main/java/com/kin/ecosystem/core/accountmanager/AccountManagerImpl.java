@@ -96,6 +96,7 @@ public class AccountManagerImpl implements AccountManager {
 
 	@Override
 	public void logout() {
+		removeAccountCreationRegistration();
 		accountState.removeAllObservers();
 		accountState.postValue(REQUIRE_CREATION);
 		local.logout();
@@ -127,14 +128,16 @@ public class AccountManagerImpl implements AccountManager {
 					if (accountCreationRegistration != null) {
 						removeAccountCreationRegistration();
 					}
-					accountCreationRegistration = getKinAccount().blockchainEvents()
-						.addAccountCreationListener(new EventListener<Void>() {
-							@Override
-							public void onEvent(Void data) {
-								removeAccountCreationRegistration();
-								setAccountState(CREATION_COMPLETED);
-							}
-						});
+					if (getKinAccount() != null) {
+						accountCreationRegistration = getKinAccount().blockchainEvents()
+							.addAccountCreationListener(new EventListener<Void>() {
+								@Override
+								public void onEvent(Void data) {
+									removeAccountCreationRegistration();
+									setAccountState(CREATION_COMPLETED);
+								}
+							});
+					}
 					break;
 				case REQUIRE_TRUSTLINE:
 					///////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,7 +181,7 @@ public class AccountManagerImpl implements AccountManager {
 			@Override
 			public void onResponse(Boolean response) {
 				//switch to the new KinAccount
-				if(blockchainSource.updateActiveAccount(accountIndex)) {
+				if (blockchainSource.updateActiveAccount(accountIndex)) {
 					callback.onResponse(response);
 				} else {
 					callback.onFailure(ErrorUtil.createAccountCannotLoadedException(accountIndex));
@@ -199,8 +202,10 @@ public class AccountManagerImpl implements AccountManager {
 	}
 
 	private void removeAccountCreationRegistration() {
-		accountCreationRegistration.remove();
-		accountCreationRegistration = null;
+		if (accountCreationRegistration != null) {
+			accountCreationRegistration.remove();
+			accountCreationRegistration = null;
+		}
 	}
 
 	private boolean isValidState(int currentState, int newState) {

@@ -107,7 +107,7 @@ Create or edit a local ```credential.properties``` file in the ```app``` module 
 ```
 APP_ID="YOUR_APP_ID" // The issuer (iss). Default = 'test'.
 
-ES256_PRIVATE_KEY="YOUR_ES256_PRIVATE_KEY” // For production, JWT is created by server side with ES256 signature.
+RS512_PRIVATE_KEY="YOUR_RS512_PRIVATE_KEY” // For production, JWT is created by server side with RS512 signature.
 
 ```
 

@@ -8,8 +8,7 @@ If your app presents Kin Spend and Earn offers to your users, then each user nee
 #### Login
 *To create or access a user’s Kin account:*
 
-Call `Kin.login(…)`, passing a JWT credentials.
-You can add a `KinCallback` and get a response when the user is logged in, and then start send transactions, get information regarding the account balance, status etc.
+Call `Kin.login(…)`, passing a JWT credentials and a `KinCallback` to get a response when the user is logged in, and then it is possible to send transactions, get information regarding the account balance, status etc.
 If that user already has a Kin account, the function only accesses the existing account. Otherwise, the function creates a new wallet and account for the user.
 
 **JWT mode:**
