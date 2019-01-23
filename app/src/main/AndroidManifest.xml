@@ -15,14 +15,8 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup">
 
-        <!--"test environment is only for internal usage, you should use only beta or production as you can see below"-->
-        <meta-data
-            android:name="com.kin.ecosystem.sdk.EnvironmentName"
-            android:value="test"/>
-
-        <!--<meta-data android:name="com.kin.ecosystem.sdk.EnvironmentName" android:value="@string/kinecosystem_environment_beta"/>-->
+        <meta-data android:name="com.kin.ecosystem.sdk.EnvironmentName" android:value="@string/kinecosystem_environment_beta"/>
         <!--<meta-data android:name="com.kin.ecosystem.sdk.EnvironmentName" android:value="@string/kinecosystem_environment_production"/>-->
-
         <provider
             android:authorities="${applicationId}.MySampleProvider"
             android:exported="false"
