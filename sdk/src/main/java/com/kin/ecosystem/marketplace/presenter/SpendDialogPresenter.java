@@ -22,7 +22,6 @@ import com.kin.ecosystem.core.bi.events.SpendOrderCreationRequested;
 import com.kin.ecosystem.core.bi.events.SpendThankyouPageViewed;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
-import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.OfferInfo;
 import com.kin.ecosystem.core.network.model.OfferInfo.Confirmation;

@@ -10,9 +10,14 @@ import android.support.annotation.NonNull;
 import com.kin.ecosystem.EcosystemExperience;
 import com.kin.ecosystem.base.BasePresenter;
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.exception.BlockchainException;
+import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.model.Balance;
+import com.kin.ecosystem.core.bi.EventLogger;
+import com.kin.ecosystem.core.bi.events.GeneralEcosystemSdkError;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.settings.SettingsDataSource;
+import com.kin.ecosystem.core.util.StringUtil;
 import com.kin.ecosystem.main.INavigator;
 import com.kin.ecosystem.main.ScreenId;
 import com.kin.ecosystem.main.Title;
@@ -30,19 +35,27 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 	private boolean isConsumedIntentExtras;
 	private final SettingsDataSource settingsDataSource;
 	private final BlockchainSource blockchainSource;
+	private final EventLogger eventLogger;
 	private INavigator navigator;
 
 	private Observer<Balance> balanceObserver;
 	private Balance currentBalance;
+	private String publicAddress;
 
 	public EcosystemPresenter(@NonNull IEcosystemView view, @NonNull SettingsDataSource settingsDataSource,
-		@NonNull final BlockchainSource blockchainSource,
+		@NonNull final BlockchainSource blockchainSource, @NonNull EventLogger eventLogger,
 		@NonNull INavigator navigator, Bundle savedInstanceState, Bundle extras) {
 		this.view = view;
 		this.settingsDataSource = settingsDataSource;
 		this.blockchainSource = blockchainSource;
+		this.eventLogger = eventLogger;
 		this.navigator = navigator;
 		this.currentBalance = blockchainSource.getBalance();
+		try {
+			this.publicAddress = blockchainSource.getPublicAddress();
+		} catch (ClientException | BlockchainException e) {
+			eventLogger.send(GeneralEcosystemSdkError.create("EcosystemPresenter blockchainSource.getPublicAddress() thrown an exception"));
+		}
 
 		// Must come before processIntentExtras, so we can define if the intent was consumed already.
 		processSavedInstanceState(savedInstanceState);
@@ -155,16 +168,18 @@ public class EcosystemPresenter extends BasePresenter<IEcosystemView> implements
 	}
 
 	private void updateMenuSettingsIcon() {
-		if (!settingsDataSource.isBackedUp()) {
-			if (isGreaterThenZero(currentBalance)) {
-				changeMenuTouchIndicator(true);
-				removeBalanceObserver();
+		if (!StringUtil.isEmpty(publicAddress)) {
+			if (!settingsDataSource.isBackedUp(publicAddress)) {
+				if (isGreaterThenZero(currentBalance)) {
+					changeMenuTouchIndicator(true);
+					removeBalanceObserver();
+				} else {
+					addBalanceObserver();
+					changeMenuTouchIndicator(false);
+				}
 			} else {
-				addBalanceObserver();
 				changeMenuTouchIndicator(false);
 			}
-		} else {
-			changeMenuTouchIndicator(false);
 		}
 	}
 

@@ -29,6 +29,8 @@ public interface OfferDataSource {
 
 	boolean shouldDismissOnTap(@NonNull String offerId);
 
+	void logout();
+
 	interface Remote {
 
 		void getOffers(Callback<OfferList, ApiException> callback);

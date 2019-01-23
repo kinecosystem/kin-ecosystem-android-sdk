@@ -4,21 +4,24 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
-import com.kin.ecosystem.common.ObservableData;
+import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.core.network.ApiException;
+import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.network.model.AuthToken;
-import com.kin.ecosystem.core.network.model.SignInData;
+import com.kin.ecosystem.core.network.model.JWT;
 import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.network.model.UserProperties;
 
 public interface AuthDataSource {
 
-	void setSignInData(@NonNull final SignInData signInData);
+	@UserLoginState int getUserLoginState(@NonNull final String jwt) throws ClientException;
+
+	void setJWT(@NonNull final String jwt) throws ClientException;
 
 	void updateWalletAddress(String address, @NonNull final KinCallback<Boolean> callback);
 
-	ObservableData<String> getAppID();
+	String getAppID();
 
 	String getDeviceID();
 
@@ -26,9 +29,7 @@ public interface AuthDataSource {
 
 	String getEcosystemUserID();
 
-	void setAuthToken(@NonNull final AuthToken authToken);
-
-	void getAuthToken(@Nullable final KinCallback<AuthToken> callback);
+	void getAccountInfo(@Nullable final KinCallback<AccountInfo> callback);
 
 	AuthToken getAuthTokenSync();
 
@@ -36,13 +37,15 @@ public interface AuthDataSource {
 
 	void userStats(@NonNull final KinCallback<UserStats> callback);
 
+	void logout();
+
 	interface Local {
 
-		void setSignInData(@NonNull final SignInData signInData);
+		void setJWT(@NonNull final JwtBody jwtBody);
 
-		SignInData getSignInData();
+		String getJWT();
 
-		void setAuthToken(@NonNull final AuthToken authToken);
+		void setAccountInfo(@NonNull final AccountInfo accountInfo);
 
 		String getAppId();
 
@@ -52,23 +55,28 @@ public interface AuthDataSource {
 
 		String getEcosystemUserID();
 
+		@Nullable
+		AccountInfo getAccountInfo();
+
+		@Nullable
 		AuthToken getAuthTokenSync();
 
+		void logout();
 	}
 
 	interface Remote {
 
-		void setSignInData(@NonNull final SignInData signInData);
+		void getAccountInfo(@NonNull JWT jwt, @NonNull final Callback<AccountInfo, ApiException> callback);
 
-		void getAuthToken(@NonNull final Callback<AuthToken, ApiException> callback);
-
-		AuthToken getAuthTokenSync();
+		AccountInfo getAccountInfoSync(@NonNull JWT jwt);
 
 		void hasAccount(@NonNull String userId, @NonNull final Callback<Boolean, ApiException> callback);
 
-		void userProfile(@NonNull final Callback<UserProfile, ApiException> callback) ;
+		void userProfile(@NonNull final Callback<UserProfile, ApiException> callback);
 
+		void updateWalletAddress(@NonNull UserProperties userProperties,
+			@NonNull final Callback<Void, ApiException> callback);
 
-		void updateWalletAddress(@NonNull UserProperties userProperties, @NonNull final Callback<Void, ApiException> callback);
+		void logout(@NonNull final String authToken);
 	}
 }

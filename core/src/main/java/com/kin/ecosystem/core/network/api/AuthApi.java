@@ -23,8 +23,9 @@ import com.kin.ecosystem.core.network.ApiClient;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.ApiResponse;
 import com.kin.ecosystem.core.network.Pair;
+import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.network.model.AuthToken;
-import com.kin.ecosystem.core.network.model.SignInData;
+import com.kin.ecosystem.core.network.model.JWT;
 import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.network.model.UserProperties;
 import java.lang.reflect.Type;
@@ -58,13 +59,13 @@ public class AuthApi {
 	/**
 	 * Build call for signIn
 	 *
-	 * @param signindata (required)
+	 * @param jwt (required)
 	 * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 */
-	public Call signInCall(SignInData signindata, String X_REQUEST_ID) throws ApiException {
-		Object localVarPostBody = signindata;
+	public Call signInCall(JWT jwt, String X_REQUEST_ID) throws ApiException {
+		Object localVarPostBody = jwt;
 
 		// create path and map variables
 		String localVarPath = "/users";
@@ -101,11 +102,11 @@ public class AuthApi {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private Call signInValidateBeforeCall(SignInData signindata, String X_REQUEST_ID) throws ApiException {
+	private Call signInValidateBeforeCall(JWT jwt, String X_REQUEST_ID) throws ApiException {
 
-		// verify the required parameter 'signindata' is set
-		if (signindata == null) {
-			throw new ApiException("Missing the required parameter 'signindata' when calling signIn(Async)");
+		// verify the required parameter 'jwt' is set
+		if (jwt == null || jwt.isEmpty()) {
+			throw new ApiException("Missing the required parameter 'jwt' when calling signIn(Async)");
 		}
 
 		// verify the required parameter 'X_REQUEST_ID' is set
@@ -113,8 +114,7 @@ public class AuthApi {
 			throw new ApiException("Missing the required parameter 'X_REQUEST_ID' when calling signIn(Async)");
 		}
 
-		Call call = signInCall(signindata, X_REQUEST_ID);
-		return call;
+		return signInCall(jwt, X_REQUEST_ID);
 
 
 	}
@@ -123,13 +123,13 @@ public class AuthApi {
 	 * Sign in/ Log in
 	 * Sign a user into kin marketplace
 	 *
-	 * @param signindata (required)
+	 * @param jwt (required)
 	 * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
-	 * @return AuthToken
+	 * @return AccountInfo
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 */
-	public AuthToken signIn(SignInData signindata, String X_REQUEST_ID) throws ApiException {
-		ApiResponse<AuthToken> resp = signInWithHttpInfo(signindata, X_REQUEST_ID);
+	public AccountInfo signIn(JWT jwt, String X_REQUEST_ID) throws ApiException {
+		ApiResponse<AccountInfo> resp = signInWithHttpInfo(jwt, X_REQUEST_ID);
 		return resp.getData();
 	}
 
@@ -137,14 +137,14 @@ public class AuthApi {
 	 * Sign in/ Log in
 	 * Sign a user into kin marketplace
 	 *
-	 * @param signindata (required)
+	 * @param jwt (required)
 	 * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
-	 * @return ApiResponse&lt;AuthToken&gt;
+	 * @return ApiResponse&lt;AccountInfo&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 */
-	public ApiResponse<AuthToken> signInWithHttpInfo(SignInData signindata, String X_REQUEST_ID) throws ApiException {
-		Call call = signInValidateBeforeCall(signindata, X_REQUEST_ID);
-		Type localVarReturnType = new TypeToken<AuthToken>() {
+	public ApiResponse<AccountInfo> signInWithHttpInfo(JWT jwt, String X_REQUEST_ID) throws ApiException {
+		Call call = signInValidateBeforeCall(jwt, X_REQUEST_ID);
+		Type localVarReturnType = new TypeToken<AccountInfo>() {
 		}.getType();
 		return apiClient.execute(call, localVarReturnType);
 	}
@@ -153,17 +153,17 @@ public class AuthApi {
 	 * Sign in/ Log in (asynchronously)
 	 * Sign a user into kin marketplace
 	 *
-	 * @param signindata (required)
+	 * @param jwt (required)
 	 * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
 	 * @param callback The callback to be executed when the API call finishes
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 */
-	public Call signInAsync(SignInData signindata, String X_REQUEST_ID, final ApiCallback<AuthToken> callback)
+	public Call signInAsync(JWT jwt, String X_REQUEST_ID, final ApiCallback<AccountInfo> callback)
 		throws ApiException {
 
-		Call call = signInValidateBeforeCall(signindata, X_REQUEST_ID);
-		Type localVarReturnType = new TypeToken<AuthToken>() {
+		Call call = signInValidateBeforeCall(jwt, X_REQUEST_ID);
+		Type localVarReturnType = new TypeToken<AccountInfo>() {
 		}.getType();
 		apiClient.executeAsync(call, localVarReturnType, callback);
 		return call;
@@ -395,7 +395,7 @@ public class AuthApi {
 		Object localVarPostBody = userproperties;
 
 		// create path and map variables
-		String localVarPath = "/users";
+		String localVarPath = "/users/me";
 
 		List<Pair> localVarQueryParams = new ArrayList<Pair>();
 		List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
@@ -450,4 +450,52 @@ public class AuthApi {
 		apiClient.executeAsync(call, callback);
 		return call;
 	}
+
+	/**
+	 * Build call for logout
+	 *
+	 * @return Call to execute
+	 * @throws ApiException If fail to serialize the request body object
+	 */
+	private Call logoutCall(final String token) throws ApiException {
+		// create path and map variables
+		String localVarPath = "/users/me/session";
+
+		Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+
+		final String[] localVarAccepts = {
+			"application/json"
+		};
+		final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+		if (localVarAccept != null) {
+			localVarHeaderParams.put("Accept", localVarAccept);
+		}
+
+		final String[] localVarContentTypes = {
+			"application/json"
+		};
+		final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+		localVarHeaderParams.put("Content-Type", localVarContentType);
+		localVarHeaderParams.put("Authorization", "Bearer " + token);
+
+		String[] localVarAuthNames = new String[]{};
+		return apiClient
+			.buildCall(localVarPath, ApiClient.DELETE, null, null, null,
+				localVarHeaderParams, null, localVarAuthNames);
+	}
+
+	/**
+	 * Deletes the authToken.
+	 *
+	 * @param authToken to delete
+	 *
+	 * @return The request call
+	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+	 */
+	public Call logoutAsync(final String authToken) throws ApiException {
+		Call call = logoutCall(authToken);
+		apiClient.executeAsync(call, null);
+		return call;
+	}
+
 }

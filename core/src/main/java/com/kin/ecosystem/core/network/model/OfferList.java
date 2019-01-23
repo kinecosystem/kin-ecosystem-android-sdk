@@ -102,6 +102,12 @@ public class OfferList {
     public int hashCode() {
         return offers.hashCode() + paging.hashCode();
     }
+
+    public void removeAll() {
+		if (this.offers != null) {
+			this.offers.clear();
+		}
+    }
 }
 
 
