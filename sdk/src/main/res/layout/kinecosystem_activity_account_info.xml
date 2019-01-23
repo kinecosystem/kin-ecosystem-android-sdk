@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/kinecosystem_white"
+    tools:context=".transfer.view.AccountInfoActivity">
+
+    <ImageView
+        android:id="@+id/close_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/kinecosystem_transfer_x_margin"
+        android:src="@drawable/kinecosystem_close_icon"
+        app:layout_constraintBottom_toTopOf="@+id/delimiter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/header_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/kinecosystem_transfer_activity_title"
+        android:textColor="@color/kinecosystem_black"
+        android:textSize="@dimen/kinecosystem_transfer_header_size"
+        app:layout_constraintBottom_toTopOf="@+id/delimiter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <View
+        android:id="@+id/delimiter"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="?android:attr/actionBarSize"
+        android:background="@color/kinecosystem_gray_light"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinecosystem_transfer_logo_top_margin"
+        android:src="@drawable/kinecosystem_logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/delimiter" />
+
+    <TextView
+        android:id="@+id/transfer_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/kinecosystem_transfer_title_margin"
+        android:layout_marginLeft="@dimen/kinecosystem_transfer_title_margin"
+        android:layout_marginTop="@dimen/kinecosystem_transfer_title_top_margin"
+        android:layout_marginEnd="@dimen/kinecosystem_transfer_title_margin"
+        android:layout_marginRight="@dimen/kinecosystem_transfer_title_margin"
+        android:gravity="center"
+        android:text="@string/kinecosystem_transfer_title"
+        android:textColor="@color/kinecosystem_black"
+        android:textSize="@dimen/kinecosystem_transfer_title_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logo" />
+
+    <Button
+        android:id="@+id/confirm_button"
+        android:layout_width="@dimen/kinecosystem_round_button_width"
+        android:layout_height="@dimen/kinecosystem_round_button_height"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/kinecosystem_button_agree_transfer"
+        android:enabled="false"
+        android:gravity="center"
+        android:text="@string/kinecosystem_transfer_agree"
+        android:textAllCaps="false"
+        android:textColor="@color/kinecosystem_white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

@@ -68,4 +68,10 @@
         <item name="android:windowEnterAnimation">@anim/kinecosystem_slide_up</item>
         <item name="android:windowExitAnimation">@anim/kinecosystem_slide_down</item>
     </style>
+
+    <style name="KinecosysNoActionBar.Transparent" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name = "android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
 </resources>

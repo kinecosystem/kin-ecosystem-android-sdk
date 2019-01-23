@@ -1,1 +1,1 @@
-include ':sdk', ':app', ':core', ':common', ':test-base', ':recovery'
+include ':sdk', ':app', ':core', ':common', ':test-base', ':recovery', ':transfer'

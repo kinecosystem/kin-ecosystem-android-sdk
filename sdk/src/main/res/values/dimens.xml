@@ -11,4 +11,11 @@
     <dimen name="kinecosystem_menu_info_margin">2dp</dimen>
     <dimen name="kinecosystem_info_dot_radius">8dp</dimen>
     <dimen name="kinecosystem_radius_size">2dp</dimen>
+    <dimen name="kinecosystem_transfer_title_margin">19dp</dimen>
+    <dimen name="kinecosystem_transfer_x_margin">19dp</dimen>
+    <dimen name="kinecosystem_transfer_title_top_margin">27dp</dimen>
+    <dimen name="kinecosystem_transfer_logo_top_margin">100dp</dimen>
+    <dimen name="kinecosystem_transfer_header_size">18sp</dimen>
+    <dimen name="kinecosystem_transfer_title_size">16sp</dimen>
+
 </resources>
