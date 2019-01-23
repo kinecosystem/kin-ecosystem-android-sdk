@@ -107,9 +107,11 @@ Create or edit a local ```credential.properties``` file in the ```app``` module 
 ```
 APP_ID="YOUR_APP_ID" // The issuer (iss). Default = 'test'.
 
-RS512_PRIVATE_KEY="YOUR_RS512_PRIVATE_KEY” // For production, JWT is created by server side with RS512 signature.
+RS512_PRIVATE_KEY="YOUR_RS512_PRIVATE_KEY" // Used only for sample app, for production create the JWT by server side with ES256 signature.
 
 ```
+
+>**NOTE:** For production, create the JWT by server side with ES256 signature.
 
 ## Integrating with the Kin SDK ##
 
