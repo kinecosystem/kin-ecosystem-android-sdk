@@ -11,12 +11,13 @@ public class SettingsDataSourceImpl implements SettingsDataSource {
 	}
 
 	@Override
-	public void setIsBackedUp(boolean isBackedUp) {
-		local.setIsBackedUp(isBackedUp);
+	public void setIsBackedUp(final String publicAddress, boolean isBackedUp) {
+		local.setIsBackedUp(publicAddress, isBackedUp);
 	}
 
 	@Override
-	public boolean isBackedUp() {
-		return local.isBackedUp();
+	public boolean isBackedUp(final String publicAddress) {
+		return local.isBackedUp(publicAddress);
 	}
+
 }

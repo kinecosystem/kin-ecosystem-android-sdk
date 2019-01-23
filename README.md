@@ -39,14 +39,9 @@ Kin Ecosystem SDK must be initialized before any interaction with the SDK, in or
 
 To access the Kin Ecosystem, you’ll need to obtain authentication credentials, which you then use to register your users.
 
-There are 2 types of authentication:
-
-* **Whitelist authentication** – to be used for a quick first-time integration or sanity test. The authentication credentials are provided as simple appID and apiKey values. (For development and testing, you can use the default values provided in the Sample App.)
-
-    >**NOTE:** You can only use whitelist authentication for the Beta environment. The Production environment requires that you use JWT authentication.
 * **JWT authentication** – a secure authentication method to be used in production. This method uses a JSON Web Token (JWT) signed by the Kin Server to authenticate the client request. You provide the Kin team with one or more public signature keys and its corresponding keyID, and you receive a JWT issuer identifier (ISS key). (See [https://jwt.io](https://jwt.io) to learn more about JWT tokens.)
 
-For both types of authentication, you supply your credentials when calling the SDK’s ```Kin.login(…)``` function for a specific user. See [Creating a User’s Kin Account](docs/CREATE_ACCOUNT.md) to learn how.
+You supply your credentials when calling the SDK’s ```Kin.login(…)``` function for a specific user. See [Creating a User’s Kin Account](docs/CREATE_ACCOUNT.md) to learn more about login and logout.
 
 ## Generating the JWT Token ##
 
@@ -92,6 +87,7 @@ This is the payload structure:
 
     // application fields
     user_id: string; // A unique ID of the end user (must only be unique among your app’s users; not globally unique)
+    device_id: string; // A unique ID of the user's device
 }
 ```
 
@@ -101,26 +97,21 @@ The Kin Ecosystem SDK Sample App demonstrates how to perform common workflows su
 
 >**NOTE:** The Sample App is for demonstration only, and should not be used for any other purpose.
 
-The Sample App is pre-configured with the default whitelist credentials ```appId='test'``` and 
-```apiKey='AyINT44OAKagkSav2vzMz'```. These credentials can be used for integration testing in any app, but authorization will fail if you attempt to use them in a production environment.
-
-You can also request unique apiKey and appId values from Kin, and override the default settings, working either in whitelist or JWT authentication mode.
+The Sample App is pre-configured with the default credentials ```appId='test'``` and
+```jwt private key```. These credentials can be used for integration testing in any app, but authorization will fail if you attempt to use them in a production environment.
 
 *To override the default credential settings:* 
 
 Create or edit a local ```credential.properties``` file in the ```app``` module directory and add the lines below, using the ```appId``` and ```apiKey``` values you received.
 
 ```
-APP_ID="YOUR_APP_ID" // For whitelist registration, and also as the issuer (iss). Default = 'test'.
+APP_ID="YOUR_APP_ID" // The issuer (iss). Default = 'test'.
 
-API_KEY="YOUR_API_KEY" // For whitelist registration. Default = 'AyINT44OAKagkSav2vzMz'.
+RS512_PRIVATE_KEY="YOUR_RS512_PRIVATE_KEY" // Used only for sample app, for production create the JWT by server side with ES256 signature.
 
-ES256_PRIVATE_KEY="YOUR_ES256_PRIVATE_KEY” // Optional. Only required when testing JWT on the sample app. For production, JWT is created by server side with ES256 signature.
-
-IS_JWT_REGISTRATION = false // Optional. To test sample app JWT registration, set this property to true. If not specified, default=false.
 ```
 
-The Sample App Gradle build loads the ```credential.properties``` setting and uses it to create the ```SignInData``` object used for registration.
+>**NOTE:** For production, create the JWT by server side with ES256 signature.
 
 ## Integrating with the Kin SDK ##
 

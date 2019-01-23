@@ -4,7 +4,6 @@ import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
-import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -33,6 +32,8 @@ public interface AccountManager {
 
 	void retry();
 
+	void logout();
+
 	void switchAccount(int accountIndex, @NonNull final KinCallback<Boolean> callback);
 
 	@AccountState
@@ -51,5 +52,7 @@ public interface AccountManager {
 		int getAccountState();
 
 		void setAccountState(@AccountState int accountState);
+
+		void logout();
 	}
 }

@@ -20,7 +20,6 @@ import com.kin.ecosystem.core.bi.events.EarnOrderCreationRequested;
 import com.kin.ecosystem.core.bi.events.EarnOrderFailed;
 import com.kin.ecosystem.core.bi.events.EarnPageLoaded;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
-import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.poll.view.IPollWebView;

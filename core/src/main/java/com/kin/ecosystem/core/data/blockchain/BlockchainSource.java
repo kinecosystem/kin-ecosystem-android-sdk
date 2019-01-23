@@ -9,26 +9,24 @@ import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import kin.core.KinAccount;
 
 public interface BlockchainSource {
 
 	/**
 	 * Create account if there is no accounts in local
+	 * @param kinUserId the logged in account
 	 * @throws BlockchainException could not load the account, or could not create a new account.
 	 */
-	void createAccount() throws BlockchainException;
+	void loadAccount(String kinUserId) throws BlockchainException;
 
 	/**
 	 * Getting the current account.
 	 */
 	@Nullable
 	KinAccount getKinAccount();
-
-	/**
-	 * @param appID - appID - will be included in the memo for each transaction.
-	 */
-	void setAppID(String appID);
 
 	/**
 	 * Send transaction to the network
@@ -106,6 +104,8 @@ public interface BlockchainSource {
 	 */
 	boolean updateActiveAccount(int accountIndex);
 
+	void logout();
+
 	interface Local {
 
 		int getBalance();
@@ -114,6 +114,17 @@ public interface BlockchainSource {
 
 		int getAccountIndex();
 
-		void setAccountIndex(int index);
+		@Nullable
+		String getLastWalletAddress(String kinUserId);
+
+		void setActiveUserWallet(String kinUserId, String publicAddress);
+
+		void removeAccountIndexKey();
+
+		void logout();
+
+		boolean getIsMigrated();
+
+		void setDidMigrate();
 	}
 }

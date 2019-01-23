@@ -4,5 +4,5 @@
 
     <solid android:color="@color/kinecosystem_transparent" />
     <corners android:radius="20dp" />
-    <stroke android:width="2dp" android:color="@color/kinecosystem_white"/>
+    <stroke android:width="2dp" android:color="@color/colorPrimary"/>
 </shape>
