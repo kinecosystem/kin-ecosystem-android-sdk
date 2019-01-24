@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Kin Ecosystem - Sample App</string>
+    <string name="app_default_name">Kin Ecosystem - Sample App</string>
 
     <string name="get_balance"><u>Get Balance</u></string>
     <string name="get_balance_d"><u>Get Balance: %d</u></string>

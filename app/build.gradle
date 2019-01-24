@@ -54,7 +54,28 @@ android {
             debuggable true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
     }
+
+    flavorDimensions "all"
+    productFlavors {
+        production {
+            resValue "string", "app_name", "@string/app_default_name"
+            manifestPlaceholders = [environment: "@string/kinecosystem_environment_production"]
+        }
+        beta {
+            applicationIdSuffix ".beta"
+            resValue "string", "app_name", "Beta"
+            manifestPlaceholders = [environment: "@string/kinecosystem_environment_beta"]
+        }
+        alpha {
+            applicationIdSuffix ".test"
+            resValue "string", "app_name", "test"
+            manifestPlaceholders = [environment: "test"]
+        }
+    }
+
+
 
     android.applicationVariants.all { variant ->
         variant.outputs.all {
