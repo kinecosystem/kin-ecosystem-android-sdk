@@ -20,6 +20,7 @@ public class BackupInfoPresenterImpl extends BasePresenterImpl<BaseView> impleme
 		this.backupNavigator = backupNavigator;
 		this.callbackManager = callbackManager;
 		this.callbackManager.sendBackupEvent(BACKUP_WELCOME_PAGE_VIEWED);
+		this.callbackManager.setCancelledResult(); // make sure cancel will be called if nothing happened.
 	}
 
 	@Override

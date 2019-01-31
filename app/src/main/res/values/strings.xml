@@ -24,4 +24,7 @@
     <string name="enter_user_id">Enter user id</string>
     <string name="generate">Generate</string>
     <string name="done">Done</string>
+    <string name="order_history">Order History</string>
+    <string name="backup_flow">Backup Flow</string>
+    <string name="restore_flow">Restore Flow</string>
 </resources>

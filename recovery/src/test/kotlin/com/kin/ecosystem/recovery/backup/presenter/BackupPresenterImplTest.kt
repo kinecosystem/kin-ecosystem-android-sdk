@@ -114,7 +114,7 @@ class BackupPresenterImplTest {
             verify(view).onBackButtonClicked()
 
             verify(callbackManager).sendBackupEvent(BACKUP_CREATE_PASSWORD_PAGE_BACK_TAPPED)
-            verify(callbackManager).sendCancelledResult()
+            verify(callbackManager).setCancelledResult()
             verify(view).onBackButtonClicked()
 
             verify(callbackManager).sendBackupEvent(BACKUP_WELCOME_PAGE_BACK_TAPPED)

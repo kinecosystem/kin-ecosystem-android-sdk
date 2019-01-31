@@ -14,7 +14,7 @@
         android:id="@+id/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/kinecosystem_margin_large"
+        android:layout_marginTop="@dimen/kinrecovery_margin_main"
         android:layout_gravity="center"
         android:src="@drawable/kin_logo"
         app:layout_constraintEnd_toEndOf="parent"
@@ -25,7 +25,7 @@
     <TextView
         android:id="@+id/public_text_area"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="60dp"
         android:layout_marginLeft="@dimen/kinecosystem_margin_large"
         android:layout_marginRight="@dimen/kinecosystem_margin_large"
         android:paddingLeft="@dimen/kinecosystem_main_margin"
@@ -75,8 +75,8 @@
 
     <Button
         android:id="@+id/launch_marketplace"
+        android:layout_height="45dp"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/kinecosystem_block_margin"
         android:layout_marginStart="@dimen/kinrecovery_margin_main"
         android:layout_marginEnd="@dimen/kinecosystem_block_margin"
@@ -86,30 +86,68 @@
         android:textAllCaps="false"
         android:textColor="@color/kinecosystem_white"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/get_balance"
-        app:layout_constraintBottom_toTopOf="@+id/native_spend_button"
+        app:layout_constraintBottom_toTopOf="@+id/backup"
         app:layout_constraintEnd_toStartOf="@id/launch_orderHistory"
         app:layout_constraintHorizontal_weight="0.5"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/get_balance"/>
 
     <Button
         android:id="@+id/launch_orderHistory"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="45dp"
         android:layout_marginBottom="@dimen/kinecosystem_block_margin"
         android:layout_marginStart="@dimen/kinecosystem_block_margin"
         android:layout_marginEnd="@dimen/kinrecovery_margin_main"
         android:layout_gravity="bottom"
         android:background="@drawable/button_bg_primary_rounded"
-        android:text="Order History"
+        android:text="@string/order_history"
         android:textAllCaps="false"
         android:textColor="@color/kinecosystem_white"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/get_balance"
+        app:layout_constraintBottom_toTopOf="@+id/restore"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="0.5"
+        app:layout_constraintStart_toEndOf="@id/launch_marketplace"
+        app:layout_constraintTop_toBottomOf="@id/get_balance"/>
+
+    <Button
+        android:id="@+id/backup"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="@dimen/kinecosystem_block_margin"
+        android:layout_marginStart="@dimen/kinrecovery_margin_main"
+        android:layout_marginEnd="@dimen/kinecosystem_block_margin"
+        android:layout_gravity="bottom"
+        android:background="@drawable/button_bg_primary_rounded"
+        android:text="@string/backup_flow"
+        android:textAllCaps="false"
+        android:textColor="@color/kinecosystem_white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/native_spend_button"
+        app:layout_constraintEnd_toStartOf="@id/restore"
+        app:layout_constraintHorizontal_weight="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/launch_marketplace"/>
+
+    <Button
+        android:id="@+id/restore"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="@dimen/kinecosystem_block_margin"
+        android:layout_marginStart="@dimen/kinecosystem_block_margin"
+        android:layout_marginEnd="@dimen/kinrecovery_margin_main"
+        android:layout_gravity="bottom"
+        android:background="@drawable/button_bg_primary_rounded"
+        android:text="@string/restore_flow"
+        android:textAllCaps="false"
+        android:textColor="@color/kinecosystem_white"
+        android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/native_spend_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="0.5"
-        app:layout_constraintStart_toEndOf="@id/launch_marketplace"/>
+        app:layout_constraintStart_toEndOf="@id/backup"
+        app:layout_constraintTop_toBottomOf="@id/launch_orderHistory"/>
 
     <TextView
         android:id="@+id/native_spend_button"
@@ -218,11 +256,11 @@
         android:ellipsize="end"
         android:singleLine="true"
         android:text="User ID:"
-        tools:text="User ID: jsdhaskjdhasjdkhasjkdhakjsdhajksdhaksjhdakjshdakjsdhaskjdh"
         android:textAllCaps="false"
         android:textColor="@color/colorPrimary"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="User ID: jsdhaskjdhasjdkhasjkdhakjsdhajksdhaksjhdakjshdakjsdhaskjdh"/>
 
 </android.support.constraint.ConstraintLayout>
