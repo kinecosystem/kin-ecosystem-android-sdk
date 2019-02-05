@@ -64,6 +64,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	private int paymentObserversCount;
 	private int balanceObserversCount;
 
+	private AccountCreationRequest accountCreationRequest;
 	private ListenerRegistration paymentRegistration;
 	private ListenerRegistration balanceRegistration;
 
@@ -188,6 +189,16 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
+	public void isAccountCreated(KinCallback<Void> callback) {
+		if(accountCreationRequest != null) {
+			accountCreationRequest.cancel();
+		}
+
+		accountCreationRequest = new AccountCreationRequest(this);
+		accountCreationRequest.start(callback);
+	}
+
+	@Override
 	public void sendTransaction(@NonNull final String publicAddress, @NonNull final BigDecimal amount,
 		@NonNull final String orderID, @NonNull final String offerID) {
 		if (account != null) {
@@ -280,6 +291,19 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				Logger.log(new Log().withTag(TAG).priority(Log.ERROR).put("getBalance onError", e));
 			}
 		});
+	}
+
+	@Override
+	public Balance getBalanceSync() throws ClientException, BlockchainException {
+		if (account == null) {
+			throw ErrorUtil.getClientException(ClientException.ACCOUNT_NOT_LOGGED_IN, null);
+		}
+		try {
+			setBalance(account.getBalanceSync());
+			return balance.getValue();
+		} catch (OperationFailedException e) {
+			throw ErrorUtil.getBlockchainException(e);
+		}
 	}
 
 	@Override

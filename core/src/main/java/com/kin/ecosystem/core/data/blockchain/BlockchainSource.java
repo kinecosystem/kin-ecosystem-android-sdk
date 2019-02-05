@@ -29,6 +29,12 @@ public interface BlockchainSource {
 	KinAccount getKinAccount();
 
 	/**
+	 * Start a polling call to account's balance to check if account was created.
+	 * @param callback - onResponse if account was created, otherwise onFailure will be triggered.
+	 */
+	void isAccountCreated(KinCallback<Void> callback);
+
+	/**
 	 * Send transaction to the network
 	 *
 	 * @param publicAddress the recipient address
@@ -47,6 +53,11 @@ public interface BlockchainSource {
 	 * Get balance from network
 	 */
 	void getBalance(@Nullable final KinCallback<Balance> callback);
+
+	/**
+	 * Get balance from network
+	 */
+	Balance getBalanceSync() throws ClientException, BlockchainException;
 
 	/**
 	 * Reconnect the balance connection, due to connection lose.

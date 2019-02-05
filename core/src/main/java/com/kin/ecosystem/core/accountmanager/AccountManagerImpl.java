@@ -13,7 +13,6 @@ import com.kin.ecosystem.core.bi.events.WalletCreationSucceeded;
 import com.kin.ecosystem.core.data.auth.AuthDataSource;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.util.ErrorUtil;
-import kin.core.EventListener;
 import kin.core.KinAccount;
 import kin.core.ListenerRegistration;
 
@@ -125,19 +124,18 @@ public class AccountManagerImpl implements AccountManager {
 				case PENDING_CREATION:
 					Logger.log(new Log().withTag(TAG).put("setAccountState", "PENDING_CREATION"));
 					// Start listen for account creation on the blockchain side.
-					if (accountCreationRegistration != null) {
-						removeAccountCreationRegistration();
-					}
-					if (getKinAccount() != null) {
-						accountCreationRegistration = getKinAccount().blockchainEvents()
-							.addAccountCreationListener(new EventListener<Void>() {
-								@Override
-								public void onEvent(Void data) {
-									removeAccountCreationRegistration();
-									setAccountState(CREATION_COMPLETED);
-								}
-							});
-					}
+					blockchainSource.isAccountCreated(new KinCallback<Void>() {
+						@Override
+						public void onResponse(Void response) {
+							setAccountState(CREATION_COMPLETED);
+						}
+
+						@Override
+						public void onFailure(KinEcosystemException exception) {
+							instance.error = exception;
+							setAccountState(ERROR);
+						}
+					});
 					break;
 				case REQUIRE_TRUSTLINE:
 					///////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,8 +150,8 @@ public class AccountManagerImpl implements AccountManager {
 						}
 
 						@Override
-						public void onFailure(KinEcosystemException error) {
-							instance.error = error;
+						public void onFailure(KinEcosystemException exception) {
+							instance.error = exception;
 							setAccountState(ERROR);
 						}
 					});

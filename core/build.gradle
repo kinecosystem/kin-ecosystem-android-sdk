@@ -26,6 +26,7 @@ dependencies {
     api devDependencies.kinCore
     implementation devDependencies.okhttp3
     implementation devDependencies.loginInterceptor3
+    implementation devDependencies.kotlin
 
     testImplementation project(':test-base')
     testImplementation testingDependencies.mockitoKotlin

@@ -9,6 +9,7 @@ ext {
     gsonVersion = '2.8.2'
     hamcrestVersion = '1.3'
     zxingVersion = '3.3.3'
+    kotlinVersion = kotlin_version
 
     //Packages
     kinFoundationPackage = 'com.github.kinfoundation'
@@ -18,12 +19,12 @@ ext {
     okhttp3Packace = 'com.squareup.okhttp3'
     gsonPackage = 'com.google.code.gson'
     zxingPackage = 'com.google.zxing'
+    kotlinPackage = 'org.jetbrains.kotlin'
 
     //Testing Version
     junitVersion = '4.12'
     mockitoVersion = '2.13.0'
     robolectricVersion = '3.6.1'
-    kotlinVersion = kotlin_version
     mokitoKotlinVersion = '2.0.0-RC1'
     mockitoAndroidVersion = '2.10.0'
     androidTestVersion = '1.0.1'
@@ -32,7 +33,6 @@ ext {
     junitPackage = 'junit'
     mockitoPackage = 'org.mockito'
     robolectricPackage = 'org.robolectric'
-    kotlinPackage = 'org.jetbrains.kotlin'
     mokitoKotlinPackage = 'com.nhaarman.mockitokotlin2'
     androidTestPackage = 'com.android.support.test'
     hamcrestPackage = 'org.hamcrest'
@@ -49,13 +49,13 @@ ext {
             loginInterceptor3 : buildDependency(okhttp3Packace, 'logging-interceptor', okhttp3Version),
             supportAnnotations: buildDependency(supportPackage, 'support-annotations', supportVersion),
             zxing_qr: buildDependency(zxingPackage, 'core', zxingVersion),
+            kotlin      : buildDependency(kotlinPackage, 'kotlin-stdlib', kotlinVersion),
     ]
 
     testingDependencies = [
             junit       : buildDependency(junitPackage, 'junit', junitVersion),
             mockito     : buildDependency(mockitoPackage, 'mockito-core', mockitoVersion),
             robolectric : buildDependency(robolectricPackage, 'robolectric', robolectricVersion),
-            kotlin      : buildDependency(kotlinPackage, 'kotlin-stdlib', kotlinVersion),
             mockitoKotlin: buildDependency(mokitoKotlinPackage, 'mockito-kotlin', mokitoKotlinVersion),
             mockitoAndroid   : buildDependency(mockitoPackage, 'mockito-android', mockitoAndroidVersion),
             androidTestRunner: buildDependency(androidTestPackage, 'runner', androidTestVersion),
