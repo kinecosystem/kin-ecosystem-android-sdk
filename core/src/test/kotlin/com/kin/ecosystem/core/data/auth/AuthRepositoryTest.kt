@@ -80,6 +80,33 @@ class AuthRepositoryTest : BaseTestClass() {
     }
 
     @Test
+    fun `get user login state, with empty current user should return FIRST`() {
+        whenever(local.userID) doAnswer { "" }
+        assertEquals(UserLoginState.FIRST, authRepository.getUserLoginState(JWT_A))
+    }
+
+    @Test
+    fun `get user login state with save userID and deviceID should return SAME_USER`() {
+        whenever(local.userID) doAnswer { USER_ID_A }
+        whenever(local.deviceID) doAnswer { DEVICE_ID }
+        assertEquals(UserLoginState.SAME_USER, authRepository.getUserLoginState(JWT_A))
+    }
+
+    @Test
+    fun `get user login state with the same userID and different deviceID should return DIFFERENT_USER`() {
+        whenever(local.userID) doAnswer { USER_ID_A }
+        whenever(local.deviceID) doAnswer { "different_device_id" }
+        assertEquals(UserLoginState.DIFFERENT_USER, authRepository.getUserLoginState(JWT_A))
+    }
+
+    @Test
+    fun `get user login state with different userID and the same deviceID should return DIFFERENT_USER`() {
+        whenever(local.userID) doAnswer { USER_ID_B }
+        whenever(local.deviceID) doAnswer { DEVICE_ID }
+        assertEquals(UserLoginState.DIFFERENT_USER, authRepository.getUserLoginState(JWT_A))
+    }
+
+    @Test
     fun `update wallet address correctly`() {
         val myAddress = "my_address_12"
         val updateWalletCaptor = argumentCaptor<UserProperties>()
@@ -177,7 +204,7 @@ class AuthRepositoryTest : BaseTestClass() {
     @Test
     fun `get account info, cached token expired, get new from server`() {
         val twoDaysAgo = Instant.now().minusMillis(2 * DateUtils.DAY_IN_MILLIS).toString()
-        val expiredToken =  AuthToken("authToken", twoDaysAgo, APP_ID, USER_ID_A, ECOSYSTEM_USER_ID_A)
+        val expiredToken = AuthToken("authToken", twoDaysAgo, APP_ID, USER_ID_A, ECOSYSTEM_USER_ID_A)
         val accountInfo: AccountInfo = mock()
         accountInfo.authToken = expiredToken
         val callbackCaptor = argumentCaptor<Callback<AccountInfo, ApiException>>()
