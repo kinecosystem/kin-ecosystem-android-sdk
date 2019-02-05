@@ -62,10 +62,11 @@ public class AuthRepository implements AuthDataSource {
 	int getUserLoginState(@NonNull String jwt) throws ClientException {
 		final JwtBody jwtBody = getJwtBody(jwt);
 		final String currentUserID = localData.getUserID();
-		if (StringUtil.isEmpty(currentUserID)) {
+		final String currentDeviceID = localData.getDeviceID();
+		if (StringUtil.isEmpty(currentUserID) ) {
 			return UserLoginState.FIRST;
 		} else {
-			return currentUserID.equals(jwtBody.getUserId())
+			return currentUserID.equals(jwtBody.getUserId()) && currentDeviceID.equals(jwtBody.getDeviceId())
 				? UserLoginState.SAME_USER : UserLoginState.DIFFERENT_USER;
 		}
 	}
