@@ -20,6 +20,7 @@ import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.RecoveryBackupEvents;
 import com.kin.ecosystem.core.bi.RecoveryRestoreEvents;
 import com.kin.ecosystem.core.bi.events.BackupWalletCompleted;
+import com.kin.ecosystem.core.bi.events.BackupWalletFailed;
 import com.kin.ecosystem.core.bi.events.GeneralEcosystemSdkError;
 import com.kin.ecosystem.core.bi.events.RestoreWalletCompleted;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
@@ -59,7 +60,8 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 		try {
 			this.publicAddress = blockchainSource.getPublicAddress();
 		} catch (ClientException | BlockchainException e) {
-			eventLogger.send(GeneralEcosystemSdkError.create("SettingsPresenter blockchainSource.getPublicAddress() thrown an exception"));
+			eventLogger.send(GeneralEcosystemSdkError
+				.create("SettingsPresenter blockchainSource.getPublicAddress() thrown an exception"));
 		}
 		registerToEvents();
 		registerToCallbacks();
@@ -163,7 +165,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 
 			@Override
 			public void onFailure(Throwable throwable) {
-
+				eventLogger.send(BackupWalletFailed.create(getErrorMessage(throwable)));
 			}
 		});
 
@@ -183,6 +185,11 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 			public void onFailure(Throwable throwable) {
 			}
 		});
+	}
+
+	private String getErrorMessage(Throwable throwable) {
+		return throwable != null ? throwable.getCause() != null ? throwable.getCause().getMessage()
+			: throwable.getMessage() : "Backup failed - with unknown reason";
 	}
 
 	private void switchAccount(int accountIndex) {
