@@ -8,7 +8,7 @@ public interface BackupAndRestore {
 
 	void backupFlow() throws ClientException;
 
-	void restoreFlow();
+	void restoreFlow() throws ClientException;
 
 	void registerBackupCallback(@NonNull final BackupAndRestoreCallback backupCallback);
 

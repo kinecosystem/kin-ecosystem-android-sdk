@@ -49,6 +49,9 @@ Call `Kin.getBackupAndRestoreManager(activity)`
 
 * Step 2 - Add callbacks for backup or restore flow as you wish:
 Call `backupAndRestore.registerBackupCallback(callback)` or `backupAndRestore.registerRestoreCallback`
+
+>**NOTE:** The callback registration should happen in `onCreate` for the cases of activity restart.
+
 ```java
     // For Backup Flow
     backupAndRestore.registerBackupCallback(new BackupAndRestoreCallback() {

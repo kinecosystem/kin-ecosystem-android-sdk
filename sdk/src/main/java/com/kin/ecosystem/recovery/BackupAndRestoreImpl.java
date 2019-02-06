@@ -1,5 +1,7 @@
 package com.kin.ecosystem.recovery;
 
+import static com.kin.ecosystem.recovery.exception.BackupAndRestoreException.RESTORE_SWITCH_ACCOUNT_FAILED;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -15,6 +17,9 @@ import com.kin.ecosystem.core.bi.events.RestoreWalletCompleted;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.settings.SettingsDataSource;
 import com.kin.ecosystem.core.util.Validator;
+import com.kin.ecosystem.recovery.exception.BackupAndRestoreException;
+import com.kin.ecosystem.recovery.exception.BackupException;
+import com.kin.ecosystem.recovery.exception.BackupRestoreErrorUtil;
 
 public class BackupAndRestoreImpl implements BackupAndRestore {
 
@@ -25,7 +30,8 @@ public class BackupAndRestoreImpl implements BackupAndRestore {
 	private final BlockchainSource blockchainSource;
 
 	public BackupAndRestoreImpl(@NonNull final Activity activity, @NonNull AccountManager accountManager,
-		@NonNull EventLogger eventLogger, @NonNull BlockchainSource blockchainSource, SettingsDataSource settingsDataSource) {
+		@NonNull EventLogger eventLogger, @NonNull BlockchainSource blockchainSource,
+		SettingsDataSource settingsDataSource) {
 		this.blockchainSource = blockchainSource;
 		this.backupManager = new BackupManager(activity, blockchainSource.getKeyStoreProvider());
 		this.accountManager = accountManager;
@@ -38,13 +44,19 @@ public class BackupAndRestoreImpl implements BackupAndRestore {
 		if (blockchainSource.getKinAccount() != null) {
 			backupManager.backupFlow();
 		} else {
-			throw new ClientException(ClientException.ACCOUNT_NOT_LOGGED_IN, "Account should be logged in before backup.", null);
+			throw new ClientException(ClientException.ACCOUNT_NOT_LOGGED_IN,
+				"Account should be logged in before backup.", null);
 		}
 	}
 
 	@Override
-	public void restoreFlow() {
-		backupManager.restoreFlow();
+	public void restoreFlow() throws ClientException {
+		if (blockchainSource.getKinAccount() != null) {
+			backupManager.restoreFlow();
+		} else {
+			throw new ClientException(ClientException.ACCOUNT_NOT_LOGGED_IN,
+				"Account should be logged in before restore.", null);
+		}
 	}
 
 	@Override
@@ -59,7 +71,8 @@ public class BackupAndRestoreImpl implements BackupAndRestore {
 					settingsDataSource.setIsBackedUp(publicAddress, true);
 				} catch (ClientException | BlockchainException e) {
 					eventLogger.send(GeneralEcosystemSdkError
-						.create("BackupAndRestoreImpl onSuccess blockchainSource.getPublicAddress() thrown an exception"));
+						.create(
+							"BackupAndRestoreImpl onSuccess blockchainSource.getPublicAddress() thrown an exception"));
 				}
 				eventLogger.send(BackupWalletCompleted.create());
 				backupCallback.onSuccess();
@@ -71,9 +84,8 @@ public class BackupAndRestoreImpl implements BackupAndRestore {
 			}
 
 			@Override
-			public void onFailure(Throwable throwable) {
-				//TODO create our exceptions
-				backupCallback.onFailure(throwable);
+			public void onFailure(BackupException exception) {
+				backupCallback.onFailure(BackupRestoreErrorUtil.get(exception));
 			}
 		});
 	}
@@ -88,7 +100,8 @@ public class BackupAndRestoreImpl implements BackupAndRestore {
 
 			@Override
 			public void onFailure(KinEcosystemException exception) {
-				backupCallback.onFailure(exception);
+				backupCallback.onFailure(new BackupAndRestoreException(RESTORE_SWITCH_ACCOUNT_FAILED,
+					exception != null ? exception.getMessage() : "Switch account failed", exception));
 			}
 		});
 	}
@@ -108,9 +121,8 @@ public class BackupAndRestoreImpl implements BackupAndRestore {
 			}
 
 			@Override
-			public void onFailure(Throwable throwable) {
-				//TODO create our exceptions
-				restoreCallback.onFailure(throwable);
+			public void onFailure(BackupException exception) {
+				restoreCallback.onFailure(BackupRestoreErrorUtil.get(exception));
 			}
 		});
 	}

@@ -44,6 +44,7 @@ import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.recovery.BackupAndRestore;
 import com.kin.ecosystem.recovery.BackupAndRestoreCallback;
+import com.kin.ecosystem.recovery.exception.BackupAndRestoreException;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -117,7 +118,11 @@ public class MainActivity extends AppCompatActivity {
 			findViewById(R.id.restore).setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					backupAndRestore.restoreFlow();
+					try {
+						backupAndRestore.restoreFlow();
+					} catch (ClientException e) {
+						showSnackbar(e.getMessage(), true);
+					}
 				}
 			});
 		} catch (ClientException e) {
@@ -232,8 +237,8 @@ public class MainActivity extends AppCompatActivity {
 			}
 
 			@Override
-			public void onFailure(Throwable throwable) {
-				showSnackbar("Backup Failed " + throwable.getMessage(), true);
+			public void onFailure(BackupAndRestoreException exception) {
+				showSnackbar("Backup Failed " + exception.getMessage(), true);
 			}
 		});
 
@@ -249,8 +254,8 @@ public class MainActivity extends AppCompatActivity {
 			}
 
 			@Override
-			public void onFailure(Throwable throwable) {
-				showSnackbar("Restore Failed " + throwable.getMessage(), true);
+			public void onFailure(BackupAndRestoreException exception) {
+				showSnackbar("Restore Failed " + exception.getMessage(), true);
 			}
 		});
 	}
@@ -697,6 +702,7 @@ public class MainActivity extends AppCompatActivity {
 		nativeSpendOrderConfirmationCallback = null;
 		nativeEarnOrderConfirmationCallback = null;
 		payToUserOrderConfirmationCallback = null;
+		backupAndRestore.release();
 		try {
 			if (nativeOffer != null) {
 				Kin.removeNativeOffer(nativeOffer);

@@ -16,11 +16,13 @@ import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.RecoveryBackupEvents;
 import com.kin.ecosystem.core.bi.RecoveryRestoreEvents;
+import com.kin.ecosystem.core.bi.events.BackupWalletFailed;
 import com.kin.ecosystem.core.bi.events.GeneralEcosystemSdkError;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.settings.SettingsDataSource;
 import com.kin.ecosystem.core.util.StringUtil;
 import com.kin.ecosystem.recovery.BackupAndRestoreCallback;
+import com.kin.ecosystem.recovery.exception.BackupAndRestoreException;
 import com.kin.ecosystem.settings.BackupManager;
 import com.kin.ecosystem.settings.view.ISettingsView;
 import com.kin.ecosystem.settings.view.ISettingsView.IconColor;
@@ -126,7 +128,11 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 
 	@Override
 	public void restoreClicked() {
-		backupManager.restoreFlow();
+		try {
+			backupManager.restoreFlow();
+		} catch (ClientException e) {
+			// Could not happen in this case.
+		}
 	}
 
 	@Override
@@ -159,8 +165,8 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 			}
 
 			@Override
-			public void onFailure(Throwable throwable) {
-				Logger.log(new Log().withTag(TAG).put("BackupCallback", "onFailure"));
+			public void onFailure(BackupAndRestoreException exception) {
+				eventLogger.send(BackupWalletFailed.create(getErrorMessage(exception)));
 			}
 		});
 
@@ -176,10 +182,14 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 			}
 
 			@Override
-			public void onFailure(Throwable throwable) {
+			public void onFailure(BackupAndRestoreException throwable) {
 				showCouldNotImportAccountError();
 			}
 		});
+	}
+	private String getErrorMessage(BackupAndRestoreException exception) {
+		return exception != null ? exception.getCause() != null ? exception.getCause().getMessage()
+			: exception.getMessage() : "Backup failed - with unknown reason";
 	}
 
 
