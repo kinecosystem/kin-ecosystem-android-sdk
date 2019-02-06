@@ -188,7 +188,8 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 	}
 
 	private String getErrorMessage(Throwable throwable) {
-		return throwable.getCause() != null ? throwable.getCause().getMessage() : throwable.getMessage();
+		return throwable != null ? throwable.getCause() != null ? throwable.getCause().getMessage()
+			: throwable.getMessage() : "Backup failed - with unknown reason";
 	}
 
 	private void switchAccount(int accountIndex) {
