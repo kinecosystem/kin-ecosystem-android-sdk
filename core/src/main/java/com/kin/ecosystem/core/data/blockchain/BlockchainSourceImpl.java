@@ -195,7 +195,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		}
 
 		accountCreationRequest = new AccountCreationRequest(this);
-		accountCreationRequest.start(callback);
+		accountCreationRequest.run(callback);
 	}
 
 	@Override

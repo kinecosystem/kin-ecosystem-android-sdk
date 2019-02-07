@@ -12,13 +12,17 @@ import java.util.concurrent.Callable
 
 class AccountCreationRequest(val blockchainSource: BlockchainSource) {
 
-    private var req: PollingRequest<Void>? = null
+    private var req: PollingRequest<Void>
 
-    fun start(callback: KinCallback<Void>) {
+    init {
         req = PollingRequest(intervals = intArrayOf(2, 2, 3, 5, 10), callable = Callable<Void> {
             blockchainSource.balanceSync
-            return@Callable null })
-        req?.run(object : CoreCallback<Void> {
+            return@Callable null
+        })
+    }
+
+    fun run(callback: KinCallback<Void>) {
+        req.run(object : CoreCallback<Void> {
             override fun onResponse(response: Void?) {
                 callback.onResponse(response)
             }
@@ -34,7 +38,7 @@ class AccountCreationRequest(val blockchainSource: BlockchainSource) {
     }
 
     fun cancel() {
-        req?.cancel(true)
+        req.cancel(true)
     }
 }
 

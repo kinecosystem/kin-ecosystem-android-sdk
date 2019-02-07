@@ -9,33 +9,37 @@ internal class PollingRequest<T>(private val intervals: IntArray, private val ca
     }
 
     private val pollingLimitIndex: Int = intervals.size
-    private var request: Request<T>? = null
-    private val pollingCallable = Callable<T> {
-        Logger.log(Log().withTag("PollingRequest").text("start polling"))
-        poll(0)
+    private var request: Request<T>
+
+    init {
+        val pollingCallable = Callable<T> { poll() }
+        request = Request(pollingCallable)
     }
 
-
-    private fun poll(pollingIndex: Int): T {
-        return try {
-            Logger.log(Log().withTag("PollingRequest").put("pollingIndex", pollingIndex))
-            callable.call()
-        } catch (e: Exception) {
-            if (pollingIndex < pollingLimitIndex) {
-                Thread.sleep(intervals[pollingIndex] * SECOND_IN_MILLIS)
-                poll(pollingIndex.inc())
-            } else {
-                throw e
+    private fun poll(): T {
+        Logger.log(Log().withTag("PollingRequest").text("start polling"))
+        var pollingIndex = 0
+        Polling@ while (true) {
+            return try {
+                callable.call()
+            } catch (e: Exception) {
+                if (pollingIndex < pollingLimitIndex) {
+                    Logger.log(Log().withTag("PollingRequest").put("pollingIndex", pollingIndex))
+                    Thread.sleep(intervals[pollingIndex] * SECOND_IN_MILLIS)
+                    pollingIndex++
+                    continue@Polling
+                } else {
+                    throw e
+                }
             }
         }
     }
 
-    fun run(callback: CoreCallback<T>) {
-        request = Request(pollingCallable)
-        request?.run(callback)
+    fun run(callback: CoreCallback<T>?) {
+        request.run(callback)
     }
 
     fun cancel(mayInterruptIfRunning: Boolean) {
-        request?.cancel(mayInterruptIfRunning)
+        request.cancel(mayInterruptIfRunning)
     }
 }

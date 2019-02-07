@@ -13,29 +13,23 @@ import java.util.concurrent.Future
  * @param <T> request result type
 </T> */
 internal open class Request<T> internal constructor(private val callable: Callable<T>) {
-    private val mainHandler: Handler
+    private val mainHandler: Handler = Handler(Looper.getMainLooper())
     private var cancelled: Boolean = false
     private var executed: Boolean = false
     private var future: Future<*>? = null
     private var resultCallback: CoreCallback<T>? = null
 
-    init {
-        checkNotNull(callable, "callable")
-        this.mainHandler = Handler(Looper.getMainLooper())
-    }
-
     /**
      * Run request asynchronously, notify `callback` with successful result or error
      */
     @Synchronized
-    fun run(callback: CoreCallback<T>) {
-        checkBeforeRun(callback)
+    fun run(callback: CoreCallback<T>?) {
+        checkBeforeRun()
         executed = true
         submitFuture(callable, callback)
     }
 
-    private fun checkBeforeRun(callback: CoreCallback<T>) {
-        checkNotNull(callback, "callback")
+    private fun checkBeforeRun() {
         if (executed) {
             throw IllegalStateException("Request already running.")
         }
@@ -44,20 +38,14 @@ internal open class Request<T> internal constructor(private val callable: Callab
         }
     }
 
-    private fun checkNotNull(param: Any?, name: String) {
-        if (param == null) {
-            throw IllegalArgumentException("$name cannot be null.")
-        }
-    }
-
-    private fun submitFuture(callable: Callable<T>, callback: CoreCallback<T>) {
-        this.resultCallback = callback
+    private fun submitFuture(callable: Callable<T>, callback: CoreCallback<T>?) {
+        resultCallback = callback
         future = executorService.submit {
             try {
                 val result = callable.call()
-                executeOnMainThreadIfNotCancelled(Runnable { resultCallback!!.onResponse(result) })
+                executeOnMainThreadIfNotCancelled(Runnable { resultCallback?.onResponse(result) })
             } catch (e: Exception) {
-                executeOnMainThreadIfNotCancelled(Runnable { resultCallback!!.onFailure(e) })
+                executeOnMainThreadIfNotCancelled(Runnable { resultCallback?.onFailure(e) })
             }
         }
     }
@@ -80,12 +68,12 @@ internal open class Request<T> internal constructor(private val callable: Callab
     fun cancel(mayInterruptIfRunning: Boolean) {
         if (!cancelled) {
             cancelled = true
-            if (future != null) {
-                future!!.cancel(mayInterruptIfRunning)
-            }
+            future?.cancel(mayInterruptIfRunning)
             future = null
-            mainHandler.removeCallbacksAndMessages(null)
-            mainHandler.post { resultCallback = null }
+            mainHandler.apply {
+                removeCallbacksAndMessages(null)
+                post { resultCallback = null }
+            }
         }
     }
 
