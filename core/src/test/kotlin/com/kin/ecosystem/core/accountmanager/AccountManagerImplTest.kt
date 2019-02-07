@@ -115,10 +115,11 @@ class AccountManagerImplTest : BaseTestClass() {
 
         accountManager.addAccountStateObserver(stateObserver)
         accountManager.start()
-        argumentCaptor<EventListener<Void>>().apply {
-            verify(blockchainEvents).addAccountCreationListener(capture())
-            firstValue.onEvent(null)
+        argumentCaptor<KinCallback<Void>>().apply {
+            verify(blockchainSource).isAccountCreated(capture())
+            firstValue.onResponse(null)
         }
+
 
         assertEquals(listOf(1, 1, 2, 4), stateList)
     }
@@ -151,9 +152,9 @@ class AccountManagerImplTest : BaseTestClass() {
         whenever(local.accountState).doReturn(REQUIRE_CREATION)
         accountManager.addAccountStateObserver(stateObserver)
         accountManager.retry()
-        argumentCaptor<EventListener<Void>>().apply {
-            verify(blockchainEvents).addAccountCreationListener(capture())
-            firstValue.onEvent(null)
+        argumentCaptor<KinCallback<Void>>().apply {
+            verify(blockchainSource).isAccountCreated(capture())
+            firstValue.onResponse(null)
         }
 
         assertEquals(listOf(5, 1, 2, 4).toList(), statesArray)

@@ -24,6 +24,8 @@ import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
+import com.kin.ecosystem.core.accountmanager.AccountManager;
+import com.kin.ecosystem.core.accountmanager.AccountManager.AccountState;
 import com.kin.ecosystem.core.accountmanager.AccountManagerImpl;
 import com.kin.ecosystem.core.accountmanager.AccountManagerLocal;
 import com.kin.ecosystem.core.bi.EventLogger;
@@ -232,7 +234,7 @@ public class Kin {
 						AuthRepository.getInstance().updateWalletAddress(publicAddress, new KinCallback<Boolean>() {
 							@Override
 							public void onResponse(Boolean response) {
-								sendLoginSucceed(loginCallback, loginState);
+								onboard(loginCallback, loginState);
 							}
 
 							@Override
@@ -241,7 +243,7 @@ public class Kin {
 							}
 						});
 					} else {
-						sendLoginSucceed(loginCallback, loginState);
+						onboard(loginCallback, loginState);
 					}
 				}
 
@@ -256,11 +258,29 @@ public class Kin {
 		}
 	}
 
+	private static void onboard(final KinCallback<Void> loginCallback, final int loginState) {
+		AccountManagerImpl.getInstance().addAccountStateObserver(new Observer<Integer>() {
+			@Override
+			public void onChanged(@AccountState Integer accountState) {
+				switch (accountState) {
+					case AccountManager.CREATION_COMPLETED:
+						sendLoginSucceed(loginCallback, loginState);
+						AccountManagerImpl.getInstance().removeAccountStateObserver(this);
+						break;
+					case AccountManager.ERROR:
+						sendLoginFailed(AccountManagerImpl.getInstance().getError(), loginCallback);
+						AccountManagerImpl.getInstance().removeAccountStateObserver(this);
+						break;
+				}
+			}
+		});
+		AccountManagerImpl.getInstance().start();
+	}
+
 	private static void sendLoginSucceed(final KinCallback<Void> loginCallback, @UserLoginState int loginState) {
 		if (loginState != UserLoginState.SAME_USER) {
 			eventLogger.send(UserLoginSucceeded.create());
 		}
-		AccountManagerImpl.getInstance().start();
 		isAccountLoggedIn.getAndSet(true);
 		instance.executorsUtil.mainThread().execute(new Runnable() {
 			@Override
