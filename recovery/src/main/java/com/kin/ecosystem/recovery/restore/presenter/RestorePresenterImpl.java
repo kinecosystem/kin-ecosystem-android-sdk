@@ -29,6 +29,7 @@ public class RestorePresenterImpl extends BasePresenterImpl<RestoreView> impleme
 		this.currentStep = getStep(saveInstanceState);
 		this.accountKey = getAccountKey(saveInstanceState);
 		this.accountIndex = getAccountIndex(saveInstanceState);
+		this.callbackManager.setCancelledResult();
 	}
 
 
@@ -111,7 +112,6 @@ public class RestorePresenterImpl extends BasePresenterImpl<RestoreView> impleme
 	public void previousStep() {
 		switch (currentStep) {
 			case STEP_UPLOAD:
-				callbackManager.sendCancelledResult();
 				getView().close();
 				break;
 			case STEP_ENTER_PASSWORD:

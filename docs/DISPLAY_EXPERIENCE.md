@@ -33,3 +33,72 @@ try {
 
 >**NOTE:** The launchEcosystem function is not a one-time initialization function, you must call it each time you want to display a feature in KinEcosystem side.
 
+
+#### Launch Backup And Restore Flows ###
+Optionally, your app can launch the Kin Backup or Restore flows and receive callbacks when user either completed successfully or failure.
+
+* Step 1 - Create `backupAndRestore` to handle responses:
+Call `Kin.getBackupAndRestoreManager(activity)`
+```java
+    try {
+        backupAndRestore = Kin.getBackupAndRestoreManager(MainActivity.this);
+    } catch (ClientException e) {
+        // sdk not initialized
+    }
+```
+
+* Step 2 - Add callbacks for backup or restore flow as you wish:
+Call `backupAndRestore.registerBackupCallback(callback)` or `backupAndRestore.registerRestoreCallback`
+
+>**NOTE:** The callback registration should happen in `onCreate` for the cases of activity restart.
+
+```java
+    // For Backup Flow
+    backupAndRestore.registerBackupCallback(new BackupAndRestoreCallback() {
+        @Override
+        public void onSuccess() {
+            showSnackbar("Backup Succeed", false);
+        }
+
+        @Override
+        public void onCancel() {
+            showSnackbar("Backup Canceled", false);
+        }
+
+        @Override
+        public void onFailure(Throwable throwable) {
+            showSnackbar("Backup Failed " + throwable.getMessage(), true);
+        }
+    });
+
+    // For Restore Flow
+    backupAndRestore.registerRestoreCallback(new BackupAndRestoreCallback() {
+        @Override
+        public void onSuccess() {
+            showSnackbar("Restore Succeed", false);
+        }
+
+        @Override
+        public void onCancel() {
+            showSnackbar("Restore Canceled", false);
+        }
+
+        @Override
+        public void onFailure(Throwable throwable) {
+            showSnackbar("Restore Failed " + throwable.getMessage(), true);
+        }
+    });
+```
+
+* Step 3 - In your `onActivityResult` method: Call `backupAndRestore.onActivityResult(...)` to pass the results.
+```java
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        backupAndRestore.onActivityResult(requestCode, resultCode, data);
+    }
+```
+
+* Step 4 - Finally, launch Backup or Restore simply by calling: `backupAndRestore.backupFlow()` or `backupAndRestore.restoreFlow()`.
+
+* Step 5 - After you received the callback, release the backupAndRestore by calling: `backupAndRestore.release()`

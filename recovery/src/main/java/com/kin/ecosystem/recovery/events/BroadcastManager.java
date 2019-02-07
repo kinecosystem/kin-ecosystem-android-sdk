@@ -17,6 +17,6 @@ public interface BroadcastManager {
 
 	void sendEvent(Intent data, @ActionName final String actionName);
 
-	void sendCallback(int resultCode, Intent data);
+	void setActivityResult(int resultCode, Intent data);
 
 }

@@ -48,12 +48,16 @@ import com.kin.ecosystem.core.data.offer.OfferRepository;
 import com.kin.ecosystem.core.data.order.OrderLocalData;
 import com.kin.ecosystem.core.data.order.OrderRemoteData;
 import com.kin.ecosystem.core.data.order.OrderRepository;
+import com.kin.ecosystem.core.data.settings.SettingsDataSourceImpl;
+import com.kin.ecosystem.core.data.settings.SettingsDataSourceLocal;
 import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
 import com.kin.ecosystem.core.util.Validator;
 import com.kin.ecosystem.main.view.EcosystemActivity;
+import com.kin.ecosystem.recovery.BackupAndRestore;
+import com.kin.ecosystem.recovery.BackupAndRestoreImpl;
 import com.kin.ecosystem.splash.view.SplashActivity;
 import java.util.concurrent.atomic.AtomicBoolean;
 import kin.core.KinClient;
@@ -595,5 +599,12 @@ public class Kin {
 	public static boolean removeNativeOffer(@NonNull NativeOffer nativeOffer) throws ClientException {
 		checkInstanceNotNull();
 		return OfferRepository.getInstance().removeNativeOffer(nativeOffer);
+	}
+
+	public static BackupAndRestore getBackupAndRestoreManager(@NonNull final Activity activity) throws ClientException {
+		checkInstanceNotNull();
+		return new BackupAndRestoreImpl(activity, AccountManagerImpl.getInstance(),
+			eventLogger, BlockchainSourceImpl.getInstance(),
+			new SettingsDataSourceImpl(new SettingsDataSourceLocal(activity.getApplicationContext())));
 	}
 }

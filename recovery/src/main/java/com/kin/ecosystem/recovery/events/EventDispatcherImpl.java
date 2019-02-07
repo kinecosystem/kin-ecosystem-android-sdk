@@ -70,8 +70,8 @@ public class EventDispatcherImpl implements EventDispatcher {
 	}
 
 	@Override
-	public void sendCallback(int resultCode, Intent data) {
-		broadcastManager.sendCallback(resultCode, data);
+	public void setActivityResult(int resultCode, Intent data) {
+		broadcastManager.setActivityResult(resultCode, data);
 	}
 
 	@Override

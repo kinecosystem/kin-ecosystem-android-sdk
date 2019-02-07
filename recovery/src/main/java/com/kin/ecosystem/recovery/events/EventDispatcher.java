@@ -29,7 +29,7 @@ public interface EventDispatcher {
 
 	void sendEvent(@EventType final int eventType, final int eventID);
 
-	void sendCallback(int resultCode, Intent data);
+	void setActivityResult(int resultCode, Intent data);
 
 	void unregister();
 }

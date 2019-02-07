@@ -42,6 +42,9 @@ import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.NativeSpendOfferBuilder;
 import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.common.model.UserStats;
+import com.kin.ecosystem.recovery.BackupAndRestore;
+import com.kin.ecosystem.recovery.BackupAndRestoreCallback;
+import com.kin.ecosystem.recovery.exception.BackupAndRestoreException;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -71,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
 
 
 	private NativeOffer nativeOffer;
+	private boolean addNativeSpendOrder = true;
+
+	private BackupAndRestore backupAndRestore;
 
 	private NativeOffer getNativeSpendOffer() {
 		return new NativeSpendOfferBuilder(String.valueOf(getRandomID()))
@@ -91,12 +97,37 @@ public class MainActivity extends AppCompatActivity {
 			.build();
 	}
 
-	private boolean addNativeSpendOrder = true;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		try {
+			backupAndRestore = Kin.getBackupAndRestoreManager(this);
+			addBackupAndRestoreCallbacks();
+			findViewById(R.id.backup).setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					try {
+						backupAndRestore.backupFlow();
+					} catch (ClientException e) {
+						showSnackbar(e.getMessage(), true);
+					}
+				}
+			});
+			findViewById(R.id.restore).setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					try {
+						backupAndRestore.restoreFlow();
+					} catch (ClientException e) {
+						showSnackbar(e.getMessage(), true);
+					}
+				}
+			});
+		} catch (ClientException e) {
+			e.printStackTrace();
+		}
 
 		userID = SignInRepo.getUserId(getApplicationContext());
 		deviceID = SignInRepo.getDeviceId(getApplicationContext());
@@ -158,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 
+
 		final TextView userIdTextView = findViewById(R.id.user_id_textview);
 		SpannableString userIdSpan = getUnderlineSpan(getString(R.string.user_id, userID));
 		userIdTextView.setText(userIdSpan);
@@ -189,6 +221,43 @@ public class MainActivity extends AppCompatActivity {
 
 		addNativeOffer();
 		addNativeOfferClickedObserver();
+
+	}
+
+	private void addBackupAndRestoreCallbacks() {
+		backupAndRestore.registerBackupCallback(new BackupAndRestoreCallback() {
+			@Override
+			public void onSuccess() {
+				showSnackbar("Backup Succeed", false);
+			}
+
+			@Override
+			public void onCancel() {
+				showSnackbar("Backup Canceled", false);
+			}
+
+			@Override
+			public void onFailure(BackupAndRestoreException exception) {
+				showSnackbar("Backup Failed " + exception.getMessage(), true);
+			}
+		});
+
+		backupAndRestore.registerRestoreCallback(new BackupAndRestoreCallback() {
+			@Override
+			public void onSuccess() {
+				showSnackbar("Restore Succeed", false);
+			}
+
+			@Override
+			public void onCancel() {
+				showSnackbar("Restore Canceled", false);
+			}
+
+			@Override
+			public void onFailure(BackupAndRestoreException exception) {
+				showSnackbar("Restore Failed " + exception.getMessage(), true);
+			}
+		});
 	}
 
 	private void logout() {
@@ -622,11 +691,18 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		backupAndRestore.onActivityResult(requestCode, resultCode, data);
+	}
+
+	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		nativeSpendOrderConfirmationCallback = null;
 		nativeEarnOrderConfirmationCallback = null;
 		payToUserOrderConfirmationCallback = null;
+		backupAndRestore.release();
 		try {
 			if (nativeOffer != null) {
 				Kin.removeNativeOffer(nativeOffer);
