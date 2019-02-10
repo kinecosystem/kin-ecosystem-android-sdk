@@ -131,7 +131,7 @@ RS512_PRIVATE_KEY="YOUR_RS512_PRIVATE_KEY" // Used only for sample app, for prod
 ```groovy
  dependencies {
      ...
-     implementation 'com.github.kinfoundation.kin-ecosystem-android-sdk:sdk:0.4.0'
+     implementation 'com.github.kinfoundation.kin-ecosystem-android-sdk:sdk:0.8.0'
 
  }
 ```
