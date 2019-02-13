@@ -1,4 +1,4 @@
-I# Kin Ecosystem Android SDK #
+# Kin Ecosystem Android SDK #
 
 ## What is the Kin Ecosystem SDK? ##
 
