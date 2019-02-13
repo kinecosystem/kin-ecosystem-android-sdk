@@ -1,4 +1,4 @@
-# Kin Ecosystem Android SDK #
+I# Kin Ecosystem Android SDK #
 
 ## What is the Kin Ecosystem SDK? ##
 
@@ -7,7 +7,7 @@ The Kin Ecosystem SDK allows you to quickly and easily integrate with the Kin pl
 ## Usage and Installation
 For full details, visit the documentation on our web site:
 
-<a href="https://partners.kinecosystem.com/docs/api/api.html"><img src="https://partners.kinecosystem.com/img/documentation-button.png" alt="Documentation"/></a>
+<a href="https://partners.kinecosystem.com/docs/api/api.html"><img src="https://partners.kinecosystem.com/img/documentation-button2x.png" width=300 height=84 alt="Documentation"/></a>
 
 
 ## License ##
