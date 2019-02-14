@@ -1,17 +1,18 @@
 package com.kin.ecosystem.core.data.blockchain;
 
-import kin.core.KinAccount;
-import kin.core.exception.OperationFailedException;
+import kin.sdk.migration.common.exception.OperationFailedException;
+import kin.sdk.migration.common.interfaces.IKinAccount;
+
 
 public class CreateTrustLineCall extends Thread {
 
 	private static final int[] DELAY_SECONDS = {2, 4, 8, 16, 32, 32, 32, 32, 32, 32};
 	private static final int SEC_IN_MILLI = 1000;
 
-	private final KinAccount account;
+	private final IKinAccount account;
 	private final TrustlineCallback trustlineCallback;
 
-	public CreateTrustLineCall(KinAccount account, TrustlineCallback trustlineCallback) {
+	public CreateTrustLineCall(IKinAccount account, TrustlineCallback trustlineCallback) {
 		this.account = account;
 		this.trustlineCallback = trustlineCallback;
 	}

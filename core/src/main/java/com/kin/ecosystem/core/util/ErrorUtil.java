@@ -8,11 +8,11 @@ import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.exception.ServiceException;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.Error;
-import kin.core.exception.AccountNotActivatedException;
-import kin.core.exception.AccountNotFoundException;
-import kin.core.exception.CreateAccountException;
-import kin.core.exception.InsufficientKinException;
-import kin.core.exception.TransactionFailedException;
+import kin.sdk.migration.common.exception.AccountNotActivatedException;
+import kin.sdk.migration.common.exception.AccountNotFoundException;
+import kin.sdk.migration.common.exception.CreateAccountException;
+import kin.sdk.migration.common.exception.InsufficientKinException;
+import kin.sdk.migration.common.exception.TransactionFailedException;
 
 public class ErrorUtil {
 
@@ -92,7 +92,7 @@ public class ErrorUtil {
 	}
 
 	private static String getMessageOrDefault(Error error, final String defaultMsg) {
-		return error != null && StringUtil.isEmpty(error.getMessage()) ? error.getMessage() : defaultMsg;
+		return error != null && !StringUtil.isEmpty(error.getMessage()) ? error.getMessage() : defaultMsg;
 	}
 
 	private static String getMessage(Throwable throwable) {

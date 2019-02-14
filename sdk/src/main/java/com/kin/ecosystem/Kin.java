@@ -60,9 +60,8 @@ import com.kin.ecosystem.recovery.BackupAndRestore;
 import com.kin.ecosystem.recovery.BackupAndRestoreImpl;
 import com.kin.ecosystem.splash.view.SplashActivity;
 import java.util.concurrent.atomic.AtomicBoolean;
-import kin.core.KinClient;
-import kin.core.ServiceProvider;
-
+import kin.sdk.migration.MigrationManager;
+import kin.sdk.migration.MigrationNetworkInfo;
 
 public class Kin {
 
@@ -76,16 +75,20 @@ public class Kin {
 	private static volatile String environmentName;
 
 	private final ExecutorsUtil executorsUtil;
+	private final KinContext kinContext;
 
-	private Kin() {
+	private Kin(Context appContext) {
 		executorsUtil = new ExecutorsUtil();
+		// use application context to avoid leaks.
+		kinContext = new KinContext(appContext.getApplicationContext());
+
 	}
 
-	private static Kin getInstance() {
+	private static Kin getInstance(Context appContext) {
 		if (instance == null) {
 			synchronized (Kin.class) {
 				if (instance == null) {
-					instance = new Kin();
+					instance = new Kin(appContext);
 				}
 			}
 		}
@@ -102,52 +105,44 @@ public class Kin {
 	 */
 	public synchronized static void initialize(Context appContext) throws ClientException {
 		if (isInstanceNull()) {
-			instance = getInstance();
-			// use application context to avoid leaks.
-			appContext = appContext.getApplicationContext();
+			instance = getInstance(appContext);
 
 			//Load data from manifest, can throw ClientException if no data available.
-			loadDefaultsFromMetadata(appContext);
+			loadDefaultsFromMetadata(getKinContext());
 
 			//Set Environment
 			ConfigurationImpl.init(environmentName);
-			KinEnvironment kinEnvironment = ConfigurationImpl.getInstance().getEnvironment();
 			eventLogger = EventLoggerImpl.getInstance();
-			final String networkUrl = kinEnvironment.getBlockchainNetworkUrl();
-			final String networkId = kinEnvironment.getBlockchainPassphrase();
-			final String issuer = kinEnvironment.getIssuer();
 
 			AuthRepository
-				.init(AuthLocalData.getInstance(appContext), AuthRemoteData.getInstance(instance.executorsUtil));
+				.init(AuthLocalData.getInstance(getKinContext()), AuthRemoteData.getInstance(instance.executorsUtil));
 
-			KinClient kinClient = new KinClient(appContext, new ServiceProvider(networkUrl, networkId) {
-				@Override
-				protected String getIssuerAccountId() {
-					return issuer;
-				}
-			}, KIN_ECOSYSTEM_STORE_PREFIX_KEY);
-			BlockchainSourceImpl.init(eventLogger, kinClient, BlockchainSourceLocal.getInstance(appContext),
+			BlockchainSourceImpl.init(eventLogger, BlockchainSourceLocal.getInstance(getKinContext()),
 				AuthRepository.getInstance());
 
-			EventCommonDataUtil.setBaseData(appContext);
+			EventCommonDataUtil.setBaseData(getKinContext());
 
 			AccountManagerImpl
-				.init(AccountManagerLocal.getInstance(appContext), eventLogger, AuthRepository.getInstance(),
+				.init(AccountManagerLocal.getInstance(getKinContext()), eventLogger, AuthRepository.getInstance(),
 					BlockchainSourceImpl.getInstance());
 
 			OrderRepository.init(BlockchainSourceImpl.getInstance(),
 				eventLogger,
 				OrderRemoteData.getInstance(instance.executorsUtil),
-				OrderLocalData.getInstance(appContext, instance.executorsUtil));
+				OrderLocalData.getInstance(getKinContext(), instance.executorsUtil));
 
 			OfferRepository.init(OfferRemoteData.getInstance(instance.executorsUtil), OrderRepository.getInstance());
 
-			DeviceUtils.init(appContext);
+			DeviceUtils.init(getKinContext());
 
 			if (AuthRepository.getInstance().getAppID() != null) {
 				eventLogger.send(KinSdkInitiated.create());
 			}
 		}
+	}
+
+	private static Context getKinContext() {
+		return instance.kinContext.getApplicationContext();
 	}
 
 	private static void loadDefaultsFromMetadata(Context context) throws ClientException {
@@ -214,9 +209,12 @@ public class Kin {
 					break;
 				case UserLoginState.SAME_USER:
 					break;
+
 			}
 
 			AuthRepository.getInstance().setJWT(jwt);
+			BlockchainSourceImpl.getInstance().setMigrationManager(getMigrationManager(
+				getKinContext(), AuthRepository.getInstance().getAppID()));
 			AuthRepository.getInstance().getAccountInfo(new KinCallback<AccountInfo>() {
 				@Override
 				public void onResponse(AccountInfo accountInfo) {
@@ -299,6 +297,28 @@ public class Kin {
 				loginCallback.onFailure(exception);
 			}
 		});
+	}
+
+	private static MigrationManager getMigrationManager(Context context,@NonNull String appId) {
+		KinEnvironment kinEnvironment = ConfigurationImpl.getInstance().getEnvironment();
+
+		final String oldNetworkUrl = kinEnvironment.getOldBlockchainNetworkUrl();
+		final String oldNetworkId = kinEnvironment.getOldBlockchainPassphrase();
+
+		final String newNetworkUrl = kinEnvironment.getNewBlockchainNetworkUrl();
+		final String newNetworkId = kinEnvironment.getNewBlockchainPassphrase();
+
+		final String issuer = kinEnvironment.getOldBlockchainIssuer();
+		final String migrationServiceUrl = kinEnvironment.getMigrationServiceUrl();
+
+		MigrationNetworkInfo migrationNetworkInfo = new MigrationNetworkInfo(oldNetworkUrl, oldNetworkId,
+			newNetworkUrl, newNetworkId, issuer, migrationServiceUrl);
+
+		MigrationManager migrationManager = new MigrationManager(context, appId, migrationNetworkInfo,
+			new KinBlockchainVersionProvider(appId),
+			new MigrationEventsListener(EventLoggerImpl.getInstance()), KIN_ECOSYSTEM_STORE_PREFIX_KEY);
+		migrationManager.enableLogs(Logger.isEnabled());
+		return migrationManager;
 	}
 
 	private static String getMessage(KinEcosystemException exception) {

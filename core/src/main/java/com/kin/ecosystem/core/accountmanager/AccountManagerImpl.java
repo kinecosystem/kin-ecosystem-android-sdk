@@ -13,8 +13,8 @@ import com.kin.ecosystem.core.bi.events.WalletCreationSucceeded;
 import com.kin.ecosystem.core.data.auth.AuthDataSource;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.util.ErrorUtil;
-import kin.core.KinAccount;
-import kin.core.ListenerRegistration;
+import kin.sdk.migration.common.interfaces.IKinAccount;
+import kin.sdk.migration.common.interfaces.IListenerRegistration;
 
 public class AccountManagerImpl implements AccountManager {
 
@@ -29,7 +29,7 @@ public class AccountManagerImpl implements AccountManager {
 	private final ObservableData<Integer> accountState;
 	private KinEcosystemException error;
 
-	private ListenerRegistration accountCreationRegistration;
+	private IListenerRegistration accountCreationRegistration;
 
 	private AccountManagerImpl(@NonNull final AccountManager.Local local,
 		@NonNull final EventLogger eventLogger,
@@ -195,7 +195,7 @@ public class AccountManagerImpl implements AccountManager {
 		});
 	}
 
-	private KinAccount getKinAccount() {
+	private IKinAccount getKinAccount() {
 		return blockchainSource.getKinAccount();
 	}
 

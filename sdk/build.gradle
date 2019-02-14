@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply from: '../dependencies.gradle'
 //publish to jitpack
 apply plugin: 'maven'
@@ -26,9 +27,14 @@ dependencies {
     implementation devDependencies.recyclerView_v7
     implementation devDependencies.constraintLayout
     implementation devDependencies.picasso
+    implementation devDependencies.kotlin
 
     testImplementation project(':test-base')
     testImplementation testingDependencies.junit
     testImplementation testingDependencies.mockito
     testImplementation testingDependencies.robolectric
+
+}
+repositories {
+    mavenCentral()
 }

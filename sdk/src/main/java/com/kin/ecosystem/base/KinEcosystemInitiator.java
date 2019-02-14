@@ -8,7 +8,7 @@ import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
-import kin.core.KinAccount;
+import kin.sdk.migration.common.interfaces.IKinAccount;
 
 final class KinEcosystemInitiator {
 
@@ -21,7 +21,7 @@ final class KinEcosystemInitiator {
 		try {
 			Kin.initialize(context);
 			// If we had process restart we should load the account.
-			KinAccount account = BlockchainSourceImpl.getInstance().getKinAccount();
+			IKinAccount account = BlockchainSourceImpl.getInstance().getKinAccount();
 			if (account == null) {
 				final String kinUserId = AuthRepository.getInstance().getEcosystemUserID();
 				BlockchainSourceImpl.getInstance().loadAccount(kinUserId);

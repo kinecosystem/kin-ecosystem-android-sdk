@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
-import kin.core.exception.InsufficientKinException;
+import kin.sdk.migration.common.exception.InsufficientKinException;
 
 class CreateExternalOrderCall extends Thread {
 

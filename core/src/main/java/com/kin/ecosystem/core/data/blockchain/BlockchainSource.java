@@ -11,7 +11,7 @@ import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import kin.core.KinAccount;
+import kin.sdk.migration.common.interfaces.IKinAccount;
 
 public interface BlockchainSource {
 
@@ -26,7 +26,7 @@ public interface BlockchainSource {
 	 * Getting the current account.
 	 */
 	@Nullable
-	KinAccount getKinAccount();
+	IKinAccount getKinAccount();
 
 	/**
 	 * Start a polling call to account's balance to check if account was created.
