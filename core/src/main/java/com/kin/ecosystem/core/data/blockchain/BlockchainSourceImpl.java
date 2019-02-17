@@ -220,8 +220,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 					//TODO return whitelisted transaction
 					return null;
 				}
-			}, orderID).run(
-				new ResultCallback<ITransactionId>() {
+			}, orderID).run(new ResultCallback<ITransactionId>() {
 					@Override
 					public void onResult(ITransactionId result) {
 						eventLogger
