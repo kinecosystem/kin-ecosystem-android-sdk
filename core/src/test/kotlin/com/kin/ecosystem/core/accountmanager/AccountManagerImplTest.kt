@@ -6,6 +6,7 @@ import com.kin.ecosystem.core.accountmanager.AccountManager.*
 import com.kin.ecosystem.core.bi.EventLogger
 import com.kin.ecosystem.core.data.auth.AuthDataSource
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource
+import com.kin.ecosystem.core.network.model.AccountInfo
 import com.kin.ecosystem.core.network.model.AuthToken
 import com.nhaarman.mockitokotlin2.*
 import kin.core.BlockchainEvents
@@ -30,8 +31,8 @@ class AccountManagerImplTest : BaseTestClass() {
 
     private val eventLogger: EventLogger = mock()
     private val authRepository: AuthDataSource = mock {
-        val authTokenCaptor = argumentCaptor<KinCallback<AuthToken>>()
-        on { getAuthToken(authTokenCaptor.capture()) } doAnswer { authTokenCaptor.firstValue.onResponse(any()) }
+        val authTokenCaptor = argumentCaptor<KinCallback<AccountInfo>>()
+        on { getAccountInfo(authTokenCaptor.capture()) } doAnswer { authTokenCaptor.firstValue.onResponse(any()) }
     }
 
     private val blockchainSource: BlockchainSource = mock {
@@ -114,10 +115,11 @@ class AccountManagerImplTest : BaseTestClass() {
 
         accountManager.addAccountStateObserver(stateObserver)
         accountManager.start()
-        argumentCaptor<EventListener<Void>>().apply {
-            verify(blockchainEvents).addAccountCreationListener(capture())
-            firstValue.onEvent(null)
+        argumentCaptor<KinCallback<Void>>().apply {
+            verify(blockchainSource).isAccountCreated(capture())
+            firstValue.onResponse(null)
         }
+
 
         assertEquals(listOf(1, 1, 2, 4), stateList)
     }
@@ -150,9 +152,9 @@ class AccountManagerImplTest : BaseTestClass() {
         whenever(local.accountState).doReturn(REQUIRE_CREATION)
         accountManager.addAccountStateObserver(stateObserver)
         accountManager.retry()
-        argumentCaptor<EventListener<Void>>().apply {
-            verify(blockchainEvents).addAccountCreationListener(capture())
-            firstValue.onEvent(null)
+        argumentCaptor<KinCallback<Void>>().apply {
+            verify(blockchainSource).isAccountCreated(capture())
+            firstValue.onResponse(null)
         }
 
         assertEquals(listOf(5, 1, 2, 4).toList(), statesArray)

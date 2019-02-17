@@ -41,13 +41,14 @@ public class OrderRepository implements OrderDataSource {
 
 	private static final String TAG = OrderRepository.class.getSimpleName();
 
-	private static OrderRepository instance = null;
+	private static volatile OrderRepository instance = null;
 	private final OrderDataSource.Local localData;
 	private final OrderDataSource.Remote remoteData;
 
 	private final BlockchainSource blockchainSource;
 	private final EventLogger eventLogger;
 
+	@Nullable
 	private OrderList cachedOrderList;
 	private ObservableData<OpenOrder> cachedOpenOrder = ObservableData.create();
 	private ObservableData<Order> orderWatcher = ObservableData.create();
@@ -86,6 +87,7 @@ public class OrderRepository implements OrderDataSource {
 		return instance;
 	}
 
+	@Nullable
 	public OrderList getAllCachedOrderHistory() {
 		return cachedOrderList;
 	}
@@ -503,6 +505,11 @@ public class OrderRepository implements OrderDataSource {
 					callback.onFailure(ErrorUtil.fromApiException(e));
 				}
 			});
+	}
+
+	@Override
+	public void logout() {
+		cachedOrderList = null;
 	}
 
 	private void decrementCount() {

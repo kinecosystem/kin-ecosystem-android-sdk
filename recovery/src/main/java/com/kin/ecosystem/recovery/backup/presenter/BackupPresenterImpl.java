@@ -52,7 +52,7 @@ public class BackupPresenterImpl extends BasePresenterImpl<BackupView> implement
 		} else {
 			if (view != null) {
 				if (!isBackupSucceed && step == STEP_CREATE_PASSWORD) {
-					callbackManager.sendCancelledResult();
+					callbackManager.setCancelledResult();
 				}
 				step--;
 				view.onBackButtonClicked();

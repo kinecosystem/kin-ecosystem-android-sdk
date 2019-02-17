@@ -21,6 +21,7 @@ dependencies {
 
     implementation project(':core')
     api project(':common')
+    implementation project(':transfer')
 
     implementation devDependencies.appCompat_v7
     implementation devDependencies.recyclerView_v7

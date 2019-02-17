@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
-import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
@@ -13,9 +12,7 @@ import com.kin.ecosystem.core.bi.events.StellarAccountCreationRequested;
 import com.kin.ecosystem.core.bi.events.WalletCreationSucceeded;
 import com.kin.ecosystem.core.data.auth.AuthDataSource;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
-import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.util.ErrorUtil;
-import kin.core.EventListener;
 import kin.core.KinAccount;
 import kin.core.ListenerRegistration;
 
@@ -97,12 +94,18 @@ public class AccountManagerImpl implements AccountManager {
 	}
 
 	@Override
+	public void logout() {
+		removeAccountCreationRegistration();
+		accountState.removeAllObservers();
+		accountState.postValue(REQUIRE_CREATION);
+		local.logout();
+	}
+
+	@Override
 	public void start() {
-		if (getKinAccount() != null) {
+		if (getKinAccount() != null && !isAccountCreated()) {
 			Logger.log(new Log().withTag(TAG).put("setAccountState", "start"));
-			if (getAccountState() != CREATION_COMPLETED) {
-				this.setAccountState(local.getAccountState());
-			}
+			this.setAccountState(local.getAccountState());
 		}
 	}
 
@@ -116,34 +119,23 @@ public class AccountManagerImpl implements AccountManager {
 				case REQUIRE_CREATION:
 					eventLogger.send(StellarAccountCreationRequested.create());
 					Logger.log(new Log().withTag(TAG).put("setAccountState", "REQUIRE_CREATION"));
-					// Trigger account creation from server side.
-					authRepository.getAuthToken(new KinCallback<AuthToken>() {
-						@Override
-						public void onResponse(AuthToken response) {
-							setAccountState(PENDING_CREATION);
-						}
-
-						@Override
-						public void onFailure(KinEcosystemException error) {
-							instance.error = error;
-							setAccountState(ERROR);
-						}
-					});
+					setAccountState(PENDING_CREATION);
 					break;
 				case PENDING_CREATION:
 					Logger.log(new Log().withTag(TAG).put("setAccountState", "PENDING_CREATION"));
 					// Start listen for account creation on the blockchain side.
-					if (accountCreationRegistration != null) {
-						removeAccountCreationRegistration();
-					}
-					accountCreationRegistration = getKinAccount().blockchainEvents()
-						.addAccountCreationListener(new EventListener<Void>() {
-							@Override
-							public void onEvent(Void data) {
-								removeAccountCreationRegistration();
-								setAccountState(CREATION_COMPLETED);
-							}
-						});
+					blockchainSource.isAccountCreated(new KinCallback<Void>() {
+						@Override
+						public void onResponse(Void response) {
+							setAccountState(CREATION_COMPLETED);
+						}
+
+						@Override
+						public void onFailure(KinEcosystemException exception) {
+							instance.error = exception;
+							setAccountState(ERROR);
+						}
+					});
 					break;
 				case REQUIRE_TRUSTLINE:
 					///////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,8 +150,8 @@ public class AccountManagerImpl implements AccountManager {
 						}
 
 						@Override
-						public void onFailure(KinEcosystemException error) {
-							instance.error = error;
+						public void onFailure(KinEcosystemException exception) {
+							instance.error = exception;
 							setAccountState(ERROR);
 						}
 					});
@@ -187,7 +179,7 @@ public class AccountManagerImpl implements AccountManager {
 			@Override
 			public void onResponse(Boolean response) {
 				//switch to the new KinAccount
-				if(blockchainSource.updateActiveAccount(accountIndex)) {
+				if (blockchainSource.updateActiveAccount(accountIndex)) {
 					callback.onResponse(response);
 				} else {
 					callback.onFailure(ErrorUtil.createAccountCannotLoadedException(accountIndex));
@@ -208,8 +200,10 @@ public class AccountManagerImpl implements AccountManager {
 	}
 
 	private void removeAccountCreationRegistration() {
-		accountCreationRegistration.remove();
-		accountCreationRegistration = null;
+		if (accountCreationRegistration != null) {
+			accountCreationRegistration.remove();
+			accountCreationRegistration = null;
+		}
 	}
 
 	private boolean isValidState(int currentState, int newState) {

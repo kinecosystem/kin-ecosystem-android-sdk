@@ -2,17 +2,18 @@ package com.kin.ecosystem.core.data.auth;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.core.network.ApiCallback;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.api.AuthApi;
-import com.kin.ecosystem.core.network.model.SignInData;
+import com.kin.ecosystem.core.network.model.AccountInfo;
+import com.kin.ecosystem.core.network.model.AuthToken;
+import com.kin.ecosystem.core.network.model.JWT;
 import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.network.model.UserProperties;
+import com.kin.ecosystem.core.util.ExecutorsUtil;
 import java.util.List;
 import java.util.Map;
-import com.kin.ecosystem.common.Callback;
-import com.kin.ecosystem.core.network.model.AuthToken;
-import com.kin.ecosystem.core.util.ExecutorsUtil;
 
 public class AuthRemoteData implements AuthDataSource.Remote {
 
@@ -23,8 +24,6 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 
 	private final AuthApi authApi;
 	private final ExecutorsUtil executorsUtil;
-
-	private SignInData signInData;
 
 	private AuthRemoteData(@NonNull ExecutorsUtil executorsUtil) {
 		this.authApi = new AuthApi();
@@ -44,14 +43,9 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 	}
 
 	@Override
-	public void setSignInData(@NonNull SignInData signInData) {
-		this.signInData = signInData;
-	}
-
-	@Override
-	public void getAuthToken(@NonNull final Callback<AuthToken, ApiException> callback) {
+	public void getAccountInfo(@NonNull JWT jwt, @NonNull final Callback<AccountInfo, ApiException> callback) {
 		try {
-			authApi.signInAsync(signInData, "", new ApiCallback<AuthToken>() {
+			authApi.signInAsync(jwt, "", new ApiCallback<AccountInfo>() {
 				@Override
 				public void onFailure(final ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
 					executorsUtil.mainThread().execute(new Runnable() {
@@ -63,23 +57,14 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 				}
 
 				@Override
-				public void onSuccess(final AuthToken result, int statusCode, Map<String, List<String>> responseHeaders) {
+				public void onSuccess(final AccountInfo result, int statusCode,
+					Map<String, List<String>> responseHeaders) {
 					executorsUtil.mainThread().execute(new Runnable() {
 						@Override
 						public void run() {
 							callback.onResponse(result);
 						}
 					});
-				}
-
-				@Override
-				public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
-
-				}
-
-				@Override
-				public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
-
 				}
 			});
 		} catch (final ApiException e) {
@@ -94,9 +79,9 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 
 	@Override
 	@Nullable
-	public AuthToken getAuthTokenSync() {
+	public AccountInfo getAccountInfoSync(@NonNull JWT jwt) {
 		try {
-			return authApi.signIn(signInData, "");
+			return authApi.signIn(jwt, "");
 		} catch (ApiException e) {
 			return null;
 		}
@@ -125,16 +110,6 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 						}
 					});
 				}
-
-				@Override
-				public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
-
-				}
-
-				@Override
-				public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
-
-				}
 			});
 		} catch (final ApiException e) {
 			executorsUtil.mainThread().execute(new Runnable() {
@@ -161,7 +136,8 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 				}
 
 				@Override
-				public void onSuccess(final UserProfile result, int statusCode, Map<String, List<String>> responseHeaders) {
+				public void onSuccess(final UserProfile result, int statusCode,
+					Map<String, List<String>> responseHeaders) {
 					executorsUtil.mainThread().execute(new Runnable() {
 						@Override
 						public void run() {
@@ -171,17 +147,8 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 
 				}
 
-				@Override
-				public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
-
-				}
-
-				@Override
-				public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
-
-				}
 			});
-		} catch (final ApiException e){
+		} catch (final ApiException e) {
 			executorsUtil.mainThread().execute(new Runnable() {
 				@Override
 				public void run() {
@@ -193,7 +160,8 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 
 
 	@Override
-	public void updateWalletAddress(@NonNull UserProperties userProperties, @NonNull final Callback<Void, ApiException> callback) {
+	public void updateWalletAddress(@NonNull UserProperties userProperties,
+		@NonNull final Callback<Void, ApiException> callback) {
 		try {
 			authApi.updateUserAsync(userProperties, new ApiCallback<Void>() {
 				@Override
@@ -215,16 +183,6 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 						}
 					});
 				}
-
-				@Override
-				public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
-
-				}
-
-				@Override
-				public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
-
-				}
 			});
 		} catch (final ApiException e) {
 			executorsUtil.mainThread().execute(new Runnable() {
@@ -233,6 +191,14 @@ public class AuthRemoteData implements AuthDataSource.Remote {
 					callback.onFailure(e);
 				}
 			});
+		}
+	}
+
+	@Override
+	public void logout(@NonNull final String authToken) {
+		try {
+			authApi.logoutAsync(authToken);
+		} catch (ApiException ignored) {
 		}
 	}
 }

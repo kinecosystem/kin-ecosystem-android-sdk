@@ -9,15 +9,18 @@ import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import kin.core.KinAccount;
 
 public interface BlockchainSource {
 
 	/**
 	 * Create account if there is no accounts in local
+	 * @param kinUserId the logged in account
 	 * @throws BlockchainException could not load the account, or could not create a new account.
 	 */
-	void createAccount() throws BlockchainException;
+	void loadAccount(String kinUserId) throws BlockchainException;
 
 	/**
 	 * Getting the current account.
@@ -26,9 +29,10 @@ public interface BlockchainSource {
 	KinAccount getKinAccount();
 
 	/**
-	 * @param appID - appID - will be included in the memo for each transaction.
+	 * Start a polling call to account's balance to check if account was created.
+	 * @param callback - onResponse if account was created, otherwise onFailure will be triggered.
 	 */
-	void setAppID(String appID);
+	void isAccountCreated(KinCallback<Void> callback);
 
 	/**
 	 * Send transaction to the network
@@ -49,6 +53,11 @@ public interface BlockchainSource {
 	 * Get balance from network
 	 */
 	void getBalance(@Nullable final KinCallback<Balance> callback);
+
+	/**
+	 * Get balance from network
+	 */
+	Balance getBalanceSync() throws ClientException, BlockchainException;
 
 	/**
 	 * Reconnect the balance connection, due to connection lose.
@@ -106,6 +115,8 @@ public interface BlockchainSource {
 	 */
 	boolean updateActiveAccount(int accountIndex);
 
+	void logout();
+
 	interface Local {
 
 		int getBalance();
@@ -114,6 +125,17 @@ public interface BlockchainSource {
 
 		int getAccountIndex();
 
-		void setAccountIndex(int index);
+		@Nullable
+		String getLastWalletAddress(String kinUserId);
+
+		void setActiveUserWallet(String kinUserId, String publicAddress);
+
+		void removeAccountIndexKey();
+
+		void logout();
+
+		boolean getIsMigrated();
+
+		void setDidMigrate();
 	}
 }

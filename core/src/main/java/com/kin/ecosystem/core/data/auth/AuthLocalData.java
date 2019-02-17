@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.network.model.AuthToken;
-import com.kin.ecosystem.core.network.model.SignInData;
-import com.kin.ecosystem.core.network.model.SignInData.SignInTypeEnum;
+import com.kin.ecosystem.core.network.model.User;
+import com.kin.ecosystem.core.util.StringUtil;
 
 
 public class AuthLocalData implements AuthDataSource.Local {
@@ -20,11 +22,12 @@ public class AuthLocalData implements AuthDataSource.Local {
 	private static final String ECOSYSTEM_USER_ID_KEY = "ecosystem_user_id";
 	private static final String APP_ID_KEY = "app_id";
 	private static final String DEVICE_ID_KEY = "device_id";
-	private static final String PUBLIC_ADDRESS_KEY = "public_address";
-	private static final String TYPE_KEY = "type";
 
 	private static final String TOKEN_KEY = "token";
 	private static final String TOKEN_EXPIRATION_DATE_KEY = "token_expiration_date";
+
+	private static final String CREATED_DATE_KEY = "created_date";
+	private static final String CURRENT_WALLET_ON_SEVER_KEY = "current_wallet_on_server";
 
 	private final SharedPreferences signInSharedPreferences;
 
@@ -45,44 +48,37 @@ public class AuthLocalData implements AuthDataSource.Local {
 	}
 
 	@Override
-	public void setSignInData(@NonNull final SignInData signInData) {
+	public void setJWT(@NonNull final JwtBody jwtBody) {
 		Editor editor = signInSharedPreferences.edit();
-		editor.putString(DEVICE_ID_KEY, signInData.getDeviceId());
-		editor.putString(PUBLIC_ADDRESS_KEY, signInData.getWalletAddress());
-		editor.putString(TYPE_KEY, signInData.getSignInType().getValue());
-
-		if (signInData.getSignInType() == SignInTypeEnum.JWT) {
-			editor.putString(JWT_KEY, signInData.getJwt());
-		} else {
-			editor.putString(USER_ID_KEY, signInData.getUserId());
-			editor.putString(APP_ID_KEY, signInData.getAppId());
-		}
+		editor.putString(DEVICE_ID_KEY, jwtBody.getDeviceId());
+		editor.putString(USER_ID_KEY, jwtBody.getUserId());
+		editor.putString(APP_ID_KEY, jwtBody.getAppId());
 		editor.apply();
 	}
 
 	@Override
-	public SignInData getSignInData() {
-		final String deviceID = signInSharedPreferences.getString(DEVICE_ID_KEY, null);
-		final String publicAddress = signInSharedPreferences.getString(PUBLIC_ADDRESS_KEY, null);
-		final String signInType = signInSharedPreferences.getString(TYPE_KEY, null);
-		final String jwt = signInSharedPreferences.getString(JWT_KEY, null);
-		final String userID = signInSharedPreferences.getString(USER_ID_KEY, null);
-		final String appID = signInSharedPreferences.getString(APP_ID_KEY, null);
-		if (deviceID != null && publicAddress != null && signInType != null && jwt != null && userID != null
-			&& appID != null) {
-			return new SignInData().deviceId(deviceID).walletAddress(publicAddress)
-				.signInType(SignInTypeEnum.fromValue(signInType)).userId(userID).appId(appID);
-		} else {
-			return null;
-		}
+	public String getJWT() {
+		return signInSharedPreferences.getString(JWT_KEY, null);
 	}
 
 	@Override
-	public void setAuthToken(@NonNull final AuthToken authToken) {
+	public void setAccountInfo(@NonNull AccountInfo accountInfo) {
+		if (accountInfo.getAuthToken() != null) {
+			setUser(accountInfo.getUser());
+			setAuthToken(accountInfo.getAuthToken());
+		}
+	}
+
+	private void setUser(User user) {
+		Editor editor = signInSharedPreferences.edit();
+		editor.putString(CREATED_DATE_KEY, user.getCreatedDate());
+		editor.putString(CURRENT_WALLET_ON_SEVER_KEY, user.getCurrentWallet());
+		editor.apply();
+	}
+
+	private void setAuthToken(@NonNull final AuthToken authToken) {
 		Editor editor = signInSharedPreferences.edit();
 		editor.putString(TOKEN_KEY, authToken.getToken());
-		editor.putString(APP_ID_KEY, authToken.getAppID());
-		editor.putString(USER_ID_KEY, authToken.getUserID());
 		editor.putString(ECOSYSTEM_USER_ID_KEY, authToken.getEcosystemUserID());
 		editor.putString(TOKEN_EXPIRATION_DATE_KEY, authToken.getExpirationDate());
 		editor.apply();
@@ -109,6 +105,31 @@ public class AuthLocalData implements AuthDataSource.Local {
 	}
 
 	@Override
+	@Nullable
+	public AccountInfo getAccountInfo() {
+		AuthToken authToken = getAuthTokenSync();
+		User user = getUser();
+
+		if(authToken != null && user != null) {
+			return new AccountInfo(authToken, user);
+		} else {
+			return null;
+		}
+	}
+
+	@Nullable
+	private User getUser() {
+		String createdDate = signInSharedPreferences.getString(CREATED_DATE_KEY, null);
+		String currentWalletOnServer = signInSharedPreferences.getString(CURRENT_WALLET_ON_SEVER_KEY, null);
+		if (!StringUtil.isEmpty(createdDate) && !StringUtil.isEmpty(currentWalletOnServer)) {
+			return new User(createdDate, currentWalletOnServer);
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	@Nullable
 	public AuthToken getAuthTokenSync() {
 		String token = signInSharedPreferences.getString(TOKEN_KEY, null);
 		String appID = signInSharedPreferences.getString(APP_ID_KEY, null);
@@ -120,6 +141,17 @@ public class AuthLocalData implements AuthDataSource.Local {
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public void logout() {
+		Editor editor = signInSharedPreferences.edit();
+		editor.remove(JWT_KEY);
+		editor.remove(USER_ID_KEY);
+		editor.remove(ECOSYSTEM_USER_ID_KEY);
+		editor.remove(TOKEN_KEY);
+		editor.remove(TOKEN_EXPIRATION_DATE_KEY);
+		editor.apply();
 	}
 }
 

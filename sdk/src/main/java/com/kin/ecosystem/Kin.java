@@ -14,7 +14,6 @@ import android.support.annotation.Nullable;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.KinEnvironment;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
-import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
@@ -23,17 +22,24 @@ import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.common.model.UserStats;
-import com.kin.ecosystem.common.model.WhitelistData;
+import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
+import com.kin.ecosystem.core.accountmanager.AccountManager;
+import com.kin.ecosystem.core.accountmanager.AccountManager.AccountState;
 import com.kin.ecosystem.core.accountmanager.AccountManagerImpl;
 import com.kin.ecosystem.core.accountmanager.AccountManagerLocal;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.EventLoggerImpl;
 import com.kin.ecosystem.core.bi.events.EntrypointButtonTapped;
 import com.kin.ecosystem.core.bi.events.KinSdkInitiated;
+import com.kin.ecosystem.core.bi.events.UserLoginFailed;
+import com.kin.ecosystem.core.bi.events.UserLoginRequested;
+import com.kin.ecosystem.core.bi.events.UserLoginSucceeded;
+import com.kin.ecosystem.core.bi.events.UserLogoutRequested;
 import com.kin.ecosystem.core.data.auth.AuthLocalData;
 import com.kin.ecosystem.core.data.auth.AuthRemoteData;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
+import com.kin.ecosystem.core.data.auth.UserLoginState;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceLocal;
 import com.kin.ecosystem.core.data.internal.ConfigurationImpl;
@@ -42,16 +48,18 @@ import com.kin.ecosystem.core.data.offer.OfferRepository;
 import com.kin.ecosystem.core.data.order.OrderLocalData;
 import com.kin.ecosystem.core.data.order.OrderRemoteData;
 import com.kin.ecosystem.core.data.order.OrderRepository;
-import com.kin.ecosystem.core.network.model.AuthToken;
-import com.kin.ecosystem.core.network.model.SignInData;
-import com.kin.ecosystem.core.network.model.SignInData.SignInTypeEnum;
+import com.kin.ecosystem.core.data.settings.SettingsDataSourceImpl;
+import com.kin.ecosystem.core.data.settings.SettingsDataSourceLocal;
+import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
 import com.kin.ecosystem.core.util.Validator;
 import com.kin.ecosystem.main.view.EcosystemActivity;
+import com.kin.ecosystem.recovery.BackupAndRestore;
+import com.kin.ecosystem.recovery.BackupAndRestoreImpl;
 import com.kin.ecosystem.splash.view.SplashActivity;
-import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import kin.core.KinClient;
 import kin.core.ServiceProvider;
 
@@ -64,7 +72,7 @@ public class Kin {
 	private static volatile Kin instance;
 
 	private static EventLogger eventLogger;
-	private static volatile boolean isAccountLoggedIn = false;
+	private static volatile AtomicBoolean isAccountLoggedIn = new AtomicBoolean(false);
 	private static volatile String environmentName;
 
 	private final ExecutorsUtil executorsUtil;
@@ -109,16 +117,17 @@ public class Kin {
 			final String networkId = kinEnvironment.getBlockchainPassphrase();
 			final String issuer = kinEnvironment.getIssuer();
 
+			AuthRepository
+				.init(AuthLocalData.getInstance(appContext), AuthRemoteData.getInstance(instance.executorsUtil));
+
 			KinClient kinClient = new KinClient(appContext, new ServiceProvider(networkUrl, networkId) {
 				@Override
 				protected String getIssuerAccountId() {
 					return issuer;
 				}
 			}, KIN_ECOSYSTEM_STORE_PREFIX_KEY);
-			BlockchainSourceImpl.init(eventLogger, kinClient, BlockchainSourceLocal.getInstance(appContext));
-
-			AuthRepository
-				.init(AuthLocalData.getInstance(appContext), AuthRemoteData.getInstance(instance.executorsUtil));
+			BlockchainSourceImpl.init(eventLogger, kinClient, BlockchainSourceLocal.getInstance(appContext),
+				AuthRepository.getInstance());
 
 			EventCommonDataUtil.setBaseData(appContext);
 
@@ -135,7 +144,9 @@ public class Kin {
 
 			DeviceUtils.init(appContext);
 
-			eventLogger.send(KinSdkInitiated.create());
+			if (AuthRepository.getInstance().getAppID() != null) {
+				eventLogger.send(KinSdkInitiated.create());
+			}
 		}
 	}
 
@@ -181,111 +192,117 @@ public class Kin {
 
 	/**
 	 * In order to use all the other features in Kin Ecosystem, you should login the user first.
-	 * The whitelist option should be use only for quick integration and testing, not in production.
-	 *
-	 * @param whitelistData data for login
-	 * @param loginCallback a login callback whether login succeed or not.
-	 */
-	public static void login(@NonNull WhitelistData whitelistData, KinCallback<Void> loginCallback) {
-		SignInData signInData = getWhiteListSignInData(whitelistData);
-		internalLogin(signInData, loginCallback);
-	}
-
-	/**
-	 * In order to use all the other features in Kin Ecosystem, you should login the user first.
 	 * This option should be use in production.
 	 *
 	 * @param jwt data for login, please refer to <a href="README.md#generating-the-jwt-token">Generating the jwt token</a> and see more info.
 	 * @param loginCallback a login callback whether login succeed or not.
 	 */
 	public static void login(@NonNull String jwt, KinCallback<Void> loginCallback) {
-		SignInData signInData = getJwtSignInData(jwt);
-		internalLogin(signInData, loginCallback);
+		internalLogin(jwt, loginCallback);
 	}
 
-	private static SignInData getWhiteListSignInData(@NonNull final WhitelistData whitelistData) {
-		return new SignInData()
-			.signInType(SignInTypeEnum.WHITELIST)
-			.userId(whitelistData.getUserID())
-			.appId(whitelistData.getAppID())
-			.apiKey(whitelistData.getApiKey());
-	}
-
-	private static SignInData getJwtSignInData(@NonNull final String jwt) {
-		return new SignInData()
-			.signInType(SignInTypeEnum.JWT)
-			.jwt(jwt);
-	}
-
-	private static void internalLogin(@NonNull SignInData signInData, final KinCallback<Void> loginCallback) {
-		String publicAddress = null;
+	private static void internalLogin(@NonNull final String jwt, final KinCallback<Void> loginCallback) {
 		try {
 			checkInstanceNotNull();
-			try {
-				BlockchainSourceImpl.getInstance().createAccount();
-				publicAddress = BlockchainSourceImpl.getInstance().getPublicAddress();
-			} catch (final BlockchainException exception) {
-				instance.executorsUtil.mainThread().execute(new Runnable() {
-					@Override
-					public void run() {
-						loginCallback.onFailure(exception);
-					}
-				});
+			@UserLoginState final int loginState = AuthRepository.getInstance().getUserLoginState(jwt);
+			switch (loginState) {
+				case UserLoginState.DIFFERENT_USER:
+					logout();
+				case UserLoginState.FIRST:
+					isAccountLoggedIn.getAndSet(false);
+					eventLogger.send(UserLoginRequested.create());
+					break;
+				case UserLoginState.SAME_USER:
+					break;
 			}
+
+			AuthRepository.getInstance().setJWT(jwt);
+			AuthRepository.getInstance().getAccountInfo(new KinCallback<AccountInfo>() {
+				@Override
+				public void onResponse(AccountInfo accountInfo) {
+					String publicAddress;
+					try {
+						BlockchainSourceImpl.getInstance().loadAccount(accountInfo.getAuthToken().getEcosystemUserID());
+						publicAddress = BlockchainSourceImpl.getInstance().getPublicAddress();
+					} catch (final BlockchainException exception) {
+						sendLoginFailed(exception, loginCallback);
+						return;
+					}
+
+					// check server is synced with client, if synced -> skip updateWalletAddress
+					if (publicAddress != null && !publicAddress.equals(accountInfo.getUser().getCurrentWallet())) {
+						AuthRepository.getInstance().updateWalletAddress(publicAddress, new KinCallback<Boolean>() {
+							@Override
+							public void onResponse(Boolean response) {
+								onboard(loginCallback, loginState);
+							}
+
+							@Override
+							public void onFailure(KinEcosystemException exception) {
+								sendLoginFailed(exception, loginCallback);
+							}
+						});
+					} else {
+						onboard(loginCallback, loginState);
+					}
+				}
+
+				@Override
+				public void onFailure(final KinEcosystemException exception) {
+					sendLoginFailed(exception, loginCallback);
+				}
+			});
+
 		} catch (final ClientException exception) {
-			instance.executorsUtil.mainThread().execute(new Runnable() {
-				@Override
-				public void run() {
-					loginCallback.onFailure(exception);
-				}
-			});
+			sendLoginFailed(exception, loginCallback);
 		}
+	}
 
-		String deviceID = AuthRepository.getInstance().getDeviceID();
-		signInData.setDeviceId(deviceID != null ? deviceID : UUID.randomUUID().toString());
-		signInData.setWalletAddress(publicAddress);
-		AuthRepository.getInstance().setSignInData(signInData);
-
-		ObservableData<String> observableData = AuthRepository.getInstance().getAppID();
-		String appID = observableData.getValue();
-		if (appID == null) {
-			observableData.addObserver(new Observer<String>() {
-				@Override
-				public void onChanged(String appID) {
-					BlockchainSourceImpl.getInstance().setAppID(appID);
-					AuthRepository.getInstance().getAppID().removeObserver(this);
-				}
-			});
-		}
-		BlockchainSourceImpl.getInstance().setAppID(appID);
-
-		AuthRepository.getInstance().getAuthToken(new KinCallback<AuthToken>() {
+	private static void onboard(final KinCallback<Void> loginCallback, final int loginState) {
+		AccountManagerImpl.getInstance().addAccountStateObserver(new Observer<Integer>() {
 			@Override
-			public void onResponse(AuthToken response) {
-				isAccountLoggedIn = true;
-				instance.executorsUtil.mainThread().execute(new Runnable() {
-					@Override
-					public void run() {
-						loginCallback.onResponse(null);
-					}
-				});
-
-				if (!AccountManagerImpl.getInstance().isAccountCreated()) {
-					AccountManagerImpl.getInstance().start();
+			public void onChanged(@AccountState Integer accountState) {
+				switch (accountState) {
+					case AccountManager.CREATION_COMPLETED:
+						sendLoginSucceed(loginCallback, loginState);
+						AccountManagerImpl.getInstance().removeAccountStateObserver(this);
+						break;
+					case AccountManager.ERROR:
+						sendLoginFailed(AccountManagerImpl.getInstance().getError(), loginCallback);
+						AccountManagerImpl.getInstance().removeAccountStateObserver(this);
+						break;
 				}
-			}
-
-			@Override
-			public void onFailure(final KinEcosystemException exception) {
-				isAccountLoggedIn = false;
-				instance.executorsUtil.mainThread().execute(new Runnable() {
-					@Override
-					public void run() {
-						loginCallback.onFailure(exception);
-					}
-				});
 			}
 		});
+		AccountManagerImpl.getInstance().start();
+	}
+
+	private static void sendLoginSucceed(final KinCallback<Void> loginCallback, @UserLoginState int loginState) {
+		if (loginState != UserLoginState.SAME_USER) {
+			eventLogger.send(UserLoginSucceeded.create());
+		}
+		isAccountLoggedIn.getAndSet(true);
+		instance.executorsUtil.mainThread().execute(new Runnable() {
+			@Override
+			public void run() {
+				loginCallback.onResponse(null);
+			}
+		});
+	}
+
+	private static void sendLoginFailed(final KinEcosystemException exception, final KinCallback<Void> loginCallback) {
+		eventLogger.send(UserLoginFailed.create(getMessage(exception)));
+		isAccountLoggedIn.getAndSet(false);
+		instance.executorsUtil.mainThread().execute(new Runnable() {
+			@Override
+			public void run() {
+				loginCallback.onFailure(exception);
+			}
+		});
+	}
+
+	private static String getMessage(KinEcosystemException exception) {
+		return exception.getCause() != null ? exception.getCause().getMessage() : exception.getMessage();
 	}
 
 	private static boolean isInstanceNull() {
@@ -293,7 +310,7 @@ public class Kin {
 	}
 
 	private static void checkAccountIsLoggedIn() throws ClientException {
-		if (!isAccountLoggedIn) {
+		if (!isAccountLoggedIn.get()) {
 			throw ErrorUtil.getClientException(ACCOUNT_NOT_LOGGED_IN, null);
 		}
 	}
@@ -302,6 +319,31 @@ public class Kin {
 		if (isInstanceNull()) {
 			throw ErrorUtil.getClientException(SDK_NOT_STARTED, null);
 		}
+	}
+
+	/**
+	 * Logout from the current logged in user.
+	 *
+	 * @throws ClientException - sdk not initialized.
+	 */
+	public static void logout() throws ClientException {
+		checkInstanceNotNull();
+		if (isAccountLoggedIn.compareAndSet(true, false)) {
+			eventLogger.send(UserLogoutRequested.create());
+			Logger.log(new Log().withTag("Kin.java").text("logout").put("isAccountLoggedIn", isAccountLoggedIn));
+			AuthRepository.getInstance().logout();
+			clearCachedData();
+		}
+	}
+
+	/**
+	 * Clear cached old internal data
+	 */
+	private static void clearCachedData() {
+		BlockchainSourceImpl.getInstance().logout();
+		AccountManagerImpl.getInstance().logout();
+		OrderRepository.getInstance().logout();
+		OfferRepository.getInstance().logout();
 	}
 
 	/**
@@ -323,8 +365,8 @@ public class Kin {
 	 * otherwise it will launch Welcome to Kin page and then the experience.
 	 *
 	 * @param activity the activity user can go back to.
-	 * @throws ClientException - sdk not initialized or account not logged in.
 	 * @param experience should be one of {@link EcosystemExperience}
+	 * @throws ClientException - sdk not initialized or account not logged in.
 	 */
 	public static void launchEcosystem(@NonNull final Activity activity, @EcosystemExperience final int experience)
 		throws ClientException {
@@ -344,7 +386,8 @@ public class Kin {
 		launchIntent(activity, splashIntent, experience);
 	}
 
-	private static void navigateToExperience(@NonNull final Activity activity, @EcosystemExperience final int experience) {
+	private static void navigateToExperience(@NonNull final Activity activity,
+		@EcosystemExperience final int experience) {
 		Intent marketplaceIntent = new Intent(activity, EcosystemActivity.class);
 		launchIntent(activity, marketplaceIntent, experience);
 	}
@@ -556,5 +599,12 @@ public class Kin {
 	public static boolean removeNativeOffer(@NonNull NativeOffer nativeOffer) throws ClientException {
 		checkInstanceNotNull();
 		return OfferRepository.getInstance().removeNativeOffer(nativeOffer);
+	}
+
+	public static BackupAndRestore getBackupAndRestoreManager(@NonNull final Activity activity) throws ClientException {
+		checkInstanceNotNull();
+		return new BackupAndRestoreImpl(activity, AccountManagerImpl.getInstance(),
+			eventLogger, BlockchainSourceImpl.getInstance(),
+			new SettingsDataSourceImpl(new SettingsDataSourceLocal(activity.getApplicationContext())));
 	}
 }

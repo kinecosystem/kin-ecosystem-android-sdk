@@ -7,23 +7,23 @@ import static com.kin.ecosystem.settings.view.ISettingsView.ITEM_BACKUP;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.base.BasePresenter;
-import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
-import com.kin.ecosystem.common.exception.KinEcosystemException;
+import com.kin.ecosystem.common.exception.BlockchainException;
+import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
-import com.kin.ecosystem.core.accountmanager.AccountManager;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.RecoveryBackupEvents;
 import com.kin.ecosystem.core.bi.RecoveryRestoreEvents;
-import com.kin.ecosystem.core.bi.events.BackupWalletCompleted;
-import com.kin.ecosystem.core.bi.events.RestoreWalletCompleted;
+import com.kin.ecosystem.core.bi.events.BackupWalletFailed;
+import com.kin.ecosystem.core.bi.events.GeneralEcosystemSdkError;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.settings.SettingsDataSource;
-import com.kin.ecosystem.recovery.BackupCallback;
-import com.kin.ecosystem.recovery.BackupManager;
-import com.kin.ecosystem.recovery.RestoreCallback;
+import com.kin.ecosystem.core.util.StringUtil;
+import com.kin.ecosystem.recovery.BackupAndRestoreCallback;
+import com.kin.ecosystem.recovery.exception.BackupAndRestoreException;
+import com.kin.ecosystem.settings.BackupManager;
 import com.kin.ecosystem.settings.view.ISettingsView;
 import com.kin.ecosystem.settings.view.ISettingsView.IconColor;
 import com.kin.ecosystem.settings.view.ISettingsView.Item;
@@ -35,22 +35,27 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 	private final SettingsDataSource settingsDataSource;
 	private final BlockchainSource blockchainSource;
 	private final EventLogger eventLogger;
-	private final AccountManager accountManager;
 	private BackupManager backupManager;
 
 	private Observer<Balance> balanceObserver;
 	private Balance currentBalance;
+	private String publicAddress;
 
 	public SettingsPresenter(@NonNull final ISettingsView view, @NonNull final SettingsDataSource settingsDataSource,
 		@NonNull final BlockchainSource blockchainSource, @NonNull final BackupManager backupManager,
-		@NonNull final EventLogger eventLogger, AccountManager accountManager) {
+		@NonNull final EventLogger eventLogger) {
 		this.view = view;
 		this.backupManager = backupManager;
 		this.settingsDataSource = settingsDataSource;
 		this.blockchainSource = blockchainSource;
 		this.eventLogger = eventLogger;
-		this.accountManager = accountManager;
 		this.currentBalance = blockchainSource.getBalance();
+		try {
+			this.publicAddress = blockchainSource.getPublicAddress();
+		} catch (ClientException | BlockchainException e) {
+			eventLogger.send(GeneralEcosystemSdkError
+				.create("SettingsPresenter blockchainSource.getPublicAddress() thrown an exception"));
+		}
 		registerToEvents();
 		registerToCallbacks();
 		this.view.attachPresenter(this);
@@ -88,18 +93,20 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 	}
 
 	private void updateSettingsIcon() {
-		if (!settingsDataSource.isBackedUp()) {
-			changeIconColor(ITEM_BACKUP, GRAY);
-			if (isGreaterThenZero(currentBalance)) {
-				changeTouchIndicator(ITEM_BACKUP, true);
-				removeBalanceObserver();
+		if (!StringUtil.isEmpty(publicAddress)) {
+			if (!settingsDataSource.isBackedUp(publicAddress)) {
+				changeIconColor(ITEM_BACKUP, GRAY);
+				if (isGreaterThenZero(currentBalance)) {
+					changeTouchIndicator(ITEM_BACKUP, true);
+					removeBalanceObserver();
+				} else {
+					addBalanceObserver();
+					changeTouchIndicator(ITEM_BACKUP, false);
+				}
 			} else {
-				addBalanceObserver();
+				changeIconColor(ITEM_BACKUP, BLUE);
 				changeTouchIndicator(ITEM_BACKUP, false);
 			}
-		} else {
-			changeIconColor(ITEM_BACKUP, BLUE);
-			changeTouchIndicator(ITEM_BACKUP, false);
 		}
 	}
 
@@ -112,12 +119,20 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 
 	@Override
 	public void backupClicked() {
-		backupManager.backupFlow();
+		try {
+			backupManager.backupFlow();
+		} catch (ClientException e) {
+			// Could not happen in this case.
+		}
 	}
 
 	@Override
 	public void restoreClicked() {
-		backupManager.restoreFlow();
+		try {
+			backupManager.restoreFlow();
+		} catch (ClientException e) {
+			// Could not happen in this case.
+		}
 	}
 
 	@Override
@@ -138,7 +153,7 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 	}
 
 	private void registerToCallbacks() {
-		backupManager.registerBackupCallback(new BackupCallback() {
+		backupManager.registerBackupCallback(new BackupAndRestoreCallback() {
 			@Override
 			public void onSuccess() {
 				onBackupSuccess();
@@ -146,20 +161,19 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 
 			@Override
 			public void onCancel() {
-
+				Logger.log(new Log().withTag(TAG).put("BackupCallback", "onCancel"));
 			}
 
 			@Override
-			public void onFailure(Throwable throwable) {
-
+			public void onFailure(BackupAndRestoreException exception) {
+				eventLogger.send(BackupWalletFailed.create(getErrorMessage(exception)));
 			}
 		});
 
-		backupManager.registerRestoreCallback(new RestoreCallback() {
+		backupManager.registerRestoreCallback(new BackupAndRestoreCallback() {
 			@Override
-			public void onSuccess(int accountIndex) {
+			public void onSuccess() {
 				Logger.log(new Log().withTag(TAG).put("RestoreCallback", "onSuccess"));
-				switchAccount(accountIndex);
 			}
 
 			@Override
@@ -168,24 +182,16 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 			}
 
 			@Override
-			public void onFailure(Throwable throwable) {
-			}
-		});
-	}
-
-	private void switchAccount(int accountIndex) {
-		accountManager.switchAccount(accountIndex, new KinCallback<Boolean>() {
-			@Override
-			public void onResponse(Boolean response) {
-				eventLogger.send(RestoreWalletCompleted.create());
-			}
-
-			@Override
-			public void onFailure(KinEcosystemException exception) {
+			public void onFailure(BackupAndRestoreException throwable) {
 				showCouldNotImportAccountError();
 			}
 		});
 	}
+	private String getErrorMessage(BackupAndRestoreException exception) {
+		return exception != null ? exception.getCause() != null ? exception.getCause().getMessage()
+			: exception.getMessage() : "Backup failed - with unknown reason";
+	}
+
 
 	private void showCouldNotImportAccountError() {
 		if (view != null) {
@@ -194,8 +200,6 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 	}
 
 	private void onBackupSuccess() {
-		eventLogger.send(BackupWalletCompleted.create());
-		settingsDataSource.setIsBackedUp(true);
 		updateSettingsIcon();
 	}
 

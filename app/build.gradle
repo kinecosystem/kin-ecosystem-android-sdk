@@ -42,10 +42,8 @@ android {
 
         loadCredential()
         buildConfigField "String", "SAMPLE_APP_ID", credentialProperties.getProperty("APP_ID")
-        buildConfigField "String", "SAMPLE_API_KEY", credentialProperties.getProperty("API_KEY")
         buildConfigField "String", "RS512_PRIVATE_KEY", credentialProperties.getProperty("RS512_PRIVATE_KEY")
         buildConfigField "String", "RS512_PRIVATE_KEY_ID", credentialProperties.getProperty("RS512_PRIVATE_KEY_ID")
-        buildConfigField "boolean", "IS_JWT_REGISTRATION", credentialProperties.getProperty("IS_JWT_REGISTRATION")
 
         manifestPlaceholders = [crashlytics_api_key: credentialProperties.getProperty("CRASHLYTICS_API_KEY")]
     }
@@ -56,7 +54,28 @@ android {
             debuggable true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
     }
+
+    flavorDimensions "all"
+    productFlavors {
+        production {
+            resValue "string", "app_name", "@string/app_default_name"
+            manifestPlaceholders = [environment: "@string/kinecosystem_environment_production"]
+        }
+        beta {
+            applicationIdSuffix ".beta"
+            resValue "string", "app_name", "Beta"
+            manifestPlaceholders = [environment: "@string/kinecosystem_environment_beta"]
+        }
+        alpha {
+            applicationIdSuffix ".test"
+            resValue "string", "app_name", "test"
+            manifestPlaceholders = [environment: "test"]
+        }
+    }
+
+
 
     android.applicationVariants.all { variant ->
         variant.outputs.all {
@@ -69,7 +88,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':sdk')
 
-   //implementation 'com.github.kinfoundation.kin-ecosystem-android-sdk:sdk:0.3.1'
+   //implementation 'com.github.kinfoundation.kin-ecosystem-android-sdk:sdk:0.8.0'
 
 
     implementation 'io.jsonwebtoken:jjwt:0.9.0'
@@ -90,15 +109,12 @@ dependencies {
 def loadCredential() {
     def crashlytics_demo_api_key = "4b7647b5860d29039e16910e281fcf8d9cad21bb"
     def default_app_id = '"test"'
-    def default_api_key = '"AyINT44OAKagkSav2vzMz"'
     def default_rs512_jwt_private_key = '"MIICXQIBAAKBgQCgOMeb0heN3k9NinbsWpRo3WElwGnoP9UCpKsGLbZAzkgE64fP/thj4CH6xnoRsObl4LFdeh9cekXooS19/A+Q9M0kxlrURq8qvogJPSFERi6S7vzMM1LxGmOcgwLLSp4AGZ5A0GkjFXhiZU1hOfb2WmkKeVTyx22Df6Ox6ulslwIDAQABAoGBAIWxm248iwcIgCf16HIkyz4NrGix/C2eRgJkoYkQT8oX1ySz3KoEv0/n0LLPN0DX2nPrYFTd+JlUNk19YNaFo/5BGk0ewUpHaDvNgS52W2rSkxwO+C0K14yrFnjyrFTxytGexBVHyxV6VxYvB/2ZAAjw4C/fn7RIbj5cVsS9/xGBAkEAzloDnbM/uoF6JjioslMLhdgRBgZ8sEjvfk17pExVXF3Lg7o6sMqK9wN5QdI6CDBKDdpYAndHCxxCPd75WKcO4QJBAMbFdAzAl5ZObMrrW3N+To6FKHW8emWcHtPE/hBkzWeBljhVDF5wwjTP0YtgWsSesfy6IsTW0WG7eoZczRJbwncCQQCjcf0HPmGuErxz5dEJXmn0HA5v3VeKMlswiaLzolrCjLCUqD+wpN2phiDXl/LLZaRikJ3BZkTpcfquEx0hsUFBAkAY9IlRYIynjkkSYOImaeEq+4TM41DqmOM16zGKlV1EdXyKrgLTiIyZXM4OFZbPwKzP8f6Tf/ThtEv5uoT0nRiZAkBnWFvJ7RPFcbsKJzNfciakbpi0Hn9W1m+PTa2OfvQHKaZ/jti09jWmU9sPwS2xxOAgx9w0kVViwWaZuypBNrTc"'
     def default_rs512_jwt_private_key_id = '"rs512_0"'
     ant.propertyfile(file: "credential.properties") {
         entry(key: "APP_ID", default: System.getenv('APP_ID') ?: default_app_id)
-        entry(key: "API_KEY", default: System.getenv('API_KEY') ?: default_api_key)
         entry(key: "RS512_PRIVATE_KEY", default: System.getenv('RS512_PRIVATE_KEY') ?: default_rs512_jwt_private_key)
         entry(key: "RS512_PRIVATE_KEY_ID", default: System.getenv('RS512_PRIVATE_KEY_ID') ?: default_rs512_jwt_private_key_id)
-        entry(key: "IS_JWT_REGISTRATION", default: System.getenv('IS_JWT_REGISTRATION') ?:  "false")
         entry(key: "CRASHLYTICS_API_KEY", default: System.getenv('CRASHLYTICS_API_KEY')  ?: crashlytics_demo_api_key)
     }
     def credentialPropertiesFile = project.file("credential.properties")

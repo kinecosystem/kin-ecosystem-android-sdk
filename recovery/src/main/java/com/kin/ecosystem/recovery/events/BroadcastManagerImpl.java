@@ -60,7 +60,7 @@ public class BroadcastManagerImpl implements BroadcastManager {
 	}
 
 	@Override
-	public void sendCallback(int resultCode, Intent data) {
+	public void setActivityResult(int resultCode, Intent data) {
 		activity.setResult(resultCode, data);
 	}
 }

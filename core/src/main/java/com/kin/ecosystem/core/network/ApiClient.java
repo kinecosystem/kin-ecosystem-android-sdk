@@ -730,7 +730,10 @@ public class ApiClient {
 		call.enqueue(new Callback() {
 			@Override
 			public void onFailure(Call call, IOException e) {
-				callback.onFailure(new ApiException(e), 0, null);
+				if(callback != null) {
+					callback.onFailure(new ApiException(e), 0, null);
+				}
+
 			}
 
 			@Override
@@ -739,10 +742,14 @@ public class ApiClient {
 				try {
 					result = (T) handleResponse(response, returnType);
 				} catch (ApiException e) {
-					callback.onFailure(e, response.code(), response.headers().toMultimap());
+					if(callback != null) {
+						callback.onFailure(e, response.code(), response.headers().toMultimap());
+					}
 					return;
 				}
-				callback.onSuccess(result, response.code(), response.headers().toMultimap());
+				if (callback != null) {
+					callback.onSuccess(result, response.code(), response.headers().toMultimap());
+				}
 			}
 		});
 	}

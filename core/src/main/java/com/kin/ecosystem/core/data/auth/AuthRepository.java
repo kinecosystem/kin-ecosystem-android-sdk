@@ -2,39 +2,44 @@ package com.kin.ecosystem.core.data.auth;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
+import android.text.format.DateUtils;
 import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
-import com.kin.ecosystem.common.ObservableData;
+import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.core.network.ApiException;
+import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.network.model.AuthToken;
-import com.kin.ecosystem.core.network.model.SignInData;
+import com.kin.ecosystem.core.network.model.JWT;
 import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.network.model.UserProperties;
 import com.kin.ecosystem.core.util.DateUtil;
 import com.kin.ecosystem.core.util.ErrorUtil;
+import com.kin.ecosystem.core.util.JwtDecoder;
+import com.kin.ecosystem.core.util.StringUtil;
 import java.util.Calendar;
 import java.util.Date;
+import org.json.JSONException;
 
 public class AuthRepository implements AuthDataSource {
 
-
-	private static AuthRepository instance = null;
+	private static final long TWO_DAYS_IN_MILLIS = 2 * DateUtils.DAY_IN_MILLIS;
+	private static volatile AuthRepository instance = null;
 
 	private final AuthDataSource.Local localData;
 	private final AuthDataSource.Remote remoteData;
 
-	private SignInData cachedSignInData;
+	private String jwt;
+	private AccountInfo cachedAccountInfo;
 	private AuthToken cachedAuthToken;
-	private ObservableData<String> appId = ObservableData.create(null);
 
 	private AuthRepository(@NonNull AuthDataSource.Local local,
 		@NonNull AuthDataSource.Remote remote) {
 		this.localData = local;
 		this.remoteData = remote;
-		this.cachedSignInData = local.getSignInData();
+		this.jwt = local.getJWT();
 		this.cachedAuthToken = local.getAuthTokenSync();
+		this.cachedAccountInfo = local.getAccountInfo();
 	}
 
 	public static void init(@NonNull AuthDataSource.Local localData,
@@ -53,11 +58,39 @@ public class AuthRepository implements AuthDataSource {
 	}
 
 	@Override
-	public void setSignInData(@NonNull SignInData signInData) {
-		cachedSignInData = signInData;
-		localData.setSignInData(signInData);
-		remoteData.setSignInData(signInData);
-		postAppID(signInData.getAppId());
+	public @UserLoginState
+	int getUserLoginState(@NonNull String jwt) throws ClientException {
+		final JwtBody jwtBody = getJwtBody(jwt);
+		final String currentUserID = localData.getUserID();
+		final String currentDeviceID = localData.getDeviceID();
+		if (StringUtil.isEmpty(currentUserID) ) {
+			return UserLoginState.FIRST;
+		} else {
+			return currentUserID.equals(jwtBody.getUserId()) && currentDeviceID.equals(jwtBody.getDeviceId())
+				? UserLoginState.SAME_USER : UserLoginState.DIFFERENT_USER;
+		}
+	}
+
+	@Override
+	public void setJWT(@NonNull String jwt) throws ClientException {
+		this.jwt = jwt;
+		final JwtBody jwtBody = getJwtBody(jwt);
+		localData.setJWT(jwtBody);
+	}
+
+	@NonNull
+	private JwtBody getJwtBody(@NonNull String jwt) throws ClientException {
+		JwtBody jwtBody;
+		try {
+			jwtBody = JwtDecoder.getJwtBody(jwt);
+			if (jwtBody == null) {
+				throw new ClientException(ClientException.BAD_CONFIGURATION,
+					"The jwt is not in the correct format, please see more details on our documentation.", null);
+			}
+		} catch (JSONException | IllegalArgumentException e) {
+			throw ErrorUtil.getClientException(ClientException.BAD_CONFIGURATION, e);
+		}
+		return jwtBody;
 	}
 
 	@Override
@@ -66,8 +99,6 @@ public class AuthRepository implements AuthDataSource {
 		remoteData.updateWalletAddress(userProperties, new Callback<Void, ApiException>() {
 			@Override
 			public void onResponse(Void response) {
-				cachedSignInData.setWalletAddress(address);
-				setSignInData(cachedSignInData);
 				callback.onResponse(true);
 			}
 
@@ -79,9 +110,8 @@ public class AuthRepository implements AuthDataSource {
 	}
 
 	@Override
-	public ObservableData<String> getAppID() {
-		loadCachedAppIDIfNeeded();
-		return appId;
+	public String getAppID() {
+		return localData.getAppId();
 	}
 
 	@Override
@@ -96,34 +126,22 @@ public class AuthRepository implements AuthDataSource {
 
 	@Override
 	public String getEcosystemUserID() {
-		return localData.getEcosystemUserID();
-	}
-
-	private void loadCachedAppIDIfNeeded() {
-		if (TextUtils.isEmpty(appId.getValue())) {
-			final String localAppId = localData.getAppId();
-			if (!TextUtils.isEmpty(localAppId)) {
-				postAppID(localAppId);
-			}
-		}
+		return cachedAuthToken == null ? localData.getEcosystemUserID() : cachedAuthToken.getEcosystemUserID();
 	}
 
 	@Override
+	@Nullable
 	public AuthToken getAuthTokenSync() {
 		if (cachedAuthToken != null) {
 			return cachedAuthToken;
 		} else {
-			if (cachedSignInData != null) {
-				AuthToken authToken = localData.getAuthTokenSync();
-				if (authToken != null && !isAuthTokenExpired(authToken)) {
-					setAuthToken(authToken);
-				} else {
-					refreshTokenSync();
-				}
-				return cachedAuthToken;
+			AuthToken authToken = localData.getAuthTokenSync();
+			if (authToken != null && !isAuthTokenExpired(authToken)) {
+				setAuthToken(authToken);
 			} else {
-				return null;
+				refreshTokenSync();
 			}
+			return cachedAuthToken;
 		}
 	}
 
@@ -149,12 +167,12 @@ public class AuthRepository implements AuthDataSource {
 			@Override
 			public void onResponse(UserProfile response) {
 				UserStats userStats = new UserStats();
-				com.kin.ecosystem.core.network.model.UserStats userNetworkrStats = response.getStats();
-				if (userNetworkrStats != null) {
-					userStats.setEarnCount(userNetworkrStats.getEarnCount().intValue());
-					userStats.setLastEarnDate(userNetworkrStats.getLastEarnDate());
-					userStats.setSpendCount(userNetworkrStats.getSpendCount().intValue());
-					userStats.setLastSpendDate(userNetworkrStats.getLastSpendDate());
+				com.kin.ecosystem.core.network.model.UserStats userNetworkStats = response.getStats();
+				if (userNetworkStats != null) {
+					userStats.setEarnCount(userNetworkStats.getEarnCount().intValue());
+					userStats.setLastEarnDate(userNetworkStats.getLastEarnDate());
+					userStats.setSpendCount(userNetworkStats.getSpendCount().intValue());
+					userStats.setLastSpendDate(userNetworkStats.getLastSpendDate());
 				}
 
 				callback.onResponse(userStats);
@@ -167,13 +185,23 @@ public class AuthRepository implements AuthDataSource {
 		});
 	}
 
+	@Override
+	public void logout() {
+		final String token = cachedAuthToken.getToken();
+		remoteData.logout(token);
+
+		cachedAuthToken = null;
+		jwt = null;
+		localData.logout();
+	}
+
 	private boolean isAuthTokenExpired(AuthToken authToken) {
 		if (authToken == null) {
 			return true;
 		} else {
 			Date expirationDate = DateUtil.getDateFromUTCString(authToken.getExpirationDate());
 			if (expirationDate != null) {
-				return Calendar.getInstance().getTimeInMillis() > expirationDate.getTime();
+				return Calendar.getInstance().getTimeInMillis() > (expirationDate.getTime() - TWO_DAYS_IN_MILLIS);
 			} else {
 				return true;
 			}
@@ -181,40 +209,58 @@ public class AuthRepository implements AuthDataSource {
 	}
 
 	private void refreshTokenSync() {
-		AuthToken authToken = remoteData.getAuthTokenSync();
-		if (authToken != null) {
-			setAuthToken(authToken);
+		if (!StringUtil.isEmpty(jwt)) {
+			AccountInfo accountInfo = remoteData.getAccountInfoSync(new JWT(jwt));
+			if (accountInfo != null) {
+				setAccountInfo(accountInfo);
+			}
+		}
+	}
+
+	private void setAuthToken(@NonNull AuthToken authToken) {
+		cachedAuthToken = authToken;
+	}
+
+	private void setAccountInfo(AccountInfo accountInfo) {
+		if (accountInfo != null) {
+			cachedAccountInfo = accountInfo;
+			localData.setAccountInfo(accountInfo);
+			AuthToken authToken = accountInfo.getAuthToken();
+			if (authToken != null) {
+				setAuthToken(authToken);
+			}
 		}
 	}
 
 	@Override
-	public void setAuthToken(@NonNull AuthToken authToken) {
-		cachedAuthToken = authToken;
-		localData.setAuthToken(authToken);
-		postAppID(authToken.getAppID());
-	}
-
-	@Override
-	public void getAuthToken(@Nullable final KinCallback<AuthToken> callback) {
-		remoteData.getAuthToken(new Callback<AuthToken, ApiException>() {
-			@Override
-			public void onResponse(AuthToken authToken) {
-				setAuthToken(authToken);
+	public void getAccountInfo(@Nullable final KinCallback<AccountInfo> callback) {
+		if (cachedAccountInfo == null || isAuthTokenExpired(cachedAuthToken)) {
+			if (StringUtil.isEmpty(jwt)) {
 				if (callback != null) {
-					callback.onResponse(cachedAuthToken);
+					callback.onFailure(ErrorUtil.getClientException(ClientException.ACCOUNT_NOT_LOGGED_IN, null));
 				}
-			}
+			} else {
+				remoteData.getAccountInfo(new JWT(jwt), new Callback<AccountInfo, ApiException>() {
+					@Override
+					public void onResponse(AccountInfo accountInfo) {
+						setAccountInfo(accountInfo);
+						if (callback != null) {
+							callback.onResponse(accountInfo);
+						}
+					}
 
-			@Override
-			public void onFailure(ApiException exception) {
-				if (callback != null) {
-					callback.onFailure(ErrorUtil.fromApiException(exception));
-				}
+					@Override
+					public void onFailure(ApiException exception) {
+						if (callback != null) {
+							callback.onFailure(ErrorUtil.fromApiException(exception));
+						}
+					}
+				});
 			}
-		});
-	}
-
-	private void postAppID(@Nullable String appID) {
-		appId.postValue(appID);
+		} else {
+			if (callback != null) {
+				callback.onResponse(cachedAccountInfo);
+			}
+		}
 	}
 }

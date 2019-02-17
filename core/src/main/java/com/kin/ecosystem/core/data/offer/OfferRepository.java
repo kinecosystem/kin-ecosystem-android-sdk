@@ -20,7 +20,7 @@ import java.util.HashMap;
 
 public class OfferRepository implements OfferDataSource {
 
-	private static OfferRepository instance = null;
+	private static volatile OfferRepository instance = null;
 
 	private final OfferDataSource.Remote remoteData;
 	private final OrderDataSource orderRepository;
@@ -164,5 +164,10 @@ public class OfferRepository implements OfferDataSource {
 	public boolean shouldDismissOnTap(@NonNull String offerId) {
 		final Boolean shouldDismissOnTap = nativeOfferMap.get(offerId);
 		return shouldDismissOnTap == null ? false : shouldDismissOnTap;
+	}
+
+	@Override
+	public void logout() {
+		cachedOfferList.removeAll();
 	}
 }

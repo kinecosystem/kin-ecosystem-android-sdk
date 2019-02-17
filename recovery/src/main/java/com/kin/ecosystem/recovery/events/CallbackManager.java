@@ -69,15 +69,15 @@ public class CallbackManager {
 	public void sendRestoreSuccessResult(int accountIndex) {
 		Intent intent = new Intent();
 		intent.putExtra(EXTRA_KEY_IMPORTED_ACCOUNT_INDEX, accountIndex);
-		eventDispatcher.sendCallback(RES_CODE_SUCCESS, intent);
+		eventDispatcher.setActivityResult(RES_CODE_SUCCESS, intent);
 	}
 
 	public void sendBackupSuccessResult() {
-		eventDispatcher.sendCallback(RES_CODE_SUCCESS, null);
+		eventDispatcher.setActivityResult(RES_CODE_SUCCESS, null);
 	}
 
-	public void sendCancelledResult() {
-		eventDispatcher.sendCallback(RES_CODE_CANCEL, null);
+	public void setCancelledResult() {
+		eventDispatcher.setActivityResult(RES_CODE_CANCEL, null);
 	}
 
 	private void handleRestoreResult(int resultCode, Intent data) {

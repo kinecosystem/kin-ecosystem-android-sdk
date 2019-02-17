@@ -30,61 +30,69 @@ public class ErrorUtil {
 	private static final String BAD_OR_MISSING_PARAMETERS = "Bad or missing parameters";
 	private static final String FAILED_TO_LOAD_ACCOUNT_ON_INDEX = "Failed to load blockchain wallet on index %d";
 	private static final String ACCOUNT_IS_NOT_LOGGED_IN = "Account is not logged in, please call Kin.login(...) first.";
+	private static final String ACCOUNT_NOT_FOUND = "Account not found";
+	private static final String ACCOUNT_HAS_NO_WALLET = "Account has no wallet";
 
 
 	// Server Error codes
-	public static final int ERROR_CODE_BAD_REQUEST = 400;
-	public static final int ERROR_CODE_UNAUTHORIZED = 401;
-	public static final int ERROR_CODE_NOT_FOUND = 404;
-	public static final int ERROR_CODE_REQUEST_TIMEOUT = 408;
+	private static final int ERROR_CODE_BAD_REQUEST = 400;
+	private static final int ERROR_CODE_UNAUTHORIZED = 401;
+	private static final int ERROR_CODE_NOT_FOUND = 404;
+	private static final int ERROR_CODE_REQUEST_TIMEOUT = 408;
 	public static final int ERROR_CODE_CONFLICT = 409;
-	public static final int ERROR_CODE_INTERNAL_SERVER_ERROR = 500;
-	public static final int ERROR_CODE_TRANSACTION_FAILED_ERROR = 700;
+	private static final int ERROR_CODE_INTERNAL_SERVER_ERROR = 500;
+	private static final int ERROR_CODE_TRANSACTION_FAILED_ERROR = 700;
 
+	private static final int ERROR_CODE_NO_SUCH_USER = 4046;
+	private static final int ERROR_CODE_USER_HAS_NO_WALLET = 4095;
 	public static final int ERROR_CODE_EXTERNAL_ORDER_ALREADY_COMPLETED = 4091;
 
 	public static KinEcosystemException fromApiException(ApiException apiException) {
-		KinEcosystemException exception;
 		if (apiException == null) {
-			exception = createUnknownServiceException(null);
+			return createUnknownServiceException(null);
 		} else {
 			final int apiCode = apiException.getCode();
+			Error error = apiException.getResponseBody();
 			switch (apiCode) {
 				case ERROR_CODE_BAD_REQUEST:
 				case ERROR_CODE_UNAUTHORIZED:
 				case ERROR_CODE_NOT_FOUND:
+					if (error != null) {
+						switch (error.getCode()) {
+							case ERROR_CODE_NO_SUCH_USER:
+								return new ServiceException(ServiceException.USER_NOT_FOUND, getMessageOrDefault(error, ACCOUNT_NOT_FOUND), apiException);
+
+							case ERROR_CODE_USER_HAS_NO_WALLET:
+								return new ServiceException(ServiceException.USER_HAS_NO_WALLET, getMessageOrDefault(error, ACCOUNT_HAS_NO_WALLET), apiException);
+						}
+					}
 				case ERROR_CODE_CONFLICT:
 				case ERROR_CODE_INTERNAL_SERVER_ERROR:
 				case ERROR_CODE_TRANSACTION_FAILED_ERROR:
-					Error error = apiException.getResponseBody();
 					if (error != null) {
-						String msg = error.getMessage();
-						exception = new ServiceException(ServiceException.SERVICE_ERROR,
-							(msg != null && !msg.isEmpty()) ? msg : THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR,
-							apiException);
-						break;
+						return new ServiceException(ServiceException.SERVICE_ERROR,
+							getMessageOrDefault(error, THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR), apiException);
 					}
-					exception = createUnknownServiceException(apiException);
-					break;
+					return createUnknownServiceException(apiException);
 				case ERROR_CODE_REQUEST_TIMEOUT:
-					exception = new ServiceException(ServiceException.TIMEOUT_ERROR, THE_OPERATION_TIMED_OUT,
-						apiException);
-					break;
+					return new ServiceException(ServiceException.TIMEOUT_ERROR, THE_OPERATION_TIMED_OUT, apiException);
 				case ClientException.INTERNAL_INCONSISTENCY:
-					exception = new ClientException(ClientException.INTERNAL_INCONSISTENCY, THE_OPERATION_TIMED_OUT,
+					return new ClientException(ClientException.INTERNAL_INCONSISTENCY, THE_OPERATION_TIMED_OUT,
 						apiException);
-					break;
 				default:
-					exception = createUnknownServiceException(apiException);
-					break;
+					return createUnknownServiceException(apiException);
+
 			}
 		}
-		return exception;
 	}
 
 	private static KinEcosystemException createUnknownServiceException(@Nullable Throwable throwable) {
 		final String msg = getMessage(throwable);
 		return new ServiceException(ServiceException.SERVICE_ERROR, msg, throwable);
+	}
+
+	private static String getMessageOrDefault(Error error, final String defaultMsg) {
+		return error != null && StringUtil.isEmpty(error.getMessage()) ? error.getMessage() : defaultMsg;
 	}
 
 	private static String getMessage(Throwable throwable) {
@@ -96,6 +104,7 @@ public class ErrorUtil {
 		return (throwable != null && throwable.getCause() != null && throwable.getCause().getMessage() != null)
 			? throwable.getCause().getMessage() : ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR;
 	}
+
 
 	public static ApiException createOrderTimeoutException() {
 		final String errorTitle = "Time out";

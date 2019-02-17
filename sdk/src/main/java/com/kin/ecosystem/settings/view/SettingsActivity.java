@@ -12,9 +12,10 @@ import com.kin.ecosystem.base.BaseToolbarActivity;
 import com.kin.ecosystem.core.accountmanager.AccountManagerImpl;
 import com.kin.ecosystem.core.bi.EventLoggerImpl;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
+import com.kin.ecosystem.core.data.settings.SettingsDataSource;
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceImpl;
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceLocal;
-import com.kin.ecosystem.recovery.BackupManager;
+import com.kin.ecosystem.settings.BackupManagerImpl;
 import com.kin.ecosystem.settings.presenter.ISettingsPresenter;
 import com.kin.ecosystem.settings.presenter.SettingsPresenter;
 
@@ -59,11 +60,13 @@ public class SettingsActivity extends BaseToolbarActivity implements ISettingsVi
 		backupItem.setOnClickListener(this);
 		restoreItem.setOnClickListener(this);
 
+		final SettingsDataSource settingsDataSource = new SettingsDataSourceImpl(
+			new SettingsDataSourceLocal(getApplicationContext()));
 		settingsPresenter = new SettingsPresenter(this,
-			new SettingsDataSourceImpl(new SettingsDataSourceLocal(getApplicationContext())),
+			settingsDataSource,
 			BlockchainSourceImpl.getInstance(),
-			new BackupManager(this, BlockchainSourceImpl.getInstance().getKeyStoreProvider()),
-			EventLoggerImpl.getInstance(), AccountManagerImpl.getInstance());
+			new BackupManagerImpl(this, AccountManagerImpl.getInstance(), EventLoggerImpl.getInstance(),
+				BlockchainSourceImpl.getInstance(), settingsDataSource), EventLoggerImpl.getInstance());
 	}
 
 	@Override
