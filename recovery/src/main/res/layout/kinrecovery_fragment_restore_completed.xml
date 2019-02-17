@@ -37,13 +37,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/kinrecovery_password_qr_icon"/>
 
-    <android.support.constraint.Group
-        android:id="@+id/btn_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="kinrecovery_password_recovery_btn_frame,kinrecovery_password_recovery_btn_text"
-        />
-
     <ImageView
         android:id="@+id/kinrecovery_v_btn"
         android:layout_width="@dimen/kinrecovery_circle_v_size"

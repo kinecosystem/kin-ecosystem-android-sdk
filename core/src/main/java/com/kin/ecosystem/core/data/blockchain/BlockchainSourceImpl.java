@@ -111,6 +111,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		return instance;
 	}
 
+	@Override
 	public void setMigrationManager(@NonNull final MigrationManager migrationManager) {
 		this.migrationManager = migrationManager;
 		updateKinClient(migrationManager);
@@ -273,9 +274,9 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			}
 			return;
 		}
-		account.getBalance().run(new ResultCallback<kin.sdk.migration.common.interfaces.IBalance>() {
+		account.getBalance().run(new ResultCallback<IBalance>() {
 			@Override
-			public void onResult(final kin.sdk.migration.common.interfaces.IBalance balanceObj) {
+			public void onResult(final IBalance balanceObj) {
 				setBalance(balanceObj);
 				if (callback != null) {
 					mainThread.execute(new Runnable() {

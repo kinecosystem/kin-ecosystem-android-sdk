@@ -57,7 +57,7 @@ public class KeyStoreProviderImpl implements KeyStoreProvider {
 			IKinAccount importedAccount = kinClient.importAccount(keystore, password);
 			int index = -1;
 			for (int i = 0; i < kinClient.getAccountCount(); i++) {
-				if (importedAccount == kinClient.getAccount(i)) {
+				if (importedAccount.equals(kinClient.getAccount(i))) {
 					index = i;
 				}
 			}

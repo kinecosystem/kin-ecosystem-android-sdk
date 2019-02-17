@@ -1,12 +1,12 @@
 package com.kin.ecosystem;
 
-import com.kin.ecosystem.core.bi.EventLoggerImpl;
+import com.kin.ecosystem.core.bi.EventLogger;
 import kin.sdk.migration.bi.IMigrationEventsListener;
 import kin.sdk.migration.common.KinSdkVersion;
 
 class MigrationEventsListener implements IMigrationEventsListener {
 
-	public MigrationEventsListener(EventLoggerImpl eventLogger) {
+	public MigrationEventsListener(EventLogger eventLogger) {
 	}
 
 	@Override

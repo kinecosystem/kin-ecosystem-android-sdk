@@ -3,7 +3,6 @@ package com.kin.ecosystem.core.data.blockchain;
 import kin.sdk.migration.common.exception.OperationFailedException;
 import kin.sdk.migration.common.interfaces.IKinAccount;
 
-
 public class CreateTrustLineCall extends Thread {
 
 	private static final int[] DELAY_SECONDS = {2, 4, 8, 16, 32, 32, 32, 32, 32, 32};

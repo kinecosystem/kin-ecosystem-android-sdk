@@ -45,7 +45,7 @@ public class Payment {
 	private boolean isSucceed;
 
 	/**
-	 * Exception from kin.sdk.migration.common.interfaces.I
+	 * Exception from kin.sdk.migration.common.exception
 	 */
 	private Exception exception;
 
