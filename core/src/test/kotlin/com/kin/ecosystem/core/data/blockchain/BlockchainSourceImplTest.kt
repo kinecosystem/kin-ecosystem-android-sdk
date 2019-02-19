@@ -8,8 +8,11 @@ import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainFai
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainSucceeded
 import com.kin.ecosystem.core.data.auth.AuthDataSource
 import com.nhaarman.mockitokotlin2.*
-import kin.core.*
 import kin.ecosystem.test.base.BaseTestClass
+import kin.sdk.migration.MigrationManager
+import kin.sdk.migration.common.interfaces.*
+import kin.utils.Request
+import kin.utils.ResultCallback
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -42,28 +45,29 @@ class BlockchainSourceImplTest() : BaseTestClass() {
         on { ecosystemUserID } doAnswer { KIN_USER_ID_A }
     }
 
-    private val blockchainEvents: BlockchainEvents = mock()
-    private val getBalanceReq: Request<kin.core.Balance> = mock()
-    private val kinAccountA: KinAccount = mock {
-        on { blockchainEvents() } doAnswer { blockchainEvents }
+    private val getBalanceReq: Request<IBalance> = mock()
+    private val kinAccountA: IKinAccount = mock {
         on { balance } doAnswer { getBalanceReq }
         on { publicAddress } doAnswer { PUBLIC_ADDRESS_A }
         on { activateSync() } doAnswer {}
     }
 
-    private val kinAccountB: KinAccount = mock {
-        on { blockchainEvents() } doAnswer { blockchainEvents }
+    private val kinAccountB: IKinAccount = mock {
         on { balance } doAnswer { getBalanceReq }
         on { publicAddress } doAnswer { PUBLIC_ADDRESS_B }
         on { activateSync() } doAnswer {}
     }
 
 
-    private val kinClient: KinClient = mock {
+    private val kinClient: IKinClient = mock {
         on { addAccount() } doAnswer { kinAccountA }
     }
 
-    private val balanceObj: kin.core.Balance = mock()
+    private val migrationManager: MigrationManager = mock {
+        on { currentKinClient } doAnswer { kinClient }
+    }
+
+    private val balanceObj: IBalance = mock()
 
     private lateinit var blockchainSource: BlockchainSourceImpl
     private var balance: Balance? = null
@@ -79,11 +83,12 @@ class BlockchainSourceImplTest() : BaseTestClass() {
         val instance = BlockchainSourceImpl::class.java.getDeclaredField("instance")
         instance.isAccessible = true
         instance.set(null, null)
-        BlockchainSourceImpl.init(eventLogger, kinClient, local, authRepository)
+        BlockchainSourceImpl.init(eventLogger, local, authRepository)
+        BlockchainSourceImpl.getInstance().setMigrationManager(migrationManager)
         blockchainSource = BlockchainSourceImpl.getInstance()
     }
 
-    private fun loadAccount(kinAccount: KinAccount, publicAddress: String, kinUserId: String) {
+    private fun loadAccount(kinAccount: IKinAccount, publicAddress: String, kinUserId: String) {
         whenever(local.getLastWalletAddress(kinUserId)) doAnswer { publicAddress }
 
         whenever(kinClient.getAccount(0)) doAnswer { kinAccount }
@@ -100,7 +105,6 @@ class BlockchainSourceImplTest() : BaseTestClass() {
             verify(it, never()).getAccount(any())
         }
     }
-
 
     @Test
     fun `accountIndex not exists, skip migrate, kinClient don't have wallets, create new account`() {
@@ -145,8 +149,7 @@ class BlockchainSourceImplTest() : BaseTestClass() {
 
     @Test
     fun `load last active account`() {
-        val kinAccountC: KinAccount = mock {
-            on { blockchainEvents() } doAnswer { blockchainEvents }
+        val kinAccountC: IKinAccount = mock {
             on { balance } doAnswer { getBalanceReq }
             on { publicAddress } doAnswer { "some_other_address" }
             on { activateSync() } doAnswer {}
@@ -166,13 +169,6 @@ class BlockchainSourceImplTest() : BaseTestClass() {
         verify(local).setActiveUserWallet(KIN_USER_ID_A, PUBLIC_ADDRESS_A)
     }
 
-
-    @Test
-    fun `set appId, meme is generated correctly`() {
-        whenever(authRepository.appID).thenReturn(APP_ID);
-        assertEquals(MEMO_EXAMPLE, blockchainSource.generateMemo(ORDER_ID));
-    }
-
     @Test
     @Throws(BlockchainException::class)
     fun `get public address`() {
@@ -187,7 +183,7 @@ class BlockchainSourceImplTest() : BaseTestClass() {
         assertNull(blockchainSource.extractOrderId("123"))
         assertNull(blockchainSource.extractOrderId(MEMO_EXAMPLE))
 
-       // with app id
+        // with app id
         whenever(authRepository.appID).thenReturn(APP_ID);
         assertEquals(ORDER_ID, blockchainSource.extractOrderId(MEMO_EXAMPLE))
     }
@@ -201,13 +197,13 @@ class BlockchainSourceImplTest() : BaseTestClass() {
         val orderID = "someID"
         val transactionID = "transactionID"
 
-        val transactionRequest: Request<TransactionId> = mock()
-        val resultCallbackArgumentCaptor = argumentCaptor<ResultCallback<TransactionId>>()
-        whenever(kinAccountA.sendTransaction(any(), any(), any())).thenReturn(transactionRequest)
+        val transactionRequest: Request<ITransactionId> = mock()
+        val resultCallbackArgumentCaptor = argumentCaptor<ResultCallback<ITransactionId>>()
+        whenever(kinAccountA.sendTransaction(any(), any(), any(), any())).thenReturn(transactionRequest)
 
         blockchainSource.sendTransaction(toAddress, amount, orderID, "offerID")
         verify(transactionRequest).run(resultCallbackArgumentCaptor.capture())
-        resultCallbackArgumentCaptor.firstValue.onResult(TransactionId { transactionID })
+        resultCallbackArgumentCaptor.firstValue.onResult(ITransactionId { transactionID })
         verify(eventLogger).send(any<SpendTransactionBroadcastToBlockchainSucceeded>())
     }
 
@@ -219,9 +215,9 @@ class BlockchainSourceImplTest() : BaseTestClass() {
         val amount = BigDecimal(10)
         val orderID = "someID"
 
-        val transactionRequest: Request<TransactionId> = mock()
-        val resultCallbackArgumentCaptor = argumentCaptor<ResultCallback<TransactionId>>()
-        whenever(kinAccountA.sendTransaction(any(), any(), any())).thenReturn(transactionRequest)
+        val transactionRequest: Request<ITransactionId> = mock()
+        val resultCallbackArgumentCaptor = argumentCaptor<ResultCallback<ITransactionId>>()
+        whenever(kinAccountA.sendTransaction(any(), any(), any(), any())).thenReturn(transactionRequest)
 
         blockchainSource.sendTransaction(toAddress, amount, orderID, "offerID")
         verify(transactionRequest).run(resultCallbackArgumentCaptor.capture())
@@ -245,7 +241,7 @@ class BlockchainSourceImplTest() : BaseTestClass() {
     fun `add balance observer, get onChanged value`() {
         whenever(local.balance).thenReturn(20)
         loadAccount(kinAccountA, PUBLIC_ADDRESS_A, KIN_USER_ID_A)
-        val innerBalance: kin.core.Balance = mock()
+        val innerBalance: kin.sdk.migration.common.interfaces.IBalance = mock()
         blockchainSource.addBalanceObserver(object : Observer<Balance>() {
             override fun onChanged(value: Balance) {
                 balance = value
@@ -278,7 +274,7 @@ class BlockchainSourceImplTest() : BaseTestClass() {
     @Test
     fun `add balance observer and start listen`() {
         loadAccount(kinAccountA, PUBLIC_ADDRESS_A, KIN_USER_ID_A)
-        val balanceEventListener = argumentCaptor<EventListener<kin.core.Balance>>()
+        val balanceEventListener = argumentCaptor<IEventListener<IBalance>>()
 
         blockchainSource.addBalanceObserver(object : Observer<Balance>() {
             override fun onChanged(value: Balance) {
@@ -286,7 +282,7 @@ class BlockchainSourceImplTest() : BaseTestClass() {
             }
         }, true)
 
-        verify(blockchainEvents).addBalanceListener(balanceEventListener.capture())
+        verify(kinAccountA).addBalanceListener(balanceEventListener.capture())
         val value = BigDecimal(123)
 
         whenever(balanceObj.value()).thenReturn(value)

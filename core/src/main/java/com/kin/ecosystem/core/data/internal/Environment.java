@@ -11,6 +11,9 @@ class Environment implements KinEnvironment {
 		"https://horizon-kin-ecosystem.kininfrastructure.com/",
 		"Public Global Kin Ecosystem Network ; June 2018",
 		"GDF42M3IPERQCBLWFEZKQRK77JQ65SCKTU3CW36HZVCX7XX5A5QXZIVK",
+		"https://horizon.kinfederation.com",
+		"Kin Mainnet ; December 2018",
+		"TODO",
 		"https://api.kinmarketplace.com/" + API_VERSION,
 		"https://cdn.kinmarketplace.com/",
 		"https://kin-bi.appspot.com/eco_");
@@ -19,6 +22,9 @@ class Environment implements KinEnvironment {
 		"https://horizon-playground.kininfrastructure.com",
 		"Kin Playground Network ; June 2018",
 		"GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7",
+		"https://horizon-testnet.kininfrastructure.com",
+		"Kin Testnet ; December 2018",
+		"TODO",
 		"http://api.kinecosystembeta.com/" + API_VERSION,
 		"https://s3.amazonaws.com/assets.kinecosystembeta.com/web-offers/cards-based/index.html",
 		"https://kin-bi.appspot.com/eco_play_");
@@ -27,40 +33,66 @@ class Environment implements KinEnvironment {
 		"https://horizon-playground.kininfrastructure.com",
 		"Kin Playground Network ; June 2018",
 		"GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7",
+		"https://horizon-testnet.kininfrastructure.com",
+		"Kin Testnet ; December 2018",
+		"TODO",
 		"http://api.kinecosystemtest.com/" + API_VERSION,
 		"https://s3.amazonaws.com/assets.kinecosystemtest.com/web-offers/cards-based/index.html",
 		"https://kin-bi.appspot.com/eco_play_");
 
-	private final String blockchainNetworkUrl;
-	private final String blockchainPassphrase;
-	private final String issuer;
+	private final String oldBlockchainNetworkUrl;
+	private final String oldBlockchainPassphrase;
+	private final String oldIssuer;
+	private final String newBlockchainNetworkUrl;
+	private final String newBlockchainPassphrase;
+	private final String migrationServiceUrl;
 	private final String ecosystemServerUrl;
 	private final String ecosystemWebFront;
 	private final String biUrl;
 
-	public Environment(String blockchainNetworkUrl, String blockchainPassphrase,
-		String issuer, String ecosystemServerUrl, String ecosystemWebFront, String biUrl) {
-		this.blockchainNetworkUrl = blockchainNetworkUrl;
-		this.blockchainPassphrase = blockchainPassphrase;
-		this.issuer = issuer;
+	public Environment(
+		String oldBlockchainNetworkUrl, String oldBlockchainPassphrase, String oldIssuer,
+		String newBlockchainNetworkUrl, String newBlockchainPassphrase, String migrationServiceUrl,
+		String ecosystemServerUrl, String ecosystemWebFront, String biUrl) {
+		this.oldBlockchainNetworkUrl = oldBlockchainNetworkUrl;
+		this.oldBlockchainPassphrase = oldBlockchainPassphrase;
+		this.oldIssuer = oldIssuer;
+		this.newBlockchainNetworkUrl = newBlockchainNetworkUrl;
+		this.newBlockchainPassphrase = newBlockchainPassphrase;
+		this.migrationServiceUrl = migrationServiceUrl;
 		this.ecosystemServerUrl = ecosystemServerUrl;
 		this.ecosystemWebFront = ecosystemWebFront;
 		this.biUrl = biUrl;
 	}
 
 	@Override
-	public String getBlockchainNetworkUrl() {
-		return blockchainNetworkUrl;
+	public String getOldBlockchainNetworkUrl() {
+		return oldBlockchainNetworkUrl;
 	}
 
 	@Override
-	public String getBlockchainPassphrase() {
-		return blockchainPassphrase;
+	public String getOldBlockchainPassphrase() {
+		return oldBlockchainPassphrase;
 	}
 
 	@Override
-	public String getIssuer() {
-		return issuer;
+	public String getOldBlockchainIssuer() {
+		return oldIssuer;
+	}
+
+	@Override
+	public String getNewBlockchainNetworkUrl() {
+		return newBlockchainNetworkUrl;
+	}
+
+	@Override
+	public String getNewBlockchainPassphrase() {
+		return newBlockchainPassphrase;
+	}
+
+	@Override
+	public String getMigrationServiceUrl() {
+		return migrationServiceUrl;
 	}
 
 	@Override
@@ -77,8 +109,6 @@ class Environment implements KinEnvironment {
 	public String getBiUrl() {
 		return biUrl;
 	}
-
-
 
 	static KinEnvironment getProduction() {
 		return PRODUCTION;
