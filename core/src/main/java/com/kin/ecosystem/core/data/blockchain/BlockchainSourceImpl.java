@@ -141,6 +141,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private void createOrLoadAccount(String kinUserId) throws BlockchainException {
 		final String lastWalletAddress = local.getLastWalletAddress(kinUserId);
+		Logger.log(new Log().withTag(TAG).text("createOrLoadAccount").put("lastWalletAddress", lastWalletAddress));
 		if (kinClient.hasAccount() && !StringUtil.isEmpty(lastWalletAddress)) {
 			Logger.log(new Log().withTag(TAG).text("createOrLoadAccount").put("currentUserId", currentUserId)
 				.put("kinUserId", kinUserId));
@@ -499,6 +500,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		paymentRegistration = null;
 		balanceRegistration = null;
 		completedPayment.removeAllObservers();
+		balance.postValue(new Balance());
 		account = null;
 		local.logout();
 	}
