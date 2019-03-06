@@ -28,8 +28,8 @@ Note that we have a code of conduct, which we ask you follow in all your interac
 If you find a security vulnerability, do NOT open an issue. Email security@kinecosystem.com instead.
 
 When filing an issue, make sure to answer these questions:
-1. What's your current environment? i.e. operating system, processor architecture, node version
-1. What did you do?
+1. What's your current environment? i.e. operating system, processor architecture, Android OS
+1. What did you do (detailed reproduction steps)?
 1. What did you expect to see?
 1. What did you see instead?
 
