@@ -1,12 +1,14 @@
 package com.kin.ecosystem.transfer.view;
 
+import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.TextView;
-
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.KinEcosystemBaseActivity;
+import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.transfer.AccountInfoManager;
 import com.kin.ecosystem.transfer.presenter.AccountInfoPresenter;
 import com.kin.ecosystem.transfer.presenter.IAccountInfoPresenter;
@@ -17,6 +19,10 @@ public class AccountInfoActivity extends KinEcosystemBaseActivity implements IAc
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //On android above Oreo, you can not change orientation for Activity that has android:windowIsTranslucent=true
+        if (DeviceUtils.isBelowAndroidVersion(Build.VERSION_CODES.O)) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
         presenter = new AccountInfoPresenter(new AccountInfoManager(this), this, getIntent());
     }
 
