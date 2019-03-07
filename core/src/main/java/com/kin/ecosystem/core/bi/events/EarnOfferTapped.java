@@ -2,13 +2,13 @@
 package com.kin.ecosystem.core.bi.events;
 
 // Augmented by script
-import com.kin.ecosystem.core.bi.Event;
-import com.kin.ecosystem.core.bi.EventsStore;
 
-import java.util.HashMap;
-import java.util.Map;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.kin.ecosystem.core.bi.Event;
+import com.kin.ecosystem.core.bi.EventsStore;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -20,14 +20,15 @@ public class EarnOfferTapped implements Event {
     public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
-    public static EarnOfferTapped create(EarnOfferTapped.OfferType offerType, Double kinAmount, String offerId) {
+    public static EarnOfferTapped create(EarnOfferTapped.OfferType offerType, Double kinAmount, String offerId, EarnOfferTapped.Origin origin) {
         return new EarnOfferTapped(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             (Client) EventsStore.client(),
             offerType,
             kinAmount,
-            offerId);
+            offerId,
+            origin);
     }
 
     /**
@@ -94,6 +95,14 @@ public class EarnOfferTapped implements Event {
     @SerializedName("offer_id")
     @Expose
     private String offerId;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("origin")
+    @Expose
+    private EarnOfferTapped.Origin origin;
 
     /**
      * No args constructor for use in serialization
@@ -106,6 +115,7 @@ public class EarnOfferTapped implements Event {
      * 
      * @param offerType
      * @param common
+     * @param origin
 
      * @param client
      * @param offerId
@@ -113,7 +123,7 @@ public class EarnOfferTapped implements Event {
 
      * @param user
      */
-    public EarnOfferTapped(Common common, User user, Client client, EarnOfferTapped.OfferType offerType, Double kinAmount, String offerId) {
+    public EarnOfferTapped(Common common, User user, Client client, EarnOfferTapped.OfferType offerType, Double kinAmount, String offerId, EarnOfferTapped.Origin origin) {
         super();
         this.common = common;
         this.user = user;
@@ -121,6 +131,7 @@ public class EarnOfferTapped implements Event {
         this.offerType = offerType;
         this.kinAmount = kinAmount;
         this.offerId = offerId;
+        this.origin = origin;
     }
 
     /**
@@ -267,6 +278,24 @@ public class EarnOfferTapped implements Event {
         this.offerId = offerId;
     }
 
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public EarnOfferTapped.Origin getOrigin() {
+        return origin;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setOrigin(EarnOfferTapped.Origin origin) {
+        this.origin = origin;
+    }
+
     public enum OfferType {
 
         @SerializedName("poll")
@@ -303,6 +332,45 @@ public class EarnOfferTapped implements Event {
 
         public static EarnOfferTapped.OfferType fromValue(String value) {
             EarnOfferTapped.OfferType constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            } else {
+                return constant;
+            }
+        }
+
+    }
+
+    public enum Origin {
+
+        @SerializedName("marketplace")
+        MARKETPLACE("marketplace"),
+        @SerializedName("external")
+        EXTERNAL("external");
+        private final String value;
+        private final static Map<String, EarnOfferTapped.Origin> CONSTANTS = new HashMap<String, EarnOfferTapped.Origin>();
+
+        static {
+            for (EarnOfferTapped.Origin c: values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        private Origin(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+
+        public String value() {
+            return this.value;
+        }
+
+        public static EarnOfferTapped.Origin fromValue(String value) {
+            EarnOfferTapped.Origin constant = CONSTANTS.get(value);
             if (constant == null) {
                 throw new IllegalArgumentException(value);
             } else {

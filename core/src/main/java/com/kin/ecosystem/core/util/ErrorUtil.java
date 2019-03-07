@@ -49,7 +49,7 @@ public class ErrorUtil {
 
 	public static KinEcosystemException fromApiException(ApiException apiException) {
 		if (apiException == null) {
-			return createUnknownServiceException(null);
+			return createUnknownServiceException(null, THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR);
 		} else {
 			final int apiCode = apiException.getCode();
 			Error error = apiException.getResponseBody();
@@ -69,40 +69,57 @@ public class ErrorUtil {
 				case ERROR_CODE_CONFLICT:
 				case ERROR_CODE_INTERNAL_SERVER_ERROR:
 				case ERROR_CODE_TRANSACTION_FAILED_ERROR:
-					if (error != null) {
-						return new ServiceException(ServiceException.SERVICE_ERROR,
-							getMessageOrDefault(error, THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR), apiException);
-					}
-					return createUnknownServiceException(apiException);
+					return new ServiceException(ServiceException.SERVICE_ERROR, getMessageOrDefault(error, THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR), apiException);
 				case ERROR_CODE_REQUEST_TIMEOUT:
-					return new ServiceException(ServiceException.TIMEOUT_ERROR, THE_OPERATION_TIMED_OUT, apiException);
+					return new ServiceException(ServiceException.TIMEOUT_ERROR, getMessageOrDefault(error, THE_OPERATION_TIMED_OUT), apiException);
 				case ClientException.INTERNAL_INCONSISTENCY:
-					return new ClientException(ClientException.INTERNAL_INCONSISTENCY, THE_OPERATION_TIMED_OUT,
-						apiException);
+					return new ClientException(ClientException.INTERNAL_INCONSISTENCY, getMessageOrDefault(error, THE_OPERATION_TIMED_OUT), apiException);
 				default:
-					return createUnknownServiceException(apiException);
+					return createUnknownServiceException(apiException, getMessageOrDefault(error, THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR));
 
 			}
 		}
 	}
 
-	private static KinEcosystemException createUnknownServiceException(@Nullable Throwable throwable) {
-		final String msg = getMessage(throwable);
-		return new ServiceException(ServiceException.SERVICE_ERROR, msg, throwable);
+	private static KinEcosystemException createUnknownServiceException(@Nullable Throwable throwable, final String errorMsg) {
+		return new ServiceException(ServiceException.SERVICE_ERROR, errorMsg, throwable);
+	}
+
+	public static String getMessageOrDefault(KinEcosystemException exception, final String defaultMsg) {
+		if (exception == null) {
+			return defaultMsg;
+		}
+
+		if (exception instanceof ServiceException) {
+			Throwable cause = exception.getCause();
+			if (cause != null) {
+				if (cause instanceof ApiException) {
+					Error error = ((ApiException) cause).getResponseBody();
+					return getMessageOrDefault(error, defaultMsg);
+				} else {
+					return !StringUtil.isEmpty(cause.getMessage()) ? cause.getMessage() : defaultMsg;
+				}
+
+			} else {
+				return defaultMsg;
+			}
+
+		} else {
+			return getCauseOrDefault(exception, defaultMsg);
+		}
 	}
 
 	private static String getMessageOrDefault(Error error, final String defaultMsg) {
-		return error != null && StringUtil.isEmpty(error.getMessage()) ? error.getMessage() : defaultMsg;
+		return error != null && !StringUtil.isEmpty(error.getMessage()) ? error.getMessage() : defaultMsg;
 	}
 
 	private static String getMessage(Throwable throwable) {
-		return (throwable != null && throwable.getMessage() != null) ? throwable.getMessage()
-			: getCauseOrDefault(throwable);
+		return (throwable != null && throwable.getMessage() != null) ? throwable.getMessage() : getCauseOrDefault(throwable, ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR);
 	}
 
-	private static String getCauseOrDefault(Throwable throwable) {
+	private static String getCauseOrDefault(Throwable throwable, final String defaultMsg) {
 		return (throwable != null && throwable.getCause() != null && throwable.getCause().getMessage() != null)
-			? throwable.getCause().getMessage() : ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR;
+			? throwable.getCause().getMessage() : defaultMsg ;
 	}
 
 

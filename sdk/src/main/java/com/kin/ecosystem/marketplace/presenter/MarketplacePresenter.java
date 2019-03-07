@@ -21,7 +21,6 @@ import com.kin.ecosystem.core.bi.events.GeneralEcosystemSdkError;
 import com.kin.ecosystem.core.bi.events.MarketplacePageViewed;
 import com.kin.ecosystem.core.bi.events.NotEnoughKinPageViewed;
 import com.kin.ecosystem.core.bi.events.SpendOfferTapped;
-import com.kin.ecosystem.core.bi.events.SpendOfferTapped.Origin;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.offer.OfferDataSource;
 import com.kin.ecosystem.core.data.offer.OfferListUtil;
@@ -92,7 +91,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	@Override
 	public void onStop() {
-		if(orderObserver != null) {
+		if (orderObserver != null) {
 			orderRepository.removeOrderObserver(orderObserver);
 			orderObserver = null;
 		}
@@ -103,7 +102,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		if(spendDialogPresenter != null) {
+		if (spendDialogPresenter != null) {
 			spendDialogPresenter.onDetach();
 		}
 	}
@@ -142,7 +141,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void listenToOrders() {
-		if(orderObserver != null) {
+		if (orderObserver != null) {
 			orderRepository.removeOrderObserver(orderObserver);
 		}
 
@@ -165,7 +164,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private void removeOfferFromList(String offerId, OfferType offerType) {
 		if (offerType == OfferType.EARN) {
-			if(earnList != null) {
+			if (earnList != null) {
 				for (int i = 0; i < earnList.size(); i++) {
 					Offer offer = earnList.get(i);
 					if (offer.getId().equals(offerId)) {
@@ -177,7 +176,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 				}
 			}
 		} else {
-			if(spendList != null) {
+			if (spendList != null) {
 				for (int i = 0; i < spendList.size(); i++) {
 					Offer offer = spendList.get(i);
 					if (offer.getId().equals(offerId)) {
@@ -259,9 +258,13 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			List<Offer> newSpendOffers = new ArrayList<>();
 
 			OfferListUtil.splitOffersByType(offerList.getOffers(), newEarnOffers, newSpendOffers);
-			
-			if (earnList == null) { earnList = new ArrayList<>(); }
-			if (spendList == null) { spendList = new ArrayList<>(); }
+
+			if (earnList == null) {
+				earnList = new ArrayList<>();
+			}
+			if (spendList == null) {
+				spendList = new ArrayList<>();
+			}
 			syncList(newEarnOffers, earnList, OfferType.EARN);
 			syncList(newSpendOffers, spendList, OfferType.SPEND);
 		}
@@ -351,7 +354,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 		final Offer offer;
 		if (offerType == OfferType.EARN) {
-			if(earnList != null) {
+			if (earnList != null) {
 				offer = earnList.get(position);
 				sendEranOfferTapped(offer);
 				if (onExternalItemClicked(offer)) {
@@ -367,10 +370,12 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 					this.view.showOfferActivity(pollBundle);
 				}
 			} else {
-				sendSdkError("MarketplacePresenter earnList is null, offer position is: " + position + ", isListsAdded: " + isListsAdded);
+				sendSdkError(
+					"MarketplacePresenter earnList is null, offer position is: " + position + ", isListsAdded: "
+						+ isListsAdded);
 			}
 		} else {
-			if(spendList != null) {
+			if (spendList != null) {
 				offer = spendList.get(position);
 				sendSpendOfferTapped(offer);
 				if (onExternalItemClicked(offer)) {
@@ -391,20 +396,22 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 				} else {
 					showSomethingWentWrong();
 				}
-			} else  {
-				sendSdkError("MarketplacePresenter spendList is null, offer position is: " + position + ", isListsAdded: " + isListsAdded);
+			} else {
+				sendSdkError(
+					"MarketplacePresenter spendList is null, offer position is: " + position + ", isListsAdded: "
+						+ isListsAdded);
 			}
 		}
 	}
 
 	private void sendSdkError(String msg) {
-		if(eventLogger != null) {
+		if (eventLogger != null) {
 			eventLogger.send(GeneralEcosystemSdkError.create(msg));
 		}
 	}
 
 	private boolean isFastClicks() {
-		if(lastClickTime == NOT_FOUND) {
+		if (lastClickTime == NOT_FOUND) {
 			lastClickTime = System.currentTimeMillis();
 			return false;
 		}
@@ -418,7 +425,7 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private boolean onExternalItemClicked(Offer offer) {
-		if (offer != null && offer.getContentType() == ContentTypeEnum.EXTERNAL) {
+		if (isExternalOffer(offer)) {
 			final boolean dismissOnTap = offerRepository.shouldDismissOnTap(offer.getId());
 			if (dismissOnTap) {
 				closeMarketplace();
@@ -427,6 +434,10 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			return true;
 		}
 		return false;
+	}
+
+	private boolean isExternalOffer(Offer offer) {
+		return offer != null && offer.getContentType() == ContentTypeEnum.EXTERNAL;
 	}
 
 	private void closeMarketplace() {
@@ -438,7 +449,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 		try {
 			offerType = EarnOfferTapped.OfferType.fromValue(offer.getContentType().getValue());
 			double amount = (double) offer.getAmount();
-			eventLogger.send(EarnOfferTapped.create(offerType, amount, offer.getId()));
+			eventLogger.send(EarnOfferTapped.create(offerType, amount, offer.getId(),
+				isExternalOffer(offer) ? EarnOfferTapped.Origin.EXTERNAL : EarnOfferTapped.Origin.MARKETPLACE));
 		} catch (IllegalArgumentException | NullPointerException ex) {
 			//TODO: add general error event
 		}
@@ -446,9 +458,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 
 	private void sendSpendOfferTapped(Offer offer) {
 		double amount = (double) offer.getAmount();
-		ContentTypeEnum contentType = offer.getContentType();
 		eventLogger.send(SpendOfferTapped.create(amount, offer.getId(),
-			contentType == ContentTypeEnum.EXTERNAL ? Origin.EXTERNAL : Origin.MARKETPLACE));
+			isExternalOffer(offer) ? SpendOfferTapped.Origin.EXTERNAL : SpendOfferTapped.Origin.MARKETPLACE));
 	}
 
 	private void nativeSpendOfferClicked(Offer offer, boolean dismissMarketplace) {
