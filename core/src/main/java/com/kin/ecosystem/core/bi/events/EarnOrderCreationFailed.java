@@ -20,13 +20,14 @@ public class EarnOrderCreationFailed implements Event {
     public static final String EVENT_TYPE = "log";
 
     // Augmented by script
-    public static EarnOrderCreationFailed create(String errorReason, String offerId) {
+    public static EarnOrderCreationFailed create(String errorReason, String offerId, EarnOrderCreationFailed.Origin origin) {
         return new EarnOrderCreationFailed(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             (Client) EventsStore.client(),
             errorReason,
-            offerId);
+            offerId,
+            origin);
     }
 
     /**
@@ -85,6 +86,14 @@ public class EarnOrderCreationFailed implements Event {
     @SerializedName("offer_id")
     @Expose
     private String offerId;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("origin")
+    @Expose
+    private EarnOrderCreationFailed.Origin origin;
 
     /**
      * No args constructor for use in serialization
@@ -97,19 +106,21 @@ public class EarnOrderCreationFailed implements Event {
      * 
      * @param common
      * @param errorReason
+     * @param origin
 
      * @param client
      * @param offerId
 
      * @param user
      */
-    public EarnOrderCreationFailed(Common common, User user, Client client, String errorReason, String offerId) {
+    public EarnOrderCreationFailed(Common common, User user, Client client, String errorReason, String offerId, EarnOrderCreationFailed.Origin origin) {
         super();
         this.common = common;
         this.user = user;
         this.client = client;
         this.errorReason = errorReason;
         this.offerId = offerId;
+        this.origin = origin;
     }
 
     /**
@@ -236,6 +247,63 @@ public class EarnOrderCreationFailed implements Event {
      */
     public void setOfferId(String offerId) {
         this.offerId = offerId;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public EarnOrderCreationFailed.Origin getOrigin() {
+        return origin;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setOrigin(EarnOrderCreationFailed.Origin origin) {
+        this.origin = origin;
+    }
+
+    public enum Origin {
+
+        @SerializedName("marketplace")
+        MARKETPLACE("marketplace"),
+        @SerializedName("external")
+        EXTERNAL("external");
+        private final String value;
+        private final static Map<String, EarnOrderCreationFailed.Origin> CONSTANTS = new HashMap<String, EarnOrderCreationFailed.Origin>();
+
+        static {
+            for (EarnOrderCreationFailed.Origin c: values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        private Origin(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+
+        public String value() {
+            return this.value;
+        }
+
+        public static EarnOrderCreationFailed.Origin fromValue(String value) {
+            EarnOrderCreationFailed.Origin constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            } else {
+                return constant;
+            }
+        }
+
     }
 
 }
