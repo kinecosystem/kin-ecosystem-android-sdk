@@ -2,7 +2,6 @@ package com.kin.ecosystem.core.util;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.support.annotation.IntDef;
 import android.util.DisplayMetrics;
 
@@ -73,9 +72,4 @@ public class DeviceUtils {
     public static int getScreenWidth() {
         return screenWidth;
     }
-
-    public static boolean isBelowAndroidVersion(int androidVersion) {
-        return Build.VERSION.SDK_INT < androidVersion;
-    }
-
 }
