@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.TextView;
-
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.KinEcosystemBaseActivity;
 import com.kin.ecosystem.transfer.AccountInfoManager;

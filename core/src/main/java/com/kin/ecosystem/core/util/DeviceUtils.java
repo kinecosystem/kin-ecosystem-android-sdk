@@ -72,5 +72,4 @@ public class DeviceUtils {
     public static int getScreenWidth() {
         return screenWidth;
     }
-
 }
