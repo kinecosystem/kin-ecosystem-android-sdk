@@ -1,11 +1,8 @@
 package com.kin.ecosystem.onboarding.presenter
 
-import com.kin.ecosystem.Kin.KEY_ECOSYSTEM_EXPERIENCE
-import com.kin.ecosystem.core.accountmanager.AccountManager.CREATION_COMPLETED
-import com.kin.ecosystem.core.accountmanager.AccountManager.ERROR
-
 import android.os.Bundle
 import com.kin.ecosystem.EcosystemExperience
+import com.kin.ecosystem.Kin.KEY_ECOSYSTEM_EXPERIENCE
 import com.kin.ecosystem.R
 import com.kin.ecosystem.base.BasePresenter
 import com.kin.ecosystem.base.customAnimation
@@ -13,14 +10,13 @@ import com.kin.ecosystem.common.Observer
 import com.kin.ecosystem.core.Log
 import com.kin.ecosystem.core.Logger
 import com.kin.ecosystem.core.accountmanager.AccountManager
-import com.kin.ecosystem.core.accountmanager.AccountManager.AccountState
+import com.kin.ecosystem.core.accountmanager.AccountManager.*
 import com.kin.ecosystem.core.bi.EventLogger
 import com.kin.ecosystem.core.data.auth.AuthDataSource
 import com.kin.ecosystem.core.data.settings.SettingsDataSource
 import com.kin.ecosystem.main.INavigator
 import com.kin.ecosystem.onboarding.view.IOnboardingView
-import java.util.Timer
-import java.util.TimerTask
+import java.util.*
 
 
 class OnboardingPresenterImpl(private val accountManager: AccountManager,

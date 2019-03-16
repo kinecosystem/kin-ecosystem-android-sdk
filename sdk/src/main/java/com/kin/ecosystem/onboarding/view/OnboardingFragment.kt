@@ -21,7 +21,7 @@ import com.kin.ecosystem.core.data.settings.SettingsDataSourceImpl
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceLocal
 import com.kin.ecosystem.main.INavigator
 import com.kin.ecosystem.onboarding.presenter.OnboardingPresenter
-import com.kin.ecosystem.onboarding.presenter.OnboardingPresenter.*
+import com.kin.ecosystem.onboarding.presenter.OnboardingPresenter.Message
 import com.kin.ecosystem.onboarding.presenter.OnboardingPresenterImpl
 import java.util.*
 

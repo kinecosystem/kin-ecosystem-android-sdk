@@ -2,7 +2,6 @@ package com.kin.ecosystem.onboarding.view
 
 import com.kin.ecosystem.base.IBaseView
 import com.kin.ecosystem.onboarding.presenter.OnboardingPresenter
-import com.kin.ecosystem.onboarding.presenter.OnboardingPresenterImpl
 
 interface IOnboardingView : IBaseView {
 
