@@ -4,13 +4,16 @@
     <color name="kinecosystem_bluePrimaryDark">#0365ce</color>
     <color name="kinecosystem_hot_blue">#0000ff</color>
 
-    <color name="kinecosystem_title">#5C6786</color>
+    <color name="kinecosystem_primary">#6f41e8</color>
+
+    <color name="kinecosystem_title">#1f1f1f</color>
     <color name="kinecosystem_subtitle">@color/kinecosystem_gray_dark</color>
 
 
     <color name="kinecosystem_white">#fff</color>
 
     <color name="kinecosystem_black">#000</color>
+    <color name="kinecosystem_black_50">#99000000</color>
 
     <color name="kinecosystem_gray">#CFD0D4</color>
     <color name="kinecosystem_gray_light">#d7dce9</color>

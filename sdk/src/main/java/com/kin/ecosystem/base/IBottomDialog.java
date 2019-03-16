@@ -2,7 +2,7 @@ package com.kin.ecosystem.base;
 
 import android.support.annotation.StringRes;
 
-public interface IBottomDialog<T extends IBottomDialogPresenter> extends IBaseView<T> {
+public interface IBottomDialog extends IBaseView {
 
     void closeDialog();
 

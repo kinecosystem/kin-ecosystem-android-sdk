@@ -27,7 +27,6 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 
 	private static final int NOT_FOUND = -1;
 	private final OrderDataSource orderRepository;
-	private final BlockchainSource blockchainSource;
 	private final EventLogger eventLogger;
 
 	private List<Order> orderHistoryList = new ArrayList<>();
@@ -36,23 +35,17 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 
 	private boolean isFirstSpendOrder;
 
-	public OrderHistoryPresenter(@NonNull IOrderHistoryView view,
-		@NonNull final OrderDataSource orderRepository,
-		@NonNull final BlockchainSource blockchainSource,
+	public OrderHistoryPresenter(@NonNull final OrderDataSource orderRepository,
 		@NonNull final EventLogger eventLogger,
 		boolean isFirstSpendOrder) {
-		this.view = view;
 		this.orderRepository = orderRepository;
-		this.blockchainSource = blockchainSource;
 		this.eventLogger = eventLogger;
 		this.isFirstSpendOrder = isFirstSpendOrder;
 		this.gson = new Gson();
-
-		view.attachPresenter(this);
 	}
 
 	@Override
-	public void onAttach(IOrderHistoryView view) {
+	public void onAttach(@NonNull IOrderHistoryView view) {
 		super.onAttach(view);
 		eventLogger.send(OrderHistoryPageViewed.create());
 		getOrderHistoryList();
@@ -102,8 +95,8 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 
 	private void setOrderHistoryList(List<Order> orders) {
 		orderHistoryList = orders;
-		if (view != null) {
-			view.updateOrderHistoryList(orderHistoryList);
+		if (getView() != null) {
+			getView().updateOrderHistoryList(orderHistoryList);
 		}
 	}
 
@@ -147,14 +140,14 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 	}
 
 	private void notifyItemInserted() {
-		if (view != null) {
-			view.onItemInserted();
+		if (getView() != null) {
+			getView().onItemInserted();
 		}
 	}
 
 	private void notifyItemUpdated(int index) {
-		if (view != null) {
-			view.onItemUpdated(index);
+		if (getView() != null) {
+			getView().onItemUpdated(index);
 		}
 	}
 
@@ -169,8 +162,8 @@ public class OrderHistoryPresenter extends BasePresenter<IOrderHistoryView> impl
 
 	private void showCouponDialog(RedeemTrigger redeemTrigger, Order order) {
 		Coupon coupon = deserializeCoupon(order);
-		if (view != null && coupon != null) {
-			view.showCouponDialog(createCouponDialogPresenter(coupon, order, redeemTrigger));
+		if (getView() != null && coupon != null) {
+			getView().showCouponDialog(createCouponDialogPresenter(coupon, order, redeemTrigger));
 		}
 	}
 

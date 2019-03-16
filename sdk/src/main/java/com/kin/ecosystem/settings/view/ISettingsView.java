@@ -6,7 +6,7 @@ import com.kin.ecosystem.settings.presenter.ISettingsPresenter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public interface ISettingsView extends IBaseView<ISettingsPresenter> {
+public interface ISettingsView extends IBaseView {
 
 	int ITEM_BACKUP = 0x00000001;
 	int ITEM_RESTORE = 0x00000002;

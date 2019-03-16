@@ -24,8 +24,8 @@ public class SpendDialog extends BottomDialog<ISpendDialogPresenter> implements 
 
     @Override
     public void dismiss() {
-        super.dismiss();
         presenter.dialogDismissed();
+        super.dismiss();
     }
 
 
@@ -58,7 +58,7 @@ public class SpendDialog extends BottomDialog<ISpendDialogPresenter> implements 
 
     @Override
     public void navigateToOrderHistory() {
-        navigator.navigateToOrderHistory(true);
+        navigator.navigateToOrderHistory(true, true);
     }
 
     @Override

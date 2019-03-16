@@ -7,7 +7,7 @@
         android:id="@+id/settings_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/kinecosystem_main_medium_margin"
+        android:layout_marginLeft="@dimen/kinecosystem_main_small_margin"
         android:layout_marginRight="@dimen/kinecosystem_main_margin"/>
 
     <TextView
@@ -22,7 +22,7 @@
         android:id="@+id/settings_arrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/kinecosystem_main_medium_margin"
+        android:layout_marginRight="@dimen/kinecosystem_main_small_margin"
         android:src="@drawable/kinecosystem_arrow_right"
         />
 

@@ -7,6 +7,7 @@
     <dimen name="kinecosystem_stroke_padding">2dp</dimen>
     <dimen name="kinecosystem_stroke_small_padding">1.5dp</dimen>
     <dimen name="kinecosystem_button_corners_radius">25dp</dimen>
+    <dimen name="kinecosystem_button_corners_radius_small">3dp</dimen>
     <dimen name="kinecosystem_text_box_radius">5dp</dimen>
     <dimen name="kinecosystem_menu_info_margin">2dp</dimen>
     <dimen name="kinecosystem_info_dot_radius">8dp</dimen>

@@ -25,7 +25,7 @@
 
             <TextView
                 android:id="@+id/earn_title"
-                style="@style/KinecosysTitleTextMedium"
+                style="@style/KinecosysTitleBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/kinecosystem_tiny_margin"
@@ -44,7 +44,7 @@
             android:id="@+id/earn_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/kinecosystem_main_small_margin"/>
+            android:layout_marginTop="@dimen/kinecosystem_main_xsmall_margin"/>
 
     </LinearLayout>
 
@@ -72,7 +72,7 @@
 
             <TextView
                 android:id="@+id/spend_title"
-                style="@style/KinecosysTitleTextMedium"
+                style="@style/KinecosysTitleBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/kinecosystem_tiny_margin"
@@ -90,7 +90,7 @@
             android:id="@+id/spend_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/kinecosystem_main_small_margin"/>
+            android:layout_marginTop="@dimen/kinecosystem_main_xsmall_margin"/>
     </LinearLayout>
 
 </LinearLayout>

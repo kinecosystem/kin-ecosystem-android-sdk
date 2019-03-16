@@ -58,7 +58,6 @@ import com.kin.ecosystem.core.util.Validator;
 import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.recovery.BackupAndRestore;
 import com.kin.ecosystem.recovery.BackupAndRestoreImpl;
-import com.kin.ecosystem.splash.view.SplashActivity;
 import java.util.concurrent.atomic.AtomicBoolean;
 import kin.core.KinClient;
 import kin.core.ServiceProvider;
@@ -373,17 +372,7 @@ public class Kin {
 		checkInstanceNotNull();
 		checkAccountIsLoggedIn();
 		eventLogger.send(EntrypointButtonTapped.create());
-		boolean isAccountCreated = AccountManagerImpl.getInstance().isAccountCreated();
-		if (isAccountCreated) {
-			navigateToExperience(activity, experience);
-		} else {
-			navigateToSplash(activity, experience);
-		}
-	}
-
-	private static void navigateToSplash(@NonNull final Activity activity, @EcosystemExperience final int experience) {
-		Intent splashIntent = new Intent(activity, SplashActivity.class);
-		launchIntent(activity, splashIntent, experience);
+		navigateToExperience(activity, experience);
 	}
 
 	private static void navigateToExperience(@NonNull final Activity activity,
@@ -396,7 +385,7 @@ public class Kin {
 		@EcosystemExperience final int experience) {
 		intentToLaunch.putExtra(KEY_ECOSYSTEM_EXPERIENCE, experience);
 		activity.startActivity(intentToLaunch);
-		activity.overridePendingTransition(R.anim.kinecosystem_slide_in_right, R.anim.kinecosystem_slide_out_left);
+		activity.overridePendingTransition(0, 0);
 	}
 
 	/**

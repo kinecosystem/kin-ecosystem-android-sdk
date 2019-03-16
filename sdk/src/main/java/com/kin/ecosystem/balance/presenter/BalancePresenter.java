@@ -62,12 +62,10 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 		@NonNull final EventLogger eventLogger,
 		@NonNull final BlockchainSource blockchainSource,
 		@NonNull final OrderDataSource orderRepository) {
-		this.view = view;
+		this.setView(view);
 		this.eventLogger = eventLogger;
 		this.blockchainSource = blockchainSource;
 		this.orderRepository = orderRepository;
-
-		this.view.attachPresenter(this);
 	}
 
 	@Override
@@ -91,8 +89,8 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 
 	private void updateBalance(Balance balance) {
 		int balanceValue = balance.getAmount().intValue();
-		if (view != null) {
-			view.updateBalance(balanceValue);
+		if (getView() != null) {
+			getView().updateBalance(balanceValue);
 		}
 	}
 
@@ -166,8 +164,8 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 
 
 	private void updateSubTitle(int amount, @OrderStatus int status, @OrderType int offerType) {
-		if (view != null) {
-			view.updateSubTitle(amount, status, offerType);
+		if (getView() != null) {
+			getView().updateSubTitle(amount, status, offerType);
 		}
 	}
 
@@ -185,8 +183,8 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 	}
 
 	private void showWelcomeToKin() {
-		if (view != null) {
-			view.setWelcomeSubtitle();
+		if (getView() != null) {
+			getView().setWelcomeSubtitle();
 		}
 	}
 
@@ -247,14 +245,14 @@ public class BalancePresenter extends BasePresenter<IBalanceView> implements IBa
 	}
 
 	private void animateArrow(boolean showArrow) {
-		if (view != null) {
-			view.animateArrow(showArrow);
+		if (getView() != null) {
+			getView().animateArrow(showArrow);
 		}
 	}
 
 	private void clearSubTitle() {
-		if (view != null) {
-			view.clearSubTitle();
+		if (getView() != null) {
+			getView().clearSubTitle();
 		}
 	}
 }

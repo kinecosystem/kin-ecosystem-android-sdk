@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/balance_title"
-        style="@style/KinecosysTitleText"
+        style="@style/KinecosysTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/kinecosystem_tiny_margin"
@@ -44,7 +44,7 @@
         android:id="@+id/arrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/kinecosystem_main_medium_margin"
+        android:layout_marginRight="@dimen/kinecosystem_main_small_margin"
         android:src="@drawable/kinecosystem_arrow_right"
         app:layout_constraintBottom_toBottomOf="@+id/sub_title"
         app:layout_constraintLeft_toRightOf="@id/balance_text"
@@ -55,7 +55,7 @@
         android:id="@+id/bar"
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:layout_marginTop="@dimen/kinecosystem_main_medium_margin"
+        android:layout_marginTop="@dimen/kinecosystem_main_small_margin"
         android:background="@color/kinecosystem_gray_darker"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

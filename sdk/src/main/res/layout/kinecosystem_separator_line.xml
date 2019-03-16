@@ -4,5 +4,5 @@
     android:id="@+id/bottom_border"
     android:layout_width="match_parent"
     android:layout_height="1px"
-    android:paddingBottom="@dimen/kinecosystem_main_medium_margin"
+    android:paddingBottom="@dimen/kinecosystem_main_small_margin"
     android:background="@color/kinecosystem_gray_darker"/>

@@ -54,30 +54,22 @@ public class SettingsActivity extends BaseToolbarActivity implements ISettingsVi
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		final SettingsDataSource settingsDataSource = new SettingsDataSourceImpl(
+			new SettingsDataSourceLocal(getApplicationContext()));
+		settingsPresenter = new SettingsPresenter(settingsDataSource,
+			BlockchainSourceImpl.getInstance(),
+			new BackupManagerImpl(this, AccountManagerImpl.getInstance(), EventLoggerImpl.getInstance(),
+				BlockchainSourceImpl.getInstance(), settingsDataSource), EventLoggerImpl.getInstance());
+		settingsPresenter.onAttach(this);
+	}
+
+	@Override
+	protected void initViews() {
 		backupItem = findViewById(R.id.keep_your_kin_safe);
 		restoreItem = findViewById(R.id.restore_prev_wallet);
 
 		backupItem.setOnClickListener(this);
 		restoreItem.setOnClickListener(this);
-
-		final SettingsDataSource settingsDataSource = new SettingsDataSourceImpl(
-			new SettingsDataSourceLocal(getApplicationContext()));
-		settingsPresenter = new SettingsPresenter(this,
-			settingsDataSource,
-			BlockchainSourceImpl.getInstance(),
-			new BackupManagerImpl(this, AccountManagerImpl.getInstance(), EventLoggerImpl.getInstance(),
-				BlockchainSourceImpl.getInstance(), settingsDataSource), EventLoggerImpl.getInstance());
-	}
-
-	@Override
-	protected void initViews() {
-
-	}
-
-	@Override
-	public void attachPresenter(ISettingsPresenter presenter) {
-		settingsPresenter = presenter;
-		settingsPresenter.onAttach(this);
 	}
 
 	@Override

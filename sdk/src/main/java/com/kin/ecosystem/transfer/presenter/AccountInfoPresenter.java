@@ -34,7 +34,6 @@ public class AccountInfoPresenter extends BasePresenter<IAccountInfoView> implem
     public AccountInfoPresenter(@NonNull AccountInfoManager accountInfoManager, @NonNull IAccountInfoView view, @NonNull Intent intent) {
         this.accountInfoManager = accountInfoManager;
         processIntent(view, intent);
-        view.attachPresenter(this);
         startAccountInfoTask();
     }
 
@@ -55,8 +54,8 @@ public class AccountInfoPresenter extends BasePresenter<IAccountInfoView> implem
     public void agreeClicked() {
         if (accountInfoManager != null) {
             accountInfoManager.respondOk();
-            if (view != null) {
-                view.close();
+            if (getView() != null) {
+                getView().close();
             }
         }
     }
@@ -72,8 +71,8 @@ public class AccountInfoPresenter extends BasePresenter<IAccountInfoView> implem
     public void closeClicked() {
         if (accountInfoManager != null) {
             accountInfoManager.respondCancel();
-            if (view != null) {
-                view.close();
+            if (getView() != null) {
+                getView().close();
             }
         }
     }
@@ -119,8 +118,8 @@ public class AccountInfoPresenter extends BasePresenter<IAccountInfoView> implem
 
     private void checkTaskState() {
         if (taskState == TASK_STATE_SUCCESS) {
-            if (view != null) {
-                view.enabledAgreeButton();
+            if (getView() != null) {
+                getView().enabledAgreeButton();
             }
             taskState = TASK_STATE_UNDEFINED;
         } else if (taskState == TASK_STATE_FAILURE) {

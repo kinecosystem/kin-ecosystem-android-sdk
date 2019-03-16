@@ -41,10 +41,9 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 	private Balance currentBalance;
 	private String publicAddress;
 
-	public SettingsPresenter(@NonNull final ISettingsView view, @NonNull final SettingsDataSource settingsDataSource,
+	public SettingsPresenter(@NonNull final SettingsDataSource settingsDataSource,
 		@NonNull final BlockchainSource blockchainSource, @NonNull final BackupManager backupManager,
 		@NonNull final EventLogger eventLogger) {
-		this.view = view;
 		this.backupManager = backupManager;
 		this.settingsDataSource = settingsDataSource;
 		this.blockchainSource = blockchainSource;
@@ -58,7 +57,6 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 		}
 		registerToEvents();
 		registerToCallbacks();
-		this.view.attachPresenter(this);
 	}
 
 	@Override
@@ -137,8 +135,8 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 
 	@Override
 	public void backClicked() {
-		if (view != null) {
-			view.navigateBack();
+		if (getView() != null) {
+			getView().navigateBack();
 		}
 	}
 
@@ -194,8 +192,8 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 
 
 	private void showCouldNotImportAccountError() {
-		if (view != null) {
-			view.showCouldNotImportAccount();
+		if (getView() != null) {
+			getView().showCouldNotImportAccount();
 		}
 	}
 
@@ -204,14 +202,14 @@ public class SettingsPresenter extends BasePresenter<ISettingsView> implements I
 	}
 
 	private void changeTouchIndicator(@Item final int item, final boolean isVisible) {
-		if (view != null) {
-			view.changeTouchIndicatorVisibility(item, isVisible);
+		if (getView() != null) {
+			getView().changeTouchIndicatorVisibility(item, isVisible);
 		}
 	}
 
 	private void changeIconColor(@Item final int item, @IconColor final int color) {
-		if (view != null) {
-			view.setIconColor(item, color);
+		if (getView() != null) {
+			getView().setIconColor(item, color);
 		}
 	}
 }

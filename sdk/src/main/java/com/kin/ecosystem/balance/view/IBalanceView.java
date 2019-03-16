@@ -5,7 +5,7 @@ import com.kin.ecosystem.balance.presenter.BalancePresenter.OrderType;
 import com.kin.ecosystem.balance.presenter.IBalancePresenter;
 import com.kin.ecosystem.base.IBaseView;
 
-public interface IBalanceView extends IBaseView<IBalancePresenter> {
+public interface IBalanceView extends IBaseView {
 
 	void updateBalance(int balance);
 
