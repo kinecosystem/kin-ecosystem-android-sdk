@@ -19,8 +19,8 @@ class FontUtil private constructor(val assetsManager: AssetManager) {
         private const val NAME_SAILEC_MEDIUM  = "sailec_medium.otf"
 
 
-        val SAILEC: Typeface by lazy(LazyThreadSafetyMode.PUBLICATION) { loadTypeface(NAME_SAILEC_REGULAR) }
-        val SAILEC_MEDIUM: Typeface by lazy(LazyThreadSafetyMode.PUBLICATION) { loadTypeface(NAME_SAILEC_MEDIUM) }
+        val SAILEC: Typeface by lazy { loadTypeface(NAME_SAILEC_REGULAR) }
+        val SAILEC_MEDIUM: Typeface by lazy { loadTypeface(NAME_SAILEC_MEDIUM) }
 
         private fun loadTypeface(fontName: String) = INSTANCE?.let {
             Typeface.createFromAsset(it.assetsManager, "fonts/$fontName")
