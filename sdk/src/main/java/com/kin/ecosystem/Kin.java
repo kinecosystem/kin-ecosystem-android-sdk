@@ -58,6 +58,7 @@ import com.kin.ecosystem.core.util.Validator;
 import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.recovery.BackupAndRestore;
 import com.kin.ecosystem.recovery.BackupAndRestoreImpl;
+import com.kin.ecosystem.widget.util.FontUtil;
 import java.util.concurrent.atomic.AtomicBoolean;
 import kin.core.KinClient;
 import kin.core.ServiceProvider;
@@ -142,6 +143,7 @@ public class Kin {
 			OfferRepository.init(OfferRemoteData.getInstance(instance.executorsUtil), OrderRepository.getInstance());
 
 			DeviceUtils.init(appContext);
+			FontUtil.Companion.init(appContext.getAssets());
 
 			if (AuthRepository.getInstance().getAppID() != null) {
 				eventLogger.send(KinSdkInitiated.create());
