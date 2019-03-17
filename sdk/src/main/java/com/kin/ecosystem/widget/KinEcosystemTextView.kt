@@ -1,7 +1,6 @@
 package com.kin.ecosystem.widget
 
 import android.content.Context
-import android.content.res.TypedArray
 import android.graphics.Typeface
 import android.util.AttributeSet
 import android.widget.TextView
@@ -14,13 +13,15 @@ class KinEcosystemTextView @JvmOverloads constructor(context: Context,
                                                      defStyleAttr: Int = 0) : TextView(context, attrs, defStyleAttr) {
 
     init {
-        val attributes: TypedArray = obtainAttrs(attrs, R.styleable.KinEcosystemTextView)
+        val attributes = obtainAttrs(attrs, R.styleable.KinEcosystemTextView)
 
         try {
-            val fontExtra = attributes.getInt(R.styleable.KinEcosystemTextView_fontExtra, REGULAR)
-            typeface = getTypeFace(fontExtra)
+            attributes?.let {
+                val fontExtra = it.getInt(R.styleable.KinEcosystemTextView_fontExtra, REGULAR)
+                typeface = getTypeFace(fontExtra)
+            }
         } finally {
-            attributes.recycle()
+            attributes?.recycle()
         }
     }
 

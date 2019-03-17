@@ -5,14 +5,14 @@ import android.graphics.Typeface
 
 class FontUtil private constructor(val assetsManager: AssetManager) {
 
-
     companion object {
-        @Volatile private var INSTANCE: FontUtil? = null
+        private var INSTANCE: FontUtil? = null
 
+        /**
+         * Should be called from Main Thread
+         */
         fun init(assetsManager: AssetManager) {
-            INSTANCE ?: synchronized(this) {
-                INSTANCE ?: FontUtil(assetsManager).also { INSTANCE = it }
-            }
+            INSTANCE ?: FontUtil(assetsManager).also { INSTANCE = it }
         }
 
         private const val NAME_SAILEC_REGULAR  = "sailec.otf"
