@@ -47,6 +47,6 @@
     <string name="kinecosystem_environment_beta">beta</string>
     <string name="kinecosystem_environment_production">prod</string>
     <string name="kinecosystem_what_is_kin">What is Kin?</string>
-    <string name="lets_s_start">Lets\'s start!</string>
+    <string name="lets_s_start">Let\'s start!</string>
     <string name="kinecosystem_creating_your_account">Creating your account...</string>
 </resources>
