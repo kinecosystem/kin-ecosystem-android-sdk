@@ -38,19 +38,20 @@
         app:layout_constraintTop_toBottomOf="@+id/welcome_image"
         app:srcCompat="@drawable/kinecosystem_kin_logo_new"/>
 
-    <TextView
+    <com.kin.ecosystem.widget.KinEcosystemTextView
         android:id="@+id/whats_kin_title"
         style="@style/KinecosysTitleMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/kinecosystem_what_is_kin"
+        app:fontExtra="medium"
         app:layout_constraintBottom_toTopOf="@+id/whats_kin_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/kin_logo"/>
 
-    <TextView
+    <com.kin.ecosystem.widget.KinEcosystemTextView
         android:id="@+id/whats_kin_description"
         style="@style/KinecosysTitle"
         android:layout_width="wrap_content"
@@ -90,7 +91,7 @@
         app:layout_constraintStart_toStartOf="@id/loading_text"
         app:srcCompat="@drawable/kinecosystem_avd_loading"/>
 
-    <TextView
+    <com.kin.ecosystem.widget.KinEcosystemTextView
         android:id="@+id/loading_text"
         style="@style/KinecosysTitle"
         android:layout_width="wrap_content"

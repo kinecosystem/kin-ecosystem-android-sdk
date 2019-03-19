@@ -38,7 +38,7 @@ class OnboardingFragment: Fragment(), IOnboardingView {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val root = inflater.inflate(R.layout.kinecosystem_activity_onboarding, container, false)
+        val root = inflater.inflate(R.layout.kinecosystem_fragment_onboarding, container, false)
         onboardingPresenter = OnboardingPresenterImpl(AccountManagerImpl.getInstance(),
                 AuthRepository.getInstance(),
                 SettingsDataSourceImpl(SettingsDataSourceLocal(context.applicationContext)),
