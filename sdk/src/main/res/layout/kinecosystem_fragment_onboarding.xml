@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/kinecosystem_what_is_kin"
-        app:fontExtra="bold"
+        app:fontExtra="medium"
         app:layout_constraintBottom_toTopOf="@+id/whats_kin_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

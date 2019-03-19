@@ -27,14 +27,13 @@ class KinEcosystemTextView @JvmOverloads constructor(context: Context,
 
     private fun getTypeFace(fontStyle: Int): Typeface {
         return when(fontStyle) {
-            REGULAR -> FontUtil.SAILEC
-            BOLD -> FontUtil.SAILEC_MEDIUM
+            MEDIUM -> FontUtil.SAILEC_MEDIUM
             else -> FontUtil.SAILEC
         }
     }
 
     companion object {
         private const val REGULAR = 0
-        private const val BOLD = 1
+        private const val MEDIUM = 1
     }
 }
