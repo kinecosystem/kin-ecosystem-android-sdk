@@ -11,6 +11,26 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
+    <style name="KinecosysNoActionBar.Light" parent="KinecosysNoActionBar">
+        <item name="primaryTextColor">@color/kinecosystem_title</item>
+        <item name="backgroundCardImage">@drawable/kinecosystem_screen_bg_light</item>
+        <item name="menuMyKinIcon">@drawable/kinecosystem_ic_my_kin</item>
+        <item name="menuSettingsIcon" >@drawable/kinecosystem_ic_settings</item>
+        <item name="settingsBackupIcon">@drawable/kinecosystem_ic_backup</item>
+        <item name="settingsRestoreIcon">@drawable/kinecosystem_ic_restore</item>
+        <item name="tabDeselectedBackgroundColor">@color/kinecosystem_tab_deselected_background_light</item>
+    </style>
+
+    <style name="KinecosysNoActionBar.Dark" parent="KinecosysNoActionBar">
+        <item name="primaryTextColor">@color/kinecosystem_white</item>
+        <item name="backgroundCardImage">@drawable/kinecosystem_screen_bg_dark</item>
+        <item name="menuMyKinIcon">@drawable/kinecosystem_ic_my_kin_dark</item>
+        <item name="menuSettingsIcon" >@drawable/kinecosystem_ic_settings_dark</item>
+        <item name="settingsBackupIcon">@drawable/kinecosystem_ic_backup_dark</item>
+        <item name="settingsRestoreIcon">@drawable/kinecosystem_ic_restore_dark</item>
+        <item name="tabDeselectedBackgroundColor">@color/kinecosystem_tab_deselected_background_dark</item>
+    </style>
+
     <style name="KinecosysToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:background">@color/kinecosystem_white</item>
         <!-- android:textColorPrimary is the color of the title text in the Toolbar  -->
@@ -29,7 +49,7 @@
     </style>
 
     <style name="KinecosysTextBase">
-        <item name="android:textColor">@color/kinecosystem_title</item>
+        <item name="android:textColor">?attr/primaryTextColor</item>
         <item name="android:ellipsize">end</item>
     </style>
 
@@ -38,7 +58,7 @@
         <item name="android:textSize">@dimen/kinecosystem_title_size</item>
     </style>
 
-    <style name="KinecosysTitleSmall" parent="KinecosysTitle">
+    <style name="KinecosysTitleSmall" parent="KinecosysTextBase">
         <item name="android:textSize">@dimen/kinecosystem_small_title_size</item>
     </style>
 
@@ -50,18 +70,10 @@
         <item name="android:textSize">@dimen/kinecosystem_title_large_size</item>
     </style>
 
-    <style name="KinecosysTitleBold" parent="KinecosysTitle">
-        <item name="android:fontFamily">sans-serif-medium</item>
-    </style>
-
     <!--Subtitle-->
-    <style name="KinecosysSubTitle" parent="KinecosysTitle">
+    <style name="KinecosysSubTitle" parent="KinecosysTextBase">
         <item name="android:textSize">@dimen/kinecosystem_sub_title_size</item>
         <item name="android:textColor">@color/kinecosystem_subtitle</item>
-    </style>
-
-    <style name="KinecosysSubTitleMedium" parent="KinecosysSubTitle">
-        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
     <style name="KinecosysFullScreenDialogStyle">

@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import com.ecosystem.kin.app.BuildConfig;
 import com.ecosystem.kin.app.R;
@@ -27,6 +28,8 @@ import com.ecosystem.kin.app.main.MainActivity;
 import com.ecosystem.kin.app.model.SignInRepo;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.common.KinCallback;
+import com.kin.ecosystem.common.KinTheme;
+import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 
 public class LoginActivity extends AppCompatActivity implements OnClickListener {
@@ -37,6 +40,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
 	private TextView doneBtn;
 	private TextView generateBtn;
 	private ProgressBar loader;
+	private KinTheme kinTheme = KinTheme.LIGHT;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,6 +95,12 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
 
 	private void login() {
 		showLoading();
+		try {
+			Kin.initialize(getApplicationContext(), kinTheme);
+		} catch (ClientException e) {
+			e.printStackTrace();
+		}
+		Kin.enableLogs(true);
 		/**
 		 * SignInData should be created with registration JWT {see https://jwt.io/} created securely by server side
 		 * In the the this example {@link SignInRepo#getJWT} generate the JWT locally.
@@ -168,5 +178,17 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
 				imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
 			}
 		}
+	}
+
+	public void onThemeModeClicked(View view) {
+		switch (view.getId()) {
+			case R.id.radio_light:
+				kinTheme = KinTheme.LIGHT;
+				break;
+			case R.id.radio_dark:
+				kinTheme = KinTheme.DARK;
+				break;
+		}
+		SignInRepo.setKinTheme(this, kinTheme.name());
 	}
 }

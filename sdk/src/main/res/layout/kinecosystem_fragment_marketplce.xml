@@ -2,6 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:weightSum="1">
 
@@ -23,9 +24,10 @@
             android:orientation="vertical"
             >
 
-            <TextView
+            <com.kin.ecosystem.widget.KinEcosystemTextView
                 android:id="@+id/earn_title"
-                style="@style/KinecosysTitleBold"
+                style="@style/KinecosysTitle"
+                app:fontExtra="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/kinecosystem_tiny_margin"
@@ -70,15 +72,16 @@
             android:layout_marginRight="@dimen/kinecosystem_main_margin"
             android:orientation="vertical">
 
-            <TextView
+            <com.kin.ecosystem.widget.KinEcosystemTextView
                 android:id="@+id/spend_title"
-                style="@style/KinecosysTitleBold"
+                style="@style/KinecosysTitle"
+                app:fontExtra="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/kinecosystem_tiny_margin"
                 android:text="@string/kinecosystem_spend"/>
 
-            <TextView
+            <com.kin.ecosystem.widget.KinEcosystemTextView
                 android:id="@+id/spend_subtitle"
                 style="@style/KinecosysSubTitle"
                 android:layout_width="wrap_content"

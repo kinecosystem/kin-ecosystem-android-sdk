@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.KinEnvironment;
+import com.kin.ecosystem.common.KinTheme;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
@@ -43,6 +44,7 @@ import com.kin.ecosystem.core.data.auth.UserLoginState;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceLocal;
 import com.kin.ecosystem.core.data.internal.ConfigurationImpl;
+import com.kin.ecosystem.core.data.internal.ConfigurationLocalImpl;
 import com.kin.ecosystem.core.data.offer.OfferRemoteData;
 import com.kin.ecosystem.core.data.offer.OfferRepository;
 import com.kin.ecosystem.core.data.order.OrderLocalData;
@@ -100,7 +102,7 @@ public class Kin {
 	 * @param appContext application context.
 	 * @throws ClientException - The sdk could not be initiated.
 	 */
-	public synchronized static void initialize(Context appContext) throws ClientException {
+	public synchronized static void initialize(Context appContext, KinTheme kinTheme) throws ClientException {
 		if (isInstanceNull()) {
 			instance = getInstance();
 			// use application context to avoid leaks.
@@ -110,7 +112,7 @@ public class Kin {
 			loadDefaultsFromMetadata(appContext);
 
 			//Set Environment
-			ConfigurationImpl.init(environmentName);
+			ConfigurationImpl.init(environmentName, new ConfigurationLocalImpl(appContext));
 			KinEnvironment kinEnvironment = ConfigurationImpl.getInstance().getEnvironment();
 			eventLogger = EventLoggerImpl.getInstance();
 			final String networkUrl = kinEnvironment.getBlockchainNetworkUrl();
@@ -149,6 +151,9 @@ public class Kin {
 				eventLogger.send(KinSdkInitiated.create());
 			}
 		}
+
+		//Instance not null, update KinTheme
+		ConfigurationImpl.getInstance().setKinTheme(kinTheme);
 	}
 
 	private static void loadDefaultsFromMetadata(Context context) throws ClientException {

@@ -9,7 +9,6 @@
     <color name="kinecosystem_title">#1f1f1f</color>
     <color name="kinecosystem_subtitle">@color/kinecosystem_gray_dark</color>
 
-
     <color name="kinecosystem_white">#fff</color>
 
     <color name="kinecosystem_black">#000</color>
@@ -31,4 +30,7 @@
 
     <color name="kinecosystem_cyan">#82ffee</color>
 
+    <color name="kinecosystem_tab_deselected_text">#8c8c8c</color>
+    <color name="kinecosystem_tab_deselected_background_light">#e7e7e7</color>
+    <color name="kinecosystem_tab_deselected_background_dark">#2b2b2b</color>
 </resources>

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:id="@+id/spend_offer_container">
 
@@ -24,7 +25,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
+            <com.kin.ecosystem.widget.KinEcosystemTextView
                 android:id="@+id/title"
                 style="@style/KinecosysSubTitle"
                 android:layout_width="wrap_content"
@@ -33,7 +34,7 @@
                 android:maxLength="24"
                 tools:text="Spotify"/>
 
-            <TextView
+            <com.kin.ecosystem.widget.KinEcosystemTextView
                 android:id="@+id/sub_title"
                 style="@style/KinecosysSubTitle"
                 android:layout_width="wrap_content"
@@ -43,9 +44,10 @@
 
         </LinearLayout>
 
-        <TextView
+        <com.kin.ecosystem.widget.KinEcosystemTextView
             android:id="@+id/amount_text"
-            style="@style/KinecosysSubTitleMedium"
+            style="@style/KinecosysSubTitle"
+            app:fontExtra="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"

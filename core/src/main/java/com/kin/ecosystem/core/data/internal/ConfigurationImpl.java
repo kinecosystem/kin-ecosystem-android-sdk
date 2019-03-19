@@ -8,6 +8,7 @@ import android.os.Build.VERSION;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import com.kin.ecosystem.common.KinEnvironment;
+import com.kin.ecosystem.common.KinTheme;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
@@ -22,6 +23,7 @@ import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import org.jetbrains.annotations.NotNull;
 
 public class ConfigurationImpl implements Configuration {
 
@@ -47,18 +49,19 @@ public class ConfigurationImpl implements Configuration {
 	private static ApiClient defaultApiClient;
 
 	private final KinEnvironment kinEnvironment;
+	private final Configuration.Local local;
 	private static volatile ConfigurationImpl instance;
 
-	private ConfigurationImpl(@NonNull String environmentName) {
+	private ConfigurationImpl(@NonNull String environmentName, @NonNull Configuration.Local local) {
 		this.kinEnvironment = getEnvironmentByName(environmentName);
+		this.local = local;
 	}
 
-	public static void init(@NonNull String environmentName) {
+	public static void init(@NonNull String environmentName, @NonNull Configuration.Local local) {
 		if (instance == null) {
 			synchronized (ConfigurationImpl.class) {
 				if (instance == null) {
-
-					instance = new ConfigurationImpl(environmentName);
+					instance = new ConfigurationImpl(environmentName, local);
 				}
 			}
 		}
@@ -156,5 +159,15 @@ public class ConfigurationImpl implements Configuration {
 			acceptedLanguage = defaultLocale.getLanguage() + "-" + defaultLocale.getCountry();
 		}
 		return acceptedLanguage;
+	}
+
+	@Override
+	public KinTheme getKinTheme() {
+		return local.getKinTheme();
+	}
+
+	@Override
+	public void setKinTheme(KinTheme kinTheme) {
+		local.setKinTheme(kinTheme);
 	}
 }
