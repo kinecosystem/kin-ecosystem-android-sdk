@@ -157,17 +157,19 @@ class EcosystemPresenter(private val authDataSource: AuthDataSource,
     }
 
     private fun updateMenuSettingsIcon() {
-        if (!StringUtil.isEmpty(publicAddress)) {
-            if (!settingsDataSource.isBackedUp(publicAddress!!)) {
-                if (isGreaterThenZero(currentBalance!!)) {
-                    changeMenuTouchIndicator(true)
-                    removeBalanceObserver()
+        publicAddress?.let{
+            if (!StringUtil.isEmpty(it)) {
+                if (!settingsDataSource.isBackedUp(it)) {
+                    if (isGreaterThenZero(currentBalance!!)) {
+                        changeMenuTouchIndicator(true)
+                        removeBalanceObserver()
+                    } else {
+                        addBalanceObserver()
+                        changeMenuTouchIndicator(false)
+                    }
                 } else {
-                    addBalanceObserver()
                     changeMenuTouchIndicator(false)
                 }
-            } else {
-                changeMenuTouchIndicator(false)
             }
         }
     }
