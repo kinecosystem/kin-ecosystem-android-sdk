@@ -47,7 +47,7 @@
         <com.kin.ecosystem.widget.KinEcosystemTextView
             android:id="@+id/amount_text"
             style="@style/KinecosysSubTitle"
-            app:fontExtra="bold"
+            app:fontExtra="medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"

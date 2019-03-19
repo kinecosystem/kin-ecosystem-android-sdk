@@ -27,7 +27,7 @@
             <com.kin.ecosystem.widget.KinEcosystemTextView
                 android:id="@+id/earn_title"
                 style="@style/KinecosysTitle"
-                app:fontExtra="bold"
+                app:fontExtra="medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/kinecosystem_tiny_margin"
@@ -75,7 +75,7 @@
             <com.kin.ecosystem.widget.KinEcosystemTextView
                 android:id="@+id/spend_title"
                 style="@style/KinecosysTitle"
-                app:fontExtra="bold"
+                app:fontExtra="medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/kinecosystem_tiny_margin"
