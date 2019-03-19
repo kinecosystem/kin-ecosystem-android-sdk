@@ -41,7 +41,7 @@
     <declare-styleable name="KinEcosystemTextView">
         <attr format="enum" name="fontExtra">
             <enum name="regular" value="0"/>
-            <enum name="bold" value="1"/>
+            <enum name="medium" value="1"/>
         </attr>
     </declare-styleable>
 </resources>
