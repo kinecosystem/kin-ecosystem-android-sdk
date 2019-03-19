@@ -96,10 +96,10 @@ class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements 
 	}
 
 	private void loadInfo() {
-		if (view != null) {
-			view.setupImage(offerInfo.getImage());
-			view.setupTitle(offerInfo.getTitle(), offerInfo.getAmount());
-			view.setupDescription(offerInfo.getDescription());
+		if (getView() != null) {
+			getView().setupImage(offerInfo.getImage());
+			getView().setupTitle(offerInfo.getTitle(), offerInfo.getAmount());
+			getView().setupDescription(offerInfo.getDescription());
 		}
 	}
 
@@ -118,9 +118,9 @@ class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements 
 	public void bottomButtonClicked() {
 		isUserConfirmedPurchase = true;
 		eventLogger.send(ConfirmPurchaseButtonTapped.create(amount.doubleValue(), offer.getId(), getOrderID()));
-		if (view != null) {
+		if (getView() != null) {
 			Confirmation confirmation = offerInfo.getConfirmation();
-			view.showThankYouLayout(confirmation.getTitle(), confirmation.getDescription());
+			getView().showThankYouLayout(confirmation.getTitle(), confirmation.getDescription());
 			eventLogger.send(SpendThankyouPageViewed.create(amount.doubleValue(), offer.getId(), getOrderID()));
 			closeDialogWithDelay(CLOSE_DELAY);
 		}
@@ -146,7 +146,6 @@ class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements 
 						navigateToOrderHistory();
 						orderRepository.setIsFirstSpendOrder(false);
 					}
-					onDetach();
 				}
 			});
 		} else {
@@ -160,8 +159,8 @@ class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements 
 	}
 
 	private void navigateToOrderHistory() {
-		if (view != null) {
-			view.navigateToOrderHistory();
+		if (getView() != null) {
+			getView().navigateToOrderHistory();
 		}
 	}
 
@@ -197,8 +196,8 @@ class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements 
 	}
 
 	private void showToast(@Message final int msg) {
-		if (view != null) {
-			view.showToast(msg);
+		if (getView() != null) {
+			getView().showToast(msg);
 		}
 	}
 

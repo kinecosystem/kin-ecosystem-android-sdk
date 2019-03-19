@@ -1,23 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:splitMotionEvents="false"
-    android:weightSum="1">
+    android:layout_weight="1"
+    android:background="@color/kinecosystem_black_50">
 
-    <include layout="@layout/kinecosystem_toolbar_layout"/>
-
-    <com.kin.ecosystem.balance.view.BalanceView
-        android:id="@+id/balance_view"
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:subTitle="@string/kinecosystem_welcome_to_kin_marketplace"/>
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.2"/>
 
-    <FrameLayout
-        android:id="@+id/fragment_frame"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/screen_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-</LinearLayout>
+        android:layout_height="0dp"
+        android:background="@drawable/kinecosystem_screen_bg"
+        app:layout_constraintHeight_percent="0.8"
+        app:layout_constraintTop_toBottomOf="@id/guideline"
+        app:layout_constraintWidth_default="percent">
+
+        <FrameLayout
+            android:id="@+id/fragment_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </android.support.constraint.ConstraintLayout>
+</android.support.constraint.ConstraintLayout>

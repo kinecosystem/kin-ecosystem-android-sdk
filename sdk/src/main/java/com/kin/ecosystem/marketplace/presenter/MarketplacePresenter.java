@@ -62,18 +62,15 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	private final Gson gson;
 	private ISpendDialogPresenter spendDialogPresenter;
 
-	public MarketplacePresenter(@NonNull final IMarketplaceView view, @NonNull final OfferDataSource offerRepository,
+	public MarketplacePresenter(@NonNull final OfferDataSource offerRepository,
 		@NonNull final OrderDataSource orderRepository, @Nullable final BlockchainSource blockchainSource,
 		@NonNull INavigator navigator, @NonNull EventLogger eventLogger) {
-		this.view = view;
 		this.offerRepository = offerRepository;
 		this.orderRepository = orderRepository;
 		this.blockchainSource = blockchainSource;
 		this.navigator = navigator;
 		this.eventLogger = eventLogger;
 		this.gson = new Gson();
-
-		this.view.attachPresenter(this);
 	}
 
 	@Override
@@ -126,9 +123,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 			OfferListUtil.splitOffersByType(cachedOfferList.getOffers(), earnList, spendList);
 		}
 
-		if (this.view != null) {
-			this.view.setEarnList(earnList);
-			this.view.setSpendList(spendList);
+		if (this.getView() != null) {
+			this.getView().setEarnList(earnList);
+			this.getView().setSpendList(spendList);
 			isListsAdded = true;
 
 			if (!earnList.isEmpty()) {
@@ -191,40 +188,40 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void updateEarnTitle() {
-		if (view != null && earnList != null) {
+		if (getView() != null && earnList != null) {
 			boolean isEarnListEmpty = earnList.isEmpty();
-			view.updateEarnSubtitle(isEarnListEmpty);
+			getView().updateEarnSubtitle(isEarnListEmpty);
 		}
 	}
 
 	private void updateSpendTitle() {
-		if (view != null && spendList != null) {
+		if (getView() != null && spendList != null) {
 			boolean isSpendListEmpty = spendList.isEmpty();
-			view.updateSpendSubtitle(isSpendListEmpty);
+			getView().updateSpendSubtitle(isSpendListEmpty);
 		}
 	}
 
 	private void notifyEarnItemRemoved(int index) {
-		if (view != null) {
-			view.notifyEarnItemRemoved(index);
+		if (getView() != null) {
+			getView().notifyEarnItemRemoved(index);
 		}
 	}
 
 	private void notifyEarnItemInserted(int index) {
-		if (view != null) {
-			view.notifyEarnItemInserted(index);
+		if (getView() != null) {
+			getView().notifyEarnItemInserted(index);
 		}
 	}
 
 	private void notifySpendItemRemoved(int index) {
-		if (view != null) {
-			view.notifySpendItemRemoved(index);
+		if (getView() != null) {
+			getView().notifySpendItemRemoved(index);
 		}
 	}
 
 	private void notifySpendItemInserted(int index) {
-		if (view != null) {
-			view.notifySpendItemInserted(index);
+		if (getView() != null) {
+			getView().notifySpendItemInserted(index);
 		}
 	}
 
@@ -247,8 +244,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void setupEmptyItemView() {
-		if (view != null) {
-			view.setupEmptyItemView();
+		if (getView() != null) {
+			getView().setupEmptyItemView();
 		}
 	}
 
@@ -311,11 +308,11 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void notifyItemRangRemoved(int fromIndex, int size, OfferType offerType) {
-		if (view != null) {
+		if (getView() != null) {
 			if (isSpend(offerType)) {
-				view.notifySpendItemRangRemoved(fromIndex, size);
+				getView().notifySpendItemRangRemoved(fromIndex, size);
 			} else {
-				view.notifyEarnItemRangRemoved(fromIndex, size);
+				getView().notifyEarnItemRangRemoved(fromIndex, size);
 			}
 		}
 	}
@@ -360,14 +357,14 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 				if (onExternalItemClicked(offer)) {
 					return;
 				}
-				if (this.view != null) {
+				if (this.getView() != null) {
 					PollBundle pollBundle = new PollBundle()
 						.setJsonData(offer.getContent())
 						.setOfferID(offer.getId())
 						.setContentType(offer.getContentType().getValue())
 						.setAmount(offer.getAmount())
 						.setTitle(offer.getTitle());
-					this.view.showOfferActivity(pollBundle);
+					this.getView().showOfferActivity(pollBundle);
 				}
 			} else {
 				sendSdkError(
@@ -496,9 +493,9 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void showSpendDialog(@NonNull final OfferInfo offerInfo, @NonNull final Offer offer) {
-		if (view != null) {
+		if (getView() != null) {
 			spendDialogPresenter = createSpendDialogPresenter(offerInfo, offer);
-			view.showSpendDialog(spendDialogPresenter);
+			getView().showSpendDialog(spendDialogPresenter);
 		}
 	}
 
@@ -516,8 +513,8 @@ public class MarketplacePresenter extends BasePresenter<IMarketplaceView> implem
 	}
 
 	private void showToast(@Message final int msg) {
-		if (view != null) {
-			view.showToast(msg);
+		if (getView() != null) {
+			getView().showToast(msg);
 		}
 	}
 }

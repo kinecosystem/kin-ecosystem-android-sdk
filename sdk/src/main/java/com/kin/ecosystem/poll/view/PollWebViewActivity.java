@@ -61,25 +61,19 @@ public class PollWebViewActivity extends BaseToolbarActivity implements IPollWeb
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		PollBundle pollBundle = new PollBundle(getIntent().getExtras());
-		attachPresenter(
-			new PollWebViewPresenter(pollBundle.getJsonData(),
-				pollBundle.getOfferID(),
-				pollBundle.getContentType(),
-				pollBundle.getAmount(),
-				pollBundle.getTitle(),
-				OrderRepository.getInstance(),
-				EventLoggerImpl.getInstance()));
+		pollWebViewPresenter = new PollWebViewPresenter(pollBundle.getJsonData(),
+			pollBundle.getOfferID(),
+			pollBundle.getContentType(),
+			pollBundle.getAmount(),
+			pollBundle.getTitle(),
+			OrderRepository.getInstance(),
+			EventLoggerImpl.getInstance());
+		pollWebViewPresenter.onAttach(this);
 	}
 
 	@Override
 	public void onBackPressed() {
 		pollWebViewPresenter.closeClicked();
-	}
-
-	@Override
-	public void attachPresenter(PollWebViewPresenter presenter) {
-		pollWebViewPresenter = presenter;
-		pollWebViewPresenter.onAttach(this);
 	}
 
 	@Override

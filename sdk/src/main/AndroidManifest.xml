@@ -4,14 +4,7 @@
 
     <application>
         <activity
-            android:label="@string/kinecosystem_welcome_to_kin"
-            android:name=".splash.view.SplashActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing"
-            android:theme="@style/KinecosysNoActionBar"/>
-
-        <activity
-            android:label="@string/kinecosystem_kin_marketplace"
+            android:label="@string/kinecosystem"
             android:name=".main.view.EcosystemActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing"

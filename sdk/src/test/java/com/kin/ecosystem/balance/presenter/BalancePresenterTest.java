@@ -82,7 +82,6 @@ public class BalancePresenterTest extends BaseTestClass {
 		super.setUp();
 		MockitoAnnotations.initMocks(this);
 		balancePresenter = new BalancePresenter(balanceView, eventLogger, blockchainSource, orderRepository);
-		verify(balanceView).attachPresenter(balancePresenter);
 
 		when(order.getOrderId()).thenReturn("2");
 		when(order.getOfferId()).thenReturn("1");

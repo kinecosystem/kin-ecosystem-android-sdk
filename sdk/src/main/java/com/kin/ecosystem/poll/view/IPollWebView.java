@@ -7,7 +7,7 @@ import com.kin.ecosystem.poll.presenter.PollWebViewPresenter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public interface IPollWebView extends IBaseView<PollWebViewPresenter> {
+public interface IPollWebView extends IBaseView {
 
     int ORDER_SUBMISSION_FAILED = 0x00000001;
     int SOMETHING_WENT_WRONG = 0x00000002;

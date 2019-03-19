@@ -72,7 +72,7 @@ public class BalanceView extends ConstraintLayout implements IBalanceView {
 		inflate(context, R.layout.kinecosystem_balance_view, this);
 		setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
 			ViewGroup.LayoutParams.WRAP_CONTENT));
-		int topPadding = getResources().getDimensionPixelOffset(R.dimen.kinecosystem_main_medium_margin);
+		int topPadding = getResources().getDimensionPixelOffset(R.dimen.kinecosystem_main_small_margin);
 		setPadding(0, topPadding, 0, 0);
 		initColors();
 		initSizes();
@@ -102,7 +102,7 @@ public class BalanceView extends ConstraintLayout implements IBalanceView {
 			@Override
 			public void onGlobalLayout() {
 				if (arrow.getMeasuredWidth() > 0) {
-					arrowFromX = arrow.getPivotX() - getResources().getDimensionPixelOffset(R.dimen.kinecosystem_main_medium_margin);
+					arrowFromX = arrow.getPivotX() - getResources().getDimensionPixelOffset(R.dimen.kinecosystem_main_small_margin);
 					arrowToX = arrowFromX + arrow.getWidth();
 					arrow.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 				}
@@ -170,12 +170,6 @@ public class BalanceView extends ConstraintLayout implements IBalanceView {
 			});
 		}
 
-	}
-
-	@Override
-	public void attachPresenter(IBalancePresenter presenter) {
-		this.balancePresenter = presenter;
-		this.balancePresenter.onAttach(this);
 	}
 
 	@Override

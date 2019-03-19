@@ -15,10 +15,16 @@ import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.base.BaseRecyclerAdapter.OnItemClickListener;
 import com.kin.ecosystem.common.exception.ClientException;
+import com.kin.ecosystem.core.bi.EventLoggerImpl;
+import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
+import com.kin.ecosystem.core.data.offer.OfferRepository;
+import com.kin.ecosystem.core.data.order.OrderRepository;
 import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
+import com.kin.ecosystem.main.INavigator;
 import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter;
 import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
+import com.kin.ecosystem.marketplace.presenter.MarketplacePresenter;
 import com.kin.ecosystem.poll.view.PollWebViewActivity;
 import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
 import java.util.List;
@@ -27,11 +33,15 @@ import java.util.List;
 public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 
 
-	public static MarketplaceFragment newInstance() {
-		return new MarketplaceFragment();
+	public static MarketplaceFragment newInstance(INavigator navigator) {
+		MarketplaceFragment marketplaceFragment =  new MarketplaceFragment();
+		marketplaceFragment.navigator = navigator;
+		return marketplaceFragment;
 	}
 
 	private IMarketplacePresenter marketplacePresenter;
+	private INavigator navigator;
+
 
 	private TextView spendSubTitle;
 	private TextView earnSubTitle;
@@ -44,6 +54,11 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 		@Nullable Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.kinecosystem_fragment_marketplce, container, false);
 		initViews(root);
+		marketplacePresenter = new MarketplacePresenter(OfferRepository.getInstance(),
+			OrderRepository.getInstance(),
+			BlockchainSourceImpl.getInstance(),
+			navigator,
+			EventLoggerImpl.getInstance());
 		marketplacePresenter.onAttach(this);
 		return root;
 	}
@@ -66,11 +81,6 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 			marketplacePresenter.onDetach();
 		}
 		super.onDestroyView();
-	}
-
-	@Override
-	public void attachPresenter(IMarketplacePresenter presenter) {
-		marketplacePresenter = presenter;
 	}
 
 	protected void initViews(View root) {

@@ -7,7 +7,7 @@ import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public interface ISpendDialog extends IBottomDialog<ISpendDialogPresenter> {
+public interface ISpendDialog extends IBottomDialog {
 
     int SOMETHING_WENT_WRONG = 0x00000001;
 

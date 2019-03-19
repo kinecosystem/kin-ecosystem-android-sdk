@@ -10,7 +10,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
-public interface IMarketplaceView extends IBaseView<IMarketplacePresenter> {
+public interface IMarketplaceView extends IBaseView {
 
 	int NOT_ENOUGH_KIN = 0x00000001;
 	int SOMETHING_WENT_WRONG = 0x00000002;

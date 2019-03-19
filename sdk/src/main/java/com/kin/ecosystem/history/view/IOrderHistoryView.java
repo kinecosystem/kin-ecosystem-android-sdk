@@ -7,7 +7,7 @@ import com.kin.ecosystem.history.presenter.ICouponDialogPresenter;
 import com.kin.ecosystem.history.presenter.IOrderHistoryPresenter;
 import java.util.List;
 
-public interface IOrderHistoryView extends IBaseView<IOrderHistoryPresenter>{
+public interface IOrderHistoryView extends IBaseView {
 
     void updateOrderHistoryList(List<Order> orders);
 

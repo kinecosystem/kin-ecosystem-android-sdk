@@ -13,15 +13,24 @@ import android.view.ViewGroup;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
 import com.kin.ecosystem.base.BaseRecyclerAdapter.OnItemClickListener;
+import com.kin.ecosystem.core.bi.EventLoggerImpl;
+import com.kin.ecosystem.core.data.order.OrderRepository;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.history.presenter.ICouponDialogPresenter;
 import com.kin.ecosystem.history.presenter.IOrderHistoryPresenter;
+import com.kin.ecosystem.history.presenter.OrderHistoryPresenter;
 import java.util.List;
 
 public class OrderHistoryFragment extends Fragment implements IOrderHistoryView {
 
-	public static OrderHistoryFragment newInstance() {
-		return new OrderHistoryFragment();
+	public static final String KEY_FIRST_SPEND_ORDER = "first_spend_order";
+
+	public static OrderHistoryFragment newInstance(boolean isFirstSpendOrder) {
+		OrderHistoryFragment fragment = new OrderHistoryFragment();
+		Bundle args = new Bundle();
+		args.putBoolean(KEY_FIRST_SPEND_ORDER, isFirstSpendOrder);
+		fragment.setArguments(args);
+		return fragment;
 	}
 
 	private IOrderHistoryPresenter orderHistoryPresenter;
@@ -32,6 +41,8 @@ public class OrderHistoryFragment extends Fragment implements IOrderHistoryView 
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.kinecosystem_fragment_order_history, container, false);
 		initViews(root);
+		orderHistoryPresenter = new OrderHistoryPresenter(OrderRepository.getInstance(),
+			EventLoggerImpl.getInstance(), getArguments().getBoolean(KEY_FIRST_SPEND_ORDER, false));
 		orderHistoryPresenter.onAttach(this);
 		return root;
 	}
@@ -56,11 +67,6 @@ public class OrderHistoryFragment extends Fragment implements IOrderHistoryView 
 				orderHistoryPresenter.onItemCLicked(position);
 			}
 		});
-	}
-
-	@Override
-	public void attachPresenter(IOrderHistoryPresenter presenter) {
-		orderHistoryPresenter = presenter;
 	}
 
 	@Override
