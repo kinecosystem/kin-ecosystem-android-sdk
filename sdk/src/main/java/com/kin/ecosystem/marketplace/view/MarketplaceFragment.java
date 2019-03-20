@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,9 +44,9 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 	private INavigator navigator;
 
 
-	private TextView spendSubTitle;
+//	private TextView spendSubTitle;
 	private TextView earnSubTitle;
-	private SpendRecyclerAdapter spendRecyclerAdapter;
+//	private SpendRecyclerAdapter spendRecyclerAdapter;
 	private EarnRecyclerAdapter earnRecyclerAdapter;
 
 	@Nullable
@@ -84,30 +85,30 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 	}
 
 	protected void initViews(View root) {
-		spendSubTitle = root.findViewById(R.id.spend_subtitle);
-		earnSubTitle = root.findViewById(R.id.earn_subtitle);
-
+//		spendSubTitle = root.findViewById(R.id.spend_subtitle);
+//		earnSubTitle = root.findViewById(R.id.earn_subtitle);
+//
 		//Space item decoration for both of the recyclers
 		int margin = getResources().getDimensionPixelOffset(R.dimen.kinecosystem_main_margin);
 		int space = getResources().getDimensionPixelOffset(R.dimen.kinecosystem_offer_item_list_space);
 		SpaceItemDecoration itemDecoration = new SpaceItemDecoration(margin, space);
+//
+//		//Spend Recycler
+//		RecyclerView spendRecycler = root.findViewById(R.id.spend_recycler);
+//		spendRecycler.setLayoutManager(new HorizontalLayoutManager(getContext()));
+//		spendRecycler.addItemDecoration(itemDecoration);
+//		spendRecyclerAdapter = new SpendRecyclerAdapter();
+//		spendRecyclerAdapter.bindToRecyclerView(spendRecycler);
+//		spendRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
+//			@Override
+//			public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
+//				marketplacePresenter.onItemClicked(position, OfferType.SPEND);
+//			}
+//		});
 
-		//Spend Recycler
-		RecyclerView spendRecycler = root.findViewById(R.id.spend_recycler);
-		spendRecycler.setLayoutManager(new HorizontalLayoutManager(getContext()));
-		spendRecycler.addItemDecoration(itemDecoration);
-		spendRecyclerAdapter = new SpendRecyclerAdapter();
-		spendRecyclerAdapter.bindToRecyclerView(spendRecycler);
-		spendRecyclerAdapter.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(BaseRecyclerAdapter adapter, View view, int position) {
-				marketplacePresenter.onItemClicked(position, OfferType.SPEND);
-			}
-		});
-
-		//Earn Recycler
+//		//Earn Recycler
 		RecyclerView earnRecycler = root.findViewById(R.id.earn_recycler);
-		earnRecycler.setLayoutManager(new HorizontalLayoutManager(getContext()));
+		earnRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 		earnRecycler.addItemDecoration(itemDecoration);
 		earnRecyclerAdapter = new EarnRecyclerAdapter();
 		earnRecyclerAdapter.bindToRecyclerView(earnRecycler);
@@ -123,7 +124,7 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 
 	@Override
 	public void setSpendList(List<Offer> spendList) {
-		spendRecyclerAdapter.setNewData(spendList);
+//		spendRecyclerAdapter.setNewData(spendList);
 	}
 
 	@Override
@@ -133,7 +134,7 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 
 	@Override
 	public void setupEmptyItemView() {
-		spendRecyclerAdapter.setEmptyView(new OffersEmptyView(getContext()));
+//		spendRecyclerAdapter.setEmptyView(new OffersEmptyView(getContext()));
 		earnRecyclerAdapter.setEmptyView(new OffersEmptyView(getContext()));
 	}
 
@@ -147,7 +148,6 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 		} catch (ClientException e) {
 			marketplacePresenter.showOfferActivityFailed();
 		}
-
 	}
 
 	@Override
@@ -184,33 +184,33 @@ public class MarketplaceFragment extends Fragment implements IMarketplaceView {
 
 	@Override
 	public void notifySpendItemRemoved(int index) {
-		spendRecyclerAdapter.notifyItemRemoved(index);
+//		spendRecyclerAdapter.notifyItemRemoved(index);
 	}
 
 	@Override
 	public void notifySpendItemInserted(int index) {
-		spendRecyclerAdapter.notifyItemInserted(index);
+//		spendRecyclerAdapter.notifyItemInserted(index);
 	}
 
 	@Override
 	public void notifySpendItemRangRemoved(int fromIndex, int size) {
-		spendRecyclerAdapter.notifyItemRangeRemoved(fromIndex, size);
+//		spendRecyclerAdapter.notifyItemRangeRemoved(fromIndex, size);
 	}
 
 	@Override
 	public void notifyEarnItemRangRemoved(int fromIndex, int size) {
-		earnRecyclerAdapter.notifyItemRangeRemoved(fromIndex, size);
+//		earnRecyclerAdapter.notifyItemRangeRemoved(fromIndex, size);
 	}
 
 	@Override
 	public void updateEarnSubtitle(boolean isEmpty) {
-		earnSubTitle.setText(isEmpty ? R.string.kinecosystem_empty_tomorrow_more_opportunities
-			: R.string.kinecosystem_complete_tasks_and_earn_kin);
+//		earnSubTitle.setText(isEmpty ? R.string.kinecosystem_empty_tomorrow_more_opportunities
+//			: R.string.kinecosystem_complete_tasks_and_earn_kin);
 	}
 
 	@Override
 	public void updateSpendSubtitle(boolean isEmpty) {
-		spendSubTitle.setText(isEmpty ? R.string.kinecosystem_empty_tomorrow_more_opportunities
-			: R.string.kinecosystem_use_your_kin_to_enjoy_stuff_you_like);
+//		spendSubTitle.setText(isEmpty ? R.string.kinecosystem_empty_tomorrow_more_opportunities
+//			: R.string.kinecosystem_use_your_kin_to_enjoy_stuff_you_like);
 	}
 }
