@@ -2,8 +2,9 @@ package com.kin.ecosystem.balance.view
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.drawable.AnimatedVectorDrawable
+import android.support.graphics.drawable.AnimatedVectorDrawableCompat
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatDelegate
 import android.util.AttributeSet
 import android.view.View
 import android.widget.ImageView
@@ -23,14 +24,14 @@ class BalanceView @JvmOverloads constructor(context: Context,
                                             attrs: AttributeSet? = null,
                                             defStyleAttr: Int = 0) : LinearLayout(context, attrs, defStyleAttr), IBalanceView {
 
-    private var kinAVD: AnimatedVectorDrawable
+    private var kinAVD: AnimatedVectorDrawableCompat
     private var balanceText: TextSwitcher
     private var presenter: IBalancePresenter? = null
 
 
     init {
         View.inflate(context, R.layout.kinecosystem_balance_view, this)
-
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         kinAVD = getKinLogoAVD()
         balanceText = findViewById<TextSwitcher>(R.id.balance_text).apply {
             setFactory {
@@ -45,7 +46,7 @@ class BalanceView @JvmOverloads constructor(context: Context,
     }
 
     @SuppressLint("NewApi")
-    private fun getKinLogoAVD(): AnimatedVectorDrawable = findViewById<ImageView>(R.id.avd_kin_logo).drawable as AnimatedVectorDrawable
+    private fun getKinLogoAVD(): AnimatedVectorDrawableCompat = findViewById<ImageView>(R.id.avd_kin_logo).drawable as AnimatedVectorDrawableCompat
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()

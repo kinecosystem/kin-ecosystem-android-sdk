@@ -3,7 +3,7 @@ jobs:
   build-pull-request:
     docker:
       # specify the version you desire here
-      - image: circleci/android:api-27-alpha
+      - image: circleci/android:api-26-alpha
 
     working_directory: ~/workspace
 
