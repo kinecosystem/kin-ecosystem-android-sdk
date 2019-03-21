@@ -18,7 +18,7 @@ import com.kin.ecosystem.core.data.order.OrderRepository
 import com.kin.ecosystem.core.util.StringUtil.getAmountFormatted
 import com.kin.ecosystem.widget.util.FontUtil
 
-@SuppressLint("NewApi")
+
 class BalanceView @JvmOverloads constructor(context: Context,
                                             attrs: AttributeSet? = null,
                                             defStyleAttr: Int = 0) : LinearLayout(context, attrs, defStyleAttr), IBalanceView {
@@ -27,14 +27,15 @@ class BalanceView @JvmOverloads constructor(context: Context,
     private var balanceText: TextSwitcher
     private var presenter: IBalancePresenter? = null
 
+
     init {
         View.inflate(context, R.layout.kinecosystem_balance_view, this)
 
-        kinAVD = findViewById<ImageView>(R.id.avd_kin_logo).drawable as AnimatedVectorDrawable
+        kinAVD = getKinLogoAVD()
         balanceText = findViewById<TextSwitcher>(R.id.balance_text).apply {
             setFactory {
                 val balanceText = TextView(context)
-                balanceText.setTextAppearance(R.style.KinecosysTitle)
+                balanceText.setTextAppearance(context, R.style.KinecosysTitle)
                 balanceText.typeface = FontUtil.SAILEC_MEDIUM
                 balanceText.setTextColor(ContextCompat.getColor(context, R.color.kinecosystem_primary))
                 balanceText
@@ -42,6 +43,9 @@ class BalanceView @JvmOverloads constructor(context: Context,
         }
         presenter = BalancePresenter(BlockchainSourceImpl.getInstance(), OrderRepository.getInstance())
     }
+
+    @SuppressLint("NewApi")
+    private fun getKinLogoAVD(): AnimatedVectorDrawable = findViewById<ImageView>(R.id.avd_kin_logo).drawable as AnimatedVectorDrawable
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
