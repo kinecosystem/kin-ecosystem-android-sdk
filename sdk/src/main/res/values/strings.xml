@@ -41,13 +41,13 @@
     <string name="kinecosystem_could_not_restore_the_wallet">Could not restore the wallet, try again later.</string>
     <string name="kinecosystem_transfer_title">In order to send Kin, %1$s would like to receive your Kin account information (i.e. your public address) from %2$s.</string>
 
-    <string name="kinecosystem_kin_makes_your_favorite_apps_even_better">Kin makes your favorite apps even better\nthrough awesome experiences that\nconnect you with other users</string>
+    <string name="kinecosystem_kin_is_a_digital_currency_that_makes">Kin is a digital currency that makes\nyour favorite apps even better.</string>
 
     <!--Environments-->
     <string name="kinecosystem_environment_beta">beta</string>
     <string name="kinecosystem_environment_production">prod</string>
     <string name="kinecosystem_what_is_kin">What is Kin?</string>
-    <string name="lets_s_start">Let\'s start!</string>
+    <string name="lets_s_go">Let\'s go</string>
     <string name="kinecosystem_creating_your_account">Creating your account...</string>
     <string name="kinecosystem_what_are_you_in_the_mood_for">What are you in the mood for?</string>
 </resources>
