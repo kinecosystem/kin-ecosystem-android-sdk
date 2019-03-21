@@ -16,6 +16,10 @@ android {
         versionName "${KIN_ECOSYSTEM_SDK_VERSION_NAME}"
         consumerProguardFiles 'proguard-rules.pro'
     }
+
+    sourceSets {
+        test.java.srcDirs += 'src/test/kotlin'
+    }
 }
 
 dependencies {
@@ -33,6 +37,7 @@ dependencies {
     testImplementation project(':test-base')
     testImplementation testingDependencies.junit
     testImplementation testingDependencies.mockito
+    testImplementation testingDependencies.mockitoKotlin
     testImplementation testingDependencies.robolectric
 }
 

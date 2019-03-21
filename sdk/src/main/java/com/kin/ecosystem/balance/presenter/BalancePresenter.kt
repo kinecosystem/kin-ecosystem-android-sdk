@@ -44,9 +44,13 @@ class BalancePresenter(private val blockchainSource: BlockchainSource,
                 when (order.status) {
                     Order.Status.PENDING -> {
                         incrementPendingCount()
-                        startLoadingAnimation()
+                        if(pendingOrderCount == 1) {
+                            startLoadingAnimation()
+                        }
                     }
-                    Order.Status.COMPLETED,
+                    Order.Status.COMPLETED -> {
+                        decrementPendingCount()
+                    }
                     Order.Status.FAILED -> {
                         decrementPendingCount()
                         if (pendingOrderCount == 0) {
