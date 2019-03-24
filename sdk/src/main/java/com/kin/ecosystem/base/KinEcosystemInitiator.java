@@ -19,7 +19,7 @@ final class KinEcosystemInitiator {
 
 	protected static void init(Context context) {
 		try {
-			Kin.initialize(context);
+			Kin.initialize(context,  null);
 			// If we had process restart we should load the account.
 			KinAccount account = BlockchainSourceImpl.getInstance().getKinAccount();
 			if (account == null) {

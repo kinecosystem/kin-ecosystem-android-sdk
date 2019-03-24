@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:id="@+id/earn_offer_container">
 
@@ -12,7 +13,7 @@
         android:layout_height="90dp"
         tools:background="@drawable/kinecosystem_item_bg_placeholder"/>
 
-    <TextView
+    <com.kin.ecosystem.widget.KinEcosystemTextView
         android:id="@+id/title"
         style="@style/KinecosysSubTitle"
         android:layout_width="wrap_content"
@@ -23,7 +24,7 @@
         android:maxLength="14"
         tools:text="Answer a Poll"/>
 
-    <TextView
+    <com.kin.ecosystem.widget.KinEcosystemTextView
         android:id="@+id/sub_title"
         style="@style/KinecosysSubTitle"
         android:layout_width="wrap_content"
@@ -32,9 +33,10 @@
         android:layout_marginBottom="@dimen/kinecosystem_tiny_margin"
         tools:text="Earn KIN by answering"/>
 
-    <TextView
+    <com.kin.ecosystem.widget.KinEcosystemTextView
         android:id="@+id/amount_text"
-        style="@style/KinecosysSubTitleMedium"
+        style="@style/KinecosysSubTitle"
+        app:fontExtra="medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/kinecosystem_bluePrimary"

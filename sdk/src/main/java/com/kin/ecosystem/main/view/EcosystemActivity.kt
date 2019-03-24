@@ -6,6 +6,7 @@ import android.animation.ValueAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.IdRes
+import android.support.annotation.StyleRes
 import android.support.constraint.ConstraintLayout
 import android.support.v4.app.Fragment
 import android.support.v4.view.MenuItemCompat
@@ -17,16 +18,15 @@ import com.kin.ecosystem.base.AnimConsts
 import com.kin.ecosystem.base.CustomAnimation
 import com.kin.ecosystem.base.KinEcosystemBaseActivity
 import com.kin.ecosystem.base.customAnimation
-import com.kin.ecosystem.core.accountmanager.AccountManagerImpl
+import com.kin.ecosystem.common.KinTheme.DARK
+import com.kin.ecosystem.common.KinTheme.LIGHT
 import com.kin.ecosystem.core.bi.EventLoggerImpl
 import com.kin.ecosystem.core.data.auth.AuthRepository
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl
-import com.kin.ecosystem.core.data.offer.OfferRepository
-import com.kin.ecosystem.core.data.order.OrderRepository
+import com.kin.ecosystem.core.data.internal.ConfigurationImpl
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceImpl
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceLocal
 import com.kin.ecosystem.core.util.DeviceUtils
-import com.kin.ecosystem.history.presenter.OrderHistoryPresenter
 import com.kin.ecosystem.history.view.OrderHistoryFragment
 import com.kin.ecosystem.main.ScreenId
 import com.kin.ecosystem.main.ScreenId.MARKETPLACE
@@ -34,14 +34,11 @@ import com.kin.ecosystem.main.ScreenId.ORDER_HISTORY
 import com.kin.ecosystem.main.presenter.EcosystemPresenter
 import com.kin.ecosystem.main.presenter.IEcosystemPresenter
 import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter
-import com.kin.ecosystem.marketplace.presenter.MarketplacePresenter
 import com.kin.ecosystem.marketplace.view.MarketplaceFragment
 import com.kin.ecosystem.onPreDraw
-import com.kin.ecosystem.onboarding.presenter.OnboardingPresenterImpl
 import com.kin.ecosystem.onboarding.view.OnboardingFragment
 import com.kin.ecosystem.settings.view.SettingsActivity
 import com.kin.ecosystem.withEndAction
-import java.util.*
 
 
 class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
@@ -62,12 +59,21 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
                 .findFragmentByTag(ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG) as MarketplaceFragment?
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(getKinTheme())
         super.onCreate(savedInstanceState)
         initViews()
         ecosystemPresenter = EcosystemPresenter(AuthRepository.getInstance(),
                 SettingsDataSourceImpl(SettingsDataSourceLocal(applicationContext)),
                 BlockchainSourceImpl.getInstance(), EventLoggerImpl.getInstance(), this, savedInstanceState, intent.extras).apply {
             onAttach(this@EcosystemActivity)
+        }
+    }
+
+    @StyleRes
+    private fun getKinTheme(): Int {
+        return when(ConfigurationImpl.getInstance().kinTheme!!) {
+            LIGHT -> R.style.KinecosysNoActionBar_Light
+            DARK -> R.style.KinecosysNoActionBar_Dark
         }
     }
 
