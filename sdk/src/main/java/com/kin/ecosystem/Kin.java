@@ -40,8 +40,11 @@ import com.kin.ecosystem.core.data.auth.AuthLocalData;
 import com.kin.ecosystem.core.data.auth.AuthRemoteData;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
 import com.kin.ecosystem.core.data.auth.UserLoginState;
+import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
+import com.kin.ecosystem.core.data.blockchain.BlockchainSource.MigrationProcessListener;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceLocal;
+import com.kin.ecosystem.core.data.blockchain.BlockchainSourceRemote;
 import com.kin.ecosystem.core.data.internal.ConfigurationImpl;
 import com.kin.ecosystem.core.data.offer.OfferRemoteData;
 import com.kin.ecosystem.core.data.offer.OfferRepository;
@@ -197,6 +200,8 @@ public class Kin {
 	}
 
 	private static void internalLogin(@NonNull final String jwt, final KinCallback<Void> loginCallback) {
+		MigrationManager migrationManager = createMigrationManager(getKinContext(), AuthRepository.getInstance().getAppID());
+
 		try {
 			checkInstanceNotNull();
 			@UserLoginState final int loginState = AuthRepository.getInstance().getUserLoginState(jwt);
@@ -209,12 +214,10 @@ public class Kin {
 					break;
 				case UserLoginState.SAME_USER:
 					break;
-
 			}
 
 			AuthRepository.getInstance().setJWT(jwt);
-			BlockchainSourceImpl.getInstance().setMigrationManager(getMigrationManager(
-				getKinContext(), AuthRepository.getInstance().getAppID()));
+			BlockchainSourceImpl.getInstance().setMigrationManager(migrationManager);
 			AuthRepository.getInstance().getAccountInfo(new KinCallback<AccountInfo>() {
 				@Override
 				public void onResponse(AccountInfo accountInfo) {
@@ -252,7 +255,24 @@ public class Kin {
 			});
 
 		} catch (final ClientException exception) {
-			sendLoginFailed(exception, loginCallback);
+			if (exception.getCode() == ClientException.BLOCKCHAIN_ENDPOINT_CHANGED) {
+				BlockchainSourceImpl.getInstance().startMigrationProcess(new MigrationProcessListener() {
+					@Override
+					public void onMigrationStart() {}
+
+					@Override
+					public void onMigrationEnd() {
+						internalLogin(jwt, loginCallback);
+					}
+
+					@Override
+					public void onMigrationError(BlockchainException error) {
+						sendLoginFailed(error, loginCallback);
+					}
+				});
+			} else {
+				sendLoginFailed(exception, loginCallback);
+			}
 		}
 	}
 
@@ -299,7 +319,7 @@ public class Kin {
 		});
 	}
 
-	private static MigrationManager getMigrationManager(Context context,@NonNull String appId) {
+	private static MigrationManager createMigrationManager(Context context,@NonNull String appId) {
 		KinEnvironment kinEnvironment = ConfigurationImpl.getInstance().getEnvironment();
 
 		final String oldNetworkUrl = kinEnvironment.getOldBlockchainNetworkUrl();
@@ -314,8 +334,10 @@ public class Kin {
 		MigrationNetworkInfo migrationNetworkInfo = new MigrationNetworkInfo(oldNetworkUrl, oldNetworkId,
 			newNetworkUrl, newNetworkId, issuer, migrationServiceUrl);
 
+		final BlockchainSource.Local local = BlockchainSourceLocal.getInstance(context);
+		final BlockchainSource.Remote remote = BlockchainSourceRemote.getInstance(getInstance(context).executorsUtil);
 		MigrationManager migrationManager = new MigrationManager(context, appId, migrationNetworkInfo,
-			new KinBlockchainVersionProvider(appId),
+			new KinBlockchainVersionProvider(local, remote),
 			new MigrationEventsListener(EventLoggerImpl.getInstance()), KIN_ECOSYSTEM_STORE_PREFIX_KEY);
 		migrationManager.enableLogs(Logger.isEnabled());
 		return migrationManager;

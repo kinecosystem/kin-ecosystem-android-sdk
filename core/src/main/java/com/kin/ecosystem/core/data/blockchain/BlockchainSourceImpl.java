@@ -29,8 +29,10 @@ import com.kin.ecosystem.core.util.StringUtil;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
 import kin.sdk.migration.MigrationManager;
+import kin.sdk.migration.common.KinSdkVersion;
 import kin.sdk.migration.common.WhitelistResult;
 import kin.sdk.migration.common.exception.CreateAccountException;
+import kin.sdk.migration.common.exception.MigrationInProcessException;
 import kin.sdk.migration.common.exception.OperationFailedException;
 import kin.sdk.migration.common.exception.WhitelistTransactionFailedException;
 import kin.sdk.migration.common.interfaces.IBalance;
@@ -38,15 +40,14 @@ import kin.sdk.migration.common.interfaces.IEventListener;
 import kin.sdk.migration.common.interfaces.IKinAccount;
 import kin.sdk.migration.common.interfaces.IKinClient;
 import kin.sdk.migration.common.interfaces.IListenerRegistration;
+import kin.sdk.migration.common.interfaces.IMigrationManagerCallbacks;
 import kin.sdk.migration.common.interfaces.IPaymentInfo;
 import kin.sdk.migration.common.interfaces.ITransactionId;
 import kin.sdk.migration.common.interfaces.IWhitelistService;
 import kin.sdk.migration.common.interfaces.IWhitelistableTransaction;
 import kin.utils.ResultCallback;
 
-
 public class BlockchainSourceImpl implements BlockchainSource {
-
 	private static final String TAG = BlockchainSourceImpl.class.getSimpleName();
 
 	private static volatile BlockchainSourceImpl instance;
@@ -114,11 +115,41 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	public void setMigrationManager(@NonNull final MigrationManager migrationManager) {
 		this.migrationManager = migrationManager;
-		updateKinClient(migrationManager);
+		updateKinClient(migrationManager.getCurrentKinClient());
 	}
 
-	private void updateKinClient(@NonNull MigrationManager migrationManager) {
-		this.kinClient = migrationManager.getCurrentKinClient();
+	private void updateKinClient(IKinClient kinClient) {
+		this.kinClient = kinClient;
+	}
+
+	public void startMigrationProcess(final MigrationProcessListener listener) {
+		try {
+			migrationManager.start(new IMigrationManagerCallbacks() {
+				@Override
+				public void onMigrationStart() {
+					if (listener != null) {
+						listener.onMigrationStart();
+					}
+				}
+
+				@Override
+				public void onReady(IKinClient kinClient) {
+					updateKinClient(kinClient);
+					if (listener != null) {
+						listener.onMigrationEnd();
+					}
+				}
+
+				@Override
+				public void onError(Exception e) {
+					if (listener != null) {
+						listener.onMigrationError(new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed", e));
+					}
+				}
+			});
+		} catch (MigrationInProcessException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -211,15 +242,30 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
+	public void signTransaction(@NonNull final String publicAddress, @NonNull final BigDecimal amount,
+		@NonNull final String orderID, @NonNull final String offerID, @NonNull final SignTransactionListener listener) {
+		if (account != null) {
+			eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offerID, orderID));
+			account.sendTransaction(publicAddress, amount, new IWhitelistService() {
+				@Override
+				public WhitelistResult onWhitelistableTransactionReady(IWhitelistableTransaction transaction)
+					throws WhitelistTransactionFailedException {
+					listener.onTransactionSigned(transaction.getTransactionPayload());
+					return new WhitelistResult(transaction.getTransactionPayload(), false);
+				}
+			}, orderID);
+		}
+	}
+
+	@Override
 	public void sendTransaction(@NonNull final String publicAddress, @NonNull final BigDecimal amount,
 		@NonNull final String orderID, @NonNull final String offerID) {
 		if (account != null) {
 			eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offerID, orderID));
 			account.sendTransaction(publicAddress, amount, new IWhitelistService() {
 				@Override
-				public WhitelistResult onWhitelistableTransactionReady(IWhitelistableTransaction whitelistableTransaction) throws WhitelistTransactionFailedException {
-					//TODO return whitelisted transaction
-					return null;
+				public WhitelistResult onWhitelistableTransactionReady(IWhitelistableTransaction transaction) throws WhitelistTransactionFailedException {
+					return new WhitelistResult(transaction.getTransactionPayload(), true);
 				}
 			}, orderID).run(new ResultCallback<ITransactionId>() {
 					@Override
@@ -247,6 +293,10 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		return appID;
 	}
 
+	@Override
+	public KinSdkVersion getBlockchainVersion() {
+		return local.getBlockchainVersion();
+	}
 
 	private void initBalance() {
 		reconnectBalanceConnection();
@@ -395,7 +445,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		}
 	}
 
-
 	@Override
 	public String getPublicAddress() throws BlockchainException {
 		if (account == null) {
@@ -530,7 +579,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			listenerRegistration.remove();
 		}
 	}
-
 
 	@VisibleForTesting
 	String extractOrderId(String memo) {

@@ -16,6 +16,7 @@ import com.kin.ecosystem.core.network.model.AuthToken;
 import java.io.IOException;
 import java.util.Locale;
 import kin.ecosystem.core.BuildConfig;
+import kin.sdk.migration.common.KinSdkVersion;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.Protocol;
@@ -30,11 +31,13 @@ public class ConfigurationImpl implements Configuration {
 	private static final String HEADER_DEVICE_MANUFACTURER = "X-DEVICE-MANUFACTURER";
 	private static final String HEADER_DEVICE_LANGUAGE = "Accept-Language";
 	private static final String HEADER_OS = "X-OS";
+	private static final String HEADER_BLOCKCHAIN_VERSION = "X-KIN-BLOCKCHAIN-VERSION";
 
 	private static final String BEARER = "Bearer ";
 	private static final String AUTHORIZATION = "Authorization";
 
 	static final String API_VERSION = "v2";
+	static final String BLOCKCHAIN_VERSION = KinSdkVersion.OLD_KIN_SDK.getVersion();
 
 	private static final int NO_TOKEN_ERROR_CODE = 666;
 	private static final String AUTH_TOKEN_COULD_NOT_BE_GENERATED = "AuthToken could not be generated";
@@ -126,6 +129,7 @@ public class ConfigurationImpl implements Configuration {
 		apiClient.addDefaultHeader(HEADER_DEVICE_MODEL, Build.MODEL);
 		apiClient.addDefaultHeader(HEADER_DEVICE_MANUFACTURER, Build.MANUFACTURER);
 		apiClient.addDefaultHeader(HEADER_DEVICE_LANGUAGE, getDeviceAcceptedLanguage());
+		apiClient.addDefaultHeader(HEADER_BLOCKCHAIN_VERSION, BLOCKCHAIN_VERSION);
 	}
 
 	@Override

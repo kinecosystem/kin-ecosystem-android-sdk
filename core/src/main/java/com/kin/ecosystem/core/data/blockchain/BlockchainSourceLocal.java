@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import kin.sdk.migration.common.KinSdkVersion;
 
 public class BlockchainSourceLocal implements BlockchainSource.Local {
 
@@ -20,9 +21,9 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 	private static final String ACCOUNT_INDEX_KEY = "account_index_key";
 	private static final String CURRENT_KIN_USER_ID = "current_kin_user_id";
 	private static final String IS_MIGRATED_KEY = "is_migrated_key";
+	private static final String BLOCKCHAIN_VERSION = "blockchain_version";
 
 	private final SharedPreferences blockchainSharedPreferences;
-
 
 	private BlockchainSourceLocal(@NonNull final Context context) {
 		this.blockchainSharedPreferences = context
@@ -39,7 +40,6 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 		}
 		return instance;
 	}
-
 
 	@Override
 	public int getBalance() {
@@ -112,5 +112,16 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 	@Override
 	public void setDidMigrate() {
 		blockchainSharedPreferences.edit().putBoolean(IS_MIGRATED_KEY, true).apply();
+	}
+
+	@Override
+	public KinSdkVersion getBlockchainVersion() {
+		String version = blockchainSharedPreferences.getString(BLOCKCHAIN_VERSION, KinSdkVersion.OLD_KIN_SDK.getVersion());
+		return KinSdkVersion.valueOf(version);
+	}
+
+	@Override
+	public void setBlockchainVersion(KinSdkVersion version) {
+		blockchainSharedPreferences.edit().putString(BLOCKCHAIN_VERSION, version.getVersion());
 	}
 }

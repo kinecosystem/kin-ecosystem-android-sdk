@@ -2,16 +2,17 @@ package com.kin.ecosystem.core.data.blockchain;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.model.Balance;
+import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import kin.sdk.migration.MigrationManager;
+import kin.sdk.migration.common.KinSdkVersion;
 import kin.sdk.migration.common.interfaces.IKinAccount;
 
 public interface BlockchainSource {
@@ -39,6 +40,22 @@ public interface BlockchainSource {
 	 * @param callback - onResponse if account was created, otherwise onFailure will be triggered.
 	 */
 	void isAccountCreated(KinCallback<Void> callback);
+
+	interface SignTransactionListener {
+		void onTransactionSigned(@NonNull String transaction);
+	}
+
+	/**
+	 * Only signs the transaction, without sending it
+	 *
+	 * @param publicAddress the recipient address
+	 * @param amount the amount to send
+	 * @param orderID the orderID to be included in the memo of the transaction
+	 * @param offerID the offerID of the order
+	 * @param listener to be informed when a transaction is signed and ready
+	 */
+	void signTransaction(@NonNull String publicAddress, @NonNull BigDecimal amount, @NonNull String orderID,
+		@NonNull String offerID, @NonNull SignTransactionListener listener);
 
 	/**
 	 * Send transaction to the network
@@ -123,8 +140,9 @@ public interface BlockchainSource {
 
 	void logout();
 
-	interface Local {
+	KinSdkVersion getBlockchainVersion();
 
+	interface Local {
 		int getBalance();
 
 		void setBalance(int balance);
@@ -143,5 +161,20 @@ public interface BlockchainSource {
 		boolean getIsMigrated();
 
 		void setDidMigrate();
+
+		KinSdkVersion getBlockchainVersion();
+
+		void setBlockchainVersion(KinSdkVersion version);
+	}
+
+	interface Remote {
+		KinSdkVersion getBlockchainVersion() throws ApiException; // synced and blocking
+		void getBlockchainVersion(@NonNull final Callback<KinSdkVersion, ApiException> callback);
+	}
+
+	interface MigrationProcessListener {
+		void onMigrationStart();
+		void onMigrationEnd();
+		void onMigrationError(BlockchainException error);
 	}
 }

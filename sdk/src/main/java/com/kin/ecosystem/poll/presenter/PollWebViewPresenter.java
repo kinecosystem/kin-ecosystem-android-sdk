@@ -152,10 +152,10 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 			isOrderSubmitted = true;
 			final String orderId = openOrder.getId();
 			eventLogger.send(EarnOrderCompletionSubmitted.create(offerID, orderId));
-			orderRepository.submitOrder(offerID, result, orderId, new KinCallback<Order>() {
+			orderRepository.submitEarnOrder(offerID, result, orderId, new KinCallback<Order>() {
 				@Override
 				public void onResponse(Order response) {
-
+					// TODO: shouldn't something happen here?
 				}
 
 				@Override

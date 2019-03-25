@@ -3,6 +3,7 @@ package com.kin.ecosystem.marketplace.presenter;
 import static com.kin.ecosystem.marketplace.view.ISpendDialog.SOMETHING_WENT_WRONG;
 
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import com.kin.ecosystem.base.BaseDialogPresenter;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.KinCallbackAdapter;
@@ -21,6 +22,7 @@ import com.kin.ecosystem.core.bi.events.SpendOrderCreationReceived;
 import com.kin.ecosystem.core.bi.events.SpendOrderCreationRequested;
 import com.kin.ecosystem.core.bi.events.SpendThankyouPageViewed;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
+import com.kin.ecosystem.core.data.blockchain.BlockchainSource.SignTransactionListener;
 import com.kin.ecosystem.core.data.order.OrderDataSource;
 import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.OfferInfo;
@@ -131,8 +133,7 @@ class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements 
 	private void submitAndSendTransaction() {
 		if (openOrder != null) {
 			isSubmitted = true;
-			final String orderID = openOrder.getId();
-			submitOrder(offer.getId(), orderID);
+			submitOrder();
 		}
 	}
 
@@ -178,20 +179,29 @@ class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements 
 		blockchainSource.sendTransaction(addressee, amount, orderID, offer.getId());
 	}
 
-	private void submitOrder(String offerID, final String orderID) {
-		eventLogger.send(SpendOrderCompletionSubmitted.create(offerID, orderID, false, Origin.MARKETPLACE));
-		orderRepository.submitOrder(offerID, null, orderID, new KinCallback<Order>() {
-			@Override
-			public void onResponse(Order response) {
-				final String addressee = offer.getBlockchainData().getRecipientAddress();
-				sendTransaction(addressee, amount, orderID);
-				Logger.log(new Log().withTag(TAG).put(" Submit onResponse", response));
-			}
+	private void submitOrder() {
+		final String orderId = openOrder.getId();
+		final String offerId = openOrder.getOfferId();
+		final String address = openOrder.getBlockchainData().getRecipientAddress();
 
+		eventLogger.send(SpendOrderCompletionSubmitted.create(offerId, orderId, false, Origin.MARKETPLACE));
+		blockchainSource.signTransaction(address, amount, orderId, offerId, new SignTransactionListener() {
 			@Override
-			public void onFailure(KinEcosystemException exception) {
-				showToast(SOMETHING_WENT_WRONG);
-				Logger.log(new Log().withTag(TAG).put(" Submit onFailure", exception));
+			public void onTransactionSigned(@NonNull String transaction) {
+				orderRepository.submitSpendOrder(offerId, transaction, orderId, new KinCallback<Order>() {
+					@Override
+					public void onResponse(Order response) {
+						final String addressee = offer.getBlockchainData().getRecipientAddress();
+						sendTransaction(addressee, amount, orderId);
+						Logger.log(new Log().withTag(TAG).put(" Submit onResponse", response));
+					}
+
+					@Override
+					public void onFailure(KinEcosystemException exception) {
+						showToast(SOMETHING_WENT_WRONG);
+						Logger.log(new Log().withTag(TAG).put(" Submit onFailure", exception));
+					}
+				});
 			}
 		});
 	}

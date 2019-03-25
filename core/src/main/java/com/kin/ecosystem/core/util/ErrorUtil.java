@@ -105,7 +105,6 @@ public class ErrorUtil {
 			? throwable.getCause().getMessage() : ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR;
 	}
 
-
 	public static ApiException createOrderTimeoutException() {
 		final String errorTitle = "Time out";
 		final String errorMsg = "order timed out";

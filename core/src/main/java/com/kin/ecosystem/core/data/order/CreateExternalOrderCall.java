@@ -11,6 +11,8 @@ import com.kin.ecosystem.core.bi.events.SpendOrderCompletionSubmitted;
 import com.kin.ecosystem.core.bi.events.SpendOrderCreationFailed;
 import com.kin.ecosystem.core.bi.events.SpendOrderCreationReceived;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
+import com.kin.ecosystem.core.data.blockchain.BlockchainSource.SignTransactionListener;
+import com.kin.ecosystem.core.data.blockchain.BlockchainSourceLocal;
 import com.kin.ecosystem.core.data.blockchain.Payment;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.JWTBodyPaymentConfirmationResult;
@@ -25,11 +27,10 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
+import kin.sdk.migration.common.KinSdkVersion;
 import kin.sdk.migration.common.exception.InsufficientKinException;
 
 class CreateExternalOrderCall extends Thread {
-
-	private static final int SSE_TIMEOUT = 15000; // 15 seconds
 	private final OrderDataSource orderRepository;
 	private final BlockchainSource blockchainSource;
 	private final String orderJwt;
@@ -55,7 +56,7 @@ class CreateExternalOrderCall extends Thread {
 			// Create external order
 			openOrder = orderRepository.createExternalOrderSync(orderJwt);
 			sendOrderCreationReceivedEvent();
-			if (isSpendOrder(openOrder)) {
+			if (isSpendOrder()) {
 				Balance balance = blockchainSource.getBalance();
 				if (balance.getAmount().intValue() < openOrder.getAmount()) {
 					orderRepository.cancelOrderSync(openOrder.getId());
@@ -81,74 +82,71 @@ class CreateExternalOrderCall extends Thread {
 			return;
 		}
 
-		//Create SSE timeout timer, so we can schedule timed task.
-		final Timer sseTimeoutTimer = new Timer();
-		final AtomicBoolean isTimeoutTaskCanceled = new AtomicBoolean(false);
-
-		//Listen for payments, make sure the transaction succeed.
-		final Observer<Payment> paymentObserver = new Observer<Payment>() {
-			@Override
-			public void onChanged(final Payment payment) {
-				if (isPaymentOrderEquals(payment, openOrder.getId())) {
-					//Cancel SSE timeout task
-					if(!isTimeoutTaskCanceled.getAndSet(true)) {
-						sseTimeoutTimer.cancel();
-					}
-
-					if (payment.isSucceed()) {
-						getOrder(payment.getOrderID());
-					} else {
-						if (isSpendOrder(openOrder)) {
-							runOnMainThread(new Runnable() {
-								@Override
-								public void run() {
-									((ExternalSpendOrderCallbacks) externalOrderCallbacks)
-										.onTransactionFailed(openOrder,
-											ErrorUtil.getBlockchainException(payment.getException()));
-								}
-							});
-						}
-					}
-					blockchainSource.removePaymentObserver(this);
-				}
-			}
-		};
-		blockchainSource.addPaymentObservable(paymentObserver);
-
 		sendCompletionSubmittedEvent(openOrder);
-		orderRepository.submitOrder(openOrder.getOfferId(), null, openOrder.getId(), new KinCallback<Order>() {
+
+		final String orderId = openOrder.getId();
+		final String offerId = openOrder.getOfferId();
+		final BigDecimal amount = new BigDecimal(openOrder.getAmount());
+		final String address = openOrder.getBlockchainData().getRecipientAddress();
+
+		if (blockchainSource.getBlockchainVersion() == KinSdkVersion.NEW_KIN_SDK) {
+			sendKin3Order(orderId, offerId, address, amount);
+		} else {
+			sendKin2Order(orderId, offerId, address, amount);
+		}
+
+		getOrder(orderId);
+	}
+
+	private void sendKin2Order(final String orderId, final String offerId, final String address, final BigDecimal amount) {
+		KinCallback<Order> callback = new KinCallback<Order>() {
 			@Override
 			public void onResponse(Order response) {
-				if (isSpendOrder(openOrder)) {
+				if (isSpendOrder()) {
 					// Send transaction to the blockchain
-					blockchainSource.sendTransaction(openOrder.getBlockchainData().getRecipientAddress(),
-						new BigDecimal(openOrder.getAmount()), openOrder.getId(), openOrder.getOfferId());
+					blockchainSource.sendTransaction(address, amount, orderId, offerId);
 				}
-
-				// Schedule sse timeout task
-				sseTimeoutTimer.schedule(new TimerTask() {
-					@Override
-					public void run() {
-						// TimerTask runs on a BG thread of the timer.
-						if(!isTimeoutTaskCanceled.getAndSet(true)) {
-							// Timeout should be fulfilled, remove payment observer and start server polling for order.
-							blockchainSource.removePaymentObserver(paymentObserver);
-							getOrder(openOrder.getId());
-							sseTimeoutTimer.cancel(); // Clear queue so it can be GC
-						}
-					}
-				}, SSE_TIMEOUT);
 			}
 
 			@Override
 			public void onFailure(KinEcosystemException e) {
-				blockchainSource.removePaymentObserver(paymentObserver);
 				onOrderFailed(e);
 			}
-		});
+		};
+
+		if (isSpendOrder()) {
+			orderRepository.submitSpendOrder(offerId, null, orderId, callback);
+		} else {
+			orderRepository.submitEarnOrder(offerId, null, orderId, callback);
+		}
 	}
 
-	private boolean isSpendOrder(OpenOrder openOrder) {
+	private void sendKin3Order(final String orderId, final String offerId, final String address, final BigDecimal amount) {
+		final KinCallback<Order> callback = new KinCallback<Order>() {
+			@Override
+			public void onResponse(Order response) {
+				// NOP: do nothing
+			}
+
+			@Override
+			public void onFailure(KinEcosystemException e) {
+				onOrderFailed(e);
+			}
+		};
+
+		if (isSpendOrder()) {
+			blockchainSource.signTransaction(address, amount, orderId, offerId, new SignTransactionListener() {
+				@Override
+				public void onTransactionSigned(@NonNull String transaction) {
+					orderRepository.submitSpendOrder(offerId, transaction, orderId, callback);
+				}
+			});
+		} else {
+			orderRepository.submitEarnOrder(offerId, null, orderId, callback);
+		}
+	}
+
+	private boolean isSpendOrder() {
 		return openOrder.getOfferType() == OfferType.SPEND;
 	}
 
