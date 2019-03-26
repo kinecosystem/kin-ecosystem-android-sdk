@@ -1,9 +1,16 @@
 package com.kin.ecosystem.base;
 
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
+import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.util.SparseArray;
@@ -88,6 +95,14 @@ class BaseViewHolder<T> extends RecyclerView.ViewHolder {
 	protected void setTextColor(@IdRes int viewId, @ColorInt int color) {
 		TextView view = getView(viewId);
 		view.setTextColor(color);
+	}
+
+	protected void setVectorDrawable(@IdRes int viewId, @DrawableRes int vectorResID) {
+		if(!AppCompatDelegate.isCompatVectorFromResourcesEnabled()) {
+			AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+		}
+		ImageView view = getView(viewId);
+		view.setImageResource(vectorResID);
 	}
 
 	/**

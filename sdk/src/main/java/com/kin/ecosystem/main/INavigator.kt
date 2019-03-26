@@ -6,7 +6,7 @@ interface INavigator {
 
     fun navigateToOnboarding()
 
-    fun navigateToMarketplace(customAnimation: CustomAnimation)
+    fun navigateToMarketplace(customAnimation: CustomAnimation = com.kin.ecosystem.base.customAnimation {  })
 
     fun navigateToOrderHistory(isFirstSpendOrder: Boolean, addToBackStack: Boolean = true)
 

@@ -271,6 +271,7 @@ public class Kin {
 				switch (accountState) {
 					case AccountManager.CREATION_COMPLETED:
 						sendLoginSucceed(loginCallback, loginState);
+						OfferRepository.getInstance().getOffers(null);
 						AccountManagerImpl.getInstance().removeAccountStateObserver(this);
 						break;
 					case AccountManager.ERROR:

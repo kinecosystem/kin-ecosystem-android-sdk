@@ -73,15 +73,15 @@ public class MainActivity extends AppCompatActivity {
 	private String spendOfferID = "";
 
 
-	private NativeOffer nativeOffer;
-	private boolean addNativeSpendOrder = true;
+	private NativeOffer nativeSpendOffer;
+	private NativeOffer nativeEarnOffer;
 
 	private BackupAndRestore backupAndRestore;
 
 	private NativeOffer getNativeSpendOffer() {
 		return new NativeSpendOfferBuilder(String.valueOf(getRandomID()))
-			.title("Spacial one time offer")
-			.description("More details on native spend")
+			.title("One time offer")
+			.description("More details on native spend\ncan be placed here")
 			.amount(100)
 			.image("https://s3.amazonaws.com/assets.kinecosystembeta.com/images/spend_test.png")
 			.build();
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private NativeOffer getNativeEarnOffer() {
 		return new NativeEarnOfferBuilder(String.valueOf(getRandomID()))
-			.title("Get your free Kin")
+			.title("Get free Kin")
 			.description("Upgrade your profile")
 			.amount(100)
 			.image("https://s3.amazonaws.com/assets.kinecosystembeta.com/images/native_earn_padding.png")
@@ -292,18 +292,20 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void addNativeOffer() {
-		if (nativeOffer != null) {
-			removeNativeOffer(nativeOffer);
-		}
-		if (addNativeSpendOrder) {
-			nativeOffer = getNativeSpendOffer();
-			addNativeOffer(nativeOffer, true);
-		} else {
-			nativeOffer = getNativeEarnOffer();
-			addNativeOffer(nativeOffer, false);
+		removeNativeOffers();
+		nativeSpendOffer = getNativeSpendOffer();
+		addNativeOffer(nativeSpendOffer, true);
+		nativeEarnOffer = getNativeEarnOffer();
+		addNativeOffer(nativeEarnOffer, false);
+	}
 
+	private void removeNativeOffers() {
+		if (nativeEarnOffer != null) {
+			removeNativeOffer(nativeEarnOffer);
 		}
-		addNativeSpendOrder = !addNativeSpendOrder;
+		if (nativeSpendOffer != null) {
+			removeNativeOffer(nativeSpendOffer);
+		}
 	}
 
 	private void showUserStats(final View v) {
@@ -403,7 +405,6 @@ public class MainActivity extends AppCompatActivity {
 
 					NativeOffer nativeOffer = nativeOfferClickEvent.getNativeOffer();
 					removeNativeOffer(nativeOffer);
-					addNativeOffer();
 					if (nativeOfferClickEvent.isDismissOnTap()) {
 						new AlertDialog.Builder(MainActivity.this)
 							.setTitle("Native Offer (" + nativeOffer.getTitle() + ")")
@@ -704,9 +705,7 @@ public class MainActivity extends AppCompatActivity {
 		payToUserOrderConfirmationCallback = null;
 		backupAndRestore.release();
 		try {
-			if (nativeOffer != null) {
-				Kin.removeNativeOffer(nativeOffer);
-			}
+			removeNativeOffers();
 			if(nativeOfferClickedObserver != null) {
 				Kin.removeNativeOfferClickedObserver(nativeOfferClickedObserver);
 			}

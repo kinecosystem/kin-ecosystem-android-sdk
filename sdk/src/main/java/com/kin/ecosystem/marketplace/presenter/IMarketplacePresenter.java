@@ -13,13 +13,15 @@ public interface IMarketplacePresenter extends IBasePresenter<IMarketplaceView> 
 
     void getOffers();
 
-    void onItemClicked(int position, OfferType offerType);
+    void onItemClicked(int position);
 
     void showOfferActivityFailed();
 
     void backButtonPressed();
 
-    INavigator getNavigator();
-
     void setNavigator(INavigator navigator);
+
+	void closeClicked();
+
+    void myKinCLicked();
 }

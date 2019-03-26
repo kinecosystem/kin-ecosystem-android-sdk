@@ -32,6 +32,14 @@ public class OfferList {
         }
     }
 
+    public boolean add(@NonNull final Offer offer) {
+        if (offers != null) {
+            this.offers.add(offer);
+            return true;
+        }
+        return false;
+    }
+
     public OfferList addAll(@NonNull final OfferList offerList) {
         List<Offer> offers = offerList.getOffers();
         if (offers != null) {

@@ -139,8 +139,8 @@ class OnboardingPresenterImpl(private val accountManager: AccountManager,
                 settingsDataSource.setSawOnboarding(authDataSource.ecosystemUserID)
                 when (nextExperience) {
                     EcosystemExperience.MARKETPLACE -> navigator.navigateToMarketplace(customAnimation {
-                        enter = R.anim.kinecosystem_slide_in_right
-                        exit = R.anim.kinecosystem_slide_out_left
+                        enter = R.anim.kinecosystem_fade_in
+                        exit = R.anim.kinecosystem_fade_out
                     })
                     EcosystemExperience.ORDER_HISTORY -> navigator.navigateToOrderHistory(isFirstSpendOrder = false, addToBackStack = false)
                 }

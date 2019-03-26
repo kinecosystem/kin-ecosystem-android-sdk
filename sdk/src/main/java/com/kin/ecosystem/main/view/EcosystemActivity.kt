@@ -9,10 +9,6 @@ import android.support.annotation.IdRes
 import android.support.annotation.StyleRes
 import android.support.constraint.ConstraintLayout
 import android.support.v4.app.Fragment
-import android.support.v4.view.MenuItemCompat
-import android.view.Menu
-import android.view.View
-import android.widget.ImageView
 import com.kin.ecosystem.R
 import com.kin.ecosystem.base.AnimConsts
 import com.kin.ecosystem.base.CustomAnimation
@@ -20,7 +16,6 @@ import com.kin.ecosystem.base.KinEcosystemBaseActivity
 import com.kin.ecosystem.base.customAnimation
 import com.kin.ecosystem.common.KinTheme.DARK
 import com.kin.ecosystem.common.KinTheme.LIGHT
-import com.kin.ecosystem.core.bi.EventLoggerImpl
 import com.kin.ecosystem.core.data.auth.AuthRepository
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl
 import com.kin.ecosystem.core.data.internal.ConfigurationImpl
@@ -49,10 +44,9 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
     private var ecosystemPresenter: IEcosystemPresenter? = null
     private var marketplacePresenter: IMarketplacePresenter? = null
 
-    private var actionView: View? = null
-
     private lateinit var containerFrame: ConstraintLayout
     private lateinit var contentFrame: ConstraintLayout
+    private var isClosing = false
 
     private val savedMarketplaceFragment: MarketplaceFragment?
         get() = supportFragmentManager
@@ -64,14 +58,14 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
         initViews()
         ecosystemPresenter = EcosystemPresenter(AuthRepository.getInstance(),
                 SettingsDataSourceImpl(SettingsDataSourceLocal(applicationContext)),
-                BlockchainSourceImpl.getInstance(), EventLoggerImpl.getInstance(), this, savedInstanceState, intent.extras).apply {
+                BlockchainSourceImpl.getInstance(), this, savedInstanceState, intent.extras).apply {
             onAttach(this@EcosystemActivity)
         }
     }
 
     @StyleRes
     private fun getKinTheme(): Int {
-        return when(ConfigurationImpl.getInstance().kinTheme!!) {
+        return when (ConfigurationImpl.getInstance().kinTheme!!) {
             LIGHT -> R.style.KinecosysNoActionBar_Light
             DARK -> R.style.KinecosysNoActionBar_Dark
         }
@@ -87,7 +81,7 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
             }
         }
         contentFrame = findViewById<ConstraintLayout>(R.id.screen_content).apply {
-            setOnClickListener {  }
+            setOnClickListener { }
         }
     }
 
@@ -96,38 +90,9 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
         ecosystemPresenter?.onStart()
     }
 
-    override fun onStop() {
-        super.onStop()
-        ecosystemPresenter?.onStop()
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         ecosystemPresenter?.onSaveInstanceState(outState)
         super.onSaveInstanceState(outState)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.kinecosystem_menu_marketplace, menu)
-        setupActionView(menu)
-        ecosystemPresenter?.onMenuInitialized()
-        return true
-    }
-
-    private fun setupActionView(menu: Menu) {
-        menu.findItem(R.id.menu_settings)?.let {
-            MenuItemCompat.getActionView(it).apply {
-                setOnClickListener { ecosystemPresenter?.settingsMenuClicked() }
-            }
-        }
-    }
-
-    override fun showMenuTouchIndicator(isVisible: Boolean) {
-        actionView?.let {
-            it.findViewById<ImageView>(R.id.ic_info_dot).apply {
-                visibility = if (isVisible) View.VISIBLE else View.GONE
-            }
-        }
     }
 
     private fun replaceFragment(@IdRes containerId: Int, fragment: Fragment, tag: String, customAnimation: CustomAnimation = CustomAnimation()) {
@@ -186,7 +151,10 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
     }
 
     override fun close() {
-        runExitAnimation()
+        if(!isClosing) {
+            isClosing = true
+            runExitAnimation()
+        }
     }
 
     private fun runEnterAnimation() {
@@ -251,12 +219,13 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
         val count = supportFragmentManager.backStackEntryCount
         if (count == 0) {
             val currentFragment = getCurrentFragment()
-            when(currentFragment) {
+            when (currentFragment) {
                 is OrderHistoryFragment -> {
                     navigateToMarketplace(customAnimation {
-                    enter = R.anim.kinecosystem_slide_in_left
-                    exit = R.anim.kinecosystem_slide_out_right
-                })}
+                        enter = R.anim.kinecosystem_slide_in_left
+                        exit = R.anim.kinecosystem_slide_out_right
+                    })
+                }
                 is MarketplaceFragment -> {
                     marketplacePresenter?.backButtonPressed()
                     close()
@@ -268,13 +237,11 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
             if (entry != null && entry.name == MARKETPLACE_TO_ORDER_HISTORY) {
                 // After pressing back from OrderHistory, should put the attrs again.
                 // This is the only fragment that should set presenter again on back.
-                savedMarketplaceFragment?.let {
-//                    attachMarketplacePresenter().onAttach(it)
-                }
+                savedMarketplaceFragment?.setNavigator(this)
                         ?: navigateToMarketplace(customAnimation {
-                    enter = R.anim.kinecosystem_slide_in_left
-                    exit = R.anim.kinecosystem_slide_out_right
-                })
+                            enter = R.anim.kinecosystem_slide_in_left
+                            exit = R.anim.kinecosystem_slide_out_right
+                        })
                 supportFragmentManager.popBackStackImmediate()
                 setVisibleScreen(MARKETPLACE)
             }

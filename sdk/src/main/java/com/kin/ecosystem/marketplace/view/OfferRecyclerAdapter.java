@@ -3,8 +3,11 @@ package com.kin.ecosystem.marketplace.view;
 import static com.kin.ecosystem.core.util.StringUtil.getAmountFormatted;
 
 import android.content.Context;
-import android.support.annotation.LayoutRes;
+import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
@@ -13,17 +16,12 @@ import com.kin.ecosystem.core.network.model.Offer.ContentTypeEnum;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.marketplace.view.OfferRecyclerAdapter.ViewHolder;
+import java.util.List;
 
-abstract class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
+class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
 
-    private static final String KIN = " Kin";
-
-    abstract float getImageWidthToScreenRatio();
-
-    abstract float getImageHeightRatio();
-
-    OfferRecyclerAdapter(@LayoutRes int layoutResID) {
-        super(layoutResID);
+    OfferRecyclerAdapter() {
+        super(R.layout.kinecosystem_offer_recycler_item);
     }
 
     @Override
@@ -39,41 +37,57 @@ abstract class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolde
     class ViewHolder extends AbstractBaseViewHolder<Offer> {
 
         private int imageWidth;
-        private int imageHeight;
+        private int earnColor;
+        private int spendColor;
 
         ViewHolder(View item_root) {
             super(item_root);
             getView(R.id.title);
             getView(R.id.sub_title);
             getView(R.id.amount_text);
-            setViewSize(R.id.image, imageWidth, imageHeight);
+            getView(R.id.kin_logo);
+            setViewSize(R.id.image, imageWidth, imageWidth);
         }
 
         @Override
         protected void init(Context context) {
-            imageWidth = (int) (DeviceUtils.getScreenWidth() * getImageWidthToScreenRatio());
-            imageHeight = (int) (imageWidth * getImageHeightRatio());
+            imageWidth = (int) (DeviceUtils.getScreenWidth() * 0.2f);
+            earnColor = ContextCompat.getColor(context, R.color.kinecosystem_earn);
+            spendColor = ContextCompat.getColor(context, R.color.kinecosystem_spend);
         }
 
         @Override
         protected void bindObject(final Offer item) {
-            setImageUrlResized(R.id.image, item.getImage(), imageWidth, imageHeight);
-            setText(R.id.title, item.getTitle());
-            setText(R.id.sub_title, item.getDescription());
+            setImageUrlResized(R.id.image, item.getImage(), imageWidth, imageWidth);
+            setTitle(item);
             setAmountText(item);
+            setText(R.id.sub_title, item.getDescription());
 
             if (item.getOfferType() == OfferType.EARN && item.getContentType() == ContentTypeEnum.POLL) {
                 setOnItemClickListener(getOnItemClickListener());
             }
         }
 
+        private void setTitle(final Offer item) {
+            if(item.getOfferType() == OfferType.EARN) {
+                setText(R.id.title, item.getTitle() + " +");
+                setTextColor(R.id.title, earnColor);
+            } else  {
+                setText(R.id.title, item.getTitle());
+                setTextColor(R.id.title, spendColor);
+            }
+        }
+
         private void setAmountText(final Offer item) {
             int amount = item.getAmount();
             if (item.getOfferType() == OfferType.EARN) {
-                setText(R.id.amount_text, "+" + getAmountFormatted(amount) + KIN);
+            	setVectorDrawable(R.id.kin_logo, R.drawable.kinecosystem_ic_kin_logo_small);
+                setTextColor(R.id.amount_text, earnColor);
             } else {
-                setText(R.id.amount_text, getAmountFormatted(amount) + KIN);
+				setVectorDrawable(R.id.kin_logo, R.drawable.kinecosystem_ic_kin_logo_small_green);
+                setTextColor(R.id.amount_text, spendColor);
             }
+            setText(R.id.amount_text, getAmountFormatted(amount));
         }
     }
 }
