@@ -124,7 +124,7 @@ public class OfferRepository implements OfferDataSource {
 				} else {
 					if(earnMPItr.hasNext()) {
 						Offer offer = earnMPItr.next();
-						if(tutorial != null && !tutorial.equals(offer)) {
+						if((tutorial != null && !tutorial.equals(offer)) || (tutorial == null)) {
 							masterList.add(offer);
 						}
 					}
