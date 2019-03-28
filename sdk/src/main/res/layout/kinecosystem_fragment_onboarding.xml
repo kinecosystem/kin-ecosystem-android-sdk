@@ -35,7 +35,8 @@
         android:layout_marginTop="@dimen/kinecosystem_main__medium_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/welcome_image"
+        app:layout_constraintBottom_toTopOf="@+id/whats_kin_title"
+        android:layout_marginBottom="@dimen/kinecosystem_main__medium_margin"
         app:srcCompat="@drawable/kinecosystem_kin_logo_new"/>
 
     <com.kin.ecosystem.widget.KinEcosystemTextView
@@ -49,7 +50,8 @@
         app:layout_constraintBottom_toTopOf="@+id/whats_kin_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/kin_logo"/>
+        android:layout_marginBottom="@dimen/kinrecovery_margin_medium"
+        />
 
     <com.kin.ecosystem.widget.KinEcosystemTextView
         android:id="@+id/whats_kin_description"
@@ -57,20 +59,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/kinecosystem_kin_makes_your_favorite_apps_even_better"
+        android:text="@string/kinecosystem_kin_is_a_digital_currency_that_makes"
         android:textSize="@dimen/kinecosystem_sub_title_size"
         app:layout_constraintBottom_toTopOf="@+id/lets_start_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/whats_kin_title"/>
+        android:lineSpacingMultiplier="1.5"
+        android:layout_marginBottom="@dimen/kinecosystem_main__medium_margin"/>
 
     <Button
         android:id="@+id/lets_start_button"
         android:layout_width="@dimen/kinecosystem_round_button_width"
         android:layout_height="@dimen/kinecosystem_round_button_height"
-        android:layout_marginBottom="@dimen/kinrecovery_margin_main"
+        android:layout_marginBottom="@dimen/kinecosystem_main__medium_margin"
         android:background="@drawable/kinecosystem_button_primary_bg_rounded"
-        android:text="@string/lets_s_start"
+        android:text="@string/lets_s_go"
         android:textAllCaps="false"
         android:textColor="@color/kinecosystem_white"
         android:textSize="@dimen/kinecosystem_title_size"
