@@ -5,8 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="@dimen/kinrecovery_margin_medium"
-    android:layout_marginRight="@dimen/kinrecovery_margin_medium"
+    android:layout_marginLeft="@dimen/kinecosystem_tiny_margin"
+    android:layout_marginRight="@dimen/kinecosystem_tiny_margin"
     android:layout_gravity="center_horizontal"
     android:background="?attr/offerBackground">
 

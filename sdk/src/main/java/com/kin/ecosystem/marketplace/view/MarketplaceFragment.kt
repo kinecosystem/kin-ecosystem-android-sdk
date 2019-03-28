@@ -72,7 +72,7 @@ class MarketplaceFragment : Fragment(), IMarketplaceView {
         }
 
         //Space item decoration for both of the recyclers
-        val margin = resources.getDimensionPixelOffset(R.dimen.kinecosystem_main_margin)
+        val margin = resources.getDimensionPixelOffset(R.dimen.kinecosystem_tiny_margin)
         val itemDecoration = SpaceItemDecoration(margin)
 
         offersRecycler = root.findViewById<RecyclerView>(R.id.offers_recycler).apply {
