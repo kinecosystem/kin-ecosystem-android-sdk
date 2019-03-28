@@ -1,9 +1,9 @@
 package com.kin.ecosystem.onboarding.view
 
 import android.annotation.SuppressLint
-import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.support.annotation.StringRes
+import android.support.graphics.drawable.AnimatedVectorDrawableCompat
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -76,7 +76,7 @@ class OnboardingFragment: Fragment(), IOnboardingView {
         with(loadingAVD) {
             visibility = View.VISIBLE
             animate().alpha(AnimConsts.Value.ALPHA_1).setDuration(AnimConsts.Duration.FADE_ANIM).start()
-            (drawable as AnimatedVectorDrawable).start()
+            (drawable as AnimatedVectorDrawableCompat).start()
         }
     }
 
@@ -93,7 +93,7 @@ class OnboardingFragment: Fragment(), IOnboardingView {
                         .setDuration(AnimConsts.Duration.FADE_ANIM)
                         .withStartAction {
                             visibility = View.INVISIBLE
-                            (drawable as AnimatedVectorDrawable).stop()
+                            (drawable as AnimatedVectorDrawableCompat).stop()
                         }
                         .start()
 

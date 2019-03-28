@@ -39,7 +39,8 @@ public class TouchIndicatorIcon extends View {
 
 	public TouchIndicatorIcon(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs, 0);
-		final Drawable icon;
+		final int iconRes;
+
 		final boolean indicatorVisibility;
 		setLayoutParams(new ViewGroup.LayoutParams(iconSize, iconSize));
 
@@ -47,16 +48,18 @@ public class TouchIndicatorIcon extends View {
 			.obtainStyledAttributes(attrs, R.styleable.KinEcosystemTouchIndicatorIcon, 0, 0);
 
 		try {
-			icon = styledAttributes.getDrawable(R.styleable.KinEcosystemTouchIndicatorIcon_src);
-			indicatorVisibility = styledAttributes
-				.getBoolean(R.styleable.KinEcosystemTouchIndicatorIcon_kinecosystem_indicatorVisibility, false);
+			iconRes = styledAttributes.getResourceId(R.styleable.KinEcosystemTouchIndicatorIcon_src, -1);
+			indicatorVisibility = styledAttributes.getBoolean(R.styleable.KinEcosystemTouchIndicatorIcon_kinecosystem_indicatorVisibility, false);
 		} finally {
 			styledAttributes.recycle();
 		}
 
-		if (icon != null) {
-			setIcon(icon);
-			setTouchIndicatorVisibility(indicatorVisibility);
+		if(iconRes != -1) {
+			final Drawable icon = ContextCompat.getDrawable(context, iconRes);
+			if (icon != null) {
+				setIcon(icon);
+				setTouchIndicatorVisibility(indicatorVisibility);
+			}
 		}
 	}
 
