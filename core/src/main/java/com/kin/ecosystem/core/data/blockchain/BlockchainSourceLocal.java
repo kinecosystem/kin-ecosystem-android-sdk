@@ -117,7 +117,7 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 	@Override
 	public KinSdkVersion getBlockchainVersion() {
 		String version = blockchainSharedPreferences.getString(BLOCKCHAIN_VERSION, KinSdkVersion.OLD_KIN_SDK.getVersion());
-		return KinSdkVersion.valueOf(version);
+		return KinSdkVersion.get(version);
 	}
 
 	@Override

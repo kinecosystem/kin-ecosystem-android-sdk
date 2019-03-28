@@ -35,7 +35,7 @@ public class BlockchainSourceRemote implements Remote {
 
 	@Override
 	public KinSdkVersion getBlockchainVersion() throws ApiException {
-		return KinSdkVersion.valueOf(api.getBlockchainVersionSync(""));
+		return KinSdkVersion.get(api.getBlockchainVersionSync(""));
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class BlockchainSourceRemote implements Remote {
 					executorsUtil.mainThread().execute(new Runnable() {
 						@Override
 						public void run() {
-							callback.onResponse(KinSdkVersion.valueOf(result));
+							callback.onResponse(KinSdkVersion.get(result));
 						}
 					});
 				}

@@ -31,11 +31,15 @@ import kin.sdk.migration.common.KinSdkVersion;
 import kin.sdk.migration.common.exception.InsufficientKinException;
 
 class CreateExternalOrderCall extends Thread {
+	private static final int SSE_TIMEOUT = 15000; // 15 seconds
 	private final OrderDataSource orderRepository;
 	private final BlockchainSource blockchainSource;
 	private final String orderJwt;
 	private final ExternalOrderCallbacks externalOrderCallbacks;
 	private final EventLogger eventLogger;
+	private final Timer sseTimeoutTimer;
+	private final AtomicBoolean isTimeoutTaskCanceled;
+	private final Observer<Payment> paymentObserver;
 
 	private OpenOrder openOrder;
 	private MainThreadExecutor mainThreadExecutor = new MainThreadExecutor();
@@ -48,6 +52,37 @@ class CreateExternalOrderCall extends Thread {
 		this.orderJwt = orderJwt;
 		this.eventLogger = eventLogger;
 		this.externalOrderCallbacks = externalOrderCallbacks;
+		this.sseTimeoutTimer = new Timer();
+		this.isTimeoutTaskCanceled = new AtomicBoolean(false);
+
+		this.paymentObserver = new Observer<Payment>() {
+			@Override
+			public void onChanged(final Payment payment) {
+				if (isPaymentOrderEquals(payment, openOrder.getId())) {
+					//Cancel SSE timeout task
+					if (!isTimeoutTaskCanceled.getAndSet(true)) {
+						sseTimeoutTimer.cancel();
+					}
+
+					if (payment.isSucceed()) {
+						getOrder(payment.getOrderID());
+					} else {
+						if (isSpendOrder()) {
+							runOnMainThread(new Runnable() {
+								@Override
+								public void run() {
+									((ExternalSpendOrderCallbacks) CreateExternalOrderCall.this.externalOrderCallbacks)
+										.onTransactionFailed(openOrder,
+											ErrorUtil.getBlockchainException(payment.getException()));
+								}
+							});
+						}
+					}
+
+					CreateExternalOrderCall.this.blockchainSource.removePaymentObserver(this);
+				}
+			}
+		};
 	}
 
 	@Override
@@ -82,20 +117,19 @@ class CreateExternalOrderCall extends Thread {
 			return;
 		}
 
-		sendCompletionSubmittedEvent(openOrder);
-
 		final String orderId = openOrder.getId();
 		final String offerId = openOrder.getOfferId();
 		final BigDecimal amount = new BigDecimal(openOrder.getAmount());
 		final String address = openOrder.getBlockchainData().getRecipientAddress();
 
+		blockchainSource.addPaymentObservable(paymentObserver);
 		if (blockchainSource.getBlockchainVersion() == KinSdkVersion.NEW_KIN_SDK) {
 			sendKin3Order(orderId, offerId, address, amount);
 		} else {
 			sendKin2Order(orderId, offerId, address, amount);
 		}
 
-		getOrder(orderId);
+		sendCompletionSubmittedEvent(openOrder);
 	}
 
 	private void sendKin2Order(final String orderId, final String offerId, final String address, final BigDecimal amount) {
@@ -106,10 +140,13 @@ class CreateExternalOrderCall extends Thread {
 					// Send transaction to the blockchain
 					blockchainSource.sendTransaction(address, amount, orderId, offerId);
 				}
+
+				scheduleTimer();
 			}
 
 			@Override
 			public void onFailure(KinEcosystemException e) {
+				blockchainSource.removePaymentObserver(paymentObserver);
 				onOrderFailed(e);
 			}
 		};
@@ -125,11 +162,17 @@ class CreateExternalOrderCall extends Thread {
 		final KinCallback<Order> callback = new KinCallback<Order>() {
 			@Override
 			public void onResponse(Order response) {
-				// NOP: do nothing
+				if (isSpendOrder()) {
+					// Send transaction to the blockchain
+					blockchainSource.sendTransaction(address, amount, orderId, offerId);
+				}
+
+				scheduleTimer();
 			}
 
 			@Override
 			public void onFailure(KinEcosystemException e) {
+				blockchainSource.removePaymentObserver(paymentObserver);
 				onOrderFailed(e);
 			}
 		};
@@ -144,6 +187,21 @@ class CreateExternalOrderCall extends Thread {
 		} else {
 			orderRepository.submitEarnOrder(offerId, null, orderId, callback);
 		}
+	}
+
+	private void scheduleTimer() {
+		sseTimeoutTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				// TimerTask runs on a BG thread of the timer.
+				if (!isTimeoutTaskCanceled.getAndSet(true)) {
+					// Timeout should be fulfilled, remove payment observer and start server polling for order.
+					blockchainSource.removePaymentObserver(paymentObserver);
+					getOrder(openOrder.getId());
+					sseTimeoutTimer.cancel(); // Clear queue so it can be GC
+				}
+			}
+		}, SSE_TIMEOUT);
 	}
 
 	private boolean isSpendOrder() {
