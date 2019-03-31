@@ -11,6 +11,7 @@ import com.kin.ecosystem.common.KinEnvironment;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
+import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.network.ApiClient;
 import com.kin.ecosystem.core.network.model.AuthToken;
 import java.io.IOException;
@@ -37,8 +38,6 @@ public class ConfigurationImpl implements Configuration {
 	private static final String AUTHORIZATION = "Authorization";
 
 	static final String API_VERSION = "v2";
-	// static final String BLOCKCHAIN_VERSION = KinSdkVersion.OLD_KIN_SDK.getVersion();
-	static final String BLOCKCHAIN_VERSION = KinSdkVersion.NEW_KIN_SDK.getVersion();
 
 	private static final int NO_TOKEN_ERROR_CODE = 666;
 	private static final String AUTH_TOKEN_COULD_NOT_BE_GENERATED = "AuthToken could not be generated";
@@ -49,6 +48,7 @@ public class ConfigurationImpl implements Configuration {
 
 	private static final Object apiClientLock = new Object();
 	private static ApiClient defaultApiClient;
+	private static BlockchainSource blockchainSource;
 
 	private final KinEnvironment kinEnvironment;
 	private static volatile ConfigurationImpl instance;
@@ -66,6 +66,10 @@ public class ConfigurationImpl implements Configuration {
 				}
 			}
 		}
+	}
+
+	public static void setBlockchainSource(BlockchainSource bcSource) {
+		blockchainSource = bcSource;
 	}
 
 	public static ConfigurationImpl getInstance() {
@@ -130,7 +134,10 @@ public class ConfigurationImpl implements Configuration {
 		apiClient.addDefaultHeader(HEADER_DEVICE_MODEL, Build.MODEL);
 		apiClient.addDefaultHeader(HEADER_DEVICE_MANUFACTURER, Build.MANUFACTURER);
 		apiClient.addDefaultHeader(HEADER_DEVICE_LANGUAGE, getDeviceAcceptedLanguage());
-		apiClient.addDefaultHeader(HEADER_BLOCKCHAIN_VERSION, BLOCKCHAIN_VERSION);
+
+		if (blockchainSource != null) {
+			apiClient.addDefaultHeader(HEADER_BLOCKCHAIN_VERSION, blockchainSource.getBlockchainVersion().getVersion());
+		}
 	}
 
 	@Override

@@ -123,6 +123,8 @@ public class Kin {
 			BlockchainSourceImpl.init(eventLogger, BlockchainSourceLocal.getInstance(getKinContext()),
 				AuthRepository.getInstance());
 
+			ConfigurationImpl.setBlockchainSource(BlockchainSourceImpl.getInstance());
+
 			EventCommonDataUtil.setBaseData(getKinContext());
 
 			AccountManagerImpl
