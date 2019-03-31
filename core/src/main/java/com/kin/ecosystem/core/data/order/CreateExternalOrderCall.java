@@ -6,6 +6,8 @@ import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.exception.ServiceException;
 import com.kin.ecosystem.common.model.Balance;
+import com.kin.ecosystem.core.Log;
+import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.SpendOrderCompletionSubmitted;
 import com.kin.ecosystem.core.bi.events.SpendOrderCreationFailed;
@@ -29,6 +31,7 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 import kin.sdk.migration.common.KinSdkVersion;
 import kin.sdk.migration.common.exception.InsufficientKinException;
+import kin.sdk.migration.common.exception.OperationFailedException;
 
 class CreateExternalOrderCall extends Thread {
 	private static final int SSE_TIMEOUT = 15000; // 15 seconds
@@ -159,12 +162,15 @@ class CreateExternalOrderCall extends Thread {
 	}
 
 	private void sendKin3Order(final String orderId, final String offerId, final String address, final BigDecimal amount) {
+		Logger.log(new Log().withTag("MOO").text("sendKin3Order 1"));
+
 		final KinCallback<Order> callback = new KinCallback<Order>() {
 			@Override
 			public void onResponse(Order response) {
+				Logger.log(new Log().withTag("MOO").text("sendKin3Order 2"));
 				if (isSpendOrder()) {
 					// Send transaction to the blockchain
-					blockchainSource.sendTransaction(address, amount, orderId, offerId);
+					// blockchainSource.sendTransaction(address, amount, orderId, offerId);
 				}
 
 				scheduleTimer();
@@ -172,18 +178,26 @@ class CreateExternalOrderCall extends Thread {
 
 			@Override
 			public void onFailure(KinEcosystemException e) {
+				Logger.log(new Log().withTag("MOO").text("sendKin3Order 3"));
 				blockchainSource.removePaymentObserver(paymentObserver);
 				onOrderFailed(e);
 			}
 		};
 
 		if (isSpendOrder()) {
-			blockchainSource.signTransaction(address, amount, orderId, offerId, new SignTransactionListener() {
-				@Override
-				public void onTransactionSigned(@NonNull String transaction) {
-					orderRepository.submitSpendOrder(offerId, transaction, orderId, callback);
-				}
-			});
+			Logger.log(new Log().withTag("MOO").text("sendKin3Order 4"));
+			try {
+				blockchainSource.signTransaction(address, amount, orderId, offerId, new SignTransactionListener() {
+					@Override
+					public void onTransactionSigned(@NonNull String transaction) {
+						Logger.log(new Log().withTag("MOO").text("sendKin3Order 5"));
+						orderRepository.submitSpendOrder(offerId, transaction, orderId, callback);
+					}
+				});
+			} catch (OperationFailedException e) {
+				blockchainSource.removePaymentObserver(paymentObserver);
+				onOrderFailed(new KinEcosystemException(KinEcosystemException.UNKNOWN, e.getMessage(), e));
+			}
 		} else {
 			orderRepository.submitEarnOrder(offerId, null, orderId, callback);
 		}

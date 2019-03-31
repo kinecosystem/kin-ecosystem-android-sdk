@@ -1,5 +1,7 @@
 package com.kin.ecosystem;
 
+import com.kin.ecosystem.core.Log;
+import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.network.ApiException;
 import kin.sdk.migration.common.KinSdkVersion;
@@ -18,6 +20,7 @@ class KinBlockchainVersionProvider implements IKinVersionProvider {
 	@Override
 	public KinSdkVersion getKinSdkVersion() throws FailedToResolveSdkVersionException {
 		if (local.getBlockchainVersion() == KinSdkVersion.NEW_KIN_SDK) {
+			Logger.log(new Log().withTag("MOO").text("new version"));
 			return KinSdkVersion.NEW_KIN_SDK;
 		}
 
@@ -29,6 +32,7 @@ class KinBlockchainVersionProvider implements IKinVersionProvider {
 		}
 
 		local.setBlockchainVersion(version);
+		Logger.log(new Log().withTag("MOO").text("version: " + version));
 
 		return version;
 	}

@@ -32,6 +32,7 @@ import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.marketplace.view.ISpendDialog;
 import com.kin.ecosystem.marketplace.view.ISpendDialog.Message;
 import java.math.BigDecimal;
+import kin.sdk.migration.common.exception.OperationFailedException;
 
 
 class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements ISpendDialogPresenter {
@@ -185,25 +186,30 @@ class SpendDialogPresenter extends BaseDialogPresenter<ISpendDialog> implements 
 		final String address = openOrder.getBlockchainData().getRecipientAddress();
 
 		eventLogger.send(SpendOrderCompletionSubmitted.create(offerId, orderId, false, Origin.MARKETPLACE));
-		blockchainSource.signTransaction(address, amount, orderId, offerId, new SignTransactionListener() {
-			@Override
-			public void onTransactionSigned(@NonNull String transaction) {
-				orderRepository.submitSpendOrder(offerId, transaction, orderId, new KinCallback<Order>() {
-					@Override
-					public void onResponse(Order response) {
-						final String addressee = offer.getBlockchainData().getRecipientAddress();
-						sendTransaction(addressee, amount, orderId);
-						Logger.log(new Log().withTag(TAG).put(" Submit onResponse", response));
-					}
+		try {
+			blockchainSource.signTransaction(address, amount, orderId, offerId, new SignTransactionListener() {
+				@Override
+				public void onTransactionSigned(@NonNull String transaction) {
+					orderRepository.submitSpendOrder(offerId, transaction, orderId, new KinCallback<Order>() {
+						@Override
+						public void onResponse(Order response) {
+							final String addressee = offer.getBlockchainData().getRecipientAddress();
+							sendTransaction(addressee, amount, orderId);
+							Logger.log(new Log().withTag(TAG).put(" Submit onResponse", response));
+						}
 
-					@Override
-					public void onFailure(KinEcosystemException exception) {
-						showToast(SOMETHING_WENT_WRONG);
-						Logger.log(new Log().withTag(TAG).put(" Submit onFailure", exception));
-					}
-				});
-			}
-		});
+						@Override
+						public void onFailure(KinEcosystemException exception) {
+							showToast(SOMETHING_WENT_WRONG);
+							Logger.log(new Log().withTag(TAG).put(" Submit onFailure", exception));
+						}
+					});
+				}
+			});
+		} catch (OperationFailedException e) {
+			showToast(SOMETHING_WENT_WRONG);
+			Logger.log(new Log().withTag(TAG).put(" Submit onFailure", e));
+		}
 	}
 
 	private void showToast(@Message final int msg) {

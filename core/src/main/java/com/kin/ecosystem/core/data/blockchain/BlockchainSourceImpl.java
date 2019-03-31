@@ -119,6 +119,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	private void updateKinClient(IKinClient kinClient) {
+		Logger.log(new Log().withTag("MOO").text(kinClient.getEnvironment().getNetworkUrl()));
 		this.kinClient = kinClient;
 	}
 
@@ -243,13 +244,15 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	@Override
 	public void signTransaction(@NonNull final String publicAddress, @NonNull final BigDecimal amount,
-		@NonNull final String orderID, @NonNull final String offerID, @NonNull final SignTransactionListener listener) {
+		@NonNull final String orderID, @NonNull final String offerID, @NonNull final SignTransactionListener listener) throws OperationFailedException {
+		Logger.log(new Log().withTag("MOO").text("signTransaction 1"));
 		if (account != null) {
+			Logger.log(new Log().withTag("MOO").text("signTransaction 2"));
 			eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offerID, orderID));
-			account.sendTransaction(publicAddress, amount, new IWhitelistService() {
+			account.sendTransactionSync(publicAddress, amount, new IWhitelistService() {
 				@Override
-				public WhitelistResult onWhitelistableTransactionReady(IWhitelistableTransaction transaction)
-					throws WhitelistTransactionFailedException {
+				public WhitelistResult onWhitelistableTransactionReady(IWhitelistableTransaction transaction) {
+					Logger.log(new Log().withTag("MOO").text("signTransaction 3"));
 					listener.onTransactionSigned(transaction.getTransactionPayload());
 					return new WhitelistResult(transaction.getTransactionPayload(), false);
 				}
@@ -260,6 +263,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	public void sendTransaction(@NonNull final String publicAddress, @NonNull final BigDecimal amount,
 		@NonNull final String orderID, @NonNull final String offerID) {
+		Logger.log(new Log().withTag("MOO").text("sendTransaction 1"));
 		if (account != null) {
 			eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offerID, orderID));
 			account.sendTransaction(publicAddress, amount, new IWhitelistService() {

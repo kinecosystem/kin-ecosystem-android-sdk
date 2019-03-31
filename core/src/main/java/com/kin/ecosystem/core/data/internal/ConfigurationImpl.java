@@ -37,7 +37,8 @@ public class ConfigurationImpl implements Configuration {
 	private static final String AUTHORIZATION = "Authorization";
 
 	static final String API_VERSION = "v2";
-	static final String BLOCKCHAIN_VERSION = KinSdkVersion.OLD_KIN_SDK.getVersion();
+	// static final String BLOCKCHAIN_VERSION = KinSdkVersion.OLD_KIN_SDK.getVersion();
+	static final String BLOCKCHAIN_VERSION = KinSdkVersion.NEW_KIN_SDK.getVersion();
 
 	private static final int NO_TOKEN_ERROR_CODE = 666;
 	private static final String AUTH_TOKEN_COULD_NOT_BE_GENERATED = "AuthToken could not be generated";

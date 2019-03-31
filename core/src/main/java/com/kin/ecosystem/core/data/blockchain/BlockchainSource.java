@@ -13,6 +13,7 @@ import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
 import kin.sdk.migration.MigrationManager;
 import kin.sdk.migration.common.KinSdkVersion;
+import kin.sdk.migration.common.exception.OperationFailedException;
 import kin.sdk.migration.common.interfaces.IKinAccount;
 
 public interface BlockchainSource {
@@ -55,7 +56,7 @@ public interface BlockchainSource {
 	 * @param listener to be informed when a transaction is signed and ready
 	 */
 	void signTransaction(@NonNull String publicAddress, @NonNull BigDecimal amount, @NonNull String orderID,
-		@NonNull String offerID, @NonNull SignTransactionListener listener);
+		@NonNull String offerID, @NonNull SignTransactionListener listener) throws OperationFailedException;
 
 	/**
 	 * Send transaction to the network
