@@ -8,16 +8,19 @@ import android.os.Build.VERSION;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import com.kin.ecosystem.common.KinEnvironment;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
+import com.kin.ecosystem.common.exception.ServiceException;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.network.ApiClient;
+import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.AuthToken;
+import com.kin.ecosystem.core.util.ErrorUtil;
 import java.io.IOException;
 import java.util.Locale;
 import kin.ecosystem.core.BuildConfig;
-import kin.sdk.migration.common.KinSdkVersion;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.Protocol;
@@ -90,7 +93,7 @@ public class ConfigurationImpl implements Configuration {
 					@Override
 					public Response intercept(Chain chain) throws IOException {
 						Request originalRequest = chain.request();
-						if (isCanProceed(originalRequest)) {
+						if (shouldntBeAuthenticated(originalRequest)) {
 							return chain.proceed(originalRequest);
 						} else {
 							AuthToken authToken = AuthRepository.getInstance().getAuthTokenSync();
@@ -98,7 +101,18 @@ public class ConfigurationImpl implements Configuration {
 								Request authorisedRequest = originalRequest.newBuilder()
 									.header(AUTHORIZATION, BEARER + authToken.getToken())
 									.build();
-								return chain.proceed(authorisedRequest);
+
+								Response response = chain.proceed(authorisedRequest);
+								try {
+									final Object result = defaultApiClient.deserialize(response, Object.class);
+								} catch (ApiException e) {
+									KinEcosystemException serviceException = ErrorUtil.fromApiException(e);
+									if (serviceException.getCode() == ServiceException.BLOCKCHAIN_ENDPOINT_CHANGED) {
+										// TODO: start migration
+									}
+								}
+
+								return response;
 							} else {
 								// Stop the request from being executed.
 								Logger.log(new Log().withTag("ApiClient").text("No token - response error on client"));
@@ -121,7 +135,7 @@ public class ConfigurationImpl implements Configuration {
 		return defaultApiClient;
 	}
 
-	private boolean isCanProceed(Request originalRequest) {
+	private boolean shouldntBeAuthenticated(Request originalRequest) {
 		final String path = originalRequest.url().encodedPath();
 		final String method = originalRequest.method();
 		return path.equals(USERS_PATH) && method.equals(POST) ||
