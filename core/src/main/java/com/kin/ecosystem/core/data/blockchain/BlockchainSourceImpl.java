@@ -138,9 +138,9 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		// If the account should migrate then migrate it, if not update the kinClient to run on this version.
 		// If we don't have an account then check the server for the current version and update the kinClient to run on this version.
 		if (kinClient.hasAccount()) {
-			// TODO: 01/04/2019 get the real public address
 //			try {
 //				final String publicAddress = getPublicAddress();
+			// TODO: 01/04/2019 when login will happen before then change it back to be  getPublicAddress().
 				final String publicAddress = kinClient.getAccount(0).getPublicAddress();
 				remote.getMigrationInfo(publicAddress,
 					new Callback<MigrationInfo, ApiException>() {
@@ -160,10 +160,8 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 						@Override
 						public void onFailure(ApiException exception) {
-							// TODO: 31/03/2019 handle error like in any other place in the app in this stage
-							int i = 0;
-							i++;
-
+							// TODO: 31/03/2019 handle error like in any other place in the app, find what kind of error...
+							// TODO: 01/04/2019 and if got account not found, which probably means that the account is only created locally then handle it.
 						}
 					});
 //			} catch (BlockchainException e) {
@@ -179,7 +177,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 				@Override
 				public void onFailure(ApiException exception) {
-					// TODO: 31/03/2019 handle error like in any other place in the app in this stage
+					// TODO: 31/03/2019 handle error like in any other place in the app, find what kind of error...
 				}
 			});
 		}
@@ -357,7 +355,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	@Override
 	public KinSdkVersion getBlockchainVersion() {
-		// TODO: 01/04/2019 if we don't have it locally then why not getting it from the server
 		return local.getBlockchainVersion();
 	}
 

@@ -162,7 +162,6 @@ public class ConfigurationImpl implements Configuration {
 		apiClient.addDefaultHeader(HEADER_DEVICE_LANGUAGE, getDeviceAcceptedLanguage());
 
 		if (blockchainSource != null) {
-			// TODO: 01/04/2019 there is a problem if there is no version locally
 			apiClient.addDefaultHeader(HEADER_BLOCKCHAIN_VERSION, blockchainSource.getBlockchainVersion().getVersion());
 		}
 	}
