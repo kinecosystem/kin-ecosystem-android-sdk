@@ -35,7 +35,8 @@ public class BlockchainSourceRemote implements Remote {
 
 	@Override
 	public KinSdkVersion getBlockchainVersion() throws ApiException {
-		return KinSdkVersion.get(api.getBlockchainVersionSync(""));
+		String version = api.getBlockchainVersionSync("");
+		return KinSdkVersion.get(version);
 	}
 
 	@Override

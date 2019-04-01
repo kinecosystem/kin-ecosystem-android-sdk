@@ -26,7 +26,7 @@ public class MigrationApi extends Api {
 
 	public String getBlockchainVersionSync(String X_REQUEST_ID) throws ApiException {
 		Call call = getBlockchainVersion(X_REQUEST_ID);
-		ApiResponse<String> response = apiClient.execute(call);
+		ApiResponse<String> response = apiClient.execute(call, String.class);
 		return response.getData();
 	}
 
