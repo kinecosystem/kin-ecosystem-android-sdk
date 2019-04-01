@@ -32,6 +32,7 @@ public class ErrorUtil {
 	private static final String ACCOUNT_IS_NOT_LOGGED_IN = "Account is not logged in, please call Kin.login(...) first.";
 	private static final String ACCOUNT_NOT_FOUND = "Account not found";
 	private static final String ACCOUNT_HAS_NO_WALLET = "Account has no wallet";
+	private static final String MIGRATION_NEEDED = "Migration is needed";
 
 
 	// Server Error codes
@@ -40,12 +41,14 @@ public class ErrorUtil {
 	private static final int ERROR_CODE_NOT_FOUND = 404;
 	private static final int ERROR_CODE_REQUEST_TIMEOUT = 408;
 	public static final int ERROR_CODE_CONFLICT = 409;
+	public static final int ERROR_CODE_GONE = 410;
 	private static final int ERROR_CODE_INTERNAL_SERVER_ERROR = 500;
 	private static final int ERROR_CODE_TRANSACTION_FAILED_ERROR = 700;
 
 	private static final int ERROR_CODE_NO_SUCH_USER = 4046;
 	private static final int ERROR_CODE_USER_HAS_NO_WALLET = 4095;
 	public static final int ERROR_CODE_EXTERNAL_ORDER_ALREADY_COMPLETED = 4091;
+	public static final int ERROR_CODE_BLOCKCHAIN_ENDPOINT_CHANGED = 4101;
 
 	public static KinEcosystemException fromApiException(ApiException apiException) {
 		if (apiException == null) {
@@ -74,6 +77,14 @@ public class ErrorUtil {
 							getMessageOrDefault(error, THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR), apiException);
 					}
 					return createUnknownServiceException(apiException);
+				case ERROR_CODE_GONE:
+					if (error != null) {
+						switch (error.getCode()) {
+							case ERROR_CODE_BLOCKCHAIN_ENDPOINT_CHANGED:
+								return new ServiceException(ServiceException.BLOCKCHAIN_ENDPOINT_CHANGED,
+									MIGRATION_NEEDED, apiException);
+						}
+					}
 				case ERROR_CODE_REQUEST_TIMEOUT:
 					return new ServiceException(ServiceException.TIMEOUT_ERROR, THE_OPERATION_TIMED_OUT, apiException);
 				case ClientException.INTERNAL_INCONSISTENCY:
@@ -81,7 +92,6 @@ public class ErrorUtil {
 						apiException);
 				default:
 					return createUnknownServiceException(apiException);
-
 			}
 		}
 	}

@@ -51,7 +51,6 @@ import kin.sdk.migration.common.interfaces.IWhitelistableTransaction;
 import kin.utils.ResultCallback;
 
 public class BlockchainSourceImpl implements BlockchainSource {
-
 	private static final String TAG = BlockchainSourceImpl.class.getSimpleName();
 
 	private static volatile BlockchainSourceImpl instance;
@@ -105,11 +104,10 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	public static void init(@NonNull EventLogger eventLogger, @NonNull Local local, @NonNull Remote remote,
 		@NonNull AuthDataSource authDataSource) {
-		if (BlockchainSourceImpl.instance == null) {
+		if (instance == null) {
 			synchronized (BlockchainSourceImpl.class) {
-				if (BlockchainSourceImpl.instance == null) {
-					BlockchainSourceImpl.instance = new BlockchainSourceImpl(eventLogger, local, remote,
-						authDataSource);
+				if (instance == null) {
+					instance = new BlockchainSourceImpl(eventLogger, local, remote, authDataSource);
 				}
 			}
 		}
@@ -122,12 +120,12 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	public void setMigrationManager(@NonNull final MigrationManager migrationManager) {
 		this.migrationManager = migrationManager;
-		updateKinClient(migrationManager.getKinClient(
-			KinSdkVersion.OLD_KIN_SDK)); // TODO: 31/03/2019 as I understand there is no need for this because you will get the KinClient from the migration process
+		// In this case it doesn't really matter which version because we only need it to check if there are any accounts
+		// Later on it will be updated according migration process.
+		updateKinClient(migrationManager.getKinClient(KinSdkVersion.OLD_KIN_SDK));
 	}
 
 	private void updateKinClient(IKinClient kinClient) {
-		Logger.log(new Log().withTag("MOO").text(kinClient.getEnvironment().getNetworkUrl()));
 		this.kinClient = kinClient;
 	}
 
@@ -195,8 +193,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				@Override
 				public void onError(Exception e) {
 					if (listener != null) {
-						listener.onMigrationError(
-							new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed", e));
+						listener.onMigrationError(new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed", e));
 					}
 				}
 			});
@@ -213,7 +210,8 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	/**
-	 * Support backward compatibility, load the old account and migrate to current multiple users implementation.
+	 * Support backward compatibility,
+	 * load the old account and migrate to current multiple users implementation.
 	 */
 	private void migrateToMultipleUsers(String kinUserId) {
 		if (!local.getIsMigrated()) {
@@ -295,16 +293,12 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	@Override
 	public void signTransaction(@NonNull final String publicAddress, @NonNull final BigDecimal amount,
-		@NonNull final String orderID, @NonNull final String offerID, @NonNull final SignTransactionListener listener)
-		throws OperationFailedException {
-		Logger.log(new Log().withTag("MOO").text("signTransaction 1"));
+		@NonNull final String orderID, @NonNull final String offerID, @NonNull final SignTransactionListener listener) throws OperationFailedException {
 		if (account != null) {
-			Logger.log(new Log().withTag("MOO").text("signTransaction 2"));
 			eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offerID, orderID));
 			account.sendTransactionSync(publicAddress, amount, new IWhitelistService() {
 				@Override
 				public WhitelistResult onWhitelistableTransactionReady(IWhitelistableTransaction transaction) {
-					Logger.log(new Log().withTag("MOO").text("signTransaction 3"));
 					listener.onTransactionSigned(transaction.getTransactionPayload());
 					return new WhitelistResult(transaction.getTransactionPayload(), false);
 				}
@@ -315,31 +309,29 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	public void sendTransaction(@NonNull final String publicAddress, @NonNull final BigDecimal amount,
 		@NonNull final String orderID, @NonNull final String offerID) {
-		Logger.log(new Log().withTag("MOO").text("sendTransaction 1"));
 		if (account != null) {
 			eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offerID, orderID));
 			account.sendTransaction(publicAddress, amount, new IWhitelistService() {
 				@Override
-				public WhitelistResult onWhitelistableTransactionReady(IWhitelistableTransaction transaction)
-					throws WhitelistTransactionFailedException {
+				public WhitelistResult onWhitelistableTransactionReady(IWhitelistableTransaction transaction) throws WhitelistTransactionFailedException {
 					return new WhitelistResult(transaction.getTransactionPayload(), true);
 				}
 			}, orderID).run(new ResultCallback<ITransactionId>() {
-				@Override
-				public void onResult(ITransactionId result) {
-					eventLogger
-						.send(SpendTransactionBroadcastToBlockchainSucceeded.create(result.id(), offerID, orderID));
-					Logger.log(new Log().withTag(TAG).put("sendTransaction onResult", result.id()));
-				}
+					@Override
+					public void onResult(ITransactionId result) {
+						eventLogger
+							.send(SpendTransactionBroadcastToBlockchainSucceeded.create(result.id(), offerID, orderID));
+						Logger.log(new Log().withTag(TAG).put("sendTransaction onResult", result.id()));
+					}
 
-				@Override
-				public void onError(Exception e) {
-					eventLogger
-						.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
-					completedPayment.postValue(new Payment(orderID, false, e));
-					Logger.log(new Log().withTag(TAG).put("sendTransaction onError", e.getMessage()));
-				}
-			});
+					@Override
+					public void onError(Exception e) {
+						eventLogger
+							.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
+						completedPayment.postValue(new Payment(orderID, false, e));
+						Logger.log(new Log().withTag(TAG).put("sendTransaction onError", e.getMessage()));
+					}
+				});
 		}
 	}
 

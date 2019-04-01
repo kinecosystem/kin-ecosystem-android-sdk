@@ -123,6 +123,8 @@ public class Kin {
 			BlockchainSourceImpl.init(eventLogger, BlockchainSourceLocal.getInstance(getKinContext()),
 				BlockchainSourceRemote.getInstance(instance.executorsUtil), AuthRepository.getInstance());
 
+			ConfigurationImpl.setBlockchainSource(BlockchainSourceImpl.getInstance());
+
 			EventCommonDataUtil.setBaseData(getKinContext());
 
 			AccountManagerImpl
@@ -269,24 +271,8 @@ public class Kin {
 			});*/
 
 		} catch (final ClientException exception) {
-			if (exception.getCode() == ClientException.BLOCKCHAIN_ENDPOINT_CHANGED) {
-				BlockchainSourceImpl.getInstance().startMigrationProcess(new MigrationProcessListener() {
-					@Override
-					public void onMigrationStart() {}
-
-					@Override
-					public void onMigrationEnd() {
-						internalLogin(jwt, loginCallback);
-					}
-
-					@Override
-					public void onMigrationError(BlockchainException error) {
-						sendLoginFailed(error, loginCallback);
-					}
-				});
-			} else {
-				sendLoginFailed(exception, loginCallback);
-			}
+			// TODO: handle migration error here
+			sendLoginFailed(exception, loginCallback);
 		}
 	}
 
