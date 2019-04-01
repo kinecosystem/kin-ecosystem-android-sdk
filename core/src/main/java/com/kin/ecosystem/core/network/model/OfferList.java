@@ -32,7 +32,7 @@ public class OfferList {
         }
     }
 
-    public boolean add(@NonNull final Offer offer) {
+    public boolean add(final Offer offer) {
         if (offers != null) {
             this.offers.add(offer);
             return true;
