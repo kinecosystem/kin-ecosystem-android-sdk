@@ -105,9 +105,16 @@ public class ConfigurationImpl implements Configuration {
 									.header(AUTHORIZATION, BEARER + authToken.getToken())
 									.build();
 
-								Response response = chain.proceed(authorisedRequest);
+								final Response response = chain.proceed(authorisedRequest);
+								final ResponseBody body = response.body();
+								final String bodyString = body.string();
+								final MediaType contentType = body.contentType();
+
 								try {
-									final Object result = defaultApiClient.deserialize(response, Object.class);
+									final Object result = defaultApiClient.deserialize(response
+										.newBuilder()
+										.body(ResponseBody.create(contentType, bodyString))
+										.build(), Object.class);
 								} catch (ApiException e) {
 									KinEcosystemException serviceException = ErrorUtil.fromApiException(e);
 									if (serviceException.getCode() == ServiceException.BLOCKCHAIN_ENDPOINT_CHANGED) {
@@ -115,7 +122,7 @@ public class ConfigurationImpl implements Configuration {
 									}
 								}
 
-								return response;
+								return response.newBuilder().body(ResponseBody.create(contentType, bodyString)).build();
 							} else {
 								// Stop the request from being executed.
 								Logger.log(new Log().withTag("ApiClient").text("No token - response error on client"));
