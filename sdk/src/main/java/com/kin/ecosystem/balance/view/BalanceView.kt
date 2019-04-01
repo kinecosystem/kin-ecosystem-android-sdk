@@ -38,6 +38,7 @@ class BalanceView @JvmOverloads constructor(context: Context,
                 val balanceText = TextView(context)
                 balanceText.setTextAppearance(context, R.style.KinecosysTitle)
                 balanceText.typeface = FontUtil.SAILEC_MEDIUM
+                balanceText.maxLines = 1
                 balanceText.setTextColor(ContextCompat.getColor(context, R.color.kinecosystem_primary))
                 balanceText
             }

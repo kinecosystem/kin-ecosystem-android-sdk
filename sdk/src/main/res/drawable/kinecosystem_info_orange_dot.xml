@@ -2,7 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="oval" android:thickness="@dimen/kinecosystem_stroke_width">
-            <solid android:color="?attr/kinBackgroundColor"/>
+            <solid android:color="#ffff"/>
         </shape>
     </item>
     <item

@@ -7,6 +7,7 @@ import com.kin.ecosystem.Kin.KEY_ECOSYSTEM_EXPERIENCE
 import com.kin.ecosystem.R
 import com.kin.ecosystem.base.BasePresenter
 import com.kin.ecosystem.base.CustomAnimation
+import com.kin.ecosystem.base.customAnimation
 import com.kin.ecosystem.common.Observer
 import com.kin.ecosystem.common.exception.BlockchainException
 import com.kin.ecosystem.common.exception.ClientException
@@ -85,21 +86,29 @@ class EcosystemPresenter(private val authDataSource: AuthDataSource,
 
     private fun launchOrderHistory() {
         view?.let {
-            navigator?.navigateToOrderHistory(false)
+            navigator?.navigateToOrderHistory(customAnimation {
+                enter = 0
+                exit = R.anim.kinecosystem_slide_out_right
+            }, addToBackStack = false)
         }
     }
 
     private fun navigateToVisibleScreen(visibleScreen: Int) {
         view?.let {
             when (visibleScreen) {
-                ScreenId.ORDER_HISTORY -> navigator?.navigateToOrderHistory(false)
+                ScreenId.ORDER_HISTORY -> navigator?.navigateToOrderHistory(customAnimation {
+                    enter = R.anim.kinecosystem_slide_in_right
+                    exit = R.anim.kinecosystem_slide_out_left
+                    popEnter = R.anim.kinrecovery_slide_in_left
+                    popExit = R.anim.kinecosystem_slide_out_right
+                },addToBackStack = false)
                 ScreenId.MARKETPLACE,
                 ScreenId.NONE ->
                     navigator?.navigateToMarketplace()
-                else -> navigator?.navigateToMarketplace(CustomAnimation.Builder()
-                        .enter(R.anim.kinecosystem_slide_in_right)
-                        .exit(R.anim.kinecosystem_slide_out_right)
-                        .build())
+                else -> navigator?.navigateToMarketplace(customAnimation {
+                    enter = R.anim.kinecosystem_slide_in_right
+                    exit = R.anim.kinecosystem_slide_out_right
+                })
             }
         }
     }

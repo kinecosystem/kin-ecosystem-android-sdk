@@ -73,7 +73,7 @@
         android:layout_height="@dimen/kinecosystem_round_button_height"
         android:layout_marginBottom="@dimen/kinecosystem_main__medium_margin"
         android:background="@drawable/kinecosystem_button_primary_bg_rounded"
-        android:text="@string/lets_s_go"
+        android:text="@string/kinecosystem_lets_s_go"
         android:textAllCaps="false"
         android:textColor="@color/kinecosystem_white"
         android:textSize="@dimen/kinecosystem_title_size"

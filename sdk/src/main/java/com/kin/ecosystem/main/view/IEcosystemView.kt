@@ -5,5 +5,5 @@ import com.kin.ecosystem.main.INavigator
 
 interface IEcosystemView : IBaseView, INavigator {
 
-    fun navigateBack()
+    override fun navigateBack()
 }

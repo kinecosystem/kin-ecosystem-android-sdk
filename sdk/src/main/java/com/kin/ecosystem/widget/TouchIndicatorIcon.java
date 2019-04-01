@@ -15,6 +15,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import com.kin.ecosystem.R;
+import com.kin.ecosystem.widget.util.ThemeUtil;
 
 public class TouchIndicatorIcon extends View {
 
@@ -72,7 +73,8 @@ public class TouchIndicatorIcon extends View {
 		final Drawable[] drawables = new Drawable[2];
 		icon.setBounds(0, 0, iconSize, iconSize);
 		drawables[0] = icon;
-		Drawable touchIndicator = ContextCompat.getDrawable(getContext(), R.drawable.kinecosystem_info_red_dot);
+		LayerDrawable touchIndicator = (LayerDrawable) ContextCompat.getDrawable(getContext(), R.drawable.kinecosystem_info_orange_dot) ;
+		touchIndicator.getDrawable(0).setColorFilter(ThemeUtil.Companion.themeAttributeToColor(getContext(), R.attr.kinBackgroundColor, R.color.kinecosystem_white), Mode.SRC_ATOP);
 		touchIndicator.setBounds(0, 0, indicatorRadius, indicatorRadius);
 		drawables[1] = touchIndicator;
 		layerDrawable = new LayerDrawable(drawables);
