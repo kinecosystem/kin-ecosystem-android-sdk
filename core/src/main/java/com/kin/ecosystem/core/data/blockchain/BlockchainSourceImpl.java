@@ -171,6 +171,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			remote.getBlockchainVersion(new Callback<KinSdkVersion, ApiException>() {
 				@Override
 				public void onResponse(KinSdkVersion sdkVersion) {
+					local.setBlockchainVersion(sdkVersion);
 					updateKinClient(migrationManager.getKinClient(sdkVersion));
 					listener.onMigrationEnd();
 				}
