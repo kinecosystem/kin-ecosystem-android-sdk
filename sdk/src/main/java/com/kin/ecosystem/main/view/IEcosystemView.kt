@@ -6,6 +6,4 @@ import com.kin.ecosystem.main.INavigator
 interface IEcosystemView : IBaseView, INavigator {
 
     fun navigateBack()
-
-    fun showMenuTouchIndicator(isVisible: Boolean)
 }

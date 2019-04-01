@@ -2,7 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="oval" android:thickness="@dimen/kinecosystem_stroke_width">
-            <solid android:color="@color/kinecosystem_white"/>
+            <solid android:color="?attr/kinBackgroundColor"/>
         </shape>
     </item>
     <item
@@ -13,7 +13,7 @@
         <shape android:id="@+id/center_dot" android:shape="oval">
             <solid
                 android:width="@dimen/kinecosystem_stroke_width"
-                android:color="@color/kinecosystem_red" />
+                android:color="@color/kinecosystem_orange" />
             <size
                 android:width="@dimen/kinecosystem_info_dot_radius"
                 android:height="@dimen/kinecosystem_info_dot_radius" />

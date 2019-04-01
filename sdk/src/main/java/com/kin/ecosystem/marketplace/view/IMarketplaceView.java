@@ -3,8 +3,6 @@ package com.kin.ecosystem.marketplace.view;
 import android.support.annotation.IntDef;
 import com.kin.ecosystem.base.IBaseView;
 import com.kin.ecosystem.core.network.model.Offer;
-import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter;
-import com.kin.ecosystem.marketplace.presenter.ISpendDialogPresenter;
 import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -22,31 +20,19 @@ public interface IMarketplaceView extends IBaseView {
 
 	}
 
-	void setSpendList(List<Offer> response);
-
-	void setEarnList(List<Offer> response);
+	void setOfferList(List<Offer> response);
 
 	void setupEmptyItemView();
 
 	void showOfferActivity(PollBundle pollBundle);
 
-	void showSpendDialog(ISpendDialogPresenter spendDialogPresenter);
-
 	void showToast(@Message final int msg);
 
-	void notifyEarnItemRemoved(int index);
+	void notifyOfferItemRemoved(int index);
 
-	void notifyEarnItemInserted(int index);
+	void notifyOfferItemInserted(int index);
 
-	void notifySpendItemRemoved(int index);
+	void notifyOfferItemRangRemoved(int fromIndex, int size);
 
-	void notifySpendItemInserted(int index);
-
-	void notifySpendItemRangRemoved(int fromIndex, int size);
-
-	void notifyEarnItemRangRemoved(int fromIndex, int size);
-
-	void updateEarnSubtitle(boolean isEmpty);
-
-	void updateSpendSubtitle(boolean isEmpty);
+	void showMenuTouchIndicator(boolean isVisible);
 }

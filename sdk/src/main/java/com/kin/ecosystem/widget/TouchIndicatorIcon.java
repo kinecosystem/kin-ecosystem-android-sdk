@@ -73,8 +73,7 @@ public class TouchIndicatorIcon extends View {
 		icon.setBounds(0, 0, iconSize, iconSize);
 		drawables[0] = icon;
 		Drawable touchIndicator = ContextCompat.getDrawable(getContext(), R.drawable.kinecosystem_info_red_dot);
-		final int left = icon.getIntrinsicWidth() - indicatorRadius;
-		touchIndicator.setBounds(left, 0, indicatorRadius + left, indicatorRadius);
+		touchIndicator.setBounds(0, 0, indicatorRadius, indicatorRadius);
 		drawables[1] = touchIndicator;
 		layerDrawable = new LayerDrawable(drawables);
 		layerDrawable.setId(0, ID_ICON);

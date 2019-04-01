@@ -2,12 +2,14 @@
 <resources>
     <declare-styleable name="KinEcosystemTheme">
         <attr name="primaryTextColor" format="color"/>
+        <attr name="kinBackgroundColor" format="color"/>
         <attr name="backgroundCardImage" format="integer"/>
         <attr name="menuMyKinIcon" format="integer"/>
         <attr name="menuSettingsIcon" format="integer"/>
         <attr name="settingsBackupIcon" format="integer"/>
         <attr name="settingsRestoreIcon" format="integer"/>
         <attr name="tabDeselectedBackgroundColor" format="color"/>
+        <attr name="offerBackground" format="integer"/>
     </declare-styleable>
 
     <declare-styleable name="KinEcosystemDashView">

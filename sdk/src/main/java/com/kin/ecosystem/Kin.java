@@ -11,6 +11,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatDelegate;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.KinEnvironment;
 import com.kin.ecosystem.common.KinTheme;
@@ -107,6 +108,7 @@ public class Kin {
 			instance = getInstance();
 			// use application context to avoid leaks.
 			appContext = appContext.getApplicationContext();
+			AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
 			//Load data from manifest, can throw ClientException if no data available.
 			loadDefaultsFromMetadata(appContext);
@@ -271,6 +273,7 @@ public class Kin {
 				switch (accountState) {
 					case AccountManager.CREATION_COMPLETED:
 						sendLoginSucceed(loginCallback, loginState);
+						OfferRepository.getInstance().getOffers(null);
 						AccountManagerImpl.getInstance().removeAccountStateObserver(this);
 						break;
 					case AccountManager.ERROR:

@@ -13,22 +13,26 @@
 
     <style name="KinecosysNoActionBar.Light" parent="KinecosysNoActionBar">
         <item name="primaryTextColor">@color/kinecosystem_title</item>
+        <item name="kinBackgroundColor">@color/kinecosystem_background_light</item>
         <item name="backgroundCardImage">@drawable/kinecosystem_screen_bg_light</item>
         <item name="menuMyKinIcon">@drawable/kinecosystem_ic_my_kin</item>
         <item name="menuSettingsIcon" >@drawable/kinecosystem_ic_settings</item>
         <item name="settingsBackupIcon">@drawable/kinecosystem_ic_backup</item>
         <item name="settingsRestoreIcon">@drawable/kinecosystem_ic_restore</item>
         <item name="tabDeselectedBackgroundColor">@color/kinecosystem_tab_deselected_background_light</item>
+        <item name="offerBackground">@drawable/kinecosystem_offer_item_bg_light</item>
     </style>
 
     <style name="KinecosysNoActionBar.Dark" parent="KinecosysNoActionBar">
         <item name="primaryTextColor">@color/kinecosystem_white</item>
+        <item name="kinBackgroundColor">@color/kinecosystem_background_dark</item>
         <item name="backgroundCardImage">@drawable/kinecosystem_screen_bg_dark</item>
         <item name="menuMyKinIcon">@drawable/kinecosystem_ic_my_kin_dark</item>
         <item name="menuSettingsIcon" >@drawable/kinecosystem_ic_settings_dark</item>
         <item name="settingsBackupIcon">@drawable/kinecosystem_ic_backup_dark</item>
         <item name="settingsRestoreIcon">@drawable/kinecosystem_ic_restore_dark</item>
         <item name="tabDeselectedBackgroundColor">@color/kinecosystem_tab_deselected_background_dark</item>
+        <item name="offerBackground">@drawable/kinecosystem_offer_item_bg_dark</item>
     </style>
 
     <style name="KinecosysToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">

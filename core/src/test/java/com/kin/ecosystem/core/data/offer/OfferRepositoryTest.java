@@ -86,8 +86,8 @@ public class OfferRepositoryTest {
 
 		offerRepository.getOffers(offerListCallback);
 		verify(remote).getOffers(getOfferCapture.capture());
-
 		getOfferCapture.getValue().onResponse(offerList);
+
 		assertEquals(1, offerRepository.getCachedOfferList().getOffers().size());
 		verify(offerListCallback).onResponse(offerList);
 	}
@@ -213,7 +213,7 @@ public class OfferRepositoryTest {
 
 	private OfferList getOfferList() {
 		OfferList offerList = new OfferList();
-		offerList.addAtIndex(0, offer);
+		offerList.add(offer);
 		offerList.setPaging(new Paging().next("1").previous("0").cursors(new PagingCursors().after("1").before("0")));
 		return offerList;
 	}
