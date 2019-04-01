@@ -92,7 +92,13 @@ public class ConfigurationImpl implements Configuration {
 				defaultApiClient.addInterceptor(new Interceptor() {
 					@Override
 					public Response intercept(Chain chain) throws IOException {
-						Request originalRequest = chain.request();
+						Request originalRequest = blockchainSource == null ?
+							chain.request() :
+							chain.request() // new request with the BV version header
+								.newBuilder()
+								.addHeader(HEADER_BLOCKCHAIN_VERSION, blockchainSource.getBlockchainVersion().getVersion())
+								.build();
+
 						if (shouldntBeAuthenticated(originalRequest)) {
 							return chain.proceed(originalRequest);
 						} else {
@@ -155,10 +161,6 @@ public class ConfigurationImpl implements Configuration {
 		apiClient.addDefaultHeader(HEADER_DEVICE_MODEL, Build.MODEL);
 		apiClient.addDefaultHeader(HEADER_DEVICE_MANUFACTURER, Build.MANUFACTURER);
 		apiClient.addDefaultHeader(HEADER_DEVICE_LANGUAGE, getDeviceAcceptedLanguage());
-
-		if (blockchainSource != null) {
-			apiClient.addDefaultHeader(HEADER_BLOCKCHAIN_VERSION, blockchainSource.getBlockchainVersion().getVersion());
-		}
 	}
 
 	@Override
