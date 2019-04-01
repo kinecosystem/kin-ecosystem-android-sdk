@@ -142,7 +142,8 @@ public class BlockchainSourceImpl implements BlockchainSource {
 //				final String publicAddress = getPublicAddress();
 			// TODO: 01/04/2019 when login will happen before then change it back to be  getPublicAddress().
 				final String publicAddress = kinClient.getAccount(0).getPublicAddress();
-				remote.getMigrationInfo(publicAddress,
+			// TODO: 01/04/2019 Maybe we can make it more efficient by adding a call to the local storage to check if the account is already migrated(localy)?
+			remote.getMigrationInfo(publicAddress,
 					new Callback<MigrationInfo, ApiException>() {
 						@Override
 						public void onResponse(MigrationInfo migrationInfo) {
