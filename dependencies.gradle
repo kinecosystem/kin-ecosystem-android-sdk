@@ -9,7 +9,7 @@ ext {
     gsonVersion = '2.8.2'
     hamcrestVersion = '1.3'
     zxingVersion = '3.3.3'
-    kinMigrationVersion = 'master-SNAPSHOT'
+    kinMigrationVersion = 'ab91f897fc'
     kotlinVersion = kotlin_version
 
     //Packages

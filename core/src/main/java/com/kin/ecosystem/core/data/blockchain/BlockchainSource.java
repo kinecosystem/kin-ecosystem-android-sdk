@@ -9,6 +9,7 @@ import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.core.network.ApiException;
+import com.kin.ecosystem.core.network.model.MigrationInfo;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
 import kin.sdk.migration.MigrationManager;
@@ -170,7 +171,13 @@ public interface BlockchainSource {
 
 	interface Remote {
 		KinSdkVersion getBlockchainVersion() throws ApiException; // synced and blocking
+
 		void getBlockchainVersion(@NonNull final Callback<KinSdkVersion, ApiException> callback);
+
+		MigrationInfo getMigrationInfo(String publicAddress)  throws ApiException; // synced and blocking
+
+		void getMigrationInfo(String publicAddress, @NonNull final Callback<MigrationInfo, ApiException> callback);
+
 	}
 
 	interface MigrationProcessListener {

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
+import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
@@ -23,6 +24,8 @@ import com.kin.ecosystem.core.bi.events.StellarKinTrustlineSetupFailed;
 import com.kin.ecosystem.core.bi.events.StellarKinTrustlineSetupSucceeded;
 import com.kin.ecosystem.core.data.auth.AuthDataSource;
 import com.kin.ecosystem.core.data.blockchain.CreateTrustLineCall.TrustlineCallback;
+import com.kin.ecosystem.core.network.ApiException;
+import com.kin.ecosystem.core.network.model.MigrationInfo;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
 import com.kin.ecosystem.core.util.StringUtil;
@@ -52,6 +55,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private static volatile BlockchainSourceImpl instance;
 	private final BlockchainSource.Local local;
+	private final BlockchainSource.Remote remote;
 
 	private final EventLogger eventLogger;
 	private final AuthDataSource authRepository;
@@ -86,23 +90,24 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	private static final int ORDER_ID_INDEX = 2;
 	private static final int MEMO_SPLIT_LENGTH = 3;
 
-	private BlockchainSourceImpl(@NonNull EventLogger eventLogger, @NonNull BlockchainSource.Local local,
+	private BlockchainSourceImpl(@NonNull EventLogger eventLogger, @NonNull Local local, @NonNull Remote remote,
 		@NonNull AuthDataSource authRepository) {
 		this.eventLogger = eventLogger;
 		this.authRepository = authRepository;
 		this.local = local;
+		this.remote = remote;
 		Logger.log(new Log().withTag(TAG)
 			.put("BlockchainSourceImpl authRepository.getEcosystemUserID()", authRepository.getEcosystemUserID()));
 		this.currentUserId = authRepository.getEcosystemUserID();
 		this.appID = authRepository.getAppID();
 	}
 
-	public static void init(@NonNull EventLogger eventLogger, @NonNull BlockchainSource.Local local,
+	public static void init(@NonNull EventLogger eventLogger, @NonNull Local local, @NonNull Remote remote,
 		@NonNull AuthDataSource authDataSource) {
 		if (instance == null) {
 			synchronized (BlockchainSourceImpl.class) {
 				if (instance == null) {
-					instance = new BlockchainSourceImpl(eventLogger, local, authDataSource);
+					instance = new BlockchainSourceImpl(eventLogger, local, remote, authDataSource);
 				}
 			}
 		}
@@ -115,7 +120,13 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	public void setMigrationManager(@NonNull final MigrationManager migrationManager) {
 		this.migrationManager = migrationManager;
-		updateKinClient(migrationManager.getCurrentKinClient());
+		// If no account has been found then  it doesn't really matter which version because we only need it to check
+		// if there are any accounts. Later on it will be updated according to the version that we got from the server.
+		KinSdkVersion sdkVersion = KinSdkVersion.OLD_KIN_SDK;
+		if (kinClient != null && kinClient.hasAccount() && account != null) {
+			sdkVersion = account.getKinSdkVersion();
+		}
+		updateKinClient(migrationManager.getKinClient(sdkVersion));
 	}
 
 	private void updateKinClient(IKinClient kinClient) {
@@ -123,8 +134,60 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	public void startMigrationProcess(final MigrationProcessListener listener) {
+		// Check if we have an account, if yes then get the migration info and check if this account should migrate.
+		// If the account should migrate then migrate it, if not update the kinClient to run on this version.
+		// If we don't have an account then check the server for the current version and update the kinClient to run on this version.
+		if (kinClient.hasAccount()) {
+//			try {
+//				final String publicAddress = getPublicAddress();
+			// TODO: 01/04/2019 when login will happen before then change it back to be  getPublicAddress().
+				final String publicAddress = kinClient.getAccount(0).getPublicAddress();
+			// TODO: 01/04/2019 Maybe we can make it more efficient by adding a call to the local storage to check if the account is already migrated(localy)?
+			remote.getMigrationInfo(publicAddress,
+					new Callback<MigrationInfo, ApiException>() {
+						@Override
+						public void onResponse(MigrationInfo migrationInfo) {
+							KinSdkVersion kinSdkVersion = KinSdkVersion.get(migrationInfo.getBlockchainVersion());
+							local.setBlockchainVersion(kinSdkVersion); // In any case update the version locally.
+							if (migrationInfo.shouldMigrate()) {
+								startMigration(publicAddress, listener);
+							} else {
+								updateKinClient(
+									migrationManager.getKinClient(kinSdkVersion));
+								listener.onMigrationEnd();
+							}
+
+						}
+
+						@Override
+						public void onFailure(ApiException exception) {
+							// TODO: 31/03/2019 handle error like in any other place in the app, find what kind of error...
+							// TODO: 01/04/2019 and if got account not found, which probably means that the account is only created locally then handle it.
+						}
+					});
+//			} catch (BlockchainException e) {
+//				// TODO: 31/03/2019 handle error like in any other place in the app in this stage - this can happen if, for example, account is not found or something like that.
+//			}
+		} else {
+			remote.getBlockchainVersion(new Callback<KinSdkVersion, ApiException>() {
+				@Override
+				public void onResponse(KinSdkVersion sdkVersion) {
+					local.setBlockchainVersion(sdkVersion);
+					updateKinClient(migrationManager.getKinClient(sdkVersion));
+					listener.onMigrationEnd();
+				}
+
+				@Override
+				public void onFailure(ApiException exception) {
+					// TODO: 31/03/2019 handle error like in any other place in the app, find what kind of error...
+				}
+			});
+		}
+	}
+
+	private void startMigration(String publicAddress, final MigrationProcessListener listener) {
 		try {
-			migrationManager.start(new IMigrationManagerCallbacks() {
+			migrationManager.start(publicAddress, new IMigrationManagerCallbacks() {
 				@Override
 				public void onMigrationStart() {
 					if (listener != null) {

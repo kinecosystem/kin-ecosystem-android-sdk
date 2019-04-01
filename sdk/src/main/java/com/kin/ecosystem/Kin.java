@@ -121,7 +121,7 @@ public class Kin {
 				.init(AuthLocalData.getInstance(getKinContext()), AuthRemoteData.getInstance(instance.executorsUtil));
 
 			BlockchainSourceImpl.init(eventLogger, BlockchainSourceLocal.getInstance(getKinContext()),
-				AuthRepository.getInstance());
+				BlockchainSourceRemote.getInstance(instance.executorsUtil), AuthRepository.getInstance());
 
 			ConfigurationImpl.setBlockchainSource(BlockchainSourceImpl.getInstance());
 

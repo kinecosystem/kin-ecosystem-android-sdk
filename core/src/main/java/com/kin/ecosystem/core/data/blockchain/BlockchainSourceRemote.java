@@ -6,6 +6,7 @@ import com.kin.ecosystem.core.data.blockchain.BlockchainSource.Remote;
 import com.kin.ecosystem.core.network.ApiCallback;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.api.MigrationApi;
+import com.kin.ecosystem.core.network.model.MigrationInfo;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,45 @@ public class BlockchainSourceRemote implements Remote {
 		try {
 			api.getBlockchainVersionAsync("", new ApiCallback<String>() {
 				@Override
+				public void onFailure(final ApiException e, final int statusCode, final Map<String, List<String>> responseHeaders) {
+					executorsUtil.mainThread().execute(new Runnable() {
+						@Override
+						public void run() {
+							callback.onFailure(e);
+						}
+					});
+				}
+
+				@Override
+				public void onSuccess(final String result, final int statusCode, final Map<String, List<String>> responseHeaders) {
+					executorsUtil.mainThread().execute(new Runnable() {
+						@Override
+						public void run() {
+							callback.onResponse(KinSdkVersion.get(result));
+						}
+					});
+				}
+			});
+		} catch (final ApiException e) {
+			executorsUtil.mainThread().execute(new Runnable() {
+				@Override
+				public void run() {
+					callback.onFailure(e);
+				}
+			});
+		}
+	}
+
+	@Override
+	public MigrationInfo getMigrationInfo(@NonNull String publicAddress) throws ApiException {
+		return api.getMigrationInfoSync(publicAddress);
+	}
+
+	@Override
+	public void getMigrationInfo(final String publicAddress, final @NonNull Callback<MigrationInfo, ApiException> callback) {
+		try {
+			api.getMigrationInfoAsync(publicAddress, new ApiCallback<MigrationInfo>() {
+				@Override
 				public void onFailure(final ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
 					executorsUtil.mainThread().execute(new Runnable() {
 						@Override
@@ -54,11 +94,11 @@ public class BlockchainSourceRemote implements Remote {
 				}
 
 				@Override
-				public void onSuccess(final String result, int statusCode, Map<String, List<String>> responseHeaders) {
+				public void onSuccess(final MigrationInfo result, int statusCode, Map<String, List<String>> responseHeaders) {
 					executorsUtil.mainThread().execute(new Runnable() {
 						@Override
 						public void run() {
-							callback.onResponse(KinSdkVersion.get(result));
+							callback.onResponse(result);
 						}
 					});
 				}
