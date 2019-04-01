@@ -202,7 +202,7 @@ public class Kin {
 	}
 
 	private static void internalLogin(@NonNull final String jwt, final KinCallback<Void> loginCallback) {
-		MigrationManager migrationManager = createMigrationManager(getKinContext(), "amit"/*AuthRepository.getInstance().getAppID()*/);
+		MigrationManager migrationManager = createMigrationManager(getKinContext(), "nitz"/*AuthRepository.getInstance().getAppID()*/);
 
 		try {
 			checkInstanceNotNull();

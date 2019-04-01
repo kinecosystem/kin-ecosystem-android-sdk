@@ -37,7 +37,9 @@ public class MigrationApi extends Api {
 	public Call getMigrationInfoAsync(String publicAddress, final ApiCallback<MigrationInfo> callback)
 		throws ApiException {
 		Call call = getMigrationInfo(publicAddress);
-		apiClient.executeAsync(call, callback);
+		Type localVarReturnType = new TypeToken<MigrationInfo>() {
+		}.getType();
+		apiClient.executeAsync(call, localVarReturnType, callback);
 		return call;
 
 	}

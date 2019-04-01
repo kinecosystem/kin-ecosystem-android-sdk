@@ -120,9 +120,13 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	public void setMigrationManager(@NonNull final MigrationManager migrationManager) {
 		this.migrationManager = migrationManager;
-		// In this case it doesn't really matter which version because we only need it to check if there are any accounts
-		// Later on it will be updated according migration process.
-		updateKinClient(migrationManager.getKinClient(KinSdkVersion.OLD_KIN_SDK));
+		// If no account has been found then  it doesn't really matter which version because we only need it to check
+		// if there are any accounts. Later on it will be updated according to the version that we got from the server.
+		KinSdkVersion sdkVersion = KinSdkVersion.OLD_KIN_SDK;
+		if (kinClient != null && kinClient.hasAccount() && account != null) {
+			sdkVersion = account.getKinSdkVersion();
+		}
+		updateKinClient(migrationManager.getKinClient(sdkVersion));
 	}
 
 	private void updateKinClient(IKinClient kinClient) {
@@ -134,28 +138,37 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		// If the account should migrate then migrate it, if not update the kinClient to run on this version.
 		// If we don't have an account then check the server for the current version and update the kinClient to run on this version.
 		if (kinClient.hasAccount()) {
-			remote.getMigrationInfo(kinClient.getAccount(0).getPublicAddress(),
-				new Callback<MigrationInfo, ApiException>() {
-					@Override
-					public void onResponse(MigrationInfo migrationInfo) {
-						if (migrationInfo.shouldMigrate()) {
-							startMigration(listener);
-						} else {
-							updateKinClient(
-								migrationManager.getKinClient(KinSdkVersion.get(migrationInfo.getBlockchainVersion())));
-							listener.onMigrationEnd();
+			// TODO: 01/04/2019 get the real public address
+//			try {
+//				final String publicAddress = getPublicAddress();
+				final String publicAddress = kinClient.getAccount(0).getPublicAddress();
+				remote.getMigrationInfo(publicAddress,
+					new Callback<MigrationInfo, ApiException>() {
+						@Override
+						public void onResponse(MigrationInfo migrationInfo) {
+							KinSdkVersion kinSdkVersion = KinSdkVersion.get(migrationInfo.getBlockchainVersion());
+							local.setBlockchainVersion(kinSdkVersion); // In any case update the version locally.
+							if (migrationInfo.shouldMigrate()) {
+								startMigration(publicAddress, listener);
+							} else {
+								updateKinClient(
+									migrationManager.getKinClient(kinSdkVersion));
+								listener.onMigrationEnd();
+							}
+
 						}
 
-					}
+						@Override
+						public void onFailure(ApiException exception) {
+							// TODO: 31/03/2019 handle error like in any other place in the app in this stage
+							int i = 0;
+							i++;
 
-					@Override
-					public void onFailure(ApiException exception) {
-						// TODO: 31/03/2019 handle error like in any other place in the app in this stage
-						int i = 0;
-						i++;
-
-					}
-				});
+						}
+					});
+//			} catch (BlockchainException e) {
+//				// TODO: 31/03/2019 handle error like in any other place in the app in this stage - this can happen if, for example, account is not found or something like that.
+//			}
 		} else {
 			remote.getBlockchainVersion(new Callback<KinSdkVersion, ApiException>() {
 				@Override
@@ -172,9 +185,9 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		}
 	}
 
-	private void startMigration(final MigrationProcessListener listener) {
+	private void startMigration(String publicAddress, final MigrationProcessListener listener) {
 		try {
-			migrationManager.start(new IMigrationManagerCallbacks() {
+			migrationManager.start(publicAddress, new IMigrationManagerCallbacks() {
 				@Override
 				public void onMigrationStart() {
 					if (listener != null) {

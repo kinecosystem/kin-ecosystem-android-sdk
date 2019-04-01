@@ -833,10 +833,6 @@ public class ApiClient {
 
 		String url = buildUrl(path, queryParams, collectionQueryParams);
 
-		if (url.contains("migration/info")) {
-			url = url.replace("/v2", ""); // TODO: 31/03/2019 remove after testings and discussion
-		}
-
 		final Request.Builder reqBuilder = new Request.Builder().url(url);
 		processHeaderParams(headerParams, reqBuilder);
 

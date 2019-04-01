@@ -49,7 +49,7 @@ public class ConfigurationImpl implements Configuration {
 	private static final String USERS_PATH = "/" + API_VERSION + "/users";
 	private static final String LOGOUT_PATH = "/" + API_VERSION + "/users/me/session";
 	private static final String KIN_VERSION_END_PATH = "/blockchain_version";
-	private static final String KIN_MIGRATION_INFO_PATH = "/migration/info";
+	private static final String KIN_MIGRATION_INFO_PATH = "/" + API_VERSION + "/migration/info";
 	private static final String PREFIX_ANDROID = "android ";
 
 	private static final Object apiClientLock = new Object();
@@ -150,7 +150,8 @@ public class ConfigurationImpl implements Configuration {
 		final String method = originalRequest.method();
 		return path.equals(USERS_PATH) && method.equals(POST) ||
 			path.equals(LOGOUT_PATH) && method.equals(DELETE) ||
-			path.contains(KIN_VERSION_END_PATH) && method.equals(GET);
+			path.contains(KIN_VERSION_END_PATH) && method.equals(GET) ||
+			path.contains(KIN_MIGRATION_INFO_PATH) && method.equals(GET);
 	}
 
 	private void addHeaders(ApiClient apiClient) {
