@@ -344,6 +344,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	@Override
 	public KinSdkVersion getBlockchainVersion() {
+		// TODO: 01/04/2019 if we don't have it locally then why not getting it from the server
 		return local.getBlockchainVersion();
 	}
 

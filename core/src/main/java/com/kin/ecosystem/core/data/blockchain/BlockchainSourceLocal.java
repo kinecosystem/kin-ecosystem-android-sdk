@@ -116,7 +116,9 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 
 	@Override
 	public KinSdkVersion getBlockchainVersion() {
-		String version = blockchainSharedPreferences.getString(BLOCKCHAIN_VERSION, "");
+		// TODO: 01/04/2019 Why do Nitzan want to return OLD VERSION if there is nothing locally
+		 String version = blockchainSharedPreferences.getString(BLOCKCHAIN_VERSION, KinSdkVersion.OLD_KIN_SDK.getVersion());
+//		String version = blockchainSharedPreferences.getString(BLOCKCHAIN_VERSION, "");
 		return KinSdkVersion.get(version);
 	}
 
