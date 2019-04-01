@@ -202,7 +202,6 @@ public class Kin {
 	}
 
 	private static void internalLogin(@NonNull final String jwt, final KinCallback<Void> loginCallback) {
-		MigrationManager migrationManager = createMigrationManager(getKinContext(), "nitz"/*AuthRepository.getInstance().getAppID()*/);
 
 		try {
 			checkInstanceNotNull();
@@ -219,6 +218,7 @@ public class Kin {
 			}
 
 			AuthRepository.getInstance().setJWT(jwt);
+			MigrationManager migrationManager = createMigrationManager(getKinContext(), AuthRepository.getInstance().getAppID());
 			BlockchainSourceImpl.getInstance().setMigrationManager(migrationManager);
 			BlockchainSourceImpl.getInstance().startMigrationProcess(new MigrationProcessListener() {
 				@Override
