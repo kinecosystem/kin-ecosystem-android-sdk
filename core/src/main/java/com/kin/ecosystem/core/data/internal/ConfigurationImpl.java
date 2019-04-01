@@ -1,6 +1,7 @@
 package com.kin.ecosystem.core.data.internal;
 
 import static com.kin.ecosystem.core.network.ApiClient.DELETE;
+import static com.kin.ecosystem.core.network.ApiClient.GET;
 import static com.kin.ecosystem.core.network.ApiClient.POST;
 
 import android.os.Build;
@@ -37,14 +38,16 @@ public class ConfigurationImpl implements Configuration {
 	private static final String AUTHORIZATION = "Authorization";
 
 	static final String API_VERSION = "v2";
-	// static final String BLOCKCHAIN_VERSION = KinSdkVersion.OLD_KIN_SDK.getVersion();
-	static final String BLOCKCHAIN_VERSION = KinSdkVersion.NEW_KIN_SDK.getVersion();
+	static final String BLOCKCHAIN_VERSION = KinSdkVersion.OLD_KIN_SDK.getVersion();
+//	static final String BLOCKCHAIN_VERSION = KinSdkVersion.NEW_KIN_SDK.getVersion();
 
 	private static final int NO_TOKEN_ERROR_CODE = 666;
 	private static final String AUTH_TOKEN_COULD_NOT_BE_GENERATED = "AuthToken could not be generated";
 
 	private static final String USERS_PATH = "/" + API_VERSION + "/users";
 	private static final String LOGOUT_PATH = "/" + API_VERSION + "/users/me/session";
+	private static final String KIN_VERSION_END_PATH = "/blockchain_version";
+	private static final String KIN_MIGRATION_INFO_PATH = "/migration/info";
 	private static final String PREFIX_ANDROID = "android ";
 
 	private static final Object apiClientLock = new Object();
@@ -121,7 +124,8 @@ public class ConfigurationImpl implements Configuration {
 		final String path = originalRequest.url().encodedPath();
 		final String method = originalRequest.method();
 		return path.equals(USERS_PATH) && method.equals(POST) ||
-			path.equals(LOGOUT_PATH) && method.equals(DELETE);
+			path.equals(LOGOUT_PATH) && method.equals(DELETE) ||
+			path.contains(KIN_VERSION_END_PATH) && method.equals(GET);
 	}
 
 	private void addHeaders(ApiClient apiClient) {

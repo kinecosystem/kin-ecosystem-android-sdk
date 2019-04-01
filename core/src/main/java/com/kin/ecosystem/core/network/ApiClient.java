@@ -831,7 +831,12 @@ public class ApiClient {
 		Object body, Map<String, String> headerParams, Map<String, Object> formParams, String[] authNames) throws ApiException {
 		updateParamsForAuth(authNames, queryParams, headerParams);
 
-		final String url = buildUrl(path, queryParams, collectionQueryParams);
+		String url = buildUrl(path, queryParams, collectionQueryParams);
+
+		if (url.contains("migration/info")) {
+			url = url.replace("/v2", ""); // TODO: 31/03/2019 remove after testings and discussion
+		}
+
 		final Request.Builder reqBuilder = new Request.Builder().url(url);
 		processHeaderParams(headerParams, reqBuilder);
 

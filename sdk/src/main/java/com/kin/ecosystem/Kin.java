@@ -121,7 +121,7 @@ public class Kin {
 				.init(AuthLocalData.getInstance(getKinContext()), AuthRemoteData.getInstance(instance.executorsUtil));
 
 			BlockchainSourceImpl.init(eventLogger, BlockchainSourceLocal.getInstance(getKinContext()),
-				AuthRepository.getInstance());
+				BlockchainSourceRemote.getInstance(instance.executorsUtil), AuthRepository.getInstance());
 
 			EventCommonDataUtil.setBaseData(getKinContext());
 
@@ -200,7 +200,7 @@ public class Kin {
 	}
 
 	private static void internalLogin(@NonNull final String jwt, final KinCallback<Void> loginCallback) {
-		MigrationManager migrationManager = createMigrationManager(getKinContext(), AuthRepository.getInstance().getAppID());
+		MigrationManager migrationManager = createMigrationManager(getKinContext(), "nitz"/*AuthRepository.getInstance().getAppID()*/);
 
 		try {
 			checkInstanceNotNull();

@@ -83,7 +83,7 @@ class BlockchainSourceImplTest() : BaseTestClass() {
         val instance = BlockchainSourceImpl::class.java.getDeclaredField("instance")
         instance.isAccessible = true
         instance.set(null, null)
-        BlockchainSourceImpl.init(eventLogger, local, authRepository)
+        BlockchainSourceImpl.init(eventLogger, local, authRepository, BlockchainSourceRemote.getInstance(instance.executorsUtil))
         BlockchainSourceImpl.getInstance().setMigrationManager(migrationManager)
         blockchainSource = BlockchainSourceImpl.getInstance()
     }
