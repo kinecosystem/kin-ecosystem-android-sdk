@@ -25,6 +25,24 @@ public interface BlockchainSource {
 	void setMigrationManager(@NonNull final MigrationManager migrationManager);
 
 	/**
+	 * Starts the migration process using the migration module
+	 */
+	void startMigrationProcess();
+
+	/**
+	 * Starts the migration process using the migration module
+	 * @param listener
+	 */
+	void startMigrationProcess(final MigrationProcessListener listener);
+
+	/**
+	 * Starts the migration process using the migration module for a specific public address
+	 * @param listener
+	 * @param publicAddress
+	 */
+	void startMigrationProcess(final MigrationProcessListener listener, final String publicAddress);
+
+	/**
 	 * Create account if there is no accounts in local
 	 * @param kinUserId the logged in account
 	 * @throws BlockchainException could not load the account, or could not create a new account.

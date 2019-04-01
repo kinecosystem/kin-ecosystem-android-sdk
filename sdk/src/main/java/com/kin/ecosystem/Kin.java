@@ -220,7 +220,7 @@ public class Kin {
 			AuthRepository.getInstance().setJWT(jwt);
 			MigrationManager migrationManager = createMigrationManager(getKinContext(), AuthRepository.getInstance().getAppID());
 			BlockchainSourceImpl.getInstance().setMigrationManager(migrationManager);
-			BlockchainSourceImpl.getInstance().startMigrationProcess(new MigrationProcessListener() {
+			/*BlockchainSourceImpl.getInstance().startMigrationProcess(new MigrationProcessListener() {
 				@Override
 				public void onMigrationStart() {}
 
@@ -233,8 +233,8 @@ public class Kin {
 				public void onMigrationError(BlockchainException error) {
 					sendLoginFailed(error, loginCallback);
 				}
-			});
-			/*AuthRepository.getInstance().getAccountInfo(new KinCallback<AccountInfo>() {
+			});*/
+			AuthRepository.getInstance().getAccountInfo(new KinCallback<AccountInfo>() {
 				@Override
 				public void onResponse(AccountInfo accountInfo) {
 					String publicAddress;
@@ -251,7 +251,7 @@ public class Kin {
 						AuthRepository.getInstance().updateWalletAddress(publicAddress, new KinCallback<Boolean>() {
 							@Override
 							public void onResponse(Boolean response) {
-								onboard(loginCallback, loginState);
+								migrate(loginCallback, loginState);
 							}
 
 							@Override
@@ -260,7 +260,7 @@ public class Kin {
 							}
 						});
 					} else {
-						onboard(loginCallback, loginState);
+						migrate(loginCallback, loginState);
 					}
 				}
 
@@ -268,50 +268,27 @@ public class Kin {
 				public void onFailure(final KinEcosystemException exception) {
 					sendLoginFailed(exception, loginCallback);
 				}
-			});*/
-
+			});
 		} catch (final ClientException exception) {
-			// TODO: handle migration error here
 			sendLoginFailed(exception, loginCallback);
 		}
 	}
 
-	private static void doit(final KinCallback<Void> loginCallback, final int loginState) {
-		AuthRepository.getInstance().getAccountInfo(new KinCallback<AccountInfo>() {
-			@Override
-			public void onResponse(AccountInfo accountInfo) {
-				String publicAddress;
-				try {
-					BlockchainSourceImpl.getInstance().loadAccount(accountInfo.getAuthToken().getEcosystemUserID());
-					publicAddress = BlockchainSourceImpl.getInstance().getPublicAddress();
-				} catch (final BlockchainException exception) {
-					sendLoginFailed(exception, loginCallback);
-					return;
-				}
+	private static void migrate(final KinCallback<Void> loginCallback, final int loginState) {
+		BlockchainSourceImpl.getInstance().startMigrationProcess(new MigrationProcessListener() {
+				@Override
+				public void onMigrationStart() {}
 
-				// check server is synced with client, if synced -> skip updateWalletAddress
-				if (publicAddress != null && !publicAddress.equals(accountInfo.getUser().getCurrentWallet())) {
-					AuthRepository.getInstance().updateWalletAddress(publicAddress, new KinCallback<Boolean>() {
-						@Override
-						public void onResponse(Boolean response) {
-							onboard(loginCallback, loginState);
-						}
-
-						@Override
-						public void onFailure(KinEcosystemException exception) {
-							sendLoginFailed(exception, loginCallback);
-						}
-					});
-				} else {
+				@Override
+				public void onMigrationEnd() {
 					onboard(loginCallback, loginState);
 				}
-			}
 
-			@Override
-			public void onFailure(final KinEcosystemException exception) {
-				sendLoginFailed(exception, loginCallback);
-			}
-		});
+				@Override
+				public void onMigrationError(BlockchainException error) {
+					sendLoginFailed(error, loginCallback);
+				}
+			});
 	}
 
 	private static void onboard(final KinCallback<Void> loginCallback, final int loginState) {

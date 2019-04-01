@@ -117,14 +117,14 @@ public class ConfigurationImpl implements Configuration {
 								final MediaType contentType = body.contentType();
 
 								try {
-									final Object result = defaultApiClient.deserialize(response
+									final Object result = defaultApiClient.handleResponse(response
 										.newBuilder()
 										.body(ResponseBody.create(contentType, bodyString))
 										.build(), Object.class);
 								} catch (ApiException e) {
 									KinEcosystemException serviceException = ErrorUtil.fromApiException(e);
 									if (serviceException.getCode() == ServiceException.BLOCKCHAIN_ENDPOINT_CHANGED) {
-										// TODO: start migration
+										blockchainSource.startMigrationProcess();
 									}
 								}
 

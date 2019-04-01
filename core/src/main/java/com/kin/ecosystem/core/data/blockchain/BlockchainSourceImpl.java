@@ -133,15 +133,27 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		this.kinClient = kinClient;
 	}
 
+	@Override
+	public void startMigrationProcess() {
+		startMigrationProcess(null);
+	}
+
+	@Override
 	public void startMigrationProcess(final MigrationProcessListener listener) {
+		try {
+			startMigrationProcess(listener, getPublicAddress());
+		} catch (BlockchainException e) {
+			// TODO: handle this
+		}
+	}
+
+	@Override
+	public void startMigrationProcess(final MigrationProcessListener listener, final String publicAddress) {
 		// Check if we have an account, if yes then get the migration info and check if this account should migrate.
 		// If the account should migrate then migrate it, if not update the kinClient to run on this version.
 		// If we don't have an account then check the server for the current version and update the kinClient to run on this version.
 		if (kinClient.hasAccount()) {
-//			try {
-//				final String publicAddress = getPublicAddress();
-			// TODO: 01/04/2019 when login will happen before then change it back to be  getPublicAddress().
-				final String publicAddress = kinClient.getAccount(0).getPublicAddress();
+			// final String publicAddress = kinClient.getAccount(0).getPublicAddress();
 			// TODO: 01/04/2019 Maybe we can make it more efficient by adding a call to the local storage to check if the account is already migrated(localy)?
 			remote.getMigrationInfo(publicAddress,
 					new Callback<MigrationInfo, ApiException>() {
@@ -152,22 +164,23 @@ public class BlockchainSourceImpl implements BlockchainSource {
 							if (migrationInfo.shouldMigrate()) {
 								startMigration(publicAddress, listener);
 							} else {
-								updateKinClient(
-									migrationManager.getKinClient(kinSdkVersion));
-								listener.onMigrationEnd();
+								updateKinClient(migrationManager.getKinClient(kinSdkVersion));
+								if (listener != null) {
+									listener.onMigrationEnd();
+								}
 							}
-
 						}
 
 						@Override
 						public void onFailure(ApiException exception) {
 							// TODO: 31/03/2019 handle error like in any other place in the app, find what kind of error...
 							// TODO: 01/04/2019 and if got account not found, which probably means that the account is only created locally then handle it.
+							if (listener != null) {
+								listener.onMigrationError(new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed", exception));
+								listener.onMigrationEnd();
+							}
 						}
 					});
-//			} catch (BlockchainException e) {
-//				// TODO: 31/03/2019 handle error like in any other place in the app in this stage - this can happen if, for example, account is not found or something like that.
-//			}
 		} else {
 			remote.getBlockchainVersion(new Callback<KinSdkVersion, ApiException>() {
 				@Override
@@ -180,6 +193,10 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				@Override
 				public void onFailure(ApiException exception) {
 					// TODO: 31/03/2019 handle error like in any other place in the app, find what kind of error...
+					if (listener != null) {
+						listener.onMigrationError(new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed", exception));
+						listener.onMigrationEnd();
+					}
 				}
 			});
 		}
