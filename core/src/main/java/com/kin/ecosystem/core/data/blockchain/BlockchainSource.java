@@ -162,6 +162,8 @@ public interface BlockchainSource {
 
 	KinSdkVersion getBlockchainVersion();
 
+	void fetchBlockchainVersion(Callback<KinSdkVersion, ApiException> callback);
+
 	interface Local {
 		int getBalance();
 

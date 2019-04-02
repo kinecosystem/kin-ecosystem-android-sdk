@@ -11,6 +11,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.KinEnvironment;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
@@ -53,6 +54,7 @@ import com.kin.ecosystem.core.data.order.OrderRemoteData;
 import com.kin.ecosystem.core.data.order.OrderRepository;
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceImpl;
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceLocal;
+import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.core.util.ErrorUtil;
@@ -65,6 +67,7 @@ import com.kin.ecosystem.splash.view.SplashActivity;
 import java.util.concurrent.atomic.AtomicBoolean;
 import kin.sdk.migration.MigrationManager;
 import kin.sdk.migration.MigrationNetworkInfo;
+import kin.sdk.migration.common.KinSdkVersion;
 
 public class Kin {
 
@@ -198,11 +201,6 @@ public class Kin {
 	 * @param loginCallback a login callback whether login succeed or not.
 	 */
 	public static void login(final @NonNull String jwt, final KinCallback<Void> loginCallback) {
-		internalLogin(jwt, loginCallback);
-	}
-
-	private static void internalLogin(@NonNull final String jwt, final KinCallback<Void> loginCallback) {
-
 		try {
 			checkInstanceNotNull();
 			@UserLoginState final int loginState = AuthRepository.getInstance().getUserLoginState(jwt);
@@ -218,6 +216,40 @@ public class Kin {
 			}
 
 			AuthRepository.getInstance().setJWT(jwt);
+
+			BlockchainSourceImpl.getInstance().fetchBlockchainVersion(new Callback<KinSdkVersion, ApiException>() {
+				@Override
+				public void onResponse(KinSdkVersion response) {
+					internalLogin(loginState, loginCallback);
+				}
+
+				@Override
+				public void onFailure(ApiException exception) {
+					// TODO: handle this
+				}
+			});
+		} catch (final ClientException exception) {
+			sendLoginFailed(exception, loginCallback);
+		}
+	}
+
+	// private static void internalLogin(@NonNull final String jwt, final KinCallback<Void> loginCallback) {
+	private static void internalLogin(@NonNull final int loginState, final KinCallback<Void> loginCallback) {
+		// try {
+			/*checkInstanceNotNull();
+			@UserLoginState final int loginState = AuthRepository.getInstance().getUserLoginState(jwt);
+			switch (loginState) {
+				case UserLoginState.DIFFERENT_USER:
+					logout();
+				case UserLoginState.FIRST:
+					isAccountLoggedIn.getAndSet(false);
+					eventLogger.send(UserLoginRequested.create());
+					break;
+				case UserLoginState.SAME_USER:
+					break;
+			}
+
+			AuthRepository.getInstance().setJWT(jwt);*/
 			MigrationManager migrationManager = createMigrationManager(getKinContext(), AuthRepository.getInstance().getAppID());
 			BlockchainSourceImpl.getInstance().setMigrationManager(migrationManager);
 			/*BlockchainSourceImpl.getInstance().startMigrationProcess(new MigrationProcessListener() {
@@ -269,9 +301,9 @@ public class Kin {
 					sendLoginFailed(exception, loginCallback);
 				}
 			});
-		} catch (final ClientException exception) {
+		/*} catch (final ClientException exception) {
 			sendLoginFailed(exception, loginCallback);
-		}
+		}*/
 	}
 
 	private static void migrate(final KinCallback<Void> loginCallback, final int loginState) {

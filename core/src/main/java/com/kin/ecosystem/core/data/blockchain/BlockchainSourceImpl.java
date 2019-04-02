@@ -122,10 +122,11 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		this.migrationManager = migrationManager;
 		// If no account has been found then  it doesn't really matter which version because we only need it to check
 		// if there are any accounts. Later on it will be updated according to the version that we got from the server.
-		KinSdkVersion sdkVersion = KinSdkVersion.OLD_KIN_SDK;
+		KinSdkVersion sdkVersion = getBlockchainVersion();
 		if (kinClient != null && kinClient.hasAccount() && account != null) {
 			sdkVersion = account.getKinSdkVersion();
 		}
+		Logger.log(new Log().withTag("MOOO").text("setMigrationManager with version " + sdkVersion.getVersion()));
 		updateKinClient(migrationManager.getKinClient(sdkVersion));
 	}
 
@@ -177,7 +178,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 							// TODO: 01/04/2019 and if got account not found, which probably means that the account is only created locally then handle it.
 							if (listener != null) {
 								listener.onMigrationError(new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed", exception));
-								listener.onMigrationEnd();
 							}
 						}
 					});
@@ -195,7 +195,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 					// TODO: 31/03/2019 handle error like in any other place in the app, find what kind of error...
 					if (listener != null) {
 						listener.onMigrationError(new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed", exception));
-						listener.onMigrationEnd();
 					}
 				}
 			});
@@ -375,6 +374,26 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	public KinSdkVersion getBlockchainVersion() {
 		return local.getBlockchainVersion();
+	}
+
+	@Override
+	public void fetchBlockchainVersion(final Callback<KinSdkVersion, ApiException> callback) {
+		if (getBlockchainVersion() == KinSdkVersion.NEW_KIN_SDK) {
+			callback.onResponse(KinSdkVersion.NEW_KIN_SDK);
+		} else {
+			remote.getBlockchainVersion(new Callback<KinSdkVersion, ApiException>() {
+				@Override
+				public void onResponse(KinSdkVersion version) {
+					local.setBlockchainVersion(version);
+					callback.onResponse(version);
+				}
+
+				@Override
+				public void onFailure(ApiException exception) {
+					callback.onFailure(exception);
+				}
+			});
+		}
 	}
 
 	private void initBalance() {
