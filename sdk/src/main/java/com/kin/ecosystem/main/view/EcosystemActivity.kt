@@ -14,6 +14,7 @@ import com.kin.ecosystem.base.AnimConsts
 import com.kin.ecosystem.base.CustomAnimation
 import com.kin.ecosystem.base.KinEcosystemBaseActivity
 import com.kin.ecosystem.base.customAnimation
+import com.kin.ecosystem.common.KinTheme
 import com.kin.ecosystem.common.KinTheme.DARK
 import com.kin.ecosystem.common.KinTheme.LIGHT
 import com.kin.ecosystem.core.data.auth.AuthRepository
@@ -65,10 +66,12 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
 
     @StyleRes
     private fun getKinTheme(): Int {
-        return when (ConfigurationImpl.getInstance().kinTheme!!) {
-            LIGHT -> R.style.KinecosysNoActionBar_Light
-            DARK -> R.style.KinecosysNoActionBar_Dark
-        }
+        return ConfigurationImpl.getInstance().kinTheme?.let {
+            when (it) {
+                LIGHT -> R.style.KinecosysNoActionBar_Light
+                DARK -> R.style.KinecosysNoActionBar_Dark
+            }
+        } ?: R.style.KinecosysNoActionBar_Light
     }
 
     override fun initViews() {
