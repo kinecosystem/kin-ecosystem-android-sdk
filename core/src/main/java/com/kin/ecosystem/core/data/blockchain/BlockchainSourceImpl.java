@@ -162,7 +162,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		// If the account should migrate then migrate it, if not update the kinClient to run on this version.
 		// If we don't have an account then check the server for the current version and update the kinClient to run on this version.
 		if (kinClient.hasAccount()) {
-			// final String publicAddress = kinClient.getAccount(0).getPublicAddress(); todo remove comment when finish with testings
 			// TODO: 01/04/2019 Maybe we can make it more efficient by adding a call to the local storage to check if the account is already migrated(locally)?
 			if (migrationInfo != null) {
 				startMigrationIfNeeded(migrationInfo, publicAddress, listener);
