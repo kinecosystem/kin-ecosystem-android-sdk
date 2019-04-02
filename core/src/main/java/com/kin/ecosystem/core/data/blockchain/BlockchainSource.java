@@ -179,6 +179,8 @@ public interface BlockchainSource {
 
 	KinSdkVersion getBlockchainVersion();
 
+	void fetchBlockchainVersion(Callback<KinSdkVersion, ApiException> callback);
+
 	void deleteAccount(int accountIndex) throws DeleteAccountException;
 
 	interface Local {
