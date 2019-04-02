@@ -52,6 +52,7 @@ import kin.sdk.migration.common.interfaces.IWhitelistableTransaction;
 import kin.utils.ResultCallback;
 
 public class BlockchainSourceImpl implements BlockchainSource {
+
 	private static final String TAG = BlockchainSourceImpl.class.getSimpleName();
 
 	private static volatile BlockchainSourceImpl instance;
@@ -155,7 +156,8 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
-	public void startMigrationProcess(MigrationInfo migrationInfo, final String publicAddress, final MigrationProcessListener listener) {
+	public void startMigrationProcess(MigrationInfo migrationInfo, final String publicAddress,
+		final MigrationProcessListener listener) {
 		// Check if we have an account, if yes then get the migration info and check if this account should migrate.
 		// If the account should migrate then migrate it, if not update the kinClient to run on this version.
 		// If we don't have an account then check the server for the current version and update the kinClient to run on this version.
@@ -179,7 +181,9 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				@Override
 				public void onFailure(ApiException exception) {
 					if (listener != null) {
-						listener.onMigrationError(new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed", exception));
+						listener.onMigrationError(
+							new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed",
+								exception));
 					}
 				}
 			});
@@ -196,12 +200,11 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 				@Override
 				public void onFailure(ApiException exception) {
-					// TODO: 01/04/2019 if got account not found exception, which probably means that the account is only created locally then maybe handle it somehow.
+					// TODO: 01/04/2019 if got account not found exception, which probably means that the account is only created locally then maybe handle it somehow. - talk with Doody or Lior
 
 					if (listener != null) {
-						listener.onMigrationError(
-							new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed",
-								exception));
+						listener.onMigrationError(new BlockchainException(BlockchainException.MIGRATION_FAILED,
+							"Migration Failed", exception));
 					}
 				}
 			});
@@ -219,7 +222,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		setBlockchainVersion(sdkVersion);
 		if (migrationInfo.shouldMigrate()) {
 			startMigration(publicAddress, listener);
-		} else  {
+		} else {
 			updateKinClient(migrationManager.getKinClient(KinSdkVersion.get(migrationInfo.getBlockchainVersion())));
 			if (listener != null) {
 				listener.onMigrationEnd();
@@ -248,7 +251,8 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				@Override
 				public void onError(Exception e) {
 					if (listener != null) {
-						listener.onMigrationError(new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed", e));
+						listener.onMigrationError(
+							new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed", e));
 					}
 				}
 			});
@@ -269,8 +273,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	/**
-	 * Support backward compatibility,
-	 * load the old account and migrate to current multiple users implementation.
+	 * Support backward compatibility, load the old account and migrate to current multiple users implementation.
 	 */
 	private void migrateToMultipleUsers(String kinUserId) {
 		if (!local.getIsMigrated()) {
@@ -352,7 +355,8 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	@Override
 	public void signTransaction(@NonNull final String publicAddress, @NonNull final BigDecimal amount,
-		@NonNull final String orderID, @NonNull final String offerID, @NonNull final SignTransactionListener listener) throws OperationFailedException {
+		@NonNull final String orderID, @NonNull final String offerID, @NonNull final SignTransactionListener listener)
+		throws OperationFailedException {
 		if (account != null) {
 			eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offerID, orderID));
 			account.sendTransactionSync(publicAddress, amount, new IWhitelistService() {
@@ -372,25 +376,26 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offerID, orderID));
 			account.sendTransaction(publicAddress, amount, new IWhitelistService() {
 				@Override
-				public WhitelistResult onWhitelistableTransactionReady(IWhitelistableTransaction transaction) throws WhitelistTransactionFailedException {
+				public WhitelistResult onWhitelistableTransactionReady(IWhitelistableTransaction transaction)
+					throws WhitelistTransactionFailedException {
 					return new WhitelistResult(transaction.getTransactionPayload(), true);
 				}
 			}, orderID).run(new ResultCallback<ITransactionId>() {
-					@Override
-					public void onResult(ITransactionId result) {
-						eventLogger
-							.send(SpendTransactionBroadcastToBlockchainSucceeded.create(result.id(), offerID, orderID));
-						Logger.log(new Log().withTag(TAG).put("sendTransaction onResult", result.id()));
-					}
+				@Override
+				public void onResult(ITransactionId result) {
+					eventLogger
+						.send(SpendTransactionBroadcastToBlockchainSucceeded.create(result.id(), offerID, orderID));
+					Logger.log(new Log().withTag(TAG).put("sendTransaction onResult", result.id()));
+				}
 
-					@Override
-					public void onError(Exception e) {
-						eventLogger
-							.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
-						completedPayment.postValue(new Payment(orderID, false, e));
-						Logger.log(new Log().withTag(TAG).put("sendTransaction onError", e.getMessage()));
-					}
-				});
+				@Override
+				public void onError(Exception e) {
+					eventLogger
+						.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
+					completedPayment.postValue(new Payment(orderID, false, e));
+					Logger.log(new Log().withTag(TAG).put("sendTransaction onError", e.getMessage()));
+				}
+			});
 		}
 	}
 
