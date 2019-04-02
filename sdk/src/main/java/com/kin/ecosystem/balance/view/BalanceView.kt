@@ -3,10 +3,10 @@ package com.kin.ecosystem.balance.view
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Animatable
-import android.support.v4.content.ContextCompat
+
 import android.support.v7.app.AppCompatDelegate
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextSwitcher
@@ -17,6 +17,7 @@ import com.kin.ecosystem.balance.presenter.IBalancePresenter
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl
 import com.kin.ecosystem.core.data.order.OrderRepository
 import com.kin.ecosystem.core.util.StringUtil.getAmountFormatted
+import com.kin.ecosystem.obtainAttrs
 import com.kin.ecosystem.widget.util.FontUtil
 
 
@@ -30,16 +31,23 @@ class BalanceView @JvmOverloads constructor(context: Context,
 
 
     init {
-        View.inflate(context, R.layout.kinecosystem_balance_view, this)
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+        LayoutInflater.from(context).inflate(R.layout.kinecosystem_balance_view, this, true)
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+        val attributes = obtainAttrs(attrs, R.styleable.KinEcosystemBalanceView)
+        var textStyle = R.style.KinecosysBalanceTextSmall
+        try {
+            attributes?.let {
+                 textStyle = it.getResourceId(R.styleable.KinEcosystemBalanceView_textStyle, R.style.KinecosysBalanceTextSmall)
+            }
+        } finally {
+            attributes?.recycle()
+        }
         kinAVD = getKinLogoAVD()
         balanceText = findViewById<TextSwitcher>(R.id.balance_text).apply {
             setFactory {
                 val balanceText = TextView(context)
-                balanceText.setTextAppearance(context, R.style.KinecosysTitle)
+                balanceText.setTextAppearance(context, textStyle)
                 balanceText.typeface = FontUtil.SAILEC_MEDIUM
-                balanceText.maxLines = 1
-                balanceText.setTextColor(ContextCompat.getColor(context, R.color.kinecosystem_primary))
                 balanceText
             }
         }

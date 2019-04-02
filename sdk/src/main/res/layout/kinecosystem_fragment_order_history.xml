@@ -73,6 +73,7 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="@dimen/kinrecovery_margin_main"
         android:gravity="center"
+        app:textStyle="@style/KinecosysBalanceTextLarge"
         app:layout_constraintBottom_toBottomOf="@id/balance_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/balance_title"

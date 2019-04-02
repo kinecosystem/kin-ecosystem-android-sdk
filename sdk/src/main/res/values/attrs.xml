@@ -24,7 +24,7 @@
     </declare-styleable>
 
     <declare-styleable name="KinEcosystemBalanceView">
-        <attr format="string" name="subTitle"/>
+        <attr format="integer" name="textStyle"/>
     </declare-styleable>
 
     <declare-styleable name="KinEcosystemTouchIndicatorIcon">
