@@ -14,7 +14,6 @@ import com.kin.ecosystem.base.AnimConsts
 import com.kin.ecosystem.base.CustomAnimation
 import com.kin.ecosystem.base.KinEcosystemBaseActivity
 import com.kin.ecosystem.base.customAnimation
-import com.kin.ecosystem.common.KinTheme
 import com.kin.ecosystem.common.KinTheme.DARK
 import com.kin.ecosystem.common.KinTheme.LIGHT
 import com.kin.ecosystem.core.data.auth.AuthRepository
