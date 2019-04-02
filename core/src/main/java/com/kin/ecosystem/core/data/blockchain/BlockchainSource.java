@@ -14,10 +14,18 @@ import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
 import kin.sdk.migration.MigrationManager;
 import kin.sdk.migration.common.KinSdkVersion;
+import kin.sdk.migration.common.exception.DeleteAccountException;
 import kin.sdk.migration.common.exception.OperationFailedException;
 import kin.sdk.migration.common.interfaces.IKinAccount;
 
 public interface BlockchainSource {
+
+	/**
+	 * Get the migration info from the server.
+	 * @param publicAddress the address associated with the migration information.
+	 * @param callback a callback for this method call.
+	 */
+	void getMigrationInfo(String publicAddress, Callback<MigrationInfo, ApiException> callback);
 
 	/**
 	 * Set the migration manager
@@ -37,10 +45,19 @@ public interface BlockchainSource {
 
 	/**
 	 * Starts the migration process using the migration module for a specific public address
-	 * @param listener
 	 * @param publicAddress
+	 * @param listener
 	 */
-	void startMigrationProcess(final MigrationProcessListener listener, final String publicAddress);
+	void startMigrationProcess(final String publicAddress, final MigrationProcessListener listener);
+
+	/**
+	 * Starts the migration process using the migration module for a specific public address and with a migration info object.
+	 * @param migrationInfo is the migration information needed to continue with the migration process, if null
+	 * then this method will get if from the server.
+	 * @param publicAddress is the address of the account to migrate.
+	 * @param listener is the migration process listener needed in order to get callbacks regarding the migration process
+	 */
+	void startMigrationProcess(MigrationInfo migrationInfo, final String publicAddress, final MigrationProcessListener listener);
 
 	/**
 	 * Create account if there is no accounts in local
@@ -161,6 +178,8 @@ public interface BlockchainSource {
 	void logout();
 
 	KinSdkVersion getBlockchainVersion();
+
+	void deleteAccount(int accountIndex) throws DeleteAccountException;
 
 	interface Local {
 		int getBalance();

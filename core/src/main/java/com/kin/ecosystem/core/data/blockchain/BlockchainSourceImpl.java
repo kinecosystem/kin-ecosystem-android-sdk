@@ -35,6 +35,7 @@ import kin.sdk.migration.MigrationManager;
 import kin.sdk.migration.common.KinSdkVersion;
 import kin.sdk.migration.common.WhitelistResult;
 import kin.sdk.migration.common.exception.CreateAccountException;
+import kin.sdk.migration.common.exception.DeleteAccountException;
 import kin.sdk.migration.common.exception.MigrationInProcessException;
 import kin.sdk.migration.common.exception.OperationFailedException;
 import kin.sdk.migration.common.exception.WhitelistTransactionFailedException;
@@ -139,66 +140,94 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
-	public void startMigrationProcess(final MigrationProcessListener listener) {
+	public void startMigrationProcess(MigrationProcessListener listener) {
 		try {
-			startMigrationProcess(listener, getPublicAddress());
+			startMigrationProcess(null, getPublicAddress(), listener);
 		} catch (BlockchainException e) {
-			// TODO: handle this
+			// TODO: handle this, maybe just do listener.onMigrationError(e); or do something else because of that exception
 		}
 	}
 
 	@Override
-	public void startMigrationProcess(final MigrationProcessListener listener, final String publicAddress) {
+	public void startMigrationProcess(String publicAddress, MigrationProcessListener listener) {
+		startMigrationProcess(null, publicAddress, listener);
+	}
+
+	@Override
+	public void startMigrationProcess(MigrationInfo migrationInfo, final String publicAddress, final MigrationProcessListener listener) {
 		// Check if we have an account, if yes then get the migration info and check if this account should migrate.
 		// If the account should migrate then migrate it, if not update the kinClient to run on this version.
 		// If we don't have an account then check the server for the current version and update the kinClient to run on this version.
 		if (kinClient.hasAccount()) {
-			// final String publicAddress = kinClient.getAccount(0).getPublicAddress();
-			// TODO: 01/04/2019 Maybe we can make it more efficient by adding a call to the local storage to check if the account is already migrated(localy)?
-			remote.getMigrationInfo(publicAddress,
-					new Callback<MigrationInfo, ApiException>() {
-						@Override
-						public void onResponse(MigrationInfo migrationInfo) {
-							KinSdkVersion kinSdkVersion = KinSdkVersion.get(migrationInfo.getBlockchainVersion());
-							local.setBlockchainVersion(kinSdkVersion); // In any case update the version locally.
-							if (migrationInfo.shouldMigrate()) {
-								startMigration(publicAddress, listener);
-							} else {
-								updateKinClient(migrationManager.getKinClient(kinSdkVersion));
-								if (listener != null) {
-									listener.onMigrationEnd();
-								}
-							}
-						}
-
-						@Override
-						public void onFailure(ApiException exception) {
-							// TODO: 31/03/2019 handle error like in any other place in the app, find what kind of error...
-							// TODO: 01/04/2019 and if got account not found, which probably means that the account is only created locally then handle it.
-							if (listener != null) {
-								listener.onMigrationError(new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed", exception));
-								listener.onMigrationEnd();
-							}
-						}
-					});
+			// final String publicAddress = kinClient.getAccount(0).getPublicAddress(); todo remove comment when finish with testings
+			// TODO: 01/04/2019 Maybe we can make it more efficient by adding a call to the local storage to check if the account is already migrated(locally)?
+			if (migrationInfo != null) {
+				startMigrationIfNeeded(migrationInfo, publicAddress, listener);
+			} else {
+				handleMigrationInfo(publicAddress, listener);
+			}
 		} else {
 			remote.getBlockchainVersion(new Callback<KinSdkVersion, ApiException>() {
 				@Override
 				public void onResponse(KinSdkVersion sdkVersion) {
-					local.setBlockchainVersion(sdkVersion);
+					setBlockchainVersion(sdkVersion);
 					updateKinClient(migrationManager.getKinClient(sdkVersion));
 					listener.onMigrationEnd();
 				}
 
 				@Override
 				public void onFailure(ApiException exception) {
-					// TODO: 31/03/2019 handle error like in any other place in the app, find what kind of error...
 					if (listener != null) {
 						listener.onMigrationError(new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed", exception));
+
+						// TODO: 02/04/2019 not sure that it is ok for you to call onError and then onEnd which means success, it should only be one of them
 						listener.onMigrationEnd();
 					}
 				}
 			});
+		}
+	}
+
+	private void handleMigrationInfo(final String publicAddress, final MigrationProcessListener listener) {
+		getMigrationInfo(publicAddress,
+			new Callback<MigrationInfo, ApiException>() {
+				@Override
+				public void onResponse(MigrationInfo migrationInfo) {
+					startMigrationIfNeeded(migrationInfo, publicAddress, listener);
+				}
+
+				@Override
+				public void onFailure(ApiException exception) {
+					// TODO: 01/04/2019 if got account not found exception, which probably means that the account is only created locally then maybe handle it somehow.
+
+					if (listener != null) {
+						listener.onMigrationError(
+							new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed",
+								exception));
+						// TODO: 02/04/2019 not sure that it is ok for you to call onError and then onEnd which means success, it should only be one of them
+						listener.onMigrationEnd();
+					}
+				}
+			});
+	}
+
+	@Override
+	public void getMigrationInfo(String publicAddress, Callback<MigrationInfo, ApiException> callback) {
+		remote.getMigrationInfo(publicAddress, callback);
+	}
+
+	private void startMigrationIfNeeded(MigrationInfo migrationInfo, String publicAddress,
+		MigrationProcessListener listener) {
+		// In any case update the version locally.
+		KinSdkVersion sdkVersion = KinSdkVersion.get(migrationInfo.getBlockchainVersion());
+		setBlockchainVersion(sdkVersion);
+		if (migrationInfo.shouldMigrate()) {
+			startMigration(publicAddress, listener);
+		} else  {
+			updateKinClient(migrationManager.getKinClient(KinSdkVersion.get(migrationInfo.getBlockchainVersion())));
+			if (listener != null) {
+				listener.onMigrationEnd();
+			}
 		}
 	}
 
@@ -230,6 +259,10 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		} catch (MigrationInProcessException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void setBlockchainVersion(KinSdkVersion sdkVersion) {
+		local.setBlockchainVersion(sdkVersion);
 	}
 
 	@Override
@@ -375,6 +408,13 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	public KinSdkVersion getBlockchainVersion() {
 		return local.getBlockchainVersion();
+	}
+
+	@Override
+	public void deleteAccount(int accountIndex) throws DeleteAccountException {
+		if (local.getAccountIndex() < accountIndex) {
+			kinClient.deleteAccount(accountIndex);
+		}
 	}
 
 	private void initBalance() {

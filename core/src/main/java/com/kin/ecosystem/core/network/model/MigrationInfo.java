@@ -10,11 +10,18 @@ public class MigrationInfo {
 	@SerializedName("should_migrate")
 	private boolean shouldMigrate;
 
+	@SerializedName("restore_allowed")
+	private boolean isRestorable;
+
 	public String getBlockchainVersion() {
 		return blockchainVersion;
 	}
 
 	public boolean shouldMigrate() {
 		return shouldMigrate;
+	}
+
+	public boolean isRestorable() {
+		return isRestorable;
 	}
 }

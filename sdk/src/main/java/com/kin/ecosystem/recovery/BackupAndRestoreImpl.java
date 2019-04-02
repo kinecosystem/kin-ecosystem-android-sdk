@@ -23,7 +23,8 @@ import com.kin.ecosystem.recovery.exception.BackupRestoreErrorUtil;
 
 public class BackupAndRestoreImpl implements BackupAndRestore {
 
-	protected final BackupManager backupManager;
+	private final Activity activity;
+	protected BackupManager backupManager;
 	private final AccountManager accountManager;
 	private final EventLogger eventLogger;
 	private final SettingsDataSource settingsDataSource;
@@ -32,8 +33,9 @@ public class BackupAndRestoreImpl implements BackupAndRestore {
 	public BackupAndRestoreImpl(@NonNull final Activity activity, @NonNull AccountManager accountManager,
 		@NonNull EventLogger eventLogger, @NonNull BlockchainSource blockchainSource,
 		SettingsDataSource settingsDataSource) {
+		this.activity = activity;
 		this.blockchainSource = blockchainSource;
-		this.backupManager = new BackupManager(activity, blockchainSource.getKeyStoreProvider());
+		this.backupManager = getNewBackupManager();
 		this.accountManager = accountManager;
 		this.eventLogger = eventLogger;
 		this.settingsDataSource = settingsDataSource;
@@ -90,21 +92,6 @@ public class BackupAndRestoreImpl implements BackupAndRestore {
 		});
 	}
 
-	private void switchAccount(int accountIndex, @NonNull final BackupAndRestoreCallback backupCallback) {
-		accountManager.switchAccount(accountIndex, new KinCallback<Boolean>() {
-			@Override
-			public void onResponse(Boolean response) {
-				eventLogger.send(RestoreWalletCompleted.create());
-				backupCallback.onSuccess();
-			}
-
-			@Override
-			public void onFailure(KinEcosystemException exception) {
-				backupCallback.onFailure(new BackupAndRestoreException(RESTORE_SWITCH_ACCOUNT_FAILED,
-					exception != null ? exception.getMessage() : "Switch account failed", exception));
-			}
-		});
-	}
 
 	@Override
 	public void registerRestoreCallback(@NonNull final BackupAndRestoreCallback restoreCallback) {
@@ -123,6 +110,28 @@ public class BackupAndRestoreImpl implements BackupAndRestore {
 			@Override
 			public void onFailure(BackupException exception) {
 				restoreCallback.onFailure(BackupRestoreErrorUtil.get(exception));
+			}
+		});
+	}
+
+	private BackupManager getNewBackupManager() {
+		return new BackupManager(activity, blockchainSource.getKeyStoreProvider());
+	}
+
+	private void switchAccount(int accountIndex, @NonNull final BackupAndRestoreCallback backupCallback) {
+		accountManager.switchAccount(accountIndex, new KinCallback<Boolean>() {
+			@Override
+			public void onResponse(Boolean response) {
+				release();
+				backupManager = getNewBackupManager(); //update the backupManager
+				eventLogger.send(RestoreWalletCompleted.create());
+				backupCallback.onSuccess();
+			}
+
+			@Override
+			public void onFailure(KinEcosystemException exception) {
+				backupCallback.onFailure(new BackupAndRestoreException(RESTORE_SWITCH_ACCOUNT_FAILED,
+					exception != null ? exception.getMessage() : "Switch account failed", exception));
 			}
 		});
 	}
