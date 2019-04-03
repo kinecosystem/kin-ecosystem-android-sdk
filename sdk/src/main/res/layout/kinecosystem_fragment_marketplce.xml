@@ -37,16 +37,18 @@
         />
 
     <com.kin.ecosystem.widget.KinEcosystemTextView
-        android:id="@+id/description"
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/kinecosystem_main__medium_margin"
+        android:gravity="center"
         app:layout_constraintTop_toBottomOf="@+id/close_btn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:lineSpacingMultiplier="1.5"
+        android:maxLines="2"
         style="@style/KinecosysTitleMedium"
-        app:fontExtra="medium"
-        android:text="@string/kinecosystem_what_are_you_in_the_mood_for"/>
+        app:fontExtra="medium"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/offers_recycler"
@@ -55,7 +57,7 @@
         android:orientation="vertical"
         android:layoutAnimation="@anim/kinecosystem_recycler_layout_animation_slide_from_bottom"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@+id/description"
+        app:layout_constraintTop_toBottomOf="@+id/title"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginTop="@dimen/kinecosystem_main__medium_margin"/>
 

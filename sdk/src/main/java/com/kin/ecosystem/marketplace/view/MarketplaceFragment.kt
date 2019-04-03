@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import com.kin.ecosystem.R
 import com.kin.ecosystem.common.exception.ClientException
@@ -34,6 +35,7 @@ class MarketplaceFragment : Fragment(), IMarketplaceView {
     private lateinit var offersRecyclerAdapter: OfferRecyclerAdapter
     private lateinit var offersRecycler: RecyclerView
     private lateinit var myKinButton: TouchIndicatorIcon
+    private lateinit var screenTitle: TextView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.kinecosystem_fragment_marketplce, container, false)
@@ -48,14 +50,14 @@ class MarketplaceFragment : Fragment(), IMarketplaceView {
         return root
     }
 
-    override fun onStart() {
-        super.onStart()
-        marketplacePresenter?.onStart()
+    override fun onResume() {
+        super.onResume()
+        marketplacePresenter?.onResume()
     }
 
-    override fun onStop() {
-        super.onStop()
-        marketplacePresenter?.onStop()
+    override fun onPause() {
+        super.onPause()
+        marketplacePresenter?.onPause()
     }
 
     override fun onDestroyView() {
@@ -66,6 +68,7 @@ class MarketplaceFragment : Fragment(), IMarketplaceView {
     }
 
     private fun initViews(root: View) {
+        screenTitle = root.findViewById(R.id.title)
         root.findViewById<ImageView>(R.id.close_btn).apply {
             setOnClickListener { marketplacePresenter?.closeClicked() }
         }
@@ -96,16 +99,27 @@ class MarketplaceFragment : Fragment(), IMarketplaceView {
         }
     }
 
-    override fun showToast(@IMarketplaceView.Message msg: Int) {
+    override fun updateTitle(title: IMarketplaceView.Title) {
+        screenTitle.setText(getTitleResId(title))
+    }
+
+    override fun showToast(msg: IMarketplaceView.Message) {
         Toast.makeText(context, getMessageResId(msg), Toast.LENGTH_SHORT).show()
     }
 
     @StringRes
-    private fun getMessageResId(@IMarketplaceView.Message msg: Int): Int {
+    private fun getMessageResId(msg: IMarketplaceView.Message): Int {
         return when (msg) {
-            IMarketplaceView.NOT_ENOUGH_KIN -> R.string.kinecosystem_you_dont_have_enough_kin
-            IMarketplaceView.SOMETHING_WENT_WRONG -> R.string.kinecosystem_something_went_wrong
-            else -> R.string.kinecosystem_something_went_wrong
+            IMarketplaceView.Message.NOT_ENOUGH_KIN -> R.string.kinecosystem_you_dont_have_enough_kin
+            IMarketplaceView.Message.SOMETHING_WENT_WRONG -> R.string.kinecosystem_something_went_wrong
+        }
+    }
+
+    @StringRes
+    private fun getTitleResId(title: IMarketplaceView.Title): Int {
+        return when (title) {
+            IMarketplaceView.Title.DEFAULT -> R.string.kinecosystem_what_are_you_in_the_mood_for
+            IMarketplaceView.Title.EMPTY_STATE -> R.string.kinecosystem_well_done_check_back_soon
         }
     }
 

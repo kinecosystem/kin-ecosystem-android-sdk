@@ -7,10 +7,8 @@ import static com.kin.ecosystem.core.util.StringUtil.getAmountFormatted;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import android.util.TypedValue;
 import android.view.View;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
@@ -174,9 +172,10 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
 			final int itemIndex = getLayoutPosition();
 			final int lastIndex = getDataCount() - 1;
             if(itemIndex == 0) {
-            	setVectorDrawable(R.id.kin_logo, isSpendOffer(item) ? R.drawable.ic_kinecosystem_kin_spend_icon_active_small : R.drawable.ic_kinecosystem_kin_earn_icon_active_small);
+            	setVectorDrawable(R.id.kin_logo, isSpendOffer(item) ? R.drawable.kinecosystem_kin_spend_icon_active_small
+                    : R.drawable.kinecosystem_kin_earn_icon_active_small);
 			} else {
-				setVectorDrawable(R.id.kin_logo, R.drawable.ic_kinecosystem_kin_icon_inactive_small);
+				setVectorDrawable(R.id.kin_logo, R.drawable.kinecosystem_kin_icon_inactive_small);
 			}
 
 

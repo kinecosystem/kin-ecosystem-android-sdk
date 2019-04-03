@@ -26,7 +26,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@drawable/ic_kinecosystem_kin_earn_icon_active_small"/>
+        tools:srcCompat="@drawable/kinecosystem_kin_earn_icon_active_small"/>
 
 
     <com.kin.ecosystem.widget.KinEcosystemTextView
