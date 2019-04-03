@@ -68,7 +68,7 @@ class BlockchainSourceImplTest() : BaseTestClass() {
     }
 
     private val migrationManager: MigrationManager = mock {
-        on { getKinClient(KinSdkVersion.NEW_KIN_SDK) } doAnswer { kinClient }
+        on { getKinClient( anyOrNull()) } doAnswer { kinClient }
     }
 
     private val balanceObj: IBalance = mock()

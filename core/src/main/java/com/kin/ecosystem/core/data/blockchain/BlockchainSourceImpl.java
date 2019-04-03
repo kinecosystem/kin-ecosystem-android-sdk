@@ -128,7 +128,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		if (kinClient != null && kinClient.hasAccount() && account != null) {
 			sdkVersion = account.getKinSdkVersion();
 		}
-		Logger.log(new Log().withTag("MOOO").text("setMigrationManager with version " + sdkVersion.getVersion()));
 		updateKinClient(migrationManager.getKinClient(sdkVersion));
 	}
 
