@@ -142,7 +142,7 @@ class OnboardingPresenterImpl(private val accountManager: AccountManager,
                         enter = R.anim.kinecosystem_fade_in
                         exit = R.anim.kinecosystem_fade_out
                     })
-                    EcosystemExperience.ORDER_HISTORY -> navigator.navigateToOrderHistory(isFirstSpendOrder = false, addToBackStack = false)
+                    EcosystemExperience.ORDER_HISTORY -> navigator.navigateToOrderHistory(addToBackStack = false)
                 }
             }
         }

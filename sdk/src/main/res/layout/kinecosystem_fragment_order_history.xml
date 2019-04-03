@@ -1,6 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/order_history_recycler"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    android:layout_height="match_parent">
+
+
+    <ImageView
+        android:id="@+id/back_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinecosystem_main__medium_margin"
+        android:layout_marginLeft="@dimen/kinrecovery_margin_main"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/kinecosystem_ic_back"
+        />
+
+    <com.kin.ecosystem.widget.KinEcosystemTextView
+        android:id="@+id/title"
+        style="@style/KinecosysTitleMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/kinecosystem_my_kin"
+        app:fontExtra="medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/back_btn"/>
+
+
+    <com.kin.ecosystem.widget.TouchIndicatorIcon
+        android:id="@+id/settings_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/kinrecovery_margin_main"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/back_btn"
+        app:src="?attr/menuSettingsIcon"
+        />
+
+    <com.kin.ecosystem.widget.KinEcosystemTextView
+        android:id="@+id/balance_title"
+        style="@style/KinecosysTitleMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinrecovery_margin_main"
+        android:gravity="center"
+        android:text="@string/kinecosystem_balance"
+        app:fontExtra="medium"
+        app:layout_constraintStart_toStartOf="@id/back_btn"
+        app:layout_constraintTop_toBottomOf="@id/back_btn"/>
+
+    <TextSwitcher
+        android:id="@+id/order_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inAnimation="@anim/kinecosystem_slide_fade_from_top"
+        android:outAnimation="@anim/kinecosystem_slide_fade_to_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/balance_title"
+        app:layout_constraintTop_toBottomOf="@id/balance_title"
+        app:layout_constraintHorizontal_bias="0"
+        android:layout_marginRight="@dimen/kinecosystem_main_margin"
+        tools:text="High five ! You jus got some kin."/>
+
+
+    <com.kin.ecosystem.balance.view.BalanceView
+        android:id="@+id/balance_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/kinrecovery_margin_main"
+        android:gravity="center"
+        app:textStyle="@style/KinecosysBalanceTextLarge"
+        app:layout_constraintBottom_toBottomOf="@id/balance_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/balance_title"
+        />
+
+
+    <com.kin.ecosystem.widget.KinEcosystemTabs
+        android:id="@+id/order_history_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginLeft="@dimen/kinecosystem_main_margin"
+        android:layout_marginRight="@dimen/kinecosystem_main_margin"
+        android:layout_marginTop="@dimen/kinecosystem_main_margin"
+        android:layout_marginBottom="@dimen/kinecosystem_block_margin"
+        app:leftTabText="@string/kinecosystem_earned"
+        app:rightTabText="@string/kinecosystem_used"
+        app:layout_constraintTop_toBottomOf="@+id/order_description"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/earn_order_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintTop_toBottomOf="@id/order_history_tabs"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/spend_order_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintTop_toBottomOf="@id/order_history_tabs"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</android.support.constraint.ConstraintLayout>
+

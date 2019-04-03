@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="KinEcosystemTheme">
-        <attr name="primaryTextColor" format="color"/>
-        <attr name="kinBackgroundColor" format="color"/>
-        <attr name="backgroundCardImage" format="integer"/>
-        <attr name="menuMyKinIcon" format="integer"/>
-        <attr name="menuSettingsIcon" format="integer"/>
-        <attr name="settingsBackupIcon" format="integer"/>
-        <attr name="settingsRestoreIcon" format="integer"/>
-        <attr name="tabDeselectedBackgroundColor" format="color"/>
-        <attr name="offerBackground" format="integer"/>
+        <attr format="color" name="primaryTextColor"/>
+        <attr format="color" name="kinBackgroundColor"/>
+        <attr format="integer" name="backgroundCardImage"/>
+        <attr format="integer" name="menuMyKinIcon"/>
+        <attr format="integer" name="menuSettingsIcon"/>
+        <attr format="integer" name="settingsBackupIcon"/>
+        <attr format="integer" name="settingsRestoreIcon"/>
+        <attr format="color" name="tabDeselectedBackgroundColor"/>
+        <attr format="integer" name="offerBackground"/>
     </declare-styleable>
 
     <declare-styleable name="KinEcosystemDashView">
@@ -24,7 +24,7 @@
     </declare-styleable>
 
     <declare-styleable name="KinEcosystemBalanceView">
-        <attr format="string" name="subTitle"/>
+        <attr format="integer" name="textStyle"/>
     </declare-styleable>
 
     <declare-styleable name="KinEcosystemTouchIndicatorIcon">
@@ -44,6 +44,17 @@
         <attr format="enum" name="fontExtra">
             <enum name="regular" value="0"/>
             <enum name="medium" value="1"/>
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="KinEcosystemTabsView">
+        <attr format="string" name="leftTabText"/>
+        <attr format="string" name="rightTabText"/>
+        <attr format="color" name="leftColor"/>
+        <attr format="color" name="rightColor"/>
+        <attr format="enum" name="defaultSelected">
+            <enum name="left" value="0"/>
+            <enum name="right" value="1"/>
         </attr>
     </declare-styleable>
 </resources>

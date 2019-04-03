@@ -23,6 +23,6 @@ object AnimConsts {
     }
 
     object Interpolator {
-        @JvmField internal val DECLERATE = DecelerateInterpolator()
+        @JvmField internal val DECELERATE = DecelerateInterpolator()
     }
 }

@@ -12,8 +12,8 @@
 
     <ImageView
         android:id="@+id/image"
-        android:layout_width="73dp"
-        android:layout_height="73dp"
+        android:layout_width="74dp"
+        android:layout_height="74dp"
         android:layout_marginTop="@dimen/kinrecovery_margin_main"
         android:layout_marginBottom="@dimen/kinrecovery_margin_main"
         android:layout_marginLeft="@dimen/kinecosystem_main_margin"

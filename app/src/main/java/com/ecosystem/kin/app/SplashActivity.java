@@ -13,7 +13,6 @@ import com.ecosystem.kin.app.main.MainActivity;
 import com.ecosystem.kin.app.model.SignInRepo;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.common.KinCallback;
-import com.kin.ecosystem.common.KinTheme;
 import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 

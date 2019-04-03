@@ -10,6 +10,8 @@
     <string name="kinecosystem_more">MORE</string>
     <string name="kinecosystem_spend">Spend</string>
     <string name="kinecosystem_earn">Earn</string>
+    <string name="kinecosystem_earned">Earned</string>
+    <string name="kinecosystem_used">Used</string>
     <string name="kinecosystem_let_s_get_started">Let\'s Get Started!</string>
     <string name="kinecosystem_confirm">Confirm</string>
     <string name="kinecosystem_transfer_agree">I agree</string>
@@ -34,6 +36,7 @@
     <string name="kinecosystem_copied_to_your_clipboard">Copied to your clipboard</string>
     <string name="kinecosystem_copied_text">copied text</string>
     <string name="kinecosystem_transaction_failed">Transaction failed</string>
+    <string name="kinecosystem_failed">Failed</string>
     <string name="kinecosystem_you_dont_have_enough_kin">You don\'t have enough Kin</string>
     <string name="kinecosystem_order_submission_failed">Order submission failed</string>
     <string name="kinecosystem_keep_your_kin_safe">Keep your Kin Safe</string>
@@ -47,7 +50,9 @@
     <string name="kinecosystem_environment_beta">beta</string>
     <string name="kinecosystem_environment_production">prod</string>
     <string name="kinecosystem_what_is_kin">What is Kin?</string>
-    <string name="lets_s_go">Let\'s go</string>
+    <string name="kinecosystem_lets_s_go">Let\'s go</string>
     <string name="kinecosystem_creating_your_account">Creating your account...</string>
     <string name="kinecosystem_what_are_you_in_the_mood_for">What are you in the mood for?</string>
+    <string name="kinecosystem_balance">Balance</string>
+    <string name="kinecosystem_my_kin">My Kin</string>
 </resources>

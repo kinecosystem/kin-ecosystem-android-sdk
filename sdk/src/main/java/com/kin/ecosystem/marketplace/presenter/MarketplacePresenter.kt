@@ -1,7 +1,9 @@
 package com.kin.ecosystem.marketplace.presenter
 
 
+import com.kin.ecosystem.R
 import com.kin.ecosystem.base.BasePresenter
+import com.kin.ecosystem.base.customAnimation
 import com.kin.ecosystem.common.KinCallback
 import com.kin.ecosystem.common.NativeOfferClickEvent
 import com.kin.ecosystem.common.Observer
@@ -367,7 +369,12 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
     }
 
     override fun myKinCLicked() {
-        navigator?.navigateToOrderHistory(false, true)
+        navigator?.navigateToOrderHistory(customAnimation {
+            enter = R.anim.kinecosystem_slide_in_right
+            exit = R.anim.kinecosystem_slide_out_left
+            popEnter = R.anim.kinrecovery_slide_in_left
+            popExit = R.anim.kinecosystem_slide_out_right
+        }, addToBackStack = true)
     }
 
     private fun showToast(@Message msg: Int) {

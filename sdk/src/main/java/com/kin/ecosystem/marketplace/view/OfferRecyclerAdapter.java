@@ -3,11 +3,8 @@ package com.kin.ecosystem.marketplace.view;
 import static com.kin.ecosystem.core.util.StringUtil.getAmountFormatted;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
@@ -16,9 +13,10 @@ import com.kin.ecosystem.core.network.model.Offer.ContentTypeEnum;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.marketplace.view.OfferRecyclerAdapter.ViewHolder;
-import java.util.List;
 
 class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
+
+    private static final float WIDTH_RATIO = 0.205f;
 
     OfferRecyclerAdapter() {
         super(R.layout.kinecosystem_offer_recycler_item);
@@ -36,7 +34,7 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
 
     class ViewHolder extends AbstractBaseViewHolder<Offer> {
 
-        private int imageWidth;
+        private int imageSize;
         private int earnColor;
         private int spendColor;
 
@@ -46,19 +44,19 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
             getView(R.id.sub_title);
             getView(R.id.amount_text);
             getView(R.id.kin_logo);
-            setViewSize(R.id.image, imageWidth, imageWidth);
+            setViewSize(R.id.image, imageSize, imageSize);
         }
 
         @Override
         protected void init(Context context) {
-            imageWidth = (int) (DeviceUtils.getScreenWidth() * 0.2f);
+            imageSize = (int) (DeviceUtils.getScreenWidth() * WIDTH_RATIO);
             earnColor = ContextCompat.getColor(context, R.color.kinecosystem_earn);
             spendColor = ContextCompat.getColor(context, R.color.kinecosystem_spend);
         }
 
         @Override
         protected void bindObject(final Offer item) {
-            setImageUrlResized(R.id.image, item.getImage(), imageWidth, imageWidth);
+            setImageUrlResized(R.id.image, item.getImage(), imageSize, imageSize);
             setTitle(item);
             setAmountText(item);
             setText(R.id.sub_title, item.getDescription());

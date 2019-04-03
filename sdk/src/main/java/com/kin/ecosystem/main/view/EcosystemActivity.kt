@@ -14,7 +14,6 @@ import com.kin.ecosystem.base.AnimConsts
 import com.kin.ecosystem.base.CustomAnimation
 import com.kin.ecosystem.base.KinEcosystemBaseActivity
 import com.kin.ecosystem.base.customAnimation
-import com.kin.ecosystem.common.KinTheme
 import com.kin.ecosystem.common.KinTheme.DARK
 import com.kin.ecosystem.common.KinTheme.LIGHT
 import com.kin.ecosystem.core.data.auth.AuthRepository
@@ -98,13 +97,23 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
         super.onSaveInstanceState(outState)
     }
 
-    private fun replaceFragment(@IdRes containerId: Int, fragment: Fragment, tag: String, customAnimation: CustomAnimation = CustomAnimation()) {
-        supportFragmentManager.beginTransaction()
+    private fun replaceFragment(@IdRes containerId: Int, fragment: Fragment, tag: String,
+                                customAnimation: CustomAnimation = CustomAnimation(),
+                                backStackName: String? = null, allowStateLoss: Boolean = false) {
+
+        val transaction = supportFragmentManager.beginTransaction()
                 .setCustomAnimations(customAnimation.enter,
                         customAnimation.exit,
                         customAnimation.popEnter,
                         customAnimation.popExit)
-                .replace(containerId, fragment, tag).commit()
+
+        if (backStackName != null && !backStackName.isEmpty()) {
+            transaction.addToBackStack(backStackName)
+        }
+
+        transaction.replace(containerId, fragment, tag)
+
+        if (allowStateLoss) transaction.commitAllowingStateLoss() else transaction.commit()
 
     }
 
@@ -116,7 +125,9 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
 
     override fun navigateToMarketplace(customAnimation: CustomAnimation) {
         savedMarketplaceFragment ?: MarketplaceFragment.newInstance(this).apply {
-            replaceFragment(R.id.fragment_frame, this, ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG, customAnimation)
+            replaceFragment(R.id.fragment_frame, this,
+                    tag = ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG,
+                    customAnimation = customAnimation)
             setVisibleScreen(MARKETPLACE)
         }
     }
@@ -125,25 +136,16 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
         ecosystemPresenter?.visibleScreen(id)
     }
 
-    override fun navigateToOrderHistory(isFirstSpendOrder: Boolean, addToBackStack: Boolean) {
+    override fun navigateToOrderHistory(customAnimation: CustomAnimation, addToBackStack: Boolean) {
         val orderHistoryFragment: OrderHistoryFragment = supportFragmentManager
                 .findFragmentByTag(ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG) as OrderHistoryFragment?
-                ?: OrderHistoryFragment.newInstance(isFirstSpendOrder)
+                ?: OrderHistoryFragment.newInstance(this)
 
-
-        val transaction = supportFragmentManager.beginTransaction()
-                .setCustomAnimations(
-                        R.anim.kinecosystem_slide_in_right,
-                        R.anim.kinecosystem_slide_out_left,
-                        R.anim.kinrecovery_slide_in_left,
-                        R.anim.kinecosystem_slide_out_right)
-                .replace(R.id.fragment_frame, orderHistoryFragment, ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG)
-
-        if (addToBackStack) {
-            transaction.addToBackStack(MARKETPLACE_TO_ORDER_HISTORY)
-        }
-
-        transaction.commitAllowingStateLoss()
+        replaceFragment(R.id.fragment_frame, orderHistoryFragment,
+                tag = ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG,
+                customAnimation = customAnimation,
+                backStackName = MARKETPLACE_TO_ORDER_HISTORY,
+                allowStateLoss = true)
         setVisibleScreen(ORDER_HISTORY)
     }
 
@@ -172,7 +174,7 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
         contentFrame.let {
             contentSlide = ValueAnimator.ofInt(DeviceUtils.getScreenHeight(), it.top).apply {
                 duration = AnimConsts.Duration.SLIDE_ANIM
-                interpolator = AnimConsts.Interpolator.DECLERATE
+                interpolator = AnimConsts.Interpolator.DECELERATE
                 addUpdateListener { valueAnimator ->
                     it.y = (valueAnimator.animatedValue as Int).toFloat()
                 }
@@ -200,7 +202,7 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
         containerFrame.apply {
             backgroundColorFade = ObjectAnimator.ofInt(background, AnimConsts.Property.ALPHA, AnimConsts.Value.BG_COLOR_ALPHA_255, AnimConsts.Value.BG_COLOR_ALPHA_0).apply {
                 duration = AnimConsts.Duration.CLOSE_ANIM
-                interpolator = AnimConsts.Interpolator.DECLERATE
+                interpolator = AnimConsts.Interpolator.DECELERATE
                 withEndAction {
                     finish()
                 }

@@ -1,21 +1,16 @@
 package com.kin.ecosystem.base;
 
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuff.Mode;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
-import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.kin.ecosystem.R;
@@ -69,6 +64,21 @@ class BaseViewHolder<T> extends RecyclerView.ViewHolder {
 		if (view != null) {
 			ViewGroup.LayoutParams params = view.getLayoutParams();
 			params.height = height;
+		}
+	}
+
+	protected void setVisibility(@IdRes int viewId, int visibility) {
+		View view = getView(viewId);
+		if (view != null) {
+			view.setVisibility(visibility);
+		}
+	}
+
+	protected void setViewTopMargin(@IdRes int viewId, int topMargin) {
+		View view = getView(viewId);
+		if (view != null) {
+			ViewGroup.MarginLayoutParams params = (MarginLayoutParams)view.getLayoutParams();
+			params.topMargin = topMargin;
 		}
 	}
 

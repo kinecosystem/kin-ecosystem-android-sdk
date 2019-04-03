@@ -8,9 +8,11 @@ interface INavigator {
 
     fun navigateToMarketplace(customAnimation: CustomAnimation = com.kin.ecosystem.base.customAnimation {  })
 
-    fun navigateToOrderHistory(isFirstSpendOrder: Boolean, addToBackStack: Boolean = true)
+    fun navigateToOrderHistory(customAnimation: CustomAnimation = com.kin.ecosystem.base.customAnimation {  }, addToBackStack: Boolean = true)
 
     fun navigateToSettings()
+
+    fun navigateBack()
 
     fun close()
 }

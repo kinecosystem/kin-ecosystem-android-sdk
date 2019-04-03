@@ -94,6 +94,7 @@ public class Kin {
 		}
 
 		return instance;
+
 	}
 
 	/**

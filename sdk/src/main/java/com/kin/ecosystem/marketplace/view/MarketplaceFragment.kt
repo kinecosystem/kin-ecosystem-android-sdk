@@ -138,7 +138,6 @@ class MarketplaceFragment : Fragment(), IMarketplaceView {
     }
 
     companion object {
-
         fun newInstance(navigator: INavigator): MarketplaceFragment {
             val marketplaceFragment = MarketplaceFragment()
             marketplaceFragment.navigator = navigator
