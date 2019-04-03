@@ -7,7 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 
 public class ServiceException extends KinEcosystemException {
 
-	@IntDef({SERVICE_ERROR, NETWORK_ERROR, TIMEOUT_ERROR, USER_NOT_FOUND, ORDER_FAILED, USER_HAS_NO_WALLET, BLOCKCHAIN_ENDPOINT_CHANGED})
+	@IntDef({SERVICE_ERROR, NETWORK_ERROR, TIMEOUT_ERROR, USER_NOT_FOUND, ORDER_FAILED, USER_HAS_NO_WALLET,
+		BLOCKCHAIN_ENDPOINT_CHANGED, WALLET_WAS_NOT_CREATED_IN_THIS_APP})
 	@Retention(RetentionPolicy.SOURCE)
 	public @interface ServiceErrorCodes {
 
@@ -20,6 +21,7 @@ public class ServiceException extends KinEcosystemException {
 	public static final int ORDER_FAILED = 5005;
 	public static final int USER_HAS_NO_WALLET = 5006;
 	public static final int BLOCKCHAIN_ENDPOINT_CHANGED = 5007;
+	public static final int WALLET_WAS_NOT_CREATED_IN_THIS_APP = 5008;
 
 	public ServiceException(@ServiceErrorCodes int code, String message, Throwable cause) {
 		super(code, message, cause);

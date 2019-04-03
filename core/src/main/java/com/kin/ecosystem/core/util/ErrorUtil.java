@@ -33,6 +33,7 @@ public class ErrorUtil {
 	private static final String ACCOUNT_NOT_FOUND = "Account not found";
 	private static final String ACCOUNT_HAS_NO_WALLET = "Account has no wallet";
 	private static final String MIGRATION_NEEDED = "Migration is needed";
+	private static final String WALLET_WAS_NOT_CREATED_IN_THIS_APP = "This wallet was not created in this app";
 
 
 	// Server Error codes
@@ -90,6 +91,8 @@ public class ErrorUtil {
 				case ClientException.INTERNAL_INCONSISTENCY:
 					return new ClientException(ClientException.INTERNAL_INCONSISTENCY, THE_OPERATION_TIMED_OUT,
 						apiException);
+				case ServiceException.WALLET_WAS_NOT_CREATED_IN_THIS_APP:
+					return createWalletWasNotCreatedInThisAppException();
 				default:
 					return createUnknownServiceException(apiException);
 			}
@@ -176,4 +179,10 @@ public class ErrorUtil {
 
 		return exception;
 	}
+
+	public static ServiceException createWalletWasNotCreatedInThisAppException() {
+		return new ServiceException(ServiceException.WALLET_WAS_NOT_CREATED_IN_THIS_APP,
+			WALLET_WAS_NOT_CREATED_IN_THIS_APP, null);
+	}
+
 }
