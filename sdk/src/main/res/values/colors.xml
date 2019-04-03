@@ -43,8 +43,11 @@
     <color name="kinecosystem_spend">#1dc2a4</color>
     <color name="kinecosystem_earn">@color/kinecosystem_primary</color>
 
-
     <color name="touchIndicatorStroke">?attr/kinBackgroundColor</color>
     <color name="tabsShapeDeselectedBackground">?attr/tabDeselectedBackgroundColor</color>
+
+    <color name="settings_separator_light">#e7e7e7</color>
+    <color name="settings_separator_dark">#2b2b2b</color>
+
 
 </resources>

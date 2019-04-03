@@ -21,6 +21,7 @@
         <item name="settingsRestoreIcon">@drawable/kinecosystem_ic_restore</item>
         <item name="tabDeselectedBackgroundColor">@color/kinecosystem_tab_deselected_background_light</item>
         <item name="offerBackground">@drawable/kinecosystem_offer_item_bg_light</item>
+        <item name="separatorColor">@color/settings_separator_light</item>
     </style>
 
     <style name="KinecosysNoActionBar.Dark" parent="KinecosysNoActionBar">
@@ -33,6 +34,7 @@
         <item name="settingsRestoreIcon">@drawable/kinecosystem_ic_restore_dark</item>
         <item name="tabDeselectedBackgroundColor">@color/kinecosystem_tab_deselected_background_dark</item>
         <item name="offerBackground">@drawable/kinecosystem_offer_item_bg_dark</item>
+        <item name="separatorColor">@color/settings_separator_dark</item>
     </style>
 
     <style name="KinecosysToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">

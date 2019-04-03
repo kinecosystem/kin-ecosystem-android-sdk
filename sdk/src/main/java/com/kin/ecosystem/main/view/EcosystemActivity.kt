@@ -24,17 +24,15 @@ import com.kin.ecosystem.core.data.settings.SettingsDataSourceLocal
 import com.kin.ecosystem.core.util.DeviceUtils
 import com.kin.ecosystem.history.view.OrderHistoryFragment
 import com.kin.ecosystem.main.ScreenId
-import com.kin.ecosystem.main.ScreenId.MARKETPLACE
-import com.kin.ecosystem.main.ScreenId.ORDER_HISTORY
+import com.kin.ecosystem.main.ScreenId.*
 import com.kin.ecosystem.main.presenter.EcosystemPresenter
 import com.kin.ecosystem.main.presenter.IEcosystemPresenter
 import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter
 import com.kin.ecosystem.marketplace.view.MarketplaceFragment
 import com.kin.ecosystem.onPreDraw
 import com.kin.ecosystem.onboarding.view.OnboardingFragment
-import com.kin.ecosystem.settings.view.SettingsActivity
+import com.kin.ecosystem.settings.view.SettingsFragment
 import com.kin.ecosystem.withEndAction
-
 
 class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
 
@@ -51,6 +49,11 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
     private val savedMarketplaceFragment: MarketplaceFragment?
         get() = supportFragmentManager
                 .findFragmentByTag(ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG) as MarketplaceFragment?
+
+    private val orderHistoryFragment: OrderHistoryFragment?
+        get() = supportFragmentManager
+                .findFragmentByTag(ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG) as OrderHistoryFragment?
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(getKinTheme())
@@ -137,26 +140,36 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
     }
 
     override fun navigateToOrderHistory(customAnimation: CustomAnimation, addToBackStack: Boolean) {
-        val orderHistoryFragment: OrderHistoryFragment = supportFragmentManager
-                .findFragmentByTag(ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG) as OrderHistoryFragment?
-                ?: OrderHistoryFragment.newInstance(this)
-
-        replaceFragment(R.id.fragment_frame, orderHistoryFragment,
-                tag = ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG,
-                customAnimation = customAnimation,
-                backStackName = MARKETPLACE_TO_ORDER_HISTORY,
-                allowStateLoss = true)
-        setVisibleScreen(ORDER_HISTORY)
+        orderHistoryFragment ?: OrderHistoryFragment.newInstance(this).apply {
+            replaceFragment(R.id.fragment_frame, this,
+                    tag = ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG,
+                    customAnimation = customAnimation,
+                    backStackName = if (addToBackStack) MARKETPLACE_TO_ORDER_HISTORY else null,
+                    allowStateLoss = true)
+            setVisibleScreen(ORDER_HISTORY)
+        }
     }
 
     override fun navigateToSettings() {
-        val settingsIntent = Intent(this@EcosystemActivity, SettingsActivity::class.java)
-        startActivity(settingsIntent)
-        overridePendingTransition(R.anim.kinecosystem_slide_in_right, R.anim.kinecosystem_slide_out_right)
+        val settingsFragment: SettingsFragment = supportFragmentManager
+                .findFragmentByTag(ECOSYSTEM_SETTINGS_FRAGMENT_TAG) as SettingsFragment?
+                ?: SettingsFragment.newInstance(this)
+
+        replaceFragment(R.id.fragment_frame, settingsFragment,
+                tag = ECOSYSTEM_SETTINGS_FRAGMENT_TAG,
+                customAnimation = customAnimation {
+                    enter = R.anim.kinecosystem_slide_in_right
+                    exit = R.anim.kinecosystem_slide_out_left
+                    popEnter = R.anim.kinrecovery_slide_in_left
+                    popExit = R.anim.kinecosystem_slide_out_right
+                },
+                backStackName = ORDER_HISTORY_TO_SETTINGS,
+                allowStateLoss = true)
+        setVisibleScreen(SETTINGS)
     }
 
     override fun close() {
-        if(!isClosing) {
+        if (!isClosing) {
             isClosing = true
             runExitAnimation()
         }
@@ -239,16 +252,29 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
             }
         } else {
             val entry = supportFragmentManager.getBackStackEntryAt(count - 1)
-            if (entry != null && entry.name == MARKETPLACE_TO_ORDER_HISTORY) {
-                // After pressing back from OrderHistory, should put the attrs again.
-                // This is the only fragment that should set presenter again on back.
-                savedMarketplaceFragment?.setNavigator(this)
-                        ?: navigateToMarketplace(customAnimation {
-                            enter = R.anim.kinecosystem_slide_in_left
-                            exit = R.anim.kinecosystem_slide_out_right
-                        })
-                supportFragmentManager.popBackStackImmediate()
-                setVisibleScreen(MARKETPLACE)
+            when (entry.name) {
+                MARKETPLACE_TO_ORDER_HISTORY -> {
+                    // After pressing back from OrderHistory, should put the attrs again.
+                    // This is the only fragment that should set presenter again on back.
+                    savedMarketplaceFragment?.setNavigator(this)
+                            ?: navigateToMarketplace(customAnimation {
+                                enter = R.anim.kinecosystem_slide_in_left
+                                exit = R.anim.kinecosystem_slide_out_right
+                            })
+                    supportFragmentManager.popBackStackImmediate()
+                    setVisibleScreen(MARKETPLACE)
+                }
+                ORDER_HISTORY_TO_SETTINGS -> {
+                    // After pressing back from Settings, should put the attrs again.
+                    // This is the only fragment that should set presenter again on back.
+                    orderHistoryFragment?.setNavigator(this)
+                            ?: navigateToOrderHistory(customAnimation {
+                                enter = R.anim.kinecosystem_slide_in_left
+                                exit = R.anim.kinecosystem_slide_out_right
+                            }, addToBackStack = false)
+                    supportFragmentManager.popBackStackImmediate()
+                    setVisibleScreen(ORDER_HISTORY)
+                }
             }
         }
     }
@@ -265,11 +291,31 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
         overridePendingTransition(0, 0)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        getVisibleFragment()?.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun getVisibleFragment(): Fragment? {
+        supportFragmentManager.fragments?.let { fragments ->
+            fragments.forEach { fragment ->
+                if (fragment.isVisible)
+                    return fragment
+            }
+        }
+        return null
+    }
+
     companion object {
 
+        // Fragments tags
         private const val ECOSYSTEM_ONBOARDING_FRAGMENT_TAG = "ecosystem_onboarding_fragment_tag"
         private const val ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG = "ecosystem_marketplace_fragment_tag"
         private const val ECOSYSTEM_ORDER_HISTORY_FRAGMENT_TAG = "ecosystem_order_history_fragment_tag"
+        private const val ECOSYSTEM_SETTINGS_FRAGMENT_TAG = "ecosystem_settings_fragment_tag"
+
+        // Back stack name
         private const val MARKETPLACE_TO_ORDER_HISTORY = "marketplace_to_order_history"
+        private const val ORDER_HISTORY_TO_SETTINGS = "order_history_to_settings"
     }
 }
