@@ -80,9 +80,7 @@ class OrderHistoryPresenter(private val orderRepository: OrderDataSource,
     }
 
     private fun syncNewOrders(newOrdersListObj: OrderList) {
-        val newEarnList: MutableList<Order> = ArrayList()
-        val newSpendList: MutableList<Order> = ArrayList()
-        splitByType(newOrdersListObj.orders, newEarnList, newSpendList)
+        val (newEarnList,newSpendList ) = splitByType(newOrdersListObj.orders)
         addOrders(newEarnList, earnOrderList)
         addOrders(newSpendList, spendOrderList)
     }
@@ -105,16 +103,9 @@ class OrderHistoryPresenter(private val orderRepository: OrderDataSource,
         }
     }
 
-    private fun splitByType(list: List<Order>, earnList: MutableList<Order>, spendList: MutableList<Order>) {
-        for (order in list) {
-            if (order.status != Status.PENDING) {
-                if (isEarn(order)) {
-                    earnList.add(order)
-                } else {
-                    spendList.add(order)
-                }
-            }
-        }
+    private fun splitByType(list: List<Order>) : Pair<List<Order>, List<Order>>{
+        return list.filter { it.status != Status.PENDING }
+                .partition { isEarn(it) }
     }
 
     private fun isEarn(order: Order) = order.offerType == Offer.OfferType.EARN
