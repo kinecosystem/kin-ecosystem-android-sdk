@@ -126,12 +126,20 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		if (kinClient != null && kinClient.hasAccount() && account != null) {
 			sdkVersion = account.getKinSdkVersion();
 		}
-		Logger.log(new Log().withTag("MOOO").text("setMigrationManager with version " + sdkVersion.getVersion()));
 		updateKinClient(migrationManager.getKinClient(sdkVersion));
 	}
 
 	private void updateKinClient(IKinClient kinClient) {
 		this.kinClient = kinClient;
+		final int count = kinClient.getAccountCount();
+
+		for (int i = 0; this.account != null && i < count; i++) {
+			if (this.account.getPublicAddress().equals(kinClient.getAccount(i).getPublicAddress())) {
+				this.account = kinClient.getAccount(i);
+			}
+		}
+
+		reconnectBalanceConnection();
 	}
 
 	@Override
