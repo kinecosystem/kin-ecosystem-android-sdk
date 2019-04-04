@@ -23,6 +23,7 @@
         <item name="offerBackground">@drawable/kinecosystem_offer_item_bg_light</item>
         <item name="separatorColor">@color/settings_separator_light</item>
         <item name="offersEmptyStateImage">@drawable/kinecosystem_empty_state_light</item>
+        <item name="onboardingImage">@drawable/kinecosystem_onboarding_image_light</item>
     </style>
 
     <style name="KinecosysNoActionBar.Dark" parent="KinecosysNoActionBar">
@@ -37,6 +38,7 @@
         <item name="offerBackground">@drawable/kinecosystem_offer_item_bg_dark</item>
         <item name="separatorColor">@color/settings_separator_dark</item>
         <item name="offersEmptyStateImage">@drawable/kinecosystem_empty_state_dark</item>
+        <item name="onboardingImage">@drawable/kinecosystem_onboarding_image_dark</item>
     </style>
 
     <style name="KinecosysToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
