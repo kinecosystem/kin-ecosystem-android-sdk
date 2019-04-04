@@ -24,7 +24,8 @@ import com.kin.ecosystem.core.util.OfferConverter
 import com.kin.ecosystem.core.util.StringUtil
 import com.kin.ecosystem.main.INavigator
 import com.kin.ecosystem.marketplace.view.IMarketplaceView
-import com.kin.ecosystem.marketplace.view.IMarketplaceView.*
+import com.kin.ecosystem.marketplace.view.IMarketplaceView.Message
+import com.kin.ecosystem.marketplace.view.IMarketplaceView.Title
 import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle
 import java.math.BigDecimal
 import java.util.*
@@ -69,7 +70,7 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
         eventLogger.send(MarketplacePageViewed.create())
     }
 
-    override fun onStart() {
+    override fun onResume() {
         listenToRemovedNativeOffers()
         listenToOrders()
         updateMenuSettingsIcon()
@@ -84,7 +85,7 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
         })
     }
 
-    override fun onStop() {
+    override fun onPause() {
         orderObserver?.let {
             orderRepository.removeOrderObserver(it)
             orderObserver = null
@@ -117,7 +118,7 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
         }
     }
 
-    private fun isGreaterThenZero(value: Balance) =  value.amount.compareTo(BigDecimal.ZERO) == 1
+    private fun isGreaterThenZero(value: Balance) = value.amount.compareTo(BigDecimal.ZERO) == 1
 
     private fun updateMenuSettingsIcon() {
         publicAddress.let {
@@ -148,11 +149,15 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
 
     private fun setCachedOfferLists(cachedOfferList: OfferList) {
         offerList ?: run { offerList = ArrayList() }
-        offerList?.addAll(cachedOfferList.offers)
-
-        view?.let {
-            it.setOfferList(offerList)
-            isListsAdded = true
+        offerList?.let { offerList ->
+            offerList.addAll(cachedOfferList.offers)
+            view?.let {view ->
+                isListsAdded = true
+                view.setOfferList(offerList)
+                if (offerList.isNotEmpty()) {
+                    updateTitle()
+                }
+            }
         }
     }
 
@@ -179,6 +184,7 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
                 if (offer.id == offerId) {
                     offerList.removeAt(i)
                     notifyOfferItemRemoved(i)
+                    updateTitle()
                     return
                 }
             }
@@ -202,6 +208,7 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
 
             override fun onFailure(exception: KinEcosystemException) {
                 setupEmptyItemView()
+                updateTitle()
             }
         })
     }
@@ -251,6 +258,8 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
                 notifyItemRangRemoved(0, size)
             }
         }
+
+        updateTitle()
     }
 
     private fun notifyItemRangRemoved(fromIndex: Int, size: Int) {
@@ -263,6 +272,7 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
 
     private fun notifyItemInserted(index: Int) {
         notifyOfferItemInserted(index)
+        updateTitle()
     }
 
     override fun onItemClicked(position: Int) {
@@ -284,7 +294,7 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
 
                 if (balance < amount.toInt()) {
                     eventLogger.send(NotEnoughKinPageViewed.create())
-                    showToast(NOT_ENOUGH_KIN)
+                    showToast(Message.NOT_ENOUGH_KIN)
                     return
                 }
             }
@@ -308,6 +318,12 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
             }
         } ?: run {
             sendSdkError("MarketplacePresenter offerList is null, offer position is: $position, isListsAdded: $isListsAdded")
+        }
+    }
+
+    private fun updateTitle() {
+        offerList?.apply {
+            view?.updateTitle(if(isEmpty()) Title.EMPTY_STATE else Title.DEFAULT)
         }
     }
 
@@ -349,7 +365,7 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
     }
 
     private fun showSomethingWentWrong() {
-        showToast(SOMETHING_WENT_WRONG)
+        showToast(Message.SOMETHING_WENT_WRONG)
     }
 
     override fun showOfferActivityFailed() {
@@ -377,7 +393,7 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
         }, addToBackStack = true)
     }
 
-    private fun showToast(@Message msg: Int) {
+    private fun showToast(msg: Message) {
         view?.showToast(msg)
     }
 

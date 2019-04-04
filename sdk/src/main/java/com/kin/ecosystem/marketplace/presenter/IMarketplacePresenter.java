@@ -6,9 +6,9 @@ import com.kin.ecosystem.marketplace.view.IMarketplaceView;
 
 public interface IMarketplacePresenter extends IBasePresenter<IMarketplaceView> {
 
-    void onStart();
+    void onResume();
 
-    void onStop();
+    void onPause();
 
     void getOffers();
 

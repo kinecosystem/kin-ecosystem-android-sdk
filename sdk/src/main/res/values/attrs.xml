@@ -11,6 +11,7 @@
         <attr format="color" name="tabDeselectedBackgroundColor"/>
         <attr format="integer" name="offerBackground"/>
         <attr format="color" name="separatorColor"/>
+        <attr format="integer" name="offersEmptyStateImage"/>
     </declare-styleable>
 
     <declare-styleable name="KinEcosystemDashView">
