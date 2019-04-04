@@ -9,7 +9,7 @@
         android:id="@+id/back_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/kinecosystem_main__medium_margin"
+        android:layout_marginTop="@dimen/kinecosystem_main_medium_margin"
         android:layout_marginLeft="@dimen/kinrecovery_margin_main"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
