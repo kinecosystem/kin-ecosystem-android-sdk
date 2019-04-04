@@ -29,3 +29,16 @@ inline fun <T : ValueAnimator> T.withEndAction(crossinline action: T.() -> Unit)
         }
     })
 }
+
+inline fun <T : ValueAnimator> T.withActions(crossinline startAction: T.() -> Unit, crossinline endAction: T.() -> Unit) {
+    addListener(object : AnimatorListenerAdapter() {
+        override fun onAnimationStart(animation: Animator?) {
+            super.onAnimationStart(animation)
+            startAction()
+        }
+        override fun onAnimationEnd(animation: Animator?) {
+            super.onAnimationEnd(animation)
+            endAction()
+        }
+    })
+}

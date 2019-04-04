@@ -11,13 +11,14 @@
         android:layout_marginLeft="@dimen/kinecosystem_main_small_margin"
         android:layout_marginRight="@dimen/kinecosystem_main_margin"/>
 
-    <TextView
+    <com.kin.ecosystem.widget.KinEcosystemTextView
         android:id="@+id/settings_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1.0"
+        app:fontExtra="medium"
         style="@style/KinecosysSubTitle"
-        android:textColor="@color/kinecosystem_black"/>
+        android:textColor="?attr/primaryTextColor"/>
 
     <ImageView
         android:id="@+id/settings_arrow"

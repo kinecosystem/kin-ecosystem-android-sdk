@@ -60,6 +60,8 @@ class MarketplaceFragment : Fragment(), IMarketplaceView {
 
     override fun onDestroyView() {
         marketplacePresenter?.onDetach()
+        offersRecycler.removeAllViews()
+        navigator = null
         super.onDestroyView()
     }
 

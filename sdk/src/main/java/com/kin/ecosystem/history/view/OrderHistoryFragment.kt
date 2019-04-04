@@ -4,11 +4,15 @@ package com.kin.ecosystem.history.view
 import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextSwitcher
@@ -25,11 +29,11 @@ import com.kin.ecosystem.core.util.StringUtil.getAmountFormatted
 import com.kin.ecosystem.history.presenter.IOrderHistoryPresenter
 import com.kin.ecosystem.history.presenter.OrderHistoryPresenter
 import com.kin.ecosystem.main.INavigator
-import com.kin.ecosystem.onPreDraw
 import com.kin.ecosystem.widget.KinEcosystemTabs
 import com.kin.ecosystem.widget.TouchIndicatorIcon
 import com.kin.ecosystem.widget.util.FontUtil
 import com.kin.ecosystem.widget.util.ThemeUtil
+import com.kin.ecosystem.withActions
 
 
 open class OrderHistoryFragment : Fragment(), IOrderHistoryView {
@@ -43,6 +47,9 @@ open class OrderHistoryFragment : Fragment(), IOrderHistoryView {
     private lateinit var spendOrderRecyclerView: RecyclerView
     private lateinit var settingsMenuIcon: TouchIndicatorIcon
     private lateinit var orderDescription: TextSwitcher
+    private val mainHandler by lazy {
+        Handler(Looper.getMainLooper())
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.kinecosystem_fragment_order_history, container, false)
@@ -65,9 +72,12 @@ open class OrderHistoryFragment : Fragment(), IOrderHistoryView {
         orderHistoryPresenter?.onPause()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
         orderHistoryPresenter?.onDetach()
+        earnOrderRecyclerView.removeAllViews()
+        spendOrderRecyclerView.removeAllViews()
+        navigator = null
+        super.onDestroyView()
     }
 
     private fun initColors() {
@@ -108,9 +118,9 @@ open class OrderHistoryFragment : Fragment(), IOrderHistoryView {
         }
 
         // Spend Recycler
-        spendOrderRecyclerView = root.findViewById(R.id.spend_order_recycler)
-        spendOrderRecyclerView.onPreDraw {
+        spendOrderRecyclerView = root.findViewById<RecyclerView>(R.id.spend_order_recycler).apply {
             x = DeviceUtils.getScreenWidth().toFloat()
+            visibility = GONE
         }
 
         spendRecyclerAdapter = OrderHistoryRecyclerAdapter().apply {
@@ -123,32 +133,34 @@ open class OrderHistoryFragment : Fragment(), IOrderHistoryView {
     }
 
     override fun updateSubTitle(amount: Int, orderStatus: OrderHistoryPresenter.OrderStatus, orderType: OrderHistoryPresenter.OrderType) {
-        activity.runOnUiThread {
-            val color: Int
-            val subtitle: String
-            val nextTextView = orderDescription.nextView as TextView
-            when (orderStatus) {
-                OrderHistoryPresenter.OrderStatus.DELAYED -> {
-                    subtitle = resources.getString(R.string.kinecosystem_sorry_this_may_take_some_time)
-                    color = colorOrange
+        mainHandler.post {
+            if(!isDetached) {
+                val color: Int
+                val subtitle: String
+                val nextTextView = orderDescription.nextView as TextView
+                when (orderStatus) {
+                    OrderHistoryPresenter.OrderStatus.DELAYED -> {
+                        subtitle = resources.getString(R.string.kinecosystem_sorry_this_may_take_some_time)
+                        color = colorOrange
+                    }
+                    OrderHistoryPresenter.OrderStatus.COMPLETED -> {
+                        subtitle = resources.getString(R.string.kinecosystem_earn_completed, getAmountFormatted(amount))
+                        color = colorPrimary
+                    }
+                    OrderHistoryPresenter.OrderStatus.FAILED -> {
+                        subtitle = resources.getString(R.string.kinecosystem_transaction_failed)
+                        color = colorFailed
+                    }
+                    OrderHistoryPresenter.OrderStatus.PENDING -> {
+                        subtitle = resources.getString(R.string.kinecosystem_earn_pending, getAmountFormatted(amount))
+                        color = colorPrimary
+                    }
                 }
-                OrderHistoryPresenter.OrderStatus.COMPLETED -> {
-                    subtitle = resources.getString(R.string.kinecosystem_earn_completed, getAmountFormatted(amount))
-                    color = colorPrimary
-                }
-                OrderHistoryPresenter.OrderStatus.FAILED -> {
-                    subtitle = resources.getString(R.string.kinecosystem_transaction_failed)
-                    color = colorFailed
-                }
-                OrderHistoryPresenter.OrderStatus.PENDING -> {
-                    subtitle = resources.getString(R.string.kinecosystem_earn_pending, getAmountFormatted(amount))
-                    color = colorPrimary
-                }
-            }
 
-            nextTextView.setTextColor(color)
-            nextTextView.text = subtitle
-            orderDescription.showNext()
+                nextTextView.setTextColor(color)
+                nextTextView.text = subtitle
+                orderDescription.showNext()
+            }
         }
     }
 
@@ -162,6 +174,11 @@ open class OrderHistoryFragment : Fragment(), IOrderHistoryView {
                 addUpdateListener {
                     spendOrderRecyclerView.x = it.animatedValue as Float
                 }
+                withActions(startAction = {
+                    earnOrderRecyclerView.visibility = VISIBLE
+                }, endAction = {
+                    spendOrderRecyclerView.visibility = GONE
+                })
             }
             val earnAnimSlide = ValueAnimator.ofFloat(-DeviceUtils.getScreenWidth().toFloat(), 0F).apply {
                 addUpdateListener {
@@ -181,6 +198,11 @@ open class OrderHistoryFragment : Fragment(), IOrderHistoryView {
                 addUpdateListener {
                     spendOrderRecyclerView.x = it.animatedValue as Float
                 }
+                withActions(startAction = {
+                    spendOrderRecyclerView.visibility = VISIBLE
+                }, endAction = {
+                    earnOrderRecyclerView.visibility = GONE
+                })
             }
             val earnAnimSlide = ValueAnimator.ofFloat(0F, -DeviceUtils.getScreenWidth().toFloat()).apply {
                 addUpdateListener {

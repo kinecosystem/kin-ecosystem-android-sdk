@@ -10,6 +10,7 @@
         <attr format="integer" name="settingsRestoreIcon"/>
         <attr format="color" name="tabDeselectedBackgroundColor"/>
         <attr format="integer" name="offerBackground"/>
+        <attr format="color" name="separatorColor"/>
     </declare-styleable>
 
     <declare-styleable name="KinEcosystemDashView">
@@ -35,6 +36,8 @@
     <declare-styleable name="KinEcosystemSettingsItem">
         <attr format="reference" name="kinecosystem_src"/>
         <attr format="string" name="kinecosysem_text"/>
+        <attr format="boolean" name="top_separator"/>
+        <attr format="boolean" name="bottom_separator"/>
         <attr name="kinecosystem_indicatorVisibility"/>
     </declare-styleable>
 

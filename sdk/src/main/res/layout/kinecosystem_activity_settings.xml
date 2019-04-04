@@ -1,30 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/kinecosystem_white"
-    android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <include layout="@layout/kinecosystem_toolbar_layout"/>
+    <ImageView
+        android:id="@+id/back_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinecosystem_main__medium_margin"
+        android:layout_marginLeft="@dimen/kinrecovery_margin_main"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/kinecosystem_ic_back"
+        />
+
+    <com.kin.ecosystem.widget.KinEcosystemTextView
+        android:id="@+id/title"
+        style="@style/KinecosysTitleMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/kinecosystem_settings"
+        app:fontExtra="medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/back_btn"/>
 
     <com.kin.ecosystem.settings.view.SettingsItem
         android:id="@+id/keep_your_kin_safe"
         android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/kinecosystem_margin_large"
         android:layout_height="@dimen/kinecosystem_settings_item_height"
-        app:kinecosystem_src="@drawable/kinecosystem_grey_backup_icon"
-        app:kinecosysem_text="@string/kinecosystem_keep_your_kin_safe"/>
+        app:top_separator="true"
+        app:kinecosystem_src="?attr/settingsBackupIcon"
+        app:kinecosysem_text="@string/kinecosystem_keep_your_kin_safe"
+        app:layout_constraintTop_toBottomOf="@id/title"/>
 
-    <include layout="@layout/kinecosystem_separator_line"/>
 
     <com.kin.ecosystem.settings.view.SettingsItem
         android:id="@+id/restore_prev_wallet"
         android:layout_width="match_parent"
         android:layout_height="@dimen/kinecosystem_settings_item_height"
-        app:kinecosystem_src="@drawable/kinecosystem_grey_restore_icon"
+        app:kinecosystem_src="?attr/settingsRestoreIcon"
         app:kinecosystem_indicatorVisibility="false"
-        app:kinecosysem_text="@string/kinecosystem_restore_previous_wallet"/>
+        app:top_separator="true"
+        app:bottom_separator="true"
+        app:kinecosysem_text="@string/kinecosystem_restore_previous_wallet"
+        app:layout_constraintTop_toBottomOf="@id/keep_your_kin_safe"/>
 
-    <include layout="@layout/kinecosystem_separator_line"/>
-
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>
