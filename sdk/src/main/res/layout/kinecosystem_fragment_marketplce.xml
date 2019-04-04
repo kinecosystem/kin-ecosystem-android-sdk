@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:srcCompat="@drawable/kinecosystem_ic_close_btn"
-        android:layout_marginTop="@dimen/kinecosystem_main__medium_margin"
+        android:layout_marginTop="@dimen/kinecosystem_main_medium_margin"
         android:layout_marginLeft="@dimen/kinrecovery_margin_main"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -40,7 +40,7 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/kinecosystem_main__medium_margin"
+        android:layout_marginTop="@dimen/kinecosystem_main_medium_margin"
         android:gravity="center"
         app:layout_constraintTop_toBottomOf="@+id/close_btn"
         app:layout_constraintStart_toStartOf="parent"
@@ -59,6 +59,6 @@
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         app:layout_constraintTop_toBottomOf="@+id/title"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="@dimen/kinecosystem_main__medium_margin"/>
+        android:layout_marginTop="@dimen/kinecosystem_main_medium_margin"/>
 
 </android.support.constraint.ConstraintLayout>

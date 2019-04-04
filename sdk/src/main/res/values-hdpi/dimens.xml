@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<dimen name="kinecosystem_main_margin">14dp</dimen>
-	<dimen name="kinecosystem_main_small_margin">12dp</dimen>
 	<dimen name="kinecosystem_main_xsmall_margin">9dp</dimen>
+	<dimen name="kinecosystem_main_small_margin">12dp</dimen>
+	<dimen name="kinecosystem_main_margin">14dp</dimen>
+	<dimen name="kinecosystem_main_medium_margin">18dp</dimen>>
+	<dimen name="kinecosystem_margin_large">20dp</dimen>
+	<dimen name="kinecosystem_margin_xlarge">50dp</dimen>
 
 	<dimen name="kinecosystem_block_margin">7dp</dimen>
 	<dimen name="kinecosystem_block_medium_margin">5dp</dimen>
@@ -12,9 +15,6 @@
 
 	<dimen name="kinecosystem_round_button_height">35dp</dimen>
 	<dimen name="kinecosystem_round_button_width">250dp</dimen>
-
-	<dimen name="kinecosystem_margin_large">20dp</dimen>
-	<dimen name="kinecosystem_margin_xlarge">50dp</dimen>
 
 	<dimen name="kinecosystem_bottom_margin">35dp</dimen>
 

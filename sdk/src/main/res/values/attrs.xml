@@ -12,6 +12,7 @@
         <attr format="integer" name="offerBackground"/>
         <attr format="color" name="separatorColor"/>
         <attr format="integer" name="offersEmptyStateImage"/>
+        <attr format="integer" name="onboardingImage"/>
     </declare-styleable>
 
     <declare-styleable name="KinEcosystemDashView">
