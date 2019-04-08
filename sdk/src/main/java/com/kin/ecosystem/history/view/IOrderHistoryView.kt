@@ -23,9 +23,9 @@ interface IOrderHistoryView : IBaseView {
 
     fun onSpendItemUpdated(index: Int)
 
-    fun notifyEarnDataChanged()
+    fun notifyEarnDataChanged(range: IntRange)
 
-    fun notifySpendDataChanged()
+    fun notifySpendDataChanged(range: IntRange)
 
     fun setNavigator(navigator: INavigator)
 

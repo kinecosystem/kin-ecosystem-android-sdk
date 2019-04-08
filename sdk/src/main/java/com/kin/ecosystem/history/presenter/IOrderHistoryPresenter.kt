@@ -6,6 +6,8 @@ import com.kin.ecosystem.widget.KinEcosystemTabs
 
 interface IOrderHistoryPresenter : IBasePresenter<IOrderHistoryView> {
 
+    fun onEnterTransitionEnded()
+
     fun onResume()
 
     fun onPause()

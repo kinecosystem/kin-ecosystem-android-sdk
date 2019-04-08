@@ -41,7 +41,7 @@ class OrderHistoryPresenter(private val orderRepository: OrderDataSource,
     override fun onAttach(view: IOrderHistoryView) {
         super.onAttach(view)
         eventLogger.send(OrderHistoryPageViewed.create())
-        getOrderHistoryList()
+        getCachedHistory()
         listenToOrders()
     }
 
@@ -61,13 +61,20 @@ class OrderHistoryPresenter(private val orderRepository: OrderDataSource,
         }
     }
 
-    private fun getOrderHistoryList() {
+    override fun onEnterTransitionEnded() {
+        getOrderHistoryList()
+    }
+
+    private fun getCachedHistory() {
         val cachedOrderListObj = orderRepository.allCachedOrderHistory
         cachedOrderListObj?.let {
             syncNewOrders(it)
         }
         view?.setEarnList(earnOrderList)
         view?.setSpendList(spendOrderList)
+    }
+
+    private fun getOrderHistoryList() {
         orderRepository.getAllOrderHistory(object : KinCallback<OrderList> {
             override fun onResponse(orderHistoryList: OrderList) {
                 syncNewOrders(orderHistoryList)
@@ -95,9 +102,6 @@ class OrderHistoryPresenter(private val orderRepository: OrderDataSource,
                 if (index == NOT_FOUND) {
                     //add at top (ui orientation)
                     addOrder(order = order)
-                } else {
-                    //Update
-                    updateOrder(index = index, order = order)
                 }
             }
         }
@@ -120,23 +124,21 @@ class OrderHistoryPresenter(private val orderRepository: OrderDataSource,
     private fun listenToOrders() {
         completedOrderObserver = object : Observer<Order>() {
             override fun onChanged(order: Order) {
-                if (order.origin == Order.Origin.MARKETPLACE) {
-                    order.status?.let {
-                        when (it) {
-                            Status.PENDING -> {
-                                currentPendingOrder = order
+                order.status?.let {
+                    when (it) {
+                        Status.PENDING -> {
+                            currentPendingOrder = order
+                            updateSubTitle(order)
+                        }
+                        Status.COMPLETED, Status.FAILED -> {
+                            if (isCurrentOrder(order)) {
                                 updateSubTitle(order)
                             }
-                            Status.COMPLETED, Status.FAILED -> {
-                                if (isCurrentOrder(order)) {
-                                    updateSubTitle(order)
-                                }
-                                addOrderOrUpdate(order)
-                                notifyDataChanged(order)
-                            }
-                            Status.DELAYED -> if (isCurrentOrder(order)) {
-                                updateSubTitle(order)
-                            }
+                            addOrderOrUpdate(order)
+                            updateRestOfTheOrders(order)
+                        }
+                        Status.DELAYED -> if (isCurrentOrder(order)) {
+                            updateSubTitle(order)
                         }
                     }
                 }
@@ -166,15 +168,21 @@ class OrderHistoryPresenter(private val orderRepository: OrderDataSource,
     }
 
     private fun updateSubTitle(order: Order) {
-        val status = getStatus(order)
-        view?.updateSubTitle(order.amount, status, getType(order.offerType))
+        if (order.origin == Order.Origin.MARKETPLACE) {
+            val status = getStatus(order)
+            view?.updateSubTitle(order.amount, status, getType(order.offerType))
+        }
     }
 
-    private fun notifyDataChanged(order: Order) {
+    private fun updateRestOfTheOrders(order: Order) {
         if (isEarn(order)) {
-            view?.notifyEarnDataChanged()
+            if(earnOrderList.size > 1) {
+                view?.notifyEarnDataChanged(IntRange(1, earnOrderList.size - 1))
+            }
         } else {
-            view?.notifySpendDataChanged()
+            if(spendOrderList.size > 1) {
+                view?.notifySpendDataChanged(IntRange(1, spendOrderList.size - 1))
+            }
         }
     }
 
