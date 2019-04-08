@@ -23,6 +23,8 @@ import com.kin.ecosystem.recovery.exception.BackupRestoreErrorUtil;
 
 public class BackupAndRestoreImpl implements BackupAndRestore {
 
+	private static final String SWITCH_ACCOUNT_FAILED = "Switch account failed";
+
 	private final Activity activity;
 	protected BackupManager backupManager;
 	private final AccountManager accountManager;
@@ -131,7 +133,7 @@ public class BackupAndRestoreImpl implements BackupAndRestore {
 			@Override
 			public void onFailure(KinEcosystemException exception) {
 				backupCallback.onFailure(new BackupAndRestoreException(RESTORE_SWITCH_ACCOUNT_FAILED,
-					exception != null ? exception.getMessage() : "Switch account failed", exception));
+					exception != null ? exception.getMessage() : SWITCH_ACCOUNT_FAILED, exception));
 			}
 		});
 	}
