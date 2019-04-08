@@ -126,7 +126,7 @@ public class Kin {
 			BlockchainSourceImpl.init(eventLogger, BlockchainSourceLocal.getInstance(getKinContext()),
 				BlockchainSourceRemote.getInstance(instance.executorsUtil), AuthRepository.getInstance());
 
-			ConfigurationImpl.setBlockchainSource(BlockchainSourceImpl.getInstance());
+			ConfigurationImpl.getInstance().setBlockchainSource(BlockchainSourceImpl.getInstance());
 
 			EventCommonDataUtil.setBaseData(getKinContext());
 
@@ -217,15 +217,15 @@ public class Kin {
 
 			AuthRepository.getInstance().setJWT(jwt);
 
-			BlockchainSourceImpl.getInstance().fetchBlockchainVersion(new Callback<KinSdkVersion, ApiException>() {
+			BlockchainSourceImpl.getInstance().fetchBlockchainVersion(new KinCallback<KinSdkVersion>() {
 				@Override
 				public void onResponse(KinSdkVersion response) {
 					internalLogin(loginState, loginCallback);
 				}
 
 				@Override
-				public void onFailure(ApiException exception) {
-					// TODO: handle this
+				public void onFailure(KinEcosystemException exception) {
+					internalLogin(loginState, loginCallback);
 				}
 			});
 		} catch (final ClientException exception) {
@@ -233,77 +233,45 @@ public class Kin {
 		}
 	}
 
-	// private static void internalLogin(@NonNull final String jwt, final KinCallback<Void> loginCallback) {
 	private static void internalLogin(@NonNull final int loginState, final KinCallback<Void> loginCallback) {
-		// try {
-			/*checkInstanceNotNull();
-			@UserLoginState final int loginState = AuthRepository.getInstance().getUserLoginState(jwt);
-			switch (loginState) {
-				case UserLoginState.DIFFERENT_USER:
-					logout();
-				case UserLoginState.FIRST:
-					isAccountLoggedIn.getAndSet(false);
-					eventLogger.send(UserLoginRequested.create());
-					break;
-				case UserLoginState.SAME_USER:
-					break;
+		MigrationManager migrationManager = createMigrationManager(getKinContext(), AuthRepository.getInstance().getAppID());
+		BlockchainSourceImpl.getInstance().setMigrationManager(migrationManager);
+
+		AuthRepository.getInstance().getAccountInfo(new KinCallback<AccountInfo>() {
+			@Override
+			public void onResponse(AccountInfo accountInfo) {
+				String publicAddress;
+				try {
+					BlockchainSourceImpl.getInstance().loadAccount(accountInfo.getAuthToken().getEcosystemUserID());
+					publicAddress = BlockchainSourceImpl.getInstance().getPublicAddress();
+				} catch (final BlockchainException exception) {
+					sendLoginFailed(exception, loginCallback);
+					return;
+				}
+
+				// check server is synced with client, if synced -> skip updateWalletAddress
+				if (publicAddress != null && !publicAddress.equals(accountInfo.getUser().getCurrentWallet())) {
+					AuthRepository.getInstance().updateWalletAddress(publicAddress, new KinCallback<Boolean>() {
+						@Override
+						public void onResponse(Boolean response) {
+							migrate(loginCallback, loginState);
+						}
+
+						@Override
+						public void onFailure(KinEcosystemException exception) {
+							sendLoginFailed(exception, loginCallback);
+						}
+					});
+				} else {
+					migrate(loginCallback, loginState);
+				}
 			}
 
-			AuthRepository.getInstance().setJWT(jwt);*/
-			MigrationManager migrationManager = createMigrationManager(getKinContext(), AuthRepository.getInstance().getAppID());
-			BlockchainSourceImpl.getInstance().setMigrationManager(migrationManager);
-			/*BlockchainSourceImpl.getInstance().startMigrationProcess(new MigrationProcessListener() {
-				@Override
-				public void onMigrationStart() {}
-
-				@Override
-				public void onMigrationEnd() {
-					doit(loginCallback, loginState);
-				}
-
-				@Override
-				public void onMigrationError(BlockchainException error) {
-					sendLoginFailed(error, loginCallback);
-				}
-			});*/
-			AuthRepository.getInstance().getAccountInfo(new KinCallback<AccountInfo>() {
-				@Override
-				public void onResponse(AccountInfo accountInfo) {
-					String publicAddress;
-					try {
-						BlockchainSourceImpl.getInstance().loadAccount(accountInfo.getAuthToken().getEcosystemUserID());
-						publicAddress = BlockchainSourceImpl.getInstance().getPublicAddress();
-					} catch (final BlockchainException exception) {
-						sendLoginFailed(exception, loginCallback);
-						return;
-					}
-
-					// check server is synced with client, if synced -> skip updateWalletAddress
-					if (publicAddress != null && !publicAddress.equals(accountInfo.getUser().getCurrentWallet())) {
-						AuthRepository.getInstance().updateWalletAddress(publicAddress, new KinCallback<Boolean>() {
-							@Override
-							public void onResponse(Boolean response) {
-								migrate(loginCallback, loginState);
-							}
-
-							@Override
-							public void onFailure(KinEcosystemException exception) {
-								sendLoginFailed(exception, loginCallback);
-							}
-						});
-					} else {
-						migrate(loginCallback, loginState);
-					}
-				}
-
-				@Override
-				public void onFailure(final KinEcosystemException exception) {
-					sendLoginFailed(exception, loginCallback);
-				}
-			});
-		/*} catch (final ClientException exception) {
-			sendLoginFailed(exception, loginCallback);
-		}*/
+			@Override
+			public void onFailure(final KinEcosystemException exception) {
+				sendLoginFailed(exception, loginCallback);
+			}
+		});
 	}
 
 	private static void migrate(final KinCallback<Void> loginCallback, final int loginState) {

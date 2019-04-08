@@ -7,8 +7,8 @@ import kin.sdk.migration.common.exception.FailedToResolveSdkVersionException;
 import kin.sdk.migration.common.interfaces.IKinVersionProvider;
 
 class KinBlockchainVersionProvider implements IKinVersionProvider {
-	private BlockchainSource.Local local;
-	private BlockchainSource.Remote remote;
+	private final BlockchainSource.Local local;
+	private final BlockchainSource.Remote remote;
 
 	public KinBlockchainVersionProvider(BlockchainSource.Local local, BlockchainSource.Remote remote) {
 		this.local = local;

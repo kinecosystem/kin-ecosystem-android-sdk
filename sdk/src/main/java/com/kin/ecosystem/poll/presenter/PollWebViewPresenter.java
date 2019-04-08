@@ -154,9 +154,7 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 			eventLogger.send(EarnOrderCompletionSubmitted.create(offerID, orderId));
 			orderRepository.submitEarnOrder(offerID, result, orderId, new KinCallback<Order>() {
 				@Override
-				public void onResponse(Order response) {
-					// TODO: shouldn't something happen here?
-				}
+				public void onResponse(Order response) {}
 
 				@Override
 				public void onFailure(KinEcosystemException exception) {

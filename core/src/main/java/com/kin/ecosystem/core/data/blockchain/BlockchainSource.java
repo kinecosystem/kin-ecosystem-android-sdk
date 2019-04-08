@@ -179,7 +179,7 @@ public interface BlockchainSource {
 
 	KinSdkVersion getBlockchainVersion();
 
-	void fetchBlockchainVersion(Callback<KinSdkVersion, ApiException> callback);
+	void fetchBlockchainVersion(KinCallback<KinSdkVersion> callback);
 
 	void deleteAccount(int accountIndex) throws DeleteAccountException;
 
@@ -221,7 +221,9 @@ public interface BlockchainSource {
 
 	interface MigrationProcessListener {
 		void onMigrationStart();
+
 		void onMigrationEnd();
+
 		void onMigrationError(BlockchainException error);
 	}
 }

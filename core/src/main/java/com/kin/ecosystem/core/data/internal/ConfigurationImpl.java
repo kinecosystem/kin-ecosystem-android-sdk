@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Locale;
 import kin.ecosystem.core.BuildConfig;
 import okhttp3.Interceptor;
+import okhttp3.Interceptor.Chain;
 import okhttp3.MediaType;
 import okhttp3.Protocol;
 import okhttp3.Request;
@@ -54,8 +55,8 @@ public class ConfigurationImpl implements Configuration {
 
 	private static final Object apiClientLock = new Object();
 	private static ApiClient defaultApiClient;
-	private static BlockchainSource blockchainSource;
 
+	private BlockchainSource blockchainSource;
 	private final KinEnvironment kinEnvironment;
 	private static volatile ConfigurationImpl instance;
 
@@ -74,8 +75,8 @@ public class ConfigurationImpl implements Configuration {
 		}
 	}
 
-	public static void setBlockchainSource(BlockchainSource bcSource) {
-		blockchainSource = bcSource;
+	public void setBlockchainSource(BlockchainSource blockchainSource) {
+		this.blockchainSource = blockchainSource;
 	}
 
 	public static ConfigurationImpl getInstance() {
@@ -116,19 +117,9 @@ public class ConfigurationImpl implements Configuration {
 								final String bodyString = body.string();
 								final MediaType contentType = body.contentType();
 
-								try {
-									final Object result = defaultApiClient.handleResponse(response
-										.newBuilder()
-										.body(ResponseBody.create(contentType, bodyString))
-										.build(), Object.class);
-								} catch (ApiException e) {
-									KinEcosystemException serviceException = ErrorUtil.fromApiException(e);
-									if (serviceException.getCode() == ServiceException.BLOCKCHAIN_ENDPOINT_CHANGED) {
-										blockchainSource.startMigrationProcess();
-									}
-								}
-
-								return response.newBuilder().body(ResponseBody.create(contentType, bodyString)).build();
+								return sendRequestAndMigrateOnFail(response, contentType, bodyString)
+									.newBuilder()
+									.body(ResponseBody.create(contentType, bodyString)).build();
 							} else {
 								// Stop the request from being executed.
 								Logger.log(new Log().withTag("ApiClient").text("No token - response error on client"));
@@ -166,6 +157,22 @@ public class ConfigurationImpl implements Configuration {
 		apiClient.addDefaultHeader(HEADER_DEVICE_MODEL, Build.MODEL);
 		apiClient.addDefaultHeader(HEADER_DEVICE_MANUFACTURER, Build.MANUFACTURER);
 		apiClient.addDefaultHeader(HEADER_DEVICE_LANGUAGE, getDeviceAcceptedLanguage());
+	}
+
+	private Response sendRequestAndMigrateOnFail(Response response, MediaType contentType, String body) {
+		try {
+			defaultApiClient.handleResponse(response
+				.newBuilder()
+				.body(ResponseBody.create(contentType, body))
+				.build(), Object.class);
+		} catch (ApiException e) {
+			KinEcosystemException serviceException = ErrorUtil.fromApiException(e);
+			if (serviceException.getCode() == ServiceException.BLOCKCHAIN_ENDPOINT_CHANGED) {
+				blockchainSource.startMigrationProcess();
+			}
+		}
+
+		return response;
 	}
 
 	@Override

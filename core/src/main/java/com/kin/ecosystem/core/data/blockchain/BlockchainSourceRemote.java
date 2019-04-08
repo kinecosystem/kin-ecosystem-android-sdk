@@ -15,11 +15,11 @@ import kin.sdk.migration.common.KinSdkVersion;
 public class BlockchainSourceRemote implements Remote {
 	private static volatile BlockchainSourceRemote instance;
 
-	private MigrationApi api;
+	private MigrationApi migrationApi;
 	private ExecutorsUtil executorsUtil;
 
 	private BlockchainSourceRemote(@NonNull ExecutorsUtil executorsUtil) {
-		this.api = new MigrationApi();
+		this.migrationApi = new MigrationApi();
 		this.executorsUtil = executorsUtil;
 	}
 
@@ -36,14 +36,14 @@ public class BlockchainSourceRemote implements Remote {
 
 	@Override
 	public KinSdkVersion getBlockchainVersion() throws ApiException {
-		String version = api.getBlockchainVersionSync("");
+		String version = migrationApi.getBlockchainVersionSync("");
 		return KinSdkVersion.get(version);
 	}
 
 	@Override
 	public void getBlockchainVersion(@NonNull final Callback<KinSdkVersion, ApiException> callback) {
 		try {
-			api.getBlockchainVersionAsync("", new ApiCallback<String>() {
+			migrationApi.getBlockchainVersionAsync("", new ApiCallback<String>() {
 				@Override
 				public void onFailure(final ApiException e, final int statusCode, final Map<String, List<String>> responseHeaders) {
 					executorsUtil.mainThread().execute(new Runnable() {
@@ -76,13 +76,13 @@ public class BlockchainSourceRemote implements Remote {
 
 	@Override
 	public MigrationInfo getMigrationInfo(@NonNull String publicAddress) throws ApiException {
-		return api.getMigrationInfoSync(publicAddress);
+		return migrationApi.getMigrationInfoSync(publicAddress);
 	}
 
 	@Override
 	public void getMigrationInfo(final String publicAddress, final @NonNull Callback<MigrationInfo, ApiException> callback) {
 		try {
-			api.getMigrationInfoAsync(publicAddress, new ApiCallback<MigrationInfo>() {
+			migrationApi.getMigrationInfoAsync(publicAddress, new ApiCallback<MigrationInfo>() {
 				@Override
 				public void onFailure(final ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
 					executorsUtil.mainThread().execute(new Runnable() {

@@ -162,52 +162,14 @@ public class OrderRepository implements OrderDataSource {
 	public void submitEarnOrder(@NonNull final String offerID, @Nullable String content, @NonNull final String orderID,
 		@Nullable final KinCallback<Order> callback) {
 		listenForCompletedPayment();
-		remoteData.submitEarnOrder(content, orderID, new Callback<Order, ApiException>() {
-			@Override
-			public void onResponse(Order response) {
-				pendingOrdersCount.incrementAndGet();
-				getOrderWatcher().postValue(response);
-				if (callback != null) {
-					callback.onResponse(response);
-				}
-			}
-
-			@Override
-			public void onFailure(ApiException e) {
-				getOrderWatcher().postValue(
-					new Order().orderId(orderID).offerId(offerID).status(Status.FAILED).error(e.getResponseBody()));
-				removeCachedOpenOrderByID(orderID);
-				if (callback != null) {
-					callback.onFailure(ErrorUtil.fromApiException(e));
-				}
-			}
-		});
+		remoteData.submitEarnOrder(content, orderID, createSubmitOrderCallback(callback, orderID, offerID));
 	}
 
 	@Override
 	public void submitSpendOrder(@NonNull final String offerID, @Nullable String transaction, @NonNull final String orderID,
 		@Nullable final KinCallback<Order> callback) {
 		listenForCompletedPayment();
-		remoteData.submitSpendOrder(transaction, orderID, new Callback<Order, ApiException>() {
-			@Override
-			public void onResponse(Order response) {
-				pendingOrdersCount.incrementAndGet();
-				getOrderWatcher().postValue(response);
-				if (callback != null) {
-					callback.onResponse(response);
-				}
-			}
-
-			@Override
-			public void onFailure(ApiException e) {
-				getOrderWatcher().postValue(
-					new Order().orderId(orderID).offerId(offerID).status(Status.FAILED).error(e.getResponseBody()));
-				removeCachedOpenOrderByID(orderID);
-				if (callback != null) {
-					callback.onFailure(ErrorUtil.fromApiException(e));
-				}
-			}
-		});
+		remoteData.submitSpendOrder(transaction, orderID, createSubmitOrderCallback(callback, orderID, offerID));
 	}
 
 	@Override
@@ -266,6 +228,29 @@ public class OrderRepository implements OrderDataSource {
 		if (hasMorePendingOffers()) {
 			pendingOrdersCount.decrementAndGet();
 		}
+	}
+
+	private Callback<Order, ApiException> createSubmitOrderCallback(final KinCallback<Order> callback, final String orderID, final String offerID) {
+		return new Callback<Order, ApiException>() {
+			@Override
+			public void onResponse(Order response) {
+				pendingOrdersCount.incrementAndGet();
+				getOrderWatcher().postValue(response);
+				if (callback != null) {
+					callback.onResponse(response);
+				}
+			}
+
+			@Override
+			public void onFailure(ApiException e) {
+				getOrderWatcher().postValue(
+					new Order().orderId(orderID).offerId(offerID).status(Status.FAILED).error(e.getResponseBody()));
+				removeCachedOpenOrderByID(orderID);
+				if (callback != null) {
+					callback.onFailure(ErrorUtil.fromApiException(e));
+				}
+			}
+		};
 	}
 
 	@VisibleForTesting

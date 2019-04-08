@@ -1,7 +1,7 @@
 package com.kin.ecosystem.core.network.model;
 
 import com.google.gson.annotations.SerializedName;
-import java.util.Objects;
+import com.kin.ecosystem.core.util.StringUtil;
 
 public class SpendOrderPayload {
 	@SerializedName("transaction")
@@ -34,12 +34,12 @@ public class SpendOrderPayload {
 			return false;
 		}
 		SpendOrderPayload payload = (SpendOrderPayload) o;
-		return Objects.equals(this.transaction, payload.transaction);
+		return this.transaction.equals(payload.transaction);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(transaction);
+		return transaction.hashCode();
 	}
 
 	@Override
@@ -47,19 +47,8 @@ public class SpendOrderPayload {
 		StringBuilder sb = new StringBuilder();
 		sb.append("class SpendOrderPayload {\n");
 
-		sb.append("    transaction: ").append(toIndentedString(transaction)).append("\n");
+		sb.append("    transaction: ").append(StringUtil.toIndentedString(transaction)).append("\n");
 		sb.append("}");
 		return sb.toString();
-	}
-
-	/**
-	 * Convert the given object to string with each line indented by 4 spaces
-	 * (except the first line).
-	 */
-	private String toIndentedString(java.lang.Object o) {
-		if (o == null) {
-			return "null";
-		}
-		return o.toString().replace("\n", "\n    ");
 	}
 }

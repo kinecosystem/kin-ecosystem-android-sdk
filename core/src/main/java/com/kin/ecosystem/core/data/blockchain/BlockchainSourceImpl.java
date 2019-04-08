@@ -419,7 +419,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
-	public void fetchBlockchainVersion(final Callback<KinSdkVersion, ApiException> callback) {
+	public void fetchBlockchainVersion(final KinCallback<KinSdkVersion> callback) {
 		if (getBlockchainVersion() == KinSdkVersion.NEW_KIN_SDK) {
 			callback.onResponse(KinSdkVersion.NEW_KIN_SDK);
 		} else {
@@ -432,7 +432,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 				@Override
 				public void onFailure(ApiException exception) {
-					callback.onFailure(exception);
+					callback.onFailure(ErrorUtil.fromApiException(exception));
 				}
 			});
 		}

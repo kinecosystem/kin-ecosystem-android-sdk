@@ -831,12 +831,12 @@ public class ApiClient {
 		Object body, Map<String, String> headerParams, Map<String, Object> formParams, String[] authNames) throws ApiException {
 		updateParamsForAuth(authNames, queryParams, headerParams);
 
-		String url = buildUrl(path, queryParams, collectionQueryParams);
+		final String url = buildUrl(path, queryParams, collectionQueryParams);
 
 		final Request.Builder reqBuilder = new Request.Builder().url(url);
 		processHeaderParams(headerParams, reqBuilder);
 
-		String contentType = (String) headerParams.get("Content-Type");
+		String contentType = headerParams.get("Content-Type");
 		// ensuring a default content type
 		if (contentType == null) {
 			contentType = "application/json";
