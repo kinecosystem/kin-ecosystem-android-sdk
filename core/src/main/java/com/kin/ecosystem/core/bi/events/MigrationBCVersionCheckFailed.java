@@ -12,20 +12,22 @@ import com.google.gson.annotations.SerializedName;
 
 
 /**
- * Client reports failure to complete backup
+ * Asking the server for the current blockchain version for the account- failed
  * 
  */
-public class BackupWalletFailed implements Event {
-    public static final String EVENT_NAME = "backup_wallet_failed";
-    public static final String EVENT_TYPE = "business";
+public class MigrationBCVersionCheckFailed implements Event {
+    public static final String EVENT_NAME = "migration_BC_version_check_failed";
+    public static final String EVENT_TYPE = "log";
 
     // Augmented by script
-    public static BackupWalletFailed create(String errorReason) {
-        return new BackupWalletFailed(
+    public static MigrationBCVersionCheckFailed create(String errorReason, String publicAddress, MigrationBCVersionCheckFailed.BlockchainVersion blockchainVersion) {
+        return new MigrationBCVersionCheckFailed(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             (Client) EventsStore.client(),
-            errorReason);
+            errorReason,
+            publicAddress,
+            blockchainVersion);
     }
 
     /**
@@ -76,29 +78,49 @@ public class BackupWalletFailed implements Event {
     @SerializedName("error_reason")
     @Expose
     private String errorReason;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("public_address")
+    @Expose
+    private String publicAddress;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("blockchain_version")
+    @Expose
+    private MigrationBCVersionCheckFailed.BlockchainVersion blockchainVersion;
 
     /**
      * No args constructor for use in serialization
      * 
      */
-    public BackupWalletFailed() {
+    public MigrationBCVersionCheckFailed() {
     }
 
     /**
      * 
      * @param common
      * @param errorReason
+     * @param blockchainVersion
 
      * @param client
+     * @param publicAddress
 
      * @param user
      */
-    public BackupWalletFailed(Common common, User user, Client client, String errorReason) {
+    public MigrationBCVersionCheckFailed(Common common, User user, Client client, String errorReason, String publicAddress, MigrationBCVersionCheckFailed.BlockchainVersion blockchainVersion) {
         super();
         this.common = common;
         this.user = user;
         this.client = client;
         this.errorReason = errorReason;
+        this.publicAddress = publicAddress;
+        this.blockchainVersion = blockchainVersion;
     }
 
     /**
@@ -207,6 +229,81 @@ public class BackupWalletFailed implements Event {
      */
     public void setErrorReason(String errorReason) {
         this.errorReason = errorReason;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getPublicAddress() {
+        return publicAddress;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setPublicAddress(String publicAddress) {
+        this.publicAddress = publicAddress;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public MigrationBCVersionCheckFailed.BlockchainVersion getBlockchainVersion() {
+        return blockchainVersion;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setBlockchainVersion(MigrationBCVersionCheckFailed.BlockchainVersion blockchainVersion) {
+        this.blockchainVersion = blockchainVersion;
+    }
+
+    public enum BlockchainVersion {
+
+        @SerializedName("2")
+        _2("2"),
+        @SerializedName("3")
+        _3("3");
+        private final String value;
+        private final static Map<String, MigrationBCVersionCheckFailed.BlockchainVersion> CONSTANTS = new HashMap<String, MigrationBCVersionCheckFailed.BlockchainVersion>();
+
+        static {
+            for (MigrationBCVersionCheckFailed.BlockchainVersion c: values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        private BlockchainVersion(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+
+        public String value() {
+            return this.value;
+        }
+
+        public static MigrationBCVersionCheckFailed.BlockchainVersion fromValue(String value) {
+            MigrationBCVersionCheckFailed.BlockchainVersion constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            } else {
+                return constant;
+            }
+        }
+
     }
 
 }

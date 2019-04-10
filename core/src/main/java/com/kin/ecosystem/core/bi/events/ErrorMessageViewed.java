@@ -12,16 +12,16 @@ import com.google.gson.annotations.SerializedName;
 
 
 /**
- * User login success 
+ * User views error_message New UI
  * 
  */
-public class UserLoginSucceeded implements Event {
-    public static final String EVENT_NAME = "user_login_succeeded";
-    public static final String EVENT_TYPE = "business";
+public class ErrorMessageViewed implements Event {
+    public static final String EVENT_NAME = "error_message_viewed";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
-    public static UserLoginSucceeded create() {
-        return new UserLoginSucceeded(
+    public static ErrorMessageViewed create() {
+        return new ErrorMessageViewed(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             (Client) EventsStore.client());
@@ -72,7 +72,7 @@ public class UserLoginSucceeded implements Event {
      * No args constructor for use in serialization
      * 
      */
-    public UserLoginSucceeded() {
+    public ErrorMessageViewed() {
     }
 
     /**
@@ -83,7 +83,7 @@ public class UserLoginSucceeded implements Event {
 
      * @param user
      */
-    public UserLoginSucceeded(Common common, User user, Client client) {
+    public ErrorMessageViewed(Common common, User user, Client client) {
         super();
         this.common = common;
         this.user = user;

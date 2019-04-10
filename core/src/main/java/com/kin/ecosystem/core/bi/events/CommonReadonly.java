@@ -9,6 +9,8 @@ public interface CommonReadonly {
 
     String getVersion();
 
+    String getDeviceId();
+
     String getUserId();
 
     Long getTimestamp();

@@ -17,6 +17,11 @@ import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.KinBalanceUpdated;
+import com.kin.ecosystem.core.bi.events.MigrationAccountCompleted;
+import com.kin.ecosystem.core.bi.events.MigrationAccountCompleted.BlockchainVersion;
+import com.kin.ecosystem.core.bi.events.MigrationAccountFailed;
+import com.kin.ecosystem.core.bi.events.MigrationAccountStarted;
+import com.kin.ecosystem.core.bi.events.MigrationModuleStarted;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainFailed;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainSubmitted;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainSucceeded;
@@ -237,11 +242,15 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		}
 	}
 
-	private void startMigration(String publicAddress, final MigrationProcessListener listener) {
+	private void startMigration(final String publicAddress, final MigrationProcessListener listener) {
+		eventLogger.send(MigrationModuleStarted.create(publicAddress));
+
 		try {
 			migrationManager.start(publicAddress, new IMigrationManagerCallbacks() {
 				@Override
 				public void onMigrationStart() {
+					eventLogger.send(MigrationAccountStarted.create(publicAddress));
+
 					if (listener != null) {
 						listener.onMigrationStart();
 					}
@@ -249,7 +258,11 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 				@Override
 				public void onReady(IKinClient kinClient) {
+					eventLogger.send(MigrationAccountCompleted.create(
+						BlockchainVersion._3, publicAddress
+					));
 					updateKinClient(kinClient);
+
 					if (listener != null) {
 						listener.onMigrationEnd();
 					}
@@ -257,6 +270,8 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 				@Override
 				public void onError(Exception e) {
+					eventLogger.send(MigrationAccountFailed.create(publicAddress, e.getMessage()));
+
 					if (listener != null) {
 						listener.onMigrationError(
 							new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed", e));

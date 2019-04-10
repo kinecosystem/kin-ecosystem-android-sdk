@@ -47,24 +47,25 @@ class EventCommonDataUtil {
 					}
 				});
 
-				commonProxy.setVersion(BuildConfig.VERSION_NAME);
-			}
-		};
-
-		final ClientModifier clientModifier = new ClientModifier() {
-			@Override
-			public void modify(ClientProxy commonProxy) {
 				commonProxy.setDeviceId(new DynamicValue<String>() {
 					@Override
 					public String get() {
 						return AuthRepository.getInstance().getDeviceID();
 					}
 				});
-				commonProxy.setCarrier(carrierName);
-				commonProxy.setOs(VERSION.RELEASE);
-				commonProxy.setDeviceManufacturer(Build.MANUFACTURER);
-				commonProxy.setDeviceModel(Build.MODEL);
-				commonProxy.setLanguage(new DynamicValue<String>() {
+
+				commonProxy.setVersion(BuildConfig.VERSION_NAME);
+			}
+		};
+
+		final ClientModifier clientModifier = new ClientModifier() {
+			@Override
+			public void modify(ClientProxy clientProxy) {
+				clientProxy.setCarrier(carrierName);
+				clientProxy.setOs(VERSION.RELEASE);
+				clientProxy.setDeviceManufacturer(Build.MANUFACTURER);
+				clientProxy.setDeviceModel(Build.MODEL);
+				clientProxy.setLanguage(new DynamicValue<String>() {
 					@Override
 					public String get() {
 						return Locale.getDefault().getDisplayLanguage();

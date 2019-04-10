@@ -12,19 +12,20 @@ import com.google.gson.annotations.SerializedName;
 
 
 /**
- * User login success 
+ * User views toast_messages New UI
  * 
  */
-public class UserLoginSucceeded implements Event {
-    public static final String EVENT_NAME = "user_login_succeeded";
-    public static final String EVENT_TYPE = "business";
+public class PopupMessageViewed implements Event {
+    public static final String EVENT_NAME = "popup_message_viewed";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
-    public static UserLoginSucceeded create() {
-        return new UserLoginSucceeded(
+    public static PopupMessageViewed create(PopupMessageViewed.MessageType messageType) {
+        return new PopupMessageViewed(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
-            (Client) EventsStore.client());
+            (Client) EventsStore.client(),
+            messageType);
     }
 
     /**
@@ -67,27 +68,37 @@ public class UserLoginSucceeded implements Event {
     @SerializedName("client")
     @Expose
     private Client client;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("message_type")
+    @Expose
+    private PopupMessageViewed.MessageType messageType;
 
     /**
      * No args constructor for use in serialization
      * 
      */
-    public UserLoginSucceeded() {
+    public PopupMessageViewed() {
     }
 
     /**
      * 
      * @param common
+     * @param messageType
 
      * @param client
 
      * @param user
      */
-    public UserLoginSucceeded(Common common, User user, Client client) {
+    public PopupMessageViewed(Common common, User user, Client client, PopupMessageViewed.MessageType messageType) {
         super();
         this.common = common;
         this.user = user;
         this.client = client;
+        this.messageType = messageType;
     }
 
     /**
@@ -178,6 +189,71 @@ public class UserLoginSucceeded implements Event {
      */
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public PopupMessageViewed.MessageType getMessageType() {
+        return messageType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setMessageType(PopupMessageViewed.MessageType messageType) {
+        this.messageType = messageType;
+    }
+
+    public enum MessageType {
+
+        @SerializedName("no_wallet ")
+        NO_WALLET("no_wallet "),
+        @SerializedName("error ")
+        ERROR("error "),
+        @SerializedName("earn_confirmation ")
+        EARN_CONFIRMATION("earn_confirmation "),
+        @SerializedName("generic_native ")
+        GENERIC_NATIVE("generic_native "),
+        @SerializedName("what_is_kin")
+        WHAT_IS_KIN("what_is_kin"),
+        @SerializedName("spend_confirmation")
+        SPEND_CONFIRMATION("spend_confirmation");
+        private final String value;
+        private final static Map<String, PopupMessageViewed.MessageType> CONSTANTS = new HashMap<String, PopupMessageViewed.MessageType>();
+
+        static {
+            for (PopupMessageViewed.MessageType c: values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        private MessageType(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+
+        public String value() {
+            return this.value;
+        }
+
+        public static PopupMessageViewed.MessageType fromValue(String value) {
+            PopupMessageViewed.MessageType constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            } else {
+                return constant;
+            }
+        }
+
     }
 
 }

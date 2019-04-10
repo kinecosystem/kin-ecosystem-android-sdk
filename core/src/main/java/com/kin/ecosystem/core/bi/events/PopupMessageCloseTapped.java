@@ -12,19 +12,20 @@ import com.google.gson.annotations.SerializedName;
 
 
 /**
- * User login success 
+ * User exit on boarding page by tapping on background app or  X  or android navigator
  * 
  */
-public class UserLoginSucceeded implements Event {
-    public static final String EVENT_NAME = "user_login_succeeded";
-    public static final String EVENT_TYPE = "business";
+public class PopupMessageCloseTapped implements Event {
+    public static final String EVENT_NAME = "popup_message_close_tapped";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
-    public static UserLoginSucceeded create() {
-        return new UserLoginSucceeded(
+    public static PopupMessageCloseTapped create(PopupMessageCloseTapped.ExitType exitType) {
+        return new PopupMessageCloseTapped(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
-            (Client) EventsStore.client());
+            (Client) EventsStore.client(),
+            exitType);
     }
 
     /**
@@ -67,27 +68,37 @@ public class UserLoginSucceeded implements Event {
     @SerializedName("client")
     @Expose
     private Client client;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("exit_type")
+    @Expose
+    private PopupMessageCloseTapped.ExitType exitType;
 
     /**
      * No args constructor for use in serialization
      * 
      */
-    public UserLoginSucceeded() {
+    public PopupMessageCloseTapped() {
     }
 
     /**
      * 
+     * @param exitType
      * @param common
 
      * @param client
 
      * @param user
      */
-    public UserLoginSucceeded(Common common, User user, Client client) {
+    public PopupMessageCloseTapped(Common common, User user, Client client, PopupMessageCloseTapped.ExitType exitType) {
         super();
         this.common = common;
         this.user = user;
         this.client = client;
+        this.exitType = exitType;
     }
 
     /**
@@ -178,6 +189,65 @@ public class UserLoginSucceeded implements Event {
      */
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public PopupMessageCloseTapped.ExitType getExitType() {
+        return exitType;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setExitType(PopupMessageCloseTapped.ExitType exitType) {
+        this.exitType = exitType;
+    }
+
+    public enum ExitType {
+
+        @SerializedName("backround_app")
+        BACKROUND_APP("backround_app"),
+        @SerializedName("X_button")
+        X_BUTTON("X_button"),
+        @SerializedName("Android_navigator")
+        ANDROID_NAVIGATOR("Android_navigator");
+        private final String value;
+        private final static Map<String, PopupMessageCloseTapped.ExitType> CONSTANTS = new HashMap<String, PopupMessageCloseTapped.ExitType>();
+
+        static {
+            for (PopupMessageCloseTapped.ExitType c: values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        private ExitType(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+
+        public String value() {
+            return this.value;
+        }
+
+        public static PopupMessageCloseTapped.ExitType fromValue(String value) {
+            PopupMessageCloseTapped.ExitType constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            } else {
+                return constant;
+            }
+        }
+
     }
 
 }

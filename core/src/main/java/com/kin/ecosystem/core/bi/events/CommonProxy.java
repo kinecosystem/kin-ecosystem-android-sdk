@@ -1,7 +1,7 @@
 package com.kin.ecosystem.core.bi.events;
 
-import com.kin.ecosystem.core.bi.EventsStore;
 import java.util.UUID;
+import com.kin.ecosystem.core.bi.EventsStore;
 
 public class CommonProxy implements CommonInterface {
     public Common snapshot() {
@@ -9,11 +9,12 @@ public class CommonProxy implements CommonInterface {
             this.getSchemaVersion(),
             this.getEventId(),
             this.getVersion(),
+            this.getDeviceId(),
             this.getUserId(),
             this.getTimestamp());
     }
 
-    private String schemaVersion = "1";
+    private String schemaVersion;
     private EventsStore.DynamicValue<String> dynamicSchemaVersion;
     public String getSchemaVersion() {
         return this.schemaVersion != null ? this.schemaVersion : this.dynamicSchemaVersion.get();
@@ -47,6 +48,18 @@ public class CommonProxy implements CommonInterface {
     }
     public void setVersion(EventsStore.DynamicValue<String> version) {
         this.dynamicVersion = version;
+    }
+
+    private String deviceId;
+    private EventsStore.DynamicValue<String> dynamicDeviceId;
+    public String getDeviceId() {
+        return this.deviceId != null ? this.deviceId : this.dynamicDeviceId.get();
+    }
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+    public void setDeviceId(EventsStore.DynamicValue<String> deviceId) {
+        this.dynamicDeviceId = deviceId;
     }
 
     private String userId;

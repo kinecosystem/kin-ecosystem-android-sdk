@@ -12,19 +12,20 @@ import com.google.gson.annotations.SerializedName;
 
 
 /**
- * User login success 
+ * calling the migration module
  * 
  */
-public class UserLoginSucceeded implements Event {
-    public static final String EVENT_NAME = "user_login_succeeded";
-    public static final String EVENT_TYPE = "business";
+public class MigrationModuleStarted implements Event {
+    public static final String EVENT_NAME = "migration_module_started";
+    public static final String EVENT_TYPE = "log";
 
     // Augmented by script
-    public static UserLoginSucceeded create() {
-        return new UserLoginSucceeded(
+    public static MigrationModuleStarted create(String publicAddress) {
+        return new MigrationModuleStarted(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
-            (Client) EventsStore.client());
+            (Client) EventsStore.client(),
+            publicAddress);
     }
 
     /**
@@ -67,12 +68,20 @@ public class UserLoginSucceeded implements Event {
     @SerializedName("client")
     @Expose
     private Client client;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("public_address")
+    @Expose
+    private String publicAddress;
 
     /**
      * No args constructor for use in serialization
      * 
      */
-    public UserLoginSucceeded() {
+    public MigrationModuleStarted() {
     }
 
     /**
@@ -80,14 +89,16 @@ public class UserLoginSucceeded implements Event {
      * @param common
 
      * @param client
+     * @param publicAddress
 
      * @param user
      */
-    public UserLoginSucceeded(Common common, User user, Client client) {
+    public MigrationModuleStarted(Common common, User user, Client client, String publicAddress) {
         super();
         this.common = common;
         this.user = user;
         this.client = client;
+        this.publicAddress = publicAddress;
     }
 
     /**
@@ -178,6 +189,24 @@ public class UserLoginSucceeded implements Event {
      */
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getPublicAddress() {
+        return publicAddress;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setPublicAddress(String publicAddress) {
+        this.publicAddress = publicAddress;
     }
 
 }

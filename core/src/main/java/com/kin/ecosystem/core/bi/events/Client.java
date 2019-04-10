@@ -40,14 +40,6 @@ public class Client implements ClientInterface {
      * (Required)
      * 
      */
-    @SerializedName("device_id")
-    @Expose
-    private String deviceId;
-    /**
-     * 
-     * (Required)
-     * 
-     */
     @SerializedName("device_manufacturer")
     @Expose
     private String deviceManufacturer;
@@ -74,14 +66,12 @@ public class Client implements ClientInterface {
      * @param language
      * @param deviceModel
      * @param deviceManufacturer
-     * @param deviceId
      */
-    public Client(String os, String language, String carrier, String deviceId, String deviceManufacturer, String deviceModel) {
+    public Client(String os, String language, String carrier, String deviceManufacturer, String deviceModel) {
         super();
         this.os = os;
         this.language = language;
         this.carrier = carrier;
-        this.deviceId = deviceId;
         this.deviceManufacturer = deviceManufacturer;
         this.deviceModel = deviceModel;
     }
@@ -138,24 +128,6 @@ public class Client implements ClientInterface {
      */
     public void setCarrier(String carrier) {
         this.carrier = carrier;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public String getDeviceId() {
-        return deviceId;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
     }
 
     /**

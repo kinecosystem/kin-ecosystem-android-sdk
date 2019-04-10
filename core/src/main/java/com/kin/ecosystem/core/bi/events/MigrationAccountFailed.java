@@ -12,19 +12,21 @@ import com.google.gson.annotations.SerializedName;
 
 
 /**
- * User login success 
+ * migration process has failed  meaning one of the steps failed
  * 
  */
-public class UserLoginSucceeded implements Event {
-    public static final String EVENT_NAME = "user_login_succeeded";
+public class MigrationAccountFailed implements Event {
+    public static final String EVENT_NAME = "migration_account_failed";
     public static final String EVENT_TYPE = "business";
 
     // Augmented by script
-    public static UserLoginSucceeded create() {
-        return new UserLoginSucceeded(
+    public static MigrationAccountFailed create(String publicAddress, String errorReason) {
+        return new MigrationAccountFailed(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
-            (Client) EventsStore.client());
+            (Client) EventsStore.client(),
+            publicAddress,
+            errorReason);
     }
 
     /**
@@ -67,27 +69,47 @@ public class UserLoginSucceeded implements Event {
     @SerializedName("client")
     @Expose
     private Client client;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("public_address")
+    @Expose
+    private String publicAddress;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("error_reason")
+    @Expose
+    private String errorReason;
 
     /**
      * No args constructor for use in serialization
      * 
      */
-    public UserLoginSucceeded() {
+    public MigrationAccountFailed() {
     }
 
     /**
      * 
      * @param common
+     * @param errorReason
 
      * @param client
+     * @param publicAddress
 
      * @param user
      */
-    public UserLoginSucceeded(Common common, User user, Client client) {
+    public MigrationAccountFailed(Common common, User user, Client client, String publicAddress, String errorReason) {
         super();
         this.common = common;
         this.user = user;
         this.client = client;
+        this.publicAddress = publicAddress;
+        this.errorReason = errorReason;
     }
 
     /**
@@ -178,6 +200,42 @@ public class UserLoginSucceeded implements Event {
      */
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getPublicAddress() {
+        return publicAddress;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setPublicAddress(String publicAddress) {
+        this.publicAddress = publicAddress;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getErrorReason() {
+        return errorReason;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setErrorReason(String errorReason) {
+        this.errorReason = errorReason;
     }
 
 }

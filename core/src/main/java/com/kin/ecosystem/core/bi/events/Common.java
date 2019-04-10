@@ -14,7 +14,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Common implements CommonInterface {
     public static final String PLATFORM = "Android";
-    public static final String SCHEMA_VERSION = "15522c820ef84aca25fb775a7eea5c6dcc9daac2";
+    public static final String SCHEMA_VERSION = "59ba36a8e21c628c3a0a637784021db43fe5b008";
 
     /**
      * 
@@ -40,6 +40,14 @@ public class Common implements CommonInterface {
     @SerializedName("version")
     @Expose
     private String version;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("device_id")
+    @Expose
+    private String deviceId;
     /**
      * 
      * (Required)
@@ -77,14 +85,16 @@ public class Common implements CommonInterface {
      * @param eventId
      * @param schemaVersion
      * @param version
+     * @param deviceId
      * @param userId
      * @param timestamp
      */
-    public Common(String schemaVersion, UUID eventId, String version, String userId, Long timestamp) {
+    public Common(String schemaVersion, UUID eventId, String version, String deviceId, String userId, Long timestamp) {
         super();
         this.schemaVersion = schemaVersion;
         this.eventId = eventId;
         this.version = version;
+        this.deviceId = deviceId;
         this.userId = userId;
         this.timestamp = timestamp;
     }
@@ -141,6 +151,24 @@ public class Common implements CommonInterface {
      */
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     /**

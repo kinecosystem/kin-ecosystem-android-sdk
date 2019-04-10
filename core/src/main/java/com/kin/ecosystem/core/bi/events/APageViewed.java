@@ -12,19 +12,20 @@ import com.google.gson.annotations.SerializedName;
 
 
 /**
- * User login success 
+ * User views page in new UI
  * 
  */
-public class UserLoginSucceeded implements Event {
-    public static final String EVENT_NAME = "user_login_succeeded";
-    public static final String EVENT_TYPE = "business";
+public class APageViewed implements Event {
+    public static final String EVENT_NAME = "a_page_viewed";
+    public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
-    public static UserLoginSucceeded create() {
-        return new UserLoginSucceeded(
+    public static APageViewed create(APageViewed.PageName pageName) {
+        return new APageViewed(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
-            (Client) EventsStore.client());
+            (Client) EventsStore.client(),
+            pageName);
     }
 
     /**
@@ -67,12 +68,20 @@ public class UserLoginSucceeded implements Event {
     @SerializedName("client")
     @Expose
     private Client client;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("page_name")
+    @Expose
+    private APageViewed.PageName pageName;
 
     /**
      * No args constructor for use in serialization
      * 
      */
-    public UserLoginSucceeded() {
+    public APageViewed() {
     }
 
     /**
@@ -82,12 +91,14 @@ public class UserLoginSucceeded implements Event {
      * @param client
 
      * @param user
+     * @param pageName
      */
-    public UserLoginSucceeded(Common common, User user, Client client) {
+    public APageViewed(Common common, User user, Client client, APageViewed.PageName pageName) {
         super();
         this.common = common;
         this.user = user;
         this.client = client;
+        this.pageName = pageName;
     }
 
     /**
@@ -178,6 +189,73 @@ public class UserLoginSucceeded implements Event {
      */
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public APageViewed.PageName getPageName() {
+        return pageName;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setPageName(APageViewed.PageName pageName) {
+        this.pageName = pageName;
+    }
+
+    public enum PageName {
+
+        @SerializedName("onboarding")
+        ONBOARDING("onboarding"),
+        @SerializedName("main_page")
+        MAIN_PAGE("main_page"),
+        @SerializedName("main_page_empty_state")
+        MAIN_PAGE_EMPTY_STATE("main_page_empty_state"),
+        @SerializedName("my_kin_page")
+        MY_KIN_PAGE("my_kin_page"),
+        @SerializedName("settings ")
+        SETTINGS("settings "),
+        @SerializedName("dialogs_not_enough_kin")
+        DIALOGS_NOT_ENOUGH_KIN("dialogs_not_enough_kin"),
+        @SerializedName("dialogs_spend_confirmation_screen")
+        DIALOGS_SPEND_CONFIRMATION_SCREEN("dialogs_spend_confirmation_screen");
+        private final String value;
+        private final static Map<String, APageViewed.PageName> CONSTANTS = new HashMap<String, APageViewed.PageName>();
+
+        static {
+            for (APageViewed.PageName c: values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        private PageName(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+
+        public String value() {
+            return this.value;
+        }
+
+        public static APageViewed.PageName fromValue(String value) {
+            APageViewed.PageName constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            } else {
+                return constant;
+            }
+        }
+
     }
 
 }
