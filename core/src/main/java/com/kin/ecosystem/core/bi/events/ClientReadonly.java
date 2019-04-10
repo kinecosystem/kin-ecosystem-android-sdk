@@ -9,6 +9,8 @@ public interface ClientReadonly {
 
     String getCarrier();
 
+    String getDeviceId();
+
     String getDeviceManufacturer();
 
     String getDeviceModel();

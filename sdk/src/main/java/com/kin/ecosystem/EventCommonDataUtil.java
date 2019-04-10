@@ -47,13 +47,6 @@ class EventCommonDataUtil {
 					}
 				});
 
-				commonProxy.setDeviceId(new DynamicValue<String>() {
-					@Override
-					public String get() {
-						return AuthRepository.getInstance().getDeviceID();
-					}
-				});
-
 				commonProxy.setVersion(BuildConfig.VERSION_NAME);
 			}
 		};
@@ -65,6 +58,12 @@ class EventCommonDataUtil {
 				clientProxy.setOs(VERSION.RELEASE);
 				clientProxy.setDeviceManufacturer(Build.MANUFACTURER);
 				clientProxy.setDeviceModel(Build.MODEL);
+				clientProxy.setDeviceId(new DynamicValue<String>() {
+					@Override
+					public String get() {
+						return AuthRepository.getInstance().getDeviceID();
+					}
+				});
 				clientProxy.setLanguage(new DynamicValue<String>() {
 					@Override
 					public String get() {

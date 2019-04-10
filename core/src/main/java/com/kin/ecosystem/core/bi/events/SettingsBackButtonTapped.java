@@ -20,12 +20,11 @@ public class SettingsBackButtonTapped implements Event {
     public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
-    public static SettingsBackButtonTapped create(SettingsBackButtonTapped.ExitType exitType) {
+    public static SettingsBackButtonTapped create() {
         return new SettingsBackButtonTapped(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
-            (Client) EventsStore.client(),
-            exitType);
+            (Client) EventsStore.client());
     }
 
     /**
@@ -68,14 +67,6 @@ public class SettingsBackButtonTapped implements Event {
     @SerializedName("client")
     @Expose
     private Client client;
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    @SerializedName("exit_type")
-    @Expose
-    private SettingsBackButtonTapped.ExitType exitType;
 
     /**
      * No args constructor for use in serialization
@@ -86,19 +77,17 @@ public class SettingsBackButtonTapped implements Event {
 
     /**
      * 
-     * @param exitType
      * @param common
 
      * @param client
 
      * @param user
      */
-    public SettingsBackButtonTapped(Common common, User user, Client client, SettingsBackButtonTapped.ExitType exitType) {
+    public SettingsBackButtonTapped(Common common, User user, Client client) {
         super();
         this.common = common;
         this.user = user;
         this.client = client;
-        this.exitType = exitType;
     }
 
     /**
@@ -189,65 +178,6 @@ public class SettingsBackButtonTapped implements Event {
      */
     public void setClient(Client client) {
         this.client = client;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public SettingsBackButtonTapped.ExitType getExitType() {
-        return exitType;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setExitType(SettingsBackButtonTapped.ExitType exitType) {
-        this.exitType = exitType;
-    }
-
-    public enum ExitType {
-
-        @SerializedName("backround_app")
-        BACKROUND_APP("backround_app"),
-        @SerializedName("X_button")
-        X_BUTTON("X_button"),
-        @SerializedName("Android_navigator")
-        ANDROID_NAVIGATOR("Android_navigator");
-        private final String value;
-        private final static Map<String, SettingsBackButtonTapped.ExitType> CONSTANTS = new HashMap<String, SettingsBackButtonTapped.ExitType>();
-
-        static {
-            for (SettingsBackButtonTapped.ExitType c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private ExitType(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static SettingsBackButtonTapped.ExitType fromValue(String value) {
-            SettingsBackButtonTapped.ExitType constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

@@ -8,6 +8,7 @@ public class ClientProxy implements ClientInterface {
             this.getOs(),
             this.getLanguage(),
             this.getCarrier(),
+            this.getDeviceId(),
             this.getDeviceManufacturer(),
             this.getDeviceModel());
     }
@@ -46,6 +47,18 @@ public class ClientProxy implements ClientInterface {
     }
     public void setCarrier(EventsStore.DynamicValue<String> carrier) {
         this.dynamicCarrier = carrier;
+    }
+
+    private String deviceId;
+    private EventsStore.DynamicValue<String> dynamicDeviceId;
+    public String getDeviceId() {
+        return this.deviceId != null ? this.deviceId : this.dynamicDeviceId.get();
+    }
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+    public void setDeviceId(EventsStore.DynamicValue<String> deviceId) {
+        this.dynamicDeviceId = deviceId;
     }
 
     private String deviceManufacturer;

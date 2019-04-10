@@ -9,8 +9,6 @@ public interface CommonInterface extends CommonReadonly {
 
     void setVersion(String version);
 
-    void setDeviceId(String deviceId);
-
     void setUserId(String userId);
 
     void setTimestamp(Long timestamp);
