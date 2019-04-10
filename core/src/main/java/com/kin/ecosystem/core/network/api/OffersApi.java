@@ -17,26 +17,7 @@ import java.util.Map;
 import okhttp3.Call;
 
 
-public class OffersApi {
-    private ApiClient apiClient;
-
-    public OffersApi() {
-        this(ConfigurationImpl.getInstance().getDefaultApiClient());
-    }
-
-    public OffersApi(ApiClient apiClient) {
-        this.apiClient = apiClient;
-    }
-
-    public ApiClient getApiClient() {
-        return apiClient;
-    }
-
-    public void setApiClient(ApiClient apiClient) {
-        this.apiClient = apiClient;
-    }
-
-
+public class OffersApi extends Api {
     /**
      * Build call for getOffers
      *

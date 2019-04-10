@@ -22,8 +22,11 @@ public interface OrderDataSource {
 
     void createOrder(@NonNull final String offerID, final KinCallback<OpenOrder> callback);
 
-    void submitOrder(@NonNull final String offerID, @Nullable String content, @NonNull String orderID,
-        final KinCallback<Order> callback);
+	void submitEarnOrder(@NonNull final String offerID, @Nullable String content, @NonNull String orderID,
+		final KinCallback<Order> callback);
+
+	void submitSpendOrder(@NonNull final String offerID, @Nullable String transaction, @NonNull String orderID,
+		final KinCallback<Order> callback);
 
     void cancelOrderSync(@NonNull final String orderID);
 
@@ -64,7 +67,9 @@ public interface OrderDataSource {
 
         void createOrder(@NonNull final String offerID, final Callback<OpenOrder, ApiException> callback);
 
-        void submitOrder(@Nullable String content, @NonNull String orderID, final Callback<Order, ApiException> callback);
+        void submitEarnOrder(@Nullable String content, @NonNull String orderID, final Callback<Order, ApiException> callback);
+
+        void submitSpendOrder(@Nullable String transaction, @NonNull String orderID, final Callback<Order, ApiException> callback);
 
         void cancelOrder(@NonNull final String orderID, final Callback<Void, ApiException> callback);
 

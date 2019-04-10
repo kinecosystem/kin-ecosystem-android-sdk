@@ -13,7 +13,7 @@ class Environment implements KinEnvironment {
 		"GDF42M3IPERQCBLWFEZKQRK77JQ65SCKTU3CW36HZVCX7XX5A5QXZIVK",
 		"https://horizon.kinfederation.com",
 		"Kin Mainnet ; December 2018",
-		"TODO",
+		"https://migration-service.kinmarketplace.com/migrate?address=",
 		"https://api.kinmarketplace.com/" + API_VERSION,
 		"https://cdn.kinmarketplace.com/",
 		"https://kin-bi.appspot.com/eco_");
@@ -35,7 +35,7 @@ class Environment implements KinEnvironment {
 		"GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7",
 		"https://horizon-testnet.kininfrastructure.com",
 		"Kin Testnet ; December 2018",
-		"TODO",
+		"https://migration-service.kinecosystemtest.com/migrate?address=",
 		"http://api.kinecosystemtest.com/" + API_VERSION,
 		"https://s3.amazonaws.com/assets.kinecosystemtest.com/web-offers/cards-based/index.html",
 		"https://kin-bi.appspot.com/eco_play_");

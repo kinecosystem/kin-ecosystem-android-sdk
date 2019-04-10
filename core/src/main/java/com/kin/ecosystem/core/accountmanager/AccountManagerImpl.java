@@ -1,10 +1,13 @@
 package com.kin.ecosystem.core.accountmanager;
 
 import android.support.annotation.NonNull;
+import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
+import com.kin.ecosystem.common.exception.ServiceException;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.bi.EventLogger;
@@ -12,7 +15,11 @@ import com.kin.ecosystem.core.bi.events.StellarAccountCreationRequested;
 import com.kin.ecosystem.core.bi.events.WalletCreationSucceeded;
 import com.kin.ecosystem.core.data.auth.AuthDataSource;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
+import com.kin.ecosystem.core.data.blockchain.BlockchainSource.MigrationProcessListener;
+import com.kin.ecosystem.core.network.ApiException;
+import com.kin.ecosystem.core.network.model.MigrationInfo;
 import com.kin.ecosystem.core.util.ErrorUtil;
+import kin.sdk.migration.common.exception.DeleteAccountException;
 import kin.sdk.migration.common.interfaces.IKinAccount;
 import kin.sdk.migration.common.interfaces.IListenerRegistration;
 
@@ -174,6 +181,55 @@ public class AccountManagerImpl implements AccountManager {
 	public void switchAccount(final int accountIndex, @NonNull final KinCallback<Boolean> callback) {
 		Logger.log(new Log().withTag(TAG).put("switchAccount", "start"));
 		final String address = blockchainSource.getPublicAddress(accountIndex);
+		updateWalletAddressProcess(address, accountIndex, callback);
+	}
+
+	private void updateWalletAddressProcess(final String address, final int accountIndex,
+		final KinCallback<Boolean> callback) {
+		blockchainSource.getMigrationInfo(address, new Callback<MigrationInfo, ApiException>() {
+			@Override
+			public void onResponse(MigrationInfo migrationInfo) {
+				boolean isRestorable = migrationInfo.isRestorable();
+				Logger.log(new Log().withTag(TAG).put("switchAccount", "isRestorable = " + isRestorable));
+				if (isRestorable) {
+					startMigrationProcess(migrationInfo, address, accountIndex, callback);
+				} else {
+					// TODO: 02/04/2019 is there another normal to send that error to onFailure?
+					onFailure(new ApiException(ServiceException.WALLET_WAS_NOT_CREATED_IN_THIS_APP,
+						ErrorUtil.createWalletWasNotCreatedInThisAppException()));
+				}
+			}
+
+			@Override
+			public void onFailure(ApiException exception) {
+				Logger.log(new Log().priority(Log.ERROR).withTag(TAG).text("getMigrationInfo: onFailure"));
+				deleteRestoredAccount(accountIndex);
+				callback.onFailure(ErrorUtil.fromApiException(exception));
+			}
+		});
+	}
+
+	private void startMigrationProcess(MigrationInfo migrationInfo, final String address, final int accountIndex,
+		final KinCallback<Boolean> callback) {
+		blockchainSource.startMigrationProcess(migrationInfo, address, new MigrationProcessListener() {
+			@Override
+			public void onMigrationStart() {
+			}
+
+			@Override
+			public void onMigrationEnd() {
+				updateWalletAddress(address, accountIndex, callback);
+			}
+
+			@Override
+			public void onMigrationError(BlockchainException error) {
+				deleteRestoredAccount(accountIndex);
+				callback.onFailure(error);
+			}
+		});
+	}
+
+	private void updateWalletAddress(String address, final int accountIndex, final KinCallback<Boolean> callback) {
 		//update sign in data with new wallet address and update servers
 		authRepository.updateWalletAddress(address, new KinCallback<Boolean>() {
 			@Override
@@ -182,17 +238,35 @@ public class AccountManagerImpl implements AccountManager {
 				if (blockchainSource.updateActiveAccount(accountIndex)) {
 					callback.onResponse(response);
 				} else {
+					deleteRestoredAccount(accountIndex);
 					callback.onFailure(ErrorUtil.createAccountCannotLoadedException(accountIndex));
 				}
 			}
 
 			@Override
 			public void onFailure(KinEcosystemException exception) {
-				//switch to the new KinAccount
+				deleteRestoredAccount(accountIndex);
 				callback.onFailure(exception);
 				Logger.log(new Log().withTag(TAG).put("switchAccount", "ended with failure"));
 			}
 		});
+	}
+
+	/**
+	 * This method should be called in case the restore process is failed somewhere in the way. Because currently when
+	 * restoring an account the restored account is added to kinClient(to the end of the account list if it wasn't there
+	 * before) even before the restore process is finished successfully. That is why if the restore is failed we need to
+	 * delete the restored account from the end of the account list(if it was added), if it was already there then we
+	 * don't care about it because the active one will be the same as before.
+	 */
+	private void deleteRestoredAccount(int accountIndex) {
+		try {
+			Logger.log(new Log().withTag(TAG).put("deleteRestoredAccount", "account index = " + accountIndex));
+			blockchainSource.deleteAccount(accountIndex);
+		} catch (DeleteAccountException e) {
+			e.printStackTrace();
+			Logger.log(new Log().priority(Log.ERROR).withTag(TAG).put("deleteRestoredAccount", "error " + e));
+		}
 	}
 
 	private IKinAccount getKinAccount() {

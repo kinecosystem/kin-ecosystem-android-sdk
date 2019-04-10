@@ -10,6 +10,7 @@ import com.kin.ecosystem.core.data.auth.AuthDataSource
 import com.nhaarman.mockitokotlin2.*
 import kin.ecosystem.test.base.BaseTestClass
 import kin.sdk.migration.MigrationManager
+import kin.sdk.migration.common.KinSdkVersion
 import kin.sdk.migration.common.interfaces.*
 import kin.utils.Request
 import kin.utils.ResultCallback
@@ -41,6 +42,9 @@ class BlockchainSourceImplTest() : BaseTestClass() {
     private val local: BlockchainSource.Local = mock {
         on { accountIndex } doAnswer { BlockchainSourceLocal.NOT_EXIST }
     }
+
+    private val remote: BlockchainSource.Remote = mock {}
+
     private val authRepository: AuthDataSource = mock {
         on { ecosystemUserID } doAnswer { KIN_USER_ID_A }
     }
@@ -64,7 +68,7 @@ class BlockchainSourceImplTest() : BaseTestClass() {
     }
 
     private val migrationManager: MigrationManager = mock {
-        on { currentKinClient } doAnswer { kinClient }
+        on { getKinClient( anyOrNull()) } doAnswer { kinClient }
     }
 
     private val balanceObj: IBalance = mock()
@@ -83,7 +87,7 @@ class BlockchainSourceImplTest() : BaseTestClass() {
         val instance = BlockchainSourceImpl::class.java.getDeclaredField("instance")
         instance.isAccessible = true
         instance.set(null, null)
-        BlockchainSourceImpl.init(eventLogger, local, authRepository)
+        BlockchainSourceImpl.init(eventLogger, local, remote, authRepository)
         BlockchainSourceImpl.getInstance().setMigrationManager(migrationManager)
         blockchainSource = BlockchainSourceImpl.getInstance()
     }
