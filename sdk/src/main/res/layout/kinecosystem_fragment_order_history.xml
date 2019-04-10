@@ -98,6 +98,7 @@
         android:layout_height="0dp"
         android:orientation="vertical"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        android:layoutAnimation="@anim/kinecosystem_recycler_layout_animation_order_slide_in_top"
         app:layout_constraintVertical_bias="0"
         app:layout_constraintTop_toBottomOf="@id/order_history_tabs"
         app:layout_constraintBottom_toBottomOf="parent"/>
@@ -107,7 +108,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
+        android:visibility="gone"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        android:layoutAnimation="@anim/kinecosystem_recycler_layout_animation_order_slide_in_top"
         app:layout_constraintVertical_bias="0"
         app:layout_constraintTop_toBottomOf="@id/order_history_tabs"
         app:layout_constraintBottom_toBottomOf="parent"/>

@@ -45,8 +45,9 @@ class MarketplaceFragment : Fragment(), IMarketplaceView {
                 BlockchainSourceImpl.getInstance(),
                 SettingsDataSourceImpl(SettingsDataSourceLocal(context)),
                 navigator,
-                EventLoggerImpl.getInstance())
-        marketplacePresenter?.onAttach(this)
+                EventLoggerImpl.getInstance()).apply {
+            onAttach(this@MarketplaceFragment)
+        }
         return root
     }
 
@@ -62,7 +63,6 @@ class MarketplaceFragment : Fragment(), IMarketplaceView {
 
     override fun onDestroyView() {
         marketplacePresenter?.onDetach()
-        offersRecycler.removeAllViews()
         navigator = null
         super.onDestroyView()
     }

@@ -14,6 +14,8 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextSwitcher
 import android.widget.TextView
@@ -62,6 +64,36 @@ open class OrderHistoryFragment : Fragment(), IOrderHistoryView {
         return root
     }
 
+    override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
+        if(nextAnim > 0) {
+            val anim = AnimationUtils.loadAnimation(activity, nextAnim)
+            anim.setAnimationListener(object : Animation.AnimationListener {
+                override fun onAnimationRepeat(animation: Animation?) {
+
+                }
+
+                override fun onAnimationEnd(animation: Animation?) {
+                    onEnterTransitionEnded(enter)
+                }
+
+                override fun onAnimationStart(animation: Animation?) {
+
+                }
+            })
+
+            return anim
+        } else {
+            onEnterTransitionEnded(enter)
+            return super.onCreateAnimation(transit, enter, nextAnim)
+        }
+    }
+
+    private fun onEnterTransitionEnded(enter: Boolean) {
+        if (enter) {
+            orderHistoryPresenter?.onEnterTransitionEnded()
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         orderHistoryPresenter?.onResume()
@@ -74,8 +106,6 @@ open class OrderHistoryFragment : Fragment(), IOrderHistoryView {
 
     override fun onDestroyView() {
         orderHistoryPresenter?.onDetach()
-        earnOrderRecyclerView.removeAllViews()
-        spendOrderRecyclerView.removeAllViews()
         navigator = null
         super.onDestroyView()
     }
@@ -216,17 +246,11 @@ open class OrderHistoryFragment : Fragment(), IOrderHistoryView {
     }
 
     override fun setEarnList(earnList: List<Order>) {
-        earnRecyclerAdapter.let {
-            it.setNewData(earnList)
-            it.notifyDataSetChanged()
-        }
+        earnRecyclerAdapter.setNewData(earnList)
     }
 
     override fun setSpendList(spendList: List<Order>) {
-        spendRecyclerAdapter.let {
-            it.setNewData(spendList)
-            it.notifyDataSetChanged()
-        }
+        spendRecyclerAdapter.setNewData(spendList)
     }
 
     override fun onEarnItemInserted() {
@@ -245,12 +269,12 @@ open class OrderHistoryFragment : Fragment(), IOrderHistoryView {
         spendRecyclerAdapter.notifyItemChanged(index)
     }
 
-    override fun notifyEarnDataChanged() {
-        earnRecyclerAdapter.notifyDataSetChanged()
+    override fun notifyEarnDataChanged(range: IntRange) {
+        earnRecyclerAdapter.notifyItemRangeChanged(range.start, range.last)
     }
 
-    override fun notifySpendDataChanged() {
-        spendRecyclerAdapter.notifyDataSetChanged()
+    override fun notifySpendDataChanged(range: IntRange) {
+        spendRecyclerAdapter.notifyItemRangeChanged(range.start, range.last)
     }
 
     override fun setNavigator(navigator: INavigator) {
