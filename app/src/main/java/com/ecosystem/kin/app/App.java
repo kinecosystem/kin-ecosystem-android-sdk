@@ -1,10 +1,7 @@
 package com.ecosystem.kin.app;
 
-import android.app.Application;
 import android.support.multidex.MultiDexApplication;
 import com.crashlytics.android.Crashlytics;
-import com.kin.ecosystem.Kin;
-import com.kin.ecosystem.common.exception.ClientException;
 import com.squareup.leakcanary.LeakCanary;
 import io.fabric.sdk.android.Fabric;
 
@@ -25,12 +22,6 @@ public class App extends MultiDexApplication {
 			return;
 		}
 		LeakCanary.install(this);
-        try {
-            Kin.initialize(getApplicationContext());
-        } catch (ClientException e) {
-            e.printStackTrace();
-        }
-        Kin.enableLogs(true);
     }
 
 }

@@ -13,6 +13,7 @@ import com.ecosystem.kin.app.main.MainActivity;
 import com.ecosystem.kin.app.model.SignInRepo;
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.common.KinCallback;
+import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 
 public class SplashActivity extends AppCompatActivity {
@@ -33,6 +34,12 @@ public class SplashActivity extends AppCompatActivity {
 	}
 
 	private void login() {
+		try {
+			Kin.initialize(getApplicationContext(), SignInRepo.getKinTheme(this));
+		} catch (ClientException e) {
+			e.printStackTrace();
+		}
+		Kin.enableLogs(true);
 		/**
 		 * SignInData should be created with registration JWT {see https://jwt.io/} created securely by server side
 		 * In the the this example {@link SignInRepo#getJWT} generate the JWT locally.

@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <declare-styleable name="KinEcosystemTheme">
+        <attr format="color" name="primaryTextColor"/>
+        <attr format="color" name="kinBackgroundColor"/>
+        <attr format="integer" name="backgroundCardImage"/>
+        <attr format="integer" name="menuMyKinIcon"/>
+        <attr format="integer" name="menuSettingsIcon"/>
+        <attr format="integer" name="settingsBackupIcon"/>
+        <attr format="integer" name="settingsRestoreIcon"/>
+        <attr format="color" name="tabDeselectedBackgroundColor"/>
+        <attr format="integer" name="offerBackground"/>
+        <attr format="color" name="separatorColor"/>
+        <attr format="integer" name="offersEmptyStateImage"/>
+        <attr format="integer" name="onboardingImage"/>
+    </declare-styleable>
+
     <declare-styleable name="KinEcosystemDashView">
         <attr format="color" name="color"/>
         <attr format="dimension" name="dashLength"/>
@@ -12,7 +27,7 @@
     </declare-styleable>
 
     <declare-styleable name="KinEcosystemBalanceView">
-        <attr format="string" name="subTitle"/>
+        <attr format="integer" name="textStyle"/>
     </declare-styleable>
 
     <declare-styleable name="KinEcosystemTouchIndicatorIcon">
@@ -23,8 +38,28 @@
     <declare-styleable name="KinEcosystemSettingsItem">
         <attr format="reference" name="kinecosystem_src"/>
         <attr format="string" name="kinecosysem_text"/>
+        <attr format="boolean" name="top_separator"/>
+        <attr format="boolean" name="bottom_separator"/>
         <attr name="kinecosystem_indicatorVisibility"/>
     </declare-styleable>
 
     <attr format="boolean" name="kinecosystem_indicatorVisibility"/>
+
+    <declare-styleable name="KinEcosystemTextView">
+        <attr format="enum" name="fontExtra">
+            <enum name="regular" value="0"/>
+            <enum name="medium" value="1"/>
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="KinEcosystemTabsView">
+        <attr format="string" name="leftTabText"/>
+        <attr format="string" name="rightTabText"/>
+        <attr format="color" name="leftColor"/>
+        <attr format="color" name="rightColor"/>
+        <attr format="enum" name="defaultSelected">
+            <enum name="left" value="0"/>
+            <enum name="right" value="1"/>
+        </attr>
+    </declare-styleable>
 </resources>

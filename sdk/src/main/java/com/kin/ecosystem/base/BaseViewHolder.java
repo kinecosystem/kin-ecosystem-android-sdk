@@ -4,11 +4,13 @@ import android.net.Uri;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.kin.ecosystem.R;
@@ -65,6 +67,21 @@ class BaseViewHolder<T> extends RecyclerView.ViewHolder {
 		}
 	}
 
+	protected void setVisibility(@IdRes int viewId, int visibility) {
+		View view = getView(viewId);
+		if (view != null) {
+			view.setVisibility(visibility);
+		}
+	}
+
+	protected void setViewTopMargin(@IdRes int viewId, int topMargin) {
+		View view = getView(viewId);
+		if (view != null) {
+			ViewGroup.MarginLayoutParams params = (MarginLayoutParams)view.getLayoutParams();
+			params.topMargin = topMargin;
+		}
+	}
+
 	/**
 	 * @param viewId The view id.
 	 * @param value The text to put in the text view.
@@ -88,6 +105,14 @@ class BaseViewHolder<T> extends RecyclerView.ViewHolder {
 	protected void setTextColor(@IdRes int viewId, @ColorInt int color) {
 		TextView view = getView(viewId);
 		view.setTextColor(color);
+	}
+
+	protected void setVectorDrawable(@IdRes int viewId, @DrawableRes int vectorResID) {
+		if(!AppCompatDelegate.isCompatVectorFromResourcesEnabled()) {
+			AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+		}
+		ImageView view = getView(viewId);
+		view.setImageResource(vectorResID);
 	}
 
 	/**

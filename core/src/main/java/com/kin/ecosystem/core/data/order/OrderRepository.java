@@ -464,6 +464,10 @@ public class OrderRepository implements OrderDataSource {
 	@Override
 	public void addOrderObserver(@NonNull Observer<Order> observer) {
 		getOrderWatcher().addObserver(observer);
+		final Order currentOrder = getOrderWatcher().getValue();
+		if(currentOrder != null) {
+			observer.onChanged(currentOrder);
+		}
 	}
 
 	@Override

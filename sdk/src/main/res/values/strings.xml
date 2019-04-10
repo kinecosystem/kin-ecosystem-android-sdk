@@ -1,6 +1,7 @@
 <resources>
     <!--Activity Name-->
-    <string name="kinecosystem_kin_marketplace">Kin Marketplace (Beta)</string>
+    <string name="kinecosystem_kin_marketplace">Kin Ecosystem</string>
+    <string name="kinecosystem">Kin Marketplace (Beta)</string>
     <string name="kinecosystem_transaction_history">Transaction History</string>
     <string name="kinecosystem_settings">Settings</string>
     <string name="kinecosystem_transfer_activity_title">Kin Ecosystem</string>
@@ -9,6 +10,8 @@
     <string name="kinecosystem_more">MORE</string>
     <string name="kinecosystem_spend">Spend</string>
     <string name="kinecosystem_earn">Earn</string>
+    <string name="kinecosystem_earned">Earned</string>
+    <string name="kinecosystem_used">Used</string>
     <string name="kinecosystem_let_s_get_started">Let\'s Get Started!</string>
     <string name="kinecosystem_confirm">Confirm</string>
     <string name="kinecosystem_transfer_agree">I agree</string>
@@ -33,6 +36,7 @@
     <string name="kinecosystem_copied_to_your_clipboard">Copied to your clipboard</string>
     <string name="kinecosystem_copied_text">copied text</string>
     <string name="kinecosystem_transaction_failed">Transaction failed</string>
+    <string name="kinecosystem_failed">Failed</string>
     <string name="kinecosystem_you_dont_have_enough_kin">You don\'t have enough Kin</string>
     <string name="kinecosystem_order_submission_failed">Order submission failed</string>
     <string name="kinecosystem_keep_your_kin_safe">Keep your Kin Safe</string>
@@ -40,7 +44,16 @@
     <string name="kinecosystem_could_not_restore_the_wallet">Could not restore the wallet, try again later.</string>
     <string name="kinecosystem_transfer_title">In order to send Kin, %1$s would like to receive your Kin account information (i.e. your public address) from %2$s.</string>
 
+    <string name="kinecosystem_kin_is_a_digital_currency_that_makes">Kin is a digital currency that makes\nyour favorite apps even better.</string>
+
     <!--Environments-->
     <string name="kinecosystem_environment_beta">beta</string>
     <string name="kinecosystem_environment_production">prod</string>
+    <string name="kinecosystem_what_is_kin">What is Kin?</string>
+    <string name="kinecosystem_lets_s_go">Let\'s go</string>
+    <string name="kinecosystem_creating_your_account">Creating your account...</string>
+    <string name="kinecosystem_what_are_you_in_the_mood_for">What are you in the mood for?</string>
+    <string name="kinecosystem_well_done_check_back_soon">Well done!\nCheck back soon</string>
+    <string name="kinecosystem_balance">Balance</string>
+    <string name="kinecosystem_my_kin">My Kin</string>
 </resources>

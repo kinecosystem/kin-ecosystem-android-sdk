@@ -6,8 +6,10 @@ import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.Subscription;
 import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.core.network.ApiException;
+import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.OfferList;
 
 
@@ -22,6 +24,8 @@ public interface OfferDataSource {
 	void removeNativeOfferClickedObserver(@NonNull Observer<NativeOfferClickEvent> observer);
 
 	ObservableData<NativeOfferClickEvent> getNativeSpendOfferObservable();
+
+	Subscription<Offer> addNativeOfferRemovedObserver(@NonNull Observer<Offer> observer);
 
 	boolean addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissOnTap);
 

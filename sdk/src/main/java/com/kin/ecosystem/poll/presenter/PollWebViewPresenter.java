@@ -63,14 +63,14 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 	}
 
 	private void loadUrl() {
-		if (view != null) {
-			view.loadUrl();
+		if (getView() != null) {
+			getView().loadUrl();
 		}
 	}
 
 	private void setTitle(String title) {
-		if (view != null) {
-			view.setTitle(title);
+		if (getView() != null) {
+			getView().setTitle(title);
 		}
 	}
 
@@ -119,8 +119,8 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 		} catch (IllegalArgumentException ex) {
 			//TODO: add general error event
 		}
-		if (view != null) {
-			view.renderJson(pollJsonString);
+		if (getView() != null) {
+			getView().renderJson(pollJsonString);
 		}
 	}
 
@@ -194,28 +194,28 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 	}
 
 	private void showToast(@Message final int msg) {
-		if (view != null) {
-			view.showToast(msg);
+		if (getView() != null) {
+			getView().showToast(msg);
 		}
 	}
 
 	private void closeView() {
-		if (view != null) {
-			view.close();
+		if (getView() != null) {
+			getView().close();
 		}
 	}
 
 	@Override
 	public void showToolbar() {
-		if (view != null) {
-			view.showToolbar();
+		if (getView() != null) {
+			getView().showToolbar();
 		}
 	}
 
 	@Override
 	public void hideToolbar() {
-		if (view != null) {
-			view.hideToolbar();
+		if (getView() != null) {
+			getView().hideToolbar();
 		}
 	}
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:drawable="@drawable/kinecosystem_ic_kin_logo_small"
+    tools:ignore="NewApi">
+
+    <target
+        android:animation="@animator/kin_logo_rotation"
+        android:name="kin_logo"/>
+
+</animated-vector>

@@ -11,9 +11,10 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.kin.ecosystem.common.Callback;
+import android.support.v7.app.AppCompatDelegate;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.KinEnvironment;
+import com.kin.ecosystem.common.KinTheme;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
@@ -47,6 +48,7 @@ import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceLocal;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceRemote;
 import com.kin.ecosystem.core.data.internal.ConfigurationImpl;
+import com.kin.ecosystem.core.data.internal.ConfigurationLocalImpl;
 import com.kin.ecosystem.core.data.offer.OfferRemoteData;
 import com.kin.ecosystem.core.data.offer.OfferRepository;
 import com.kin.ecosystem.core.data.order.OrderLocalData;
@@ -63,7 +65,7 @@ import com.kin.ecosystem.core.util.Validator;
 import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.recovery.BackupAndRestore;
 import com.kin.ecosystem.recovery.BackupAndRestoreImpl;
-import com.kin.ecosystem.splash.view.SplashActivity;
+import com.kin.ecosystem.widget.util.FontUtil;
 import java.util.concurrent.atomic.AtomicBoolean;
 import kin.sdk.migration.MigrationManager;
 import kin.sdk.migration.MigrationNetworkInfo;
@@ -100,6 +102,7 @@ public class Kin {
 		}
 
 		return instance;
+
 	}
 
 	/**
@@ -109,15 +112,18 @@ public class Kin {
 	 * @param appContext application context.
 	 * @throws ClientException - The sdk could not be initiated.
 	 */
-	public synchronized static void initialize(Context appContext) throws ClientException {
+	public synchronized static void initialize(Context appContext, KinTheme kinTheme) throws ClientException {
 		if (isInstanceNull()) {
 			instance = getInstance(appContext);
+			// use application context to avoid leaks.
+			appContext = appContext.getApplicationContext();
+			AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
 			//Load data from manifest, can throw ClientException if no data available.
 			loadDefaultsFromMetadata(getKinContext());
 
 			//Set Environment
-			ConfigurationImpl.init(environmentName);
+			ConfigurationImpl.init(environmentName, new ConfigurationLocalImpl(appContext));
 			eventLogger = EventLoggerImpl.getInstance();
 
 			AuthRepository
@@ -142,11 +148,15 @@ public class Kin {
 			OfferRepository.init(OfferRemoteData.getInstance(instance.executorsUtil), OrderRepository.getInstance());
 
 			DeviceUtils.init(getKinContext());
+			FontUtil.Companion.init(appContext.getAssets());
 
 			if (AuthRepository.getInstance().getAppID() != null) {
 				eventLogger.send(KinSdkInitiated.create());
 			}
 		}
+
+		//Instance not null, update KinTheme
+		ConfigurationImpl.getInstance().setKinTheme(kinTheme);
 	}
 
 	private static Context getKinContext() {
@@ -298,6 +308,7 @@ public class Kin {
 				switch (accountState) {
 					case AccountManager.CREATION_COMPLETED:
 						sendLoginSucceed(loginCallback, loginState);
+						OfferRepository.getInstance().getOffers(null);
 						AccountManagerImpl.getInstance().removeAccountStateObserver(this);
 						break;
 					case AccountManager.ERROR:
@@ -430,17 +441,7 @@ public class Kin {
 		checkInstanceNotNull();
 		checkAccountIsLoggedIn();
 		eventLogger.send(EntrypointButtonTapped.create());
-		boolean isAccountCreated = AccountManagerImpl.getInstance().isAccountCreated();
-		if (isAccountCreated) {
-			navigateToExperience(activity, experience);
-		} else {
-			navigateToSplash(activity, experience);
-		}
-	}
-
-	private static void navigateToSplash(@NonNull final Activity activity, @EcosystemExperience final int experience) {
-		Intent splashIntent = new Intent(activity, SplashActivity.class);
-		launchIntent(activity, splashIntent, experience);
+		navigateToExperience(activity, experience);
 	}
 
 	private static void navigateToExperience(@NonNull final Activity activity,
@@ -453,7 +454,7 @@ public class Kin {
 		@EcosystemExperience final int experience) {
 		intentToLaunch.putExtra(KEY_ECOSYSTEM_EXPERIENCE, experience);
 		activity.startActivity(intentToLaunch);
-		activity.overridePendingTransition(R.anim.kinecosystem_slide_in_right, R.anim.kinecosystem_slide_out_left);
+		activity.overridePendingTransition(0, 0);
 	}
 
 	/**

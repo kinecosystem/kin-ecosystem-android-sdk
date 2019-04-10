@@ -9,11 +9,16 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
+        vectorDrawables.useSupportLibrary = true
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "${KIN_ECOSYSTEM_SDK_VERSION_NAME}"
         consumerProguardFiles 'proguard-rules.pro'
+    }
+
+    sourceSets {
+        test.java.srcDirs += 'src/test/kotlin'
     }
 }
 
@@ -32,8 +37,8 @@ dependencies {
     testImplementation project(':test-base')
     testImplementation testingDependencies.junit
     testImplementation testingDependencies.mockito
+    testImplementation testingDependencies.mockitoKotlin
     testImplementation testingDependencies.robolectric
-
 }
 repositories {
     mavenCentral()

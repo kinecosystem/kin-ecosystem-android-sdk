@@ -15,6 +15,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import com.kin.ecosystem.R;
+import com.kin.ecosystem.widget.util.ThemeUtil;
 
 public class TouchIndicatorIcon extends View {
 
@@ -39,7 +40,8 @@ public class TouchIndicatorIcon extends View {
 
 	public TouchIndicatorIcon(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs, 0);
-		final Drawable icon;
+		final int iconRes;
+
 		final boolean indicatorVisibility;
 		setLayoutParams(new ViewGroup.LayoutParams(iconSize, iconSize));
 
@@ -47,16 +49,18 @@ public class TouchIndicatorIcon extends View {
 			.obtainStyledAttributes(attrs, R.styleable.KinEcosystemTouchIndicatorIcon, 0, 0);
 
 		try {
-			icon = styledAttributes.getDrawable(R.styleable.KinEcosystemTouchIndicatorIcon_src);
-			indicatorVisibility = styledAttributes
-				.getBoolean(R.styleable.KinEcosystemTouchIndicatorIcon_kinecosystem_indicatorVisibility, false);
+			iconRes = styledAttributes.getResourceId(R.styleable.KinEcosystemTouchIndicatorIcon_src, -1);
+			indicatorVisibility = styledAttributes.getBoolean(R.styleable.KinEcosystemTouchIndicatorIcon_kinecosystem_indicatorVisibility, false);
 		} finally {
 			styledAttributes.recycle();
 		}
 
-		if (icon != null) {
-			setIcon(icon);
-			setTouchIndicatorVisibility(indicatorVisibility);
+		if(iconRes != -1) {
+			final Drawable icon = ContextCompat.getDrawable(context, iconRes);
+			if (icon != null) {
+				setIcon(icon);
+				setTouchIndicatorVisibility(indicatorVisibility);
+			}
 		}
 	}
 
@@ -69,9 +73,9 @@ public class TouchIndicatorIcon extends View {
 		final Drawable[] drawables = new Drawable[2];
 		icon.setBounds(0, 0, iconSize, iconSize);
 		drawables[0] = icon;
-		Drawable touchIndicator = ContextCompat.getDrawable(getContext(), R.drawable.kinecosystem_info_red_dot);
-		final int left = icon.getIntrinsicWidth() - indicatorRadius;
-		touchIndicator.setBounds(left, 0, indicatorRadius + left, indicatorRadius);
+		LayerDrawable touchIndicator = (LayerDrawable) ContextCompat.getDrawable(getContext(), R.drawable.kinecosystem_info_orange_dot) ;
+		touchIndicator.getDrawable(0).setColorFilter(ThemeUtil.Companion.themeAttributeToColor(getContext(), R.attr.kinBackgroundColor, R.color.kinecosystem_white), Mode.SRC_ATOP);
+		touchIndicator.setBounds(0, 0, indicatorRadius, indicatorRadius);
 		drawables[1] = touchIndicator;
 		layerDrawable = new LayerDrawable(drawables);
 		layerDrawable.setId(0, ID_ICON);

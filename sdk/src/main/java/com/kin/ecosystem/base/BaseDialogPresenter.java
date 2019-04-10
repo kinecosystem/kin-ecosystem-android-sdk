@@ -17,9 +17,9 @@ public class BaseDialogPresenter<T extends IBottomDialog> extends BasePresenter<
     }
 
     protected void closeDialog() {
-        if (view != null && !isDismissed) {
+        if (getView() != null && !isDismissed) {
             isDismissed = true;
-            view.closeDialog();
+            getView().closeDialog();
         }
     }
 }

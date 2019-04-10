@@ -50,8 +50,8 @@ ext {
             okhttp3           : buildDependency(okhttp3Packace, 'okhttp', okhttp3Version),
             loginInterceptor3 : buildDependency(okhttp3Packace, 'logging-interceptor', okhttp3Version),
             supportAnnotations: buildDependency(supportPackage, 'support-annotations', supportVersion),
-            zxing_qr          : buildDependency(zxingPackage, 'core', zxingVersion),
-            kotlin            : buildDependency(kotlinPackage, 'kotlin-stdlib', kotlinVersion),
+            zxing_qr: buildDependency(zxingPackage, 'core', zxingVersion),
+            kotlin      : buildDependency(kotlinPackage, 'kotlin-stdlib-jdk7', kotlinVersion),
     ]
 
     testingDependencies = [

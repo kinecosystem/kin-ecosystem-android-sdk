@@ -17,6 +17,7 @@ public class AccountInfoActivity extends KinEcosystemBaseActivity implements IAc
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         presenter = new AccountInfoPresenter(new AccountInfoManager(this), this, getIntent());
+        presenter.onAttach(this);
     }
 
     @Override
@@ -88,11 +89,5 @@ public class AccountInfoActivity extends KinEcosystemBaseActivity implements IAc
                 }
             }
         });
-    }
-
-    @Override
-    public void attachPresenter(AccountInfoPresenter presenter) {
-        this.presenter = presenter;
-        presenter.onAttach(this);
     }
 }
