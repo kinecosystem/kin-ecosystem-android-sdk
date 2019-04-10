@@ -832,10 +832,11 @@ public class ApiClient {
 		updateParamsForAuth(authNames, queryParams, headerParams);
 
 		final String url = buildUrl(path, queryParams, collectionQueryParams);
+
 		final Request.Builder reqBuilder = new Request.Builder().url(url);
 		processHeaderParams(headerParams, reqBuilder);
 
-		String contentType = (String) headerParams.get("Content-Type");
+		String contentType = headerParams.get("Content-Type");
 		// ensuring a default content type
 		if (contentType == null) {
 			contentType = "application/json";

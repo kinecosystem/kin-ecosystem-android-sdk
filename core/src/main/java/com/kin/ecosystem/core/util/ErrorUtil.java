@@ -8,11 +8,11 @@ import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.exception.ServiceException;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.Error;
-import kin.core.exception.AccountNotActivatedException;
-import kin.core.exception.AccountNotFoundException;
-import kin.core.exception.CreateAccountException;
-import kin.core.exception.InsufficientKinException;
-import kin.core.exception.TransactionFailedException;
+import kin.sdk.migration.common.exception.AccountNotActivatedException;
+import kin.sdk.migration.common.exception.AccountNotFoundException;
+import kin.sdk.migration.common.exception.CreateAccountException;
+import kin.sdk.migration.common.exception.InsufficientKinException;
+import kin.sdk.migration.common.exception.TransactionFailedException;
 
 public class ErrorUtil {
 
@@ -32,6 +32,8 @@ public class ErrorUtil {
 	private static final String ACCOUNT_IS_NOT_LOGGED_IN = "Account is not logged in, please call Kin.login(...) first.";
 	private static final String ACCOUNT_NOT_FOUND = "Account not found";
 	private static final String ACCOUNT_HAS_NO_WALLET = "Account has no wallet";
+	private static final String MIGRATION_NEEDED = "Migration to new kin blockchain is needed";
+	private static final String WALLET_WAS_NOT_CREATED_IN_THIS_APP = "This wallet was not created in this app";
 
 
 	// Server Error codes
@@ -40,19 +42,22 @@ public class ErrorUtil {
 	private static final int ERROR_CODE_NOT_FOUND = 404;
 	private static final int ERROR_CODE_REQUEST_TIMEOUT = 408;
 	public static final int ERROR_CODE_CONFLICT = 409;
+	private static final int ERROR_CODE_GONE = 410;
 	private static final int ERROR_CODE_INTERNAL_SERVER_ERROR = 500;
 	private static final int ERROR_CODE_TRANSACTION_FAILED_ERROR = 700;
 
 	private static final int ERROR_CODE_NO_SUCH_USER = 4046;
 	private static final int ERROR_CODE_USER_HAS_NO_WALLET = 4095;
 	public static final int ERROR_CODE_EXTERNAL_ORDER_ALREADY_COMPLETED = 4091;
+	private static final int ERROR_CODE_BLOCKCHAIN_ENDPOINT_CHANGED = 4101;
 
 	public static KinEcosystemException fromApiException(ApiException apiException) {
 		if (apiException == null) {
-			return createUnknownServiceException(null, THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR);
+			return createUnknownServiceException(null);
 		} else {
 			final int apiCode = apiException.getCode();
 			Error error = apiException.getResponseBody();
+
 			switch (apiCode) {
 				case ERROR_CODE_BAD_REQUEST:
 				case ERROR_CODE_UNAUTHORIZED:
@@ -69,44 +74,43 @@ public class ErrorUtil {
 				case ERROR_CODE_CONFLICT:
 				case ERROR_CODE_INTERNAL_SERVER_ERROR:
 				case ERROR_CODE_TRANSACTION_FAILED_ERROR:
-					return new ServiceException(ServiceException.SERVICE_ERROR, getMessageOrDefault(error, THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR), apiException);
+					if (error != null) {
+						return new ServiceException(ServiceException.SERVICE_ERROR,
+							getMessageOrDefault(error, THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR), apiException);
+					}
+					return createUnknownServiceException(apiException);
+				case ERROR_CODE_GONE:
+					if (error != null) {
+						if (error.getCode() == ERROR_CODE_BLOCKCHAIN_ENDPOINT_CHANGED) {
+							return new ServiceException(ServiceException.BLOCKCHAIN_ENDPOINT_CHANGED, MIGRATION_NEEDED, apiException);
+						}
+					}
+					return createUnknownServiceException(apiException, error);
 				case ERROR_CODE_REQUEST_TIMEOUT:
 					return new ServiceException(ServiceException.TIMEOUT_ERROR, getMessageOrDefault(error, THE_OPERATION_TIMED_OUT), apiException);
 				case ClientException.INTERNAL_INCONSISTENCY:
-					return new ClientException(ClientException.INTERNAL_INCONSISTENCY, getMessageOrDefault(error, THE_OPERATION_TIMED_OUT), apiException);
+					return new ClientException(ClientException.INTERNAL_INCONSISTENCY, THE_OPERATION_TIMED_OUT,
+						apiException);
+				case ServiceException.WALLET_WAS_NOT_CREATED_IN_THIS_APP:
+					return createWalletWasNotCreatedInThisAppException();
 				default:
-					return createUnknownServiceException(apiException, getMessageOrDefault(error, THE_ECOSYSTEM_SERVER_RETURNED_AN_ERROR));
-
+					return createUnknownServiceException(apiException, error);
 			}
 		}
 	}
 
-	private static KinEcosystemException createUnknownServiceException(@Nullable Throwable throwable, final String errorMsg) {
-		return new ServiceException(ServiceException.SERVICE_ERROR, errorMsg, throwable);
+	private static KinEcosystemException createUnknownServiceException(@Nullable Throwable throwable) {
+		return createUnknownServiceException(throwable, null);
 	}
 
-	public static String getMessageOrDefault(KinEcosystemException exception, final String defaultMsg) {
-		if (exception == null) {
-			return defaultMsg;
+	private static KinEcosystemException createUnknownServiceException(@Nullable Throwable throwable, @Nullable Error error) {
+		String msg = getMessage(throwable);
+
+		if (error != null) {
+			msg += " (" + error.getCode() + ")";
 		}
 
-		if (exception instanceof ServiceException) {
-			Throwable cause = exception.getCause();
-			if (cause != null) {
-				if (cause instanceof ApiException) {
-					Error error = ((ApiException) cause).getResponseBody();
-					return getMessageOrDefault(error, defaultMsg);
-				} else {
-					return !StringUtil.isEmpty(cause.getMessage()) ? cause.getMessage() : defaultMsg;
-				}
-
-			} else {
-				return defaultMsg;
-			}
-
-		} else {
-			return getCauseOrDefault(exception, defaultMsg);
-		}
+		return new ServiceException(ServiceException.SERVICE_ERROR, msg, throwable);
 	}
 
 	private static String getMessageOrDefault(Error error, final String defaultMsg) {
@@ -121,7 +125,6 @@ public class ErrorUtil {
 		return (throwable != null && throwable.getCause() != null && throwable.getCause().getMessage() != null)
 			? throwable.getCause().getMessage() : defaultMsg ;
 	}
-
 
 	public static ApiException createOrderTimeoutException() {
 		final String errorTitle = "Time out";
@@ -184,4 +187,10 @@ public class ErrorUtil {
 
 		return exception;
 	}
+
+	public static ServiceException createWalletWasNotCreatedInThisAppException() {
+		return new ServiceException(ServiceException.WALLET_WAS_NOT_CREATED_IN_THIS_APP,
+			WALLET_WAS_NOT_CREATED_IN_THIS_APP, null);
+	}
+
 }

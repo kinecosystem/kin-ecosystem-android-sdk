@@ -26,7 +26,6 @@ import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.poll.view.IPollWebView;
 import com.kin.ecosystem.poll.view.IPollWebView.Message;
 
-
 public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements IPollWebViewPresenter {
 
 	private final OrderDataSource orderRepository;
@@ -153,11 +152,9 @@ public class PollWebViewPresenter extends BasePresenter<IPollWebView> implements
 			isOrderSubmitted = true;
 			final String orderId = openOrder.getId();
 			eventLogger.send(EarnOrderCompletionSubmitted.create(offerID, orderId, EarnOrderCompletionSubmitted.Origin.MARKETPLACE));
-			orderRepository.submitOrder(offerID, result, orderId, new KinCallback<Order>() {
+			orderRepository.submitEarnOrder(offerID, result, orderId, new KinCallback<Order>() {
 				@Override
-				public void onResponse(Order response) {
-
-				}
+				public void onResponse(Order response) {}
 
 				@Override
 				public void onFailure(KinEcosystemException exception) {

@@ -14,6 +14,7 @@ import com.kin.ecosystem.core.network.model.ExternalOrderRequest;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.OrderList;
+import com.kin.ecosystem.core.network.model.SpendOrderPayload;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
 import java.util.List;
 import java.util.Map;
@@ -87,9 +88,9 @@ public class OrderRemoteData implements OrderDataSource.Remote {
     }
 
     @Override
-    public void submitOrder(@NonNull String content, @NonNull String orderID, @NonNull final Callback<Order, ApiException> callback) {
+    public void submitEarnOrder(@NonNull String content, @NonNull String orderID, @NonNull final Callback<Order, ApiException> callback) {
         try {
-            ordersApi.submitOrderAsync(new EarnSubmission().content(content), orderID, "", new ApiCallback<Order>() {
+            ordersApi.submitEarnOrderAsync(new EarnSubmission().content(content), orderID, "", new ApiCallback<Order>() {
                 @Override
                 public void onFailure(final ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
                     executorsUtil.mainThread().execute(new Runnable() {
@@ -118,6 +119,40 @@ public class OrderRemoteData implements OrderDataSource.Remote {
                 }
             });
         }
+    }
+
+    @Override
+    public void submitSpendOrder(@NonNull String transaction, @NonNull String orderID, @NonNull final Callback<Order, ApiException> callback) {
+		try {
+			ordersApi.submitSpendOrderAsync(new SpendOrderPayload().transaction(transaction), orderID, "", new ApiCallback<Order>() {
+				@Override
+				public void onFailure(final ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+					executorsUtil.mainThread().execute(new Runnable() {
+						@Override
+						public void run() {
+							callback.onFailure(e);
+						}
+					});
+				}
+
+				@Override
+				public void onSuccess(final Order result, int statusCode, Map<String, List<String>> responseHeaders) {
+					executorsUtil.mainThread().execute(new Runnable() {
+						@Override
+						public void run() {
+							callback.onResponse(result);
+						}
+					});
+				}
+			});
+		} catch (final ApiException e) {
+			executorsUtil.mainThread().execute(new Runnable() {
+				@Override
+				public void run() {
+					callback.onFailure(e);
+				}
+			});
+		}
     }
 
     @Override
