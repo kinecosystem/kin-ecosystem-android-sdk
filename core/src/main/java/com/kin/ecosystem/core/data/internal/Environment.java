@@ -24,7 +24,7 @@ class Environment implements KinEnvironment {
 		"GBC3SG6NGTSZ2OMH3FFGB7UVRQWILW367U4GSOOF4TFSZONV42UJXUH7",
 		"https://horizon-testnet.kininfrastructure.com",
 		"Kin Testnet ; December 2018",
-		"TODO",
+		"https://migration-service.kinecosystembeta.com/migrate?address=",
 		"http://api.kinecosystembeta.com/" + API_VERSION,
 		"https://s3.amazonaws.com/assets.kinecosystembeta.com/web-offers/cards-based/index.html",
 		"https://bi.kinecosystembi.com/eco_play_");
