@@ -11,6 +11,7 @@ import com.kin.ecosystem.core.bi.EventLogger
 import com.kin.ecosystem.core.bi.RecoveryBackupEvents
 import com.kin.ecosystem.core.bi.RecoveryRestoreEvents
 import com.kin.ecosystem.core.bi.events.BackupWalletFailed
+import com.kin.ecosystem.core.bi.events.SettingsPageViewed
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource
 import com.kin.ecosystem.core.data.settings.SettingsDataSource
 import com.kin.ecosystem.main.INavigator
@@ -35,6 +36,11 @@ class SettingsPresenter(private val settingsDataSource: SettingsDataSource,
     init {
         registerToEvents()
         registerToCallbacks()
+    }
+
+    override fun onAttach(view: ISettingsView) {
+        super.onAttach(view)
+        eventLogger.send(SettingsPageViewed.create())
     }
 
     override fun onResume() {
