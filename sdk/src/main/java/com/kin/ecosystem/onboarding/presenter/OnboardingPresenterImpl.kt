@@ -12,6 +12,7 @@ import com.kin.ecosystem.core.Logger
 import com.kin.ecosystem.core.accountmanager.AccountManager
 import com.kin.ecosystem.core.accountmanager.AccountManager.*
 import com.kin.ecosystem.core.bi.EventLogger
+import com.kin.ecosystem.core.bi.events.APageViewed
 import com.kin.ecosystem.core.data.auth.AuthDataSource
 import com.kin.ecosystem.core.data.settings.SettingsDataSource
 import com.kin.ecosystem.main.INavigator
@@ -59,6 +60,7 @@ class OnboardingPresenterImpl(private val accountManager: AccountManager,
 
     override fun onAttach(view: IOnboardingView) {
         super.onAttach(view)
+        eventLogger.send(APageViewed.create(APageViewed.PageName.ONBOARDING))
     }
 
     override fun onDetach() {
