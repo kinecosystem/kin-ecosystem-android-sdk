@@ -154,7 +154,9 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		try {
 			startMigrationProcess(null, getPublicAddress(), listener);
 		} catch (BlockchainException e) {
-			// TODO: handle this, maybe just do listener.onMigrationError(e); or do something else because of that exception
+			if (listener != null) {
+				listener.onMigrationError(e);
+			}
 		}
 	}
 
@@ -188,9 +190,9 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				@Override
 				public void onFailure(ApiException exception) {
 					if (listener != null) {
+						final String message = exception == null ? "Migration Failed" : exception.getMessage();
 						listener.onMigrationError(
-							new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed",
-								exception));
+							new BlockchainException(BlockchainException.MIGRATION_FAILED, message, exception));
 					}
 				}
 			});
@@ -207,11 +209,9 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 				@Override
 				public void onFailure(ApiException exception) {
-					// TODO: 01/04/2019 if got account not found exception, which probably means that the account is only created locally then maybe handle it somehow. - talk with Doody or Lior
-
 					if (listener != null) {
-						listener.onMigrationError(new BlockchainException(BlockchainException.MIGRATION_FAILED,
-							"Migration Failed", exception));
+						final String message = exception == null ? "Migration Failed" : exception.getMessage();
+						listener.onMigrationError(new BlockchainException(BlockchainException.MIGRATION_FAILED, message, exception));
 					}
 				}
 			});
@@ -258,8 +258,9 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				@Override
 				public void onError(Exception e) {
 					if (listener != null) {
+						final String message = e == null ? "Migration Failed" : e.getMessage();
 						listener.onMigrationError(
-							new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed", e));
+							new BlockchainException(BlockchainException.MIGRATION_FAILED, message, e));
 					}
 				}
 			});
