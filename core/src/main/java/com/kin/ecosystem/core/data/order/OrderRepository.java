@@ -15,6 +15,9 @@ import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.bi.EventLogger;
+import com.kin.ecosystem.core.bi.events.EarnOrderCompleted;
+import com.kin.ecosystem.core.bi.events.EarnOrderCreationRequested;
+import com.kin.ecosystem.core.bi.events.EarnOrderFailed;
 import com.kin.ecosystem.core.bi.events.EarnOrderPaymentConfirmed;
 import com.kin.ecosystem.core.bi.events.SpendOrderCompleted;
 import com.kin.ecosystem.core.bi.events.SpendOrderCreationRequested;
@@ -360,8 +363,7 @@ public class OrderRepository implements OrderDataSource {
 					if (openOrder != null) { // did not fail before submit
 						decrementCount();
 					}
-					handleOnFailure(exception, openOrder != null ? openOrder.getOfferId() : "null",
-						openOrder != null ? openOrder.getId() : "null");
+					handleOnFailure(exception, getOfferId(openOrder), getOrderId(openOrder));
 				}
 
 				private void handleOnFailure(KinEcosystemException exception, String offerId, String orderId) {
@@ -382,6 +384,14 @@ public class OrderRepository implements OrderDataSource {
 				}
 
 			}).start();
+	}
+
+	private String getOrderId(OpenOrder openOrder) {
+		return openOrder != null ? openOrder.getId() : "null";
+	}
+
+	private String getOfferId(OpenOrder openOrder) {
+		return openOrder != null ? openOrder.getOfferId() : "null";
 	}
 
 	/**
@@ -413,12 +423,17 @@ public class OrderRepository implements OrderDataSource {
 
 	@Override
 	public void requestPayment(String offerJwt, final KinCallback<OrderConfirmation> callback) {
+		eventLogger.send(EarnOrderCreationRequested.create(EarnOrderCreationRequested.OfferType.EXTERNAL, null, "null",
+			EarnOrderCreationRequested.Origin.EXTERNAL));
 		new ExternalEarnOrderCall(this, blockchainSource, offerJwt, eventLogger, new ExternalOrderCallbacks() {
 			@Override
 			public void onOrderConfirmed(String confirmationJwt, Order order) {
 				if (callback != null) {
 					callback.onResponse(createOrderConfirmation(confirmationJwt));
 				}
+				eventLogger.send(EarnOrderCompleted
+					.create(EarnOrderCompleted.OfferType.EXTERNAL, (double) order.getAmount(), order.getOfferId(),
+						order.getOrderId(), EarnOrderCompleted.Origin.EXTERNAL));
 			}
 
 			@Override
@@ -426,13 +441,15 @@ public class OrderRepository implements OrderDataSource {
 				if (openOrder != null) { // did not fail before submit
 					decrementCount();
 				}
-				handleOnFailure(exception);
+				handleOnFailure(exception, getOfferId(openOrder), getOrderId(openOrder));
 			}
 
-			private void handleOnFailure(KinEcosystemException exception) {
+			private void handleOnFailure(KinEcosystemException exception, final String offerId, final String orderId) {
 				if (callback != null) {
 					callback.onFailure(exception);
 				}
+				eventLogger.send(
+					EarnOrderFailed.create(exception.getMessage(), offerId, orderId, EarnOrderFailed.Origin.EXTERNAL));
 			}
 		}).start();
 	}

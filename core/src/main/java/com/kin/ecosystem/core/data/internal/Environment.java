@@ -16,7 +16,7 @@ class Environment implements KinEnvironment {
 		"https://migration-service.kinmarketplace.com/migrate?address=",
 		"https://api.kinmarketplace.com/" + API_VERSION,
 		"https://cdn.kinmarketplace.com/",
-		"https://kin-bi.appspot.com/eco_");
+		"https://bi.kinecosystembi.com/eco_");
 
 	private static final Environment BETA = new Environment(
 		"https://horizon-playground.kininfrastructure.com",
@@ -27,7 +27,7 @@ class Environment implements KinEnvironment {
 		"TODO",
 		"http://api.kinecosystembeta.com/" + API_VERSION,
 		"https://s3.amazonaws.com/assets.kinecosystembeta.com/web-offers/cards-based/index.html",
-		"https://kin-bi.appspot.com/eco_play_");
+		"https://bi.kinecosystembi.com/eco_play_");
 
 	private static final Environment TEST = new Environment(
 		"https://horizon-playground.kininfrastructure.com",
@@ -38,7 +38,7 @@ class Environment implements KinEnvironment {
 		"https://migration-service.kinecosystemtest.com/migrate?address=",
 		"http://api.kinecosystemtest.com/" + API_VERSION,
 		"https://s3.amazonaws.com/assets.kinecosystemtest.com/web-offers/cards-based/index.html",
-		"https://kin-bi.appspot.com/eco_play_");
+		"https://bi.kinecosystembi.com/eco_play_");
 
 	private final String oldBlockchainNetworkUrl;
 	private final String oldBlockchainPassphrase;

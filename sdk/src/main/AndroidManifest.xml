@@ -32,7 +32,7 @@
             android:name=".transfer.view.AccountInfoActivity"
             android:screenOrientation="portrait"
             android:exported="true"
-            android:theme="@style/KinecosysNoActionBar.Transparent" />
+            android:theme="@style/KinecosysNoActionBar" />
 
     </application>
 

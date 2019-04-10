@@ -87,7 +87,7 @@ public class ErrorUtil {
 					}
 					return createUnknownServiceException(apiException, error);
 				case ERROR_CODE_REQUEST_TIMEOUT:
-					return new ServiceException(ServiceException.TIMEOUT_ERROR, THE_OPERATION_TIMED_OUT, apiException);
+					return new ServiceException(ServiceException.TIMEOUT_ERROR, getMessageOrDefault(error, THE_OPERATION_TIMED_OUT), apiException);
 				case ClientException.INTERNAL_INCONSISTENCY:
 					return new ClientException(ClientException.INTERNAL_INCONSISTENCY, THE_OPERATION_TIMED_OUT,
 						apiException);
@@ -118,13 +118,12 @@ public class ErrorUtil {
 	}
 
 	private static String getMessage(Throwable throwable) {
-		return (throwable != null && throwable.getMessage() != null) ? throwable.getMessage()
-			: getCauseOrDefault(throwable);
+		return (throwable != null && throwable.getMessage() != null) ? throwable.getMessage() : getCauseOrDefault(throwable, ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR);
 	}
 
-	private static String getCauseOrDefault(Throwable throwable) {
+	private static String getCauseOrDefault(Throwable throwable, final String defaultMsg) {
 		return (throwable != null && throwable.getCause() != null && throwable.getCause().getMessage() != null)
-			? throwable.getCause().getMessage() : ECOSYSTEM_SDK_ENCOUNTERED_AN_UNEXPECTED_ERROR;
+			? throwable.getCause().getMessage() : defaultMsg ;
 	}
 
 	public static ApiException createOrderTimeoutException() {

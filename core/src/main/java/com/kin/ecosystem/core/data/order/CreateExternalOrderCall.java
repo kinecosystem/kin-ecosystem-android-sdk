@@ -7,6 +7,9 @@ import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.exception.ServiceException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.core.bi.EventLogger;
+import com.kin.ecosystem.core.bi.events.EarnOrderCompletionSubmitted;
+import com.kin.ecosystem.core.bi.events.EarnOrderCreationFailed;
+import com.kin.ecosystem.core.bi.events.EarnOrderCreationReceived;
 import com.kin.ecosystem.core.bi.events.SpendOrderCompletionSubmitted;
 import com.kin.ecosystem.core.bi.events.SpendOrderCreationFailed;
 import com.kin.ecosystem.core.bi.events.SpendOrderCreationReceived;
@@ -218,8 +221,8 @@ class CreateExternalOrderCall extends Thread {
 							SpendOrderCompletionSubmitted.Origin.EXTERNAL));
 					break;
 				case EARN:
-					//TODO add event
-					// We don't have event currently
+					eventLogger.send(EarnOrderCompletionSubmitted.create(openOrder.getOfferId(), openOrder.getId(),
+						EarnOrderCompletionSubmitted.Origin.EXTERNAL));
 					break;
 			}
 
@@ -228,16 +231,16 @@ class CreateExternalOrderCall extends Thread {
 
 	private void sendOrderCreationFailedEvent(final OpenOrder openOrder, ApiException exception) {
 		if (openOrder != null && openOrder.getOfferType() != null) {
+			final Throwable cause = exception.getCause();
+			final String reason = cause != null ? cause.getMessage() : exception.getMessage();
 			switch (openOrder.getOfferType()) {
 				case SPEND:
-					final Throwable cause = exception.getCause();
-					final String reason = cause != null ? cause.getMessage() : exception.getMessage();
 					eventLogger.send(SpendOrderCreationFailed
 						.create(reason, openOrder.getOfferId(), true, SpendOrderCreationFailed.Origin.EXTERNAL));
 					break;
 				case EARN:
-					//TODO add event
-					// We don't have event currently
+					eventLogger.send(EarnOrderCreationFailed
+						.create(reason, openOrder.getOfferId(), EarnOrderCreationFailed.Origin.EXTERNAL));
 					break;
 			}
 
@@ -253,6 +256,8 @@ class CreateExternalOrderCall extends Thread {
 							SpendOrderCreationReceived.Origin.EXTERNAL));
 					break;
 				case EARN:
+					eventLogger.send(EarnOrderCreationReceived
+						.create(openOrder.getOfferId(), openOrder.getId(), EarnOrderCreationReceived.Origin.EXTERNAL));
 					break;
 			}
 		}

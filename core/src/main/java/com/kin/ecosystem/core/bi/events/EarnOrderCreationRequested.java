@@ -20,14 +20,15 @@ public class EarnOrderCreationRequested implements Event {
     public static final String EVENT_TYPE = "business";
 
     // Augmented by script
-    public static EarnOrderCreationRequested create(EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId) {
+    public static EarnOrderCreationRequested create(EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId, EarnOrderCreationRequested.Origin origin) {
         return new EarnOrderCreationRequested(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             (Client) EventsStore.client(),
             offerType,
             kinAmount,
-            offerId);
+            offerId,
+            origin);
     }
 
     /**
@@ -94,6 +95,14 @@ public class EarnOrderCreationRequested implements Event {
     @SerializedName("offer_id")
     @Expose
     private String offerId;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("origin")
+    @Expose
+    private EarnOrderCreationRequested.Origin origin;
 
     /**
      * No args constructor for use in serialization
@@ -106,6 +115,7 @@ public class EarnOrderCreationRequested implements Event {
      * 
      * @param offerType
      * @param common
+     * @param origin
 
      * @param client
      * @param offerId
@@ -113,7 +123,7 @@ public class EarnOrderCreationRequested implements Event {
 
      * @param user
      */
-    public EarnOrderCreationRequested(Common common, User user, Client client, EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId) {
+    public EarnOrderCreationRequested(Common common, User user, Client client, EarnOrderCreationRequested.OfferType offerType, Double kinAmount, String offerId, EarnOrderCreationRequested.Origin origin) {
         super();
         this.common = common;
         this.user = user;
@@ -121,6 +131,7 @@ public class EarnOrderCreationRequested implements Event {
         this.offerType = offerType;
         this.kinAmount = kinAmount;
         this.offerId = offerId;
+        this.origin = origin;
     }
 
     /**
@@ -267,6 +278,24 @@ public class EarnOrderCreationRequested implements Event {
         this.offerId = offerId;
     }
 
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public EarnOrderCreationRequested.Origin getOrigin() {
+        return origin;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setOrigin(EarnOrderCreationRequested.Origin origin) {
+        this.origin = origin;
+    }
+
     public enum OfferType {
 
         @SerializedName("poll")
@@ -303,6 +332,45 @@ public class EarnOrderCreationRequested implements Event {
 
         public static EarnOrderCreationRequested.OfferType fromValue(String value) {
             EarnOrderCreationRequested.OfferType constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            } else {
+                return constant;
+            }
+        }
+
+    }
+
+    public enum Origin {
+
+        @SerializedName("marketplace")
+        MARKETPLACE("marketplace"),
+        @SerializedName("external")
+        EXTERNAL("external");
+        private final String value;
+        private final static Map<String, EarnOrderCreationRequested.Origin> CONSTANTS = new HashMap<String, EarnOrderCreationRequested.Origin>();
+
+        static {
+            for (EarnOrderCreationRequested.Origin c: values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        private Origin(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+
+        public String value() {
+            return this.value;
+        }
+
+        public static EarnOrderCreationRequested.Origin fromValue(String value) {
+            EarnOrderCreationRequested.Origin constant = CONSTANTS.get(value);
             if (constant == null) {
                 throw new IllegalArgumentException(value);
             } else {

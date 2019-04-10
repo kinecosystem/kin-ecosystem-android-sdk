@@ -20,7 +20,7 @@ public class EarnOrderCompleted implements Event {
     public static final String EVENT_TYPE = "business";
 
     // Augmented by script
-    public static EarnOrderCompleted create(EarnOrderCompleted.OfferType offerType, Double kinAmount, String offerId, String orderId) {
+    public static EarnOrderCompleted create(EarnOrderCompleted.OfferType offerType, Double kinAmount, String offerId, String orderId, EarnOrderCompleted.Origin origin) {
         return new EarnOrderCompleted(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
@@ -28,7 +28,8 @@ public class EarnOrderCompleted implements Event {
             offerType,
             kinAmount,
             offerId,
-            orderId);
+            orderId,
+            origin);
     }
 
     /**
@@ -103,6 +104,14 @@ public class EarnOrderCompleted implements Event {
     @SerializedName("order_id")
     @Expose
     private String orderId;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("origin")
+    @Expose
+    private EarnOrderCompleted.Origin origin;
 
     /**
      * No args constructor for use in serialization
@@ -116,6 +125,7 @@ public class EarnOrderCompleted implements Event {
      * @param offerType
      * @param common
      * @param orderId
+     * @param origin
 
      * @param client
      * @param offerId
@@ -123,7 +133,7 @@ public class EarnOrderCompleted implements Event {
 
      * @param user
      */
-    public EarnOrderCompleted(Common common, User user, Client client, EarnOrderCompleted.OfferType offerType, Double kinAmount, String offerId, String orderId) {
+    public EarnOrderCompleted(Common common, User user, Client client, EarnOrderCompleted.OfferType offerType, Double kinAmount, String offerId, String orderId, EarnOrderCompleted.Origin origin) {
         super();
         this.common = common;
         this.user = user;
@@ -132,6 +142,7 @@ public class EarnOrderCompleted implements Event {
         this.kinAmount = kinAmount;
         this.offerId = offerId;
         this.orderId = orderId;
+        this.origin = origin;
     }
 
     /**
@@ -296,6 +307,24 @@ public class EarnOrderCompleted implements Event {
         this.orderId = orderId;
     }
 
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public EarnOrderCompleted.Origin getOrigin() {
+        return origin;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setOrigin(EarnOrderCompleted.Origin origin) {
+        this.origin = origin;
+    }
+
     public enum OfferType {
 
         @SerializedName("poll")
@@ -332,6 +361,45 @@ public class EarnOrderCompleted implements Event {
 
         public static EarnOrderCompleted.OfferType fromValue(String value) {
             EarnOrderCompleted.OfferType constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            } else {
+                return constant;
+            }
+        }
+
+    }
+
+    public enum Origin {
+
+        @SerializedName("marketplace")
+        MARKETPLACE("marketplace"),
+        @SerializedName("external")
+        EXTERNAL("external");
+        private final String value;
+        private final static Map<String, EarnOrderCompleted.Origin> CONSTANTS = new HashMap<String, EarnOrderCompleted.Origin>();
+
+        static {
+            for (EarnOrderCompleted.Origin c: values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        private Origin(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+
+        public String value() {
+            return this.value;
+        }
+
+        public static EarnOrderCompleted.Origin fromValue(String value) {
+            EarnOrderCompleted.Origin constant = CONSTANTS.get(value);
             if (constant == null) {
                 throw new IllegalArgumentException(value);
             } else {
