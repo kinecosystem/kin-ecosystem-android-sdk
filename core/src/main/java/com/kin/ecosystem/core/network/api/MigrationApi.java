@@ -13,7 +13,6 @@ import java.util.Map;
 import okhttp3.Call;
 
 public class MigrationApi extends Api {
-
 	public String getBlockchainVersionSync(String X_REQUEST_ID) throws ApiException {
 		Call call = getBlockchainVersion(X_REQUEST_ID);
 		ApiResponse<String> response = apiClient.execute(call, String.class);
@@ -43,7 +42,6 @@ public class MigrationApi extends Api {
 		return call;
 
 	}
-
 
 	private Call getBlockchainVersion(String X_REQUEST_ID) throws ApiException {
 		String path = "/applications/" + AuthRepository.getInstance().getAppID() + "/blockchain_version";
