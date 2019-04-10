@@ -46,10 +46,33 @@ public class BlockchainSourceRemote implements Remote {
 
 	@Override
 	public KinSdkVersion getBlockchainVersion() throws ApiException {
-		String version = migrationApi.getBlockchainVersionSync("");
+		try {
+			String version = migrationApi.getBlockchainVersionSync("");
+			MigrationBCVersionCheckSucceeded.BlockchainVersion bcVersion;
+			try {
+				bcVersion = MigrationBCVersionCheckSucceeded.BlockchainVersion.fromValue(version);
+			} catch (Exception e) {
+				bcVersion = null;
+			}
 
-		eventLogger.send(MigrationBCVersionCheckSucceeded.create(getPublicAddress(), MigrationBCVersionCheckSucceeded.BlockchainVersion.fromValue(version)));
-		return KinSdkVersion.get(version);
+			eventLogger.send(MigrationBCVersionCheckSucceeded.create(getPublicAddress(), bcVersion));
+			return KinSdkVersion.get(version);
+		} catch (ApiException e) {
+			MigrationBCVersionCheckFailed.BlockchainVersion bcVersion;
+			try {
+				bcVersion = MigrationBCVersionCheckFailed.BlockchainVersion.fromValue(BlockchainSourceImpl.getInstance().getBlockchainVersion().getVersion());
+			} catch (Exception e2) {
+				bcVersion = null;
+			}
+
+			eventLogger.send(MigrationBCVersionCheckFailed.create(
+				getErrorMessage(e),
+				getPublicAddress(),
+				bcVersion
+			));
+
+			throw e;
+		}
 	}
 
 	@Override
@@ -58,10 +81,16 @@ public class BlockchainSourceRemote implements Remote {
 			migrationApi.getBlockchainVersionAsync("", new ApiCallback<String>() {
 				@Override
 				public void onFailure(final ApiException e, final int statusCode, final Map<String, List<String>> responseHeaders) {
+					MigrationBCVersionCheckFailed.BlockchainVersion bcVersion;
+					try {
+						bcVersion = MigrationBCVersionCheckFailed.BlockchainVersion.fromValue(BlockchainSourceImpl.getInstance().getBlockchainVersion().getVersion());
+					} catch (Exception e2) {
+						bcVersion = null;
+					}
 					eventLogger.send(MigrationBCVersionCheckFailed.create(
-						e.getMessage(),
+						getErrorMessage(e),
 						getPublicAddress(),
-						MigrationBCVersionCheckFailed.BlockchainVersion.fromValue(BlockchainSourceImpl.getInstance().getBlockchainVersion().getVersion())
+						bcVersion
 					));
 					executorsUtil.mainThread().execute(new Runnable() {
 						@Override
@@ -73,7 +102,14 @@ public class BlockchainSourceRemote implements Remote {
 
 				@Override
 				public void onSuccess(final String result, final int statusCode, final Map<String, List<String>> responseHeaders) {
-					eventLogger.send(MigrationBCVersionCheckSucceeded.create(getPublicAddress(), MigrationBCVersionCheckSucceeded.BlockchainVersion.fromValue(result)));
+					MigrationBCVersionCheckSucceeded.BlockchainVersion bcVersion;
+					try {
+						bcVersion = MigrationBCVersionCheckSucceeded.BlockchainVersion.fromValue(result);
+					} catch (Exception e) {
+						bcVersion = null;
+					}
+
+					eventLogger.send(MigrationBCVersionCheckSucceeded.create(getPublicAddress(), bcVersion));
 					executorsUtil.mainThread().execute(new Runnable() {
 						@Override
 						public void run() {
@@ -83,10 +119,17 @@ public class BlockchainSourceRemote implements Remote {
 				}
 			});
 		} catch (final ApiException e) {
+			MigrationBCVersionCheckFailed.BlockchainVersion bcVersion;
+			try {
+				bcVersion = MigrationBCVersionCheckFailed.BlockchainVersion.fromValue(BlockchainSourceImpl.getInstance().getBlockchainVersion().getVersion());
+			} catch (Exception e2) {
+				bcVersion = null;
+			}
+
 			eventLogger.send(MigrationBCVersionCheckFailed.create(
-				e.getMessage(),
+				getErrorMessage(e),
 				getPublicAddress(),
-				MigrationBCVersionCheckFailed.BlockchainVersion.fromValue(BlockchainSourceImpl.getInstance().getBlockchainVersion().getVersion())
+				bcVersion
 			));
 			executorsUtil.mainThread().execute(new Runnable() {
 				@Override
@@ -99,9 +142,14 @@ public class BlockchainSourceRemote implements Remote {
 
 	@Override
 	public MigrationInfo getMigrationInfo(@NonNull String publicAddress) throws ApiException {
-		final MigrationInfo info = migrationApi.getMigrationInfoSync(publicAddress);
-		sendMigrationInfoSuccessEvent(publicAddress, info);
-		return info;
+		try {
+			final MigrationInfo info = migrationApi.getMigrationInfoSync(publicAddress);
+			sendMigrationInfoSuccessEvent(publicAddress, info);
+			return info;
+		} catch (ApiException e) {
+			eventLogger.send(MigrationStatusCheckFailed.create(getPublicAddress(), getErrorMessage(e)));
+			throw e;
+		}
 	}
 
 	@Override
@@ -110,7 +158,7 @@ public class BlockchainSourceRemote implements Remote {
 			migrationApi.getMigrationInfoAsync(publicAddress, new ApiCallback<MigrationInfo>() {
 				@Override
 				public void onFailure(final ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
-					eventLogger.send(MigrationStatusCheckFailed.create(getPublicAddress(), e.getMessage()));
+					eventLogger.send(MigrationStatusCheckFailed.create(getPublicAddress(), getErrorMessage(e)));
 					executorsUtil.mainThread().execute(new Runnable() {
 						@Override
 						public void run() {
@@ -131,7 +179,7 @@ public class BlockchainSourceRemote implements Remote {
 				}
 			});
 		} catch (final ApiException e) {
-			eventLogger.send(MigrationStatusCheckFailed.create(getPublicAddress(), e.getMessage()));
+			eventLogger.send(MigrationStatusCheckFailed.create(getPublicAddress(), getErrorMessage(e)));
 			executorsUtil.mainThread().execute(new Runnable() {
 				@Override
 				public void run() {
@@ -139,6 +187,18 @@ public class BlockchainSourceRemote implements Remote {
 				}
 			});
 		}
+	}
+
+	private String getErrorMessage(ApiException e) {
+		if (e != null) {
+			if (e.getResponseBody() != null) {
+				return e.getResponseBody().getMessage();
+			}
+
+			return e.getMessage();
+		}
+
+		return null;
 	}
 
 	private String getPublicAddress() {
