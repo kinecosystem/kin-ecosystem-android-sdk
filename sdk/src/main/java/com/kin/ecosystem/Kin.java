@@ -124,7 +124,7 @@ public class Kin {
 				.init(AuthLocalData.getInstance(getKinContext()), AuthRemoteData.getInstance(instance.executorsUtil));
 
 			BlockchainSourceImpl.init(eventLogger, BlockchainSourceLocal.getInstance(getKinContext()),
-				BlockchainSourceRemote.getInstance(instance.executorsUtil), AuthRepository.getInstance());
+				BlockchainSourceRemote.getInstance(instance.executorsUtil, eventLogger), AuthRepository.getInstance());
 
 			ConfigurationImpl.getInstance().setBlockchainSource(BlockchainSourceImpl.getInstance());
 
@@ -350,7 +350,7 @@ public class Kin {
 			newNetworkUrl, newNetworkId, issuer, migrationServiceUrl);
 
 		final BlockchainSource.Local local = BlockchainSourceLocal.getInstance(context);
-		final BlockchainSource.Remote remote = BlockchainSourceRemote.getInstance(getInstance(context).executorsUtil);
+		final BlockchainSource.Remote remote = BlockchainSourceRemote.getInstance(getInstance(context).executorsUtil, eventLogger);
 		MigrationManager migrationManager = new MigrationManager(context, appId, migrationNetworkInfo,
 			new KinBlockchainVersionProvider(local, remote),
 			new MigrationEventsListener(EventLoggerImpl.getInstance()), KIN_ECOSYSTEM_STORE_PREFIX_KEY);
