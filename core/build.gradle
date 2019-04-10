@@ -23,7 +23,7 @@ dependencies {
     implementation project(':common')
     api project(':recovery')
 
-    api devDependencies.kinCore
+    api devDependencies.kinMigration
     implementation devDependencies.okhttp3
     implementation devDependencies.loginInterceptor3
     implementation devDependencies.kotlin

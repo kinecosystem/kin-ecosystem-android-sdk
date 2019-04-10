@@ -7,13 +7,10 @@ import com.kin.ecosystem.core.bi.EventLogger
 import com.kin.ecosystem.core.data.auth.AuthDataSource
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource
 import com.kin.ecosystem.core.network.model.AccountInfo
-import com.kin.ecosystem.core.network.model.AuthToken
 import com.nhaarman.mockitokotlin2.*
-import kin.core.BlockchainEvents
-import kin.core.EventListener
-import kin.core.KinAccount
-import kin.core.ListenerRegistration
 import kin.ecosystem.test.base.BaseTestClass
+import kin.sdk.migration.common.interfaces.IKinAccount
+import kin.sdk.migration.common.interfaces.IListenerRegistration
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -41,12 +38,9 @@ class AccountManagerImplTest : BaseTestClass() {
         on { kinAccount } doAnswer { kinAccount }
     }
 
-    private val accountCreationRegistration: ListenerRegistration = mock()
-    private val blockchainEvents: BlockchainEvents = mock {
+    private val accountCreationRegistration: IListenerRegistration = mock()
+    private val kinAccount: IKinAccount = mock {
         on { addAccountCreationListener(any()) } doAnswer { accountCreationRegistration }
-    }
-    private val kinAccount: KinAccount = mock {
-        on { blockchainEvents() } doAnswer { blockchainEvents }
     }
 
     private lateinit var accountManager: AccountManager

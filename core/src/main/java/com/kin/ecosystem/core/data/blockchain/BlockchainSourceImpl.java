@@ -2,11 +2,11 @@ package com.kin.ecosystem.core.data.blockchain;
 
 import static com.kin.ecosystem.core.data.blockchain.BlockchainSourceLocal.NOT_EXIST;
 
-import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
+import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
@@ -24,20 +24,32 @@ import com.kin.ecosystem.core.bi.events.StellarKinTrustlineSetupFailed;
 import com.kin.ecosystem.core.bi.events.StellarKinTrustlineSetupSucceeded;
 import com.kin.ecosystem.core.data.auth.AuthDataSource;
 import com.kin.ecosystem.core.data.blockchain.CreateTrustLineCall.TrustlineCallback;
+import com.kin.ecosystem.core.network.ApiException;
+import com.kin.ecosystem.core.network.model.MigrationInfo;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
 import com.kin.ecosystem.core.util.StringUtil;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
-import kin.core.EventListener;
-import kin.core.KinAccount;
-import kin.core.KinClient;
-import kin.core.ListenerRegistration;
-import kin.core.PaymentInfo;
-import kin.core.ResultCallback;
-import kin.core.TransactionId;
-import kin.core.exception.CreateAccountException;
-import kin.core.exception.OperationFailedException;
+import kin.sdk.migration.MigrationManager;
+import kin.sdk.migration.common.KinSdkVersion;
+import kin.sdk.migration.common.WhitelistResult;
+import kin.sdk.migration.common.exception.CreateAccountException;
+import kin.sdk.migration.common.exception.DeleteAccountException;
+import kin.sdk.migration.common.exception.MigrationInProcessException;
+import kin.sdk.migration.common.exception.OperationFailedException;
+import kin.sdk.migration.common.exception.WhitelistTransactionFailedException;
+import kin.sdk.migration.common.interfaces.IBalance;
+import kin.sdk.migration.common.interfaces.IEventListener;
+import kin.sdk.migration.common.interfaces.IKinAccount;
+import kin.sdk.migration.common.interfaces.IKinClient;
+import kin.sdk.migration.common.interfaces.IListenerRegistration;
+import kin.sdk.migration.common.interfaces.IMigrationManagerCallbacks;
+import kin.sdk.migration.common.interfaces.IPaymentInfo;
+import kin.sdk.migration.common.interfaces.ITransactionId;
+import kin.sdk.migration.common.interfaces.IWhitelistService;
+import kin.sdk.migration.common.interfaces.IWhitelistableTransaction;
+import kin.utils.ResultCallback;
 
 public class BlockchainSourceImpl implements BlockchainSource {
 
@@ -45,12 +57,14 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private static volatile BlockchainSourceImpl instance;
 	private final BlockchainSource.Local local;
+	private final BlockchainSource.Remote remote;
 
 	private final EventLogger eventLogger;
 	private final AuthDataSource authRepository;
 
-	private final KinClient kinClient;
-	private KinAccount account;
+	private MigrationManager migrationManager;
+	private IKinClient kinClient;
+	private IKinAccount account;
 	private String currentUserId;
 
 	private ObservableData<Balance> balance = ObservableData.create(new Balance());
@@ -65,39 +79,37 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	private int balanceObserversCount;
 
 	private AccountCreationRequest accountCreationRequest;
-	private ListenerRegistration paymentRegistration;
-	private ListenerRegistration balanceRegistration;
+	private IListenerRegistration paymentRegistration;
+	private IListenerRegistration balanceRegistration;
 
 	private final MainThreadExecutor mainThread = new MainThreadExecutor();
 
 	private String appID;
-	private static final int MEMO_FORMAT_VERSION = 1;
-	private static final String MEMO_DELIMITER = "-";
-	private static final String MEMO_FORMAT =
-		"%d" + MEMO_DELIMITER + "%s" + MEMO_DELIMITER + "%s"; // version-appID-orderID
 
+	// Memo format version-appID-orderID
+	private static final String MEMO_DELIMITER = "-";
 	private static final int APP_ID_INDEX = 1;
 	private static final int ORDER_ID_INDEX = 2;
 	private static final int MEMO_SPLIT_LENGTH = 3;
 
-	private BlockchainSourceImpl(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient,
-		@NonNull BlockchainSource.Local local, @NonNull AuthDataSource authRepository) {
+	private BlockchainSourceImpl(@NonNull EventLogger eventLogger, @NonNull Local local, @NonNull Remote remote,
+		@NonNull AuthDataSource authRepository) {
 		this.eventLogger = eventLogger;
 		this.authRepository = authRepository;
-		this.kinClient = kinClient;
 		this.local = local;
+		this.remote = remote;
 		Logger.log(new Log().withTag(TAG)
 			.put("BlockchainSourceImpl authRepository.getEcosystemUserID()", authRepository.getEcosystemUserID()));
 		this.currentUserId = authRepository.getEcosystemUserID();
 		this.appID = authRepository.getAppID();
 	}
 
-	public static void init(@NonNull EventLogger eventLogger, @NonNull final KinClient kinClient,
-		@NonNull BlockchainSource.Local local, @NonNull AuthDataSource authDataSource) {
+	public static void init(@NonNull EventLogger eventLogger, @NonNull Local local, @NonNull Remote remote,
+		@NonNull AuthDataSource authDataSource) {
 		if (instance == null) {
 			synchronized (BlockchainSourceImpl.class) {
 				if (instance == null) {
-					instance = new BlockchainSourceImpl(eventLogger, kinClient, local, authDataSource);
+					instance = new BlockchainSourceImpl(eventLogger, local, remote, authDataSource);
 				}
 			}
 		}
@@ -108,6 +120,159 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
+	public void setMigrationManager(@NonNull final MigrationManager migrationManager) {
+		this.migrationManager = migrationManager;
+		// If no account has been found then  it doesn't really matter which version because we only need it to check
+		// if there are any accounts. Later on it will be updated according to the version that we got from the server.
+		KinSdkVersion sdkVersion = getBlockchainVersion();
+		if (kinClient != null && kinClient.hasAccount() && account != null) {
+			sdkVersion = account.getKinSdkVersion();
+		}
+		updateKinClient(migrationManager.getKinClient(sdkVersion));
+	}
+
+	private void updateKinClient(IKinClient kinClient) {
+		this.kinClient = kinClient;
+		final int count = kinClient.getAccountCount();
+
+		for (int i = 0; this.account != null && i < count; i++) {
+			if (this.account.getPublicAddress().equals(kinClient.getAccount(i).getPublicAddress())) {
+				this.account = kinClient.getAccount(i);
+			}
+		}
+
+		reconnectBalanceConnection();
+	}
+
+	@Override
+	public void startMigrationProcess() {
+		startMigrationProcess(null);
+	}
+
+	@Override
+	public void startMigrationProcess(MigrationProcessListener listener) {
+		try {
+			startMigrationProcess(null, getPublicAddress(), listener);
+		} catch (BlockchainException e) {
+			// TODO: handle this, maybe just do listener.onMigrationError(e); or do something else because of that exception
+		}
+	}
+
+	@Override
+	public void startMigrationProcess(String publicAddress, MigrationProcessListener listener) {
+		startMigrationProcess(null, publicAddress, listener);
+	}
+
+	@Override
+	public void startMigrationProcess(MigrationInfo migrationInfo, final String publicAddress,
+		final MigrationProcessListener listener) {
+		// Check if we have an account, if yes then get the migration info and check if this account should migrate.
+		// If the account should migrate then migrate it, if not update the kinClient to run on this version.
+		// If we don't have an account then check the server for the current version and update the kinClient to run on this version.
+		if (kinClient.hasAccount()) {
+			// TODO: 01/04/2019 Maybe we can make it more efficient by adding a call to the local storage to check if the account is already migrated(locally)?
+			if (migrationInfo != null) {
+				startMigrationIfNeeded(migrationInfo, publicAddress, listener);
+			} else {
+				handleMigrationInfo(publicAddress, listener);
+			}
+		} else {
+			remote.getBlockchainVersion(new Callback<KinSdkVersion, ApiException>() {
+				@Override
+				public void onResponse(KinSdkVersion sdkVersion) {
+					setBlockchainVersion(sdkVersion);
+					updateKinClient(migrationManager.getKinClient(sdkVersion));
+					listener.onMigrationEnd();
+				}
+
+				@Override
+				public void onFailure(ApiException exception) {
+					if (listener != null) {
+						listener.onMigrationError(
+							new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed",
+								exception));
+					}
+				}
+			});
+		}
+	}
+
+	private void handleMigrationInfo(final String publicAddress, final MigrationProcessListener listener) {
+		getMigrationInfo(publicAddress,
+			new Callback<MigrationInfo, ApiException>() {
+				@Override
+				public void onResponse(MigrationInfo migrationInfo) {
+					startMigrationIfNeeded(migrationInfo, publicAddress, listener);
+				}
+
+				@Override
+				public void onFailure(ApiException exception) {
+					// TODO: 01/04/2019 if got account not found exception, which probably means that the account is only created locally then maybe handle it somehow. - talk with Doody or Lior
+
+					if (listener != null) {
+						listener.onMigrationError(new BlockchainException(BlockchainException.MIGRATION_FAILED,
+							"Migration Failed", exception));
+					}
+				}
+			});
+	}
+
+	@Override
+	public void getMigrationInfo(String publicAddress, Callback<MigrationInfo, ApiException> callback) {
+		remote.getMigrationInfo(publicAddress, callback);
+	}
+
+	private void startMigrationIfNeeded(MigrationInfo migrationInfo, String publicAddress,
+		MigrationProcessListener listener) {
+		// In any case update the version locally.
+		KinSdkVersion sdkVersion = KinSdkVersion.get(migrationInfo.getBlockchainVersion());
+		setBlockchainVersion(sdkVersion);
+		if (migrationInfo.shouldMigrate()) {
+			startMigration(publicAddress, listener);
+		} else {
+			updateKinClient(migrationManager.getKinClient(KinSdkVersion.get(migrationInfo.getBlockchainVersion())));
+			if (listener != null) {
+				listener.onMigrationEnd();
+			}
+		}
+	}
+
+	private void startMigration(String publicAddress, final MigrationProcessListener listener) {
+		try {
+			migrationManager.start(publicAddress, new IMigrationManagerCallbacks() {
+				@Override
+				public void onMigrationStart() {
+					if (listener != null) {
+						listener.onMigrationStart();
+					}
+				}
+
+				@Override
+				public void onReady(IKinClient kinClient) {
+					updateKinClient(kinClient);
+					if (listener != null) {
+						listener.onMigrationEnd();
+					}
+				}
+
+				@Override
+				public void onError(Exception e) {
+					if (listener != null) {
+						listener.onMigrationError(
+							new BlockchainException(BlockchainException.MIGRATION_FAILED, "Migration Failed", e));
+					}
+				}
+			});
+		} catch (MigrationInProcessException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void setBlockchainVersion(KinSdkVersion sdkVersion) {
+		local.setBlockchainVersion(sdkVersion);
+	}
+
+	@Override
 	public void loadAccount(String kinUserId) throws BlockchainException {
 		migrateToMultipleUsers(kinUserId);
 		createOrLoadAccount(kinUserId);
@@ -115,15 +280,14 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	/**
-	 * Support backward compatibility,
-	 * load the old account and migrate to current multiple users implementation.
+	 * Support backward compatibility, load the old account and migrate to current multiple users implementation.
 	 */
 	private void migrateToMultipleUsers(String kinUserId) {
 		if (!local.getIsMigrated()) {
 			local.setDidMigrate();
 			if (kinClient.hasAccount()) {
 				final int accountIndex = local.getAccountIndex();
-				KinAccount account;
+				IKinAccount account;
 				if (accountIndex == NOT_EXIST) {
 					account = kinClient.getAccount(0);
 					Logger.log(new Log().withTag(TAG)
@@ -147,7 +311,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 			// Match between last wallet address to wallets on device.
 			for (int i = 0; i < kinClient.getAccountCount(); i++) {
-				KinAccount account = kinClient.getAccount(i);
+				IKinAccount account = kinClient.getAccount(i);
 				if (lastWalletAddress.equals(account.getPublicAddress())) {
 					this.account = account;
 					break;
@@ -171,26 +335,24 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		local.setActiveUserWallet(kinUserId, account.getPublicAddress());
 	}
 
-	private KinAccount createAccount() throws BlockchainException {
+	private IKinAccount createAccount() throws BlockchainException {
 		try {
 			// Create new account
 			return kinClient.addAccount();
-
 		} catch (CreateAccountException e) {
 			throw ErrorUtil.getBlockchainException(e);
 		}
 	}
 
-
 	@Override
 	@Nullable
-	public KinAccount getKinAccount() {
+	public IKinAccount getKinAccount() {
 		return account;
 	}
 
 	@Override
 	public void isAccountCreated(KinCallback<Void> callback) {
-		if(accountCreationRequest != null) {
+		if (accountCreationRequest != null) {
 			accountCreationRequest.cancel();
 		}
 
@@ -199,34 +361,49 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
+	public void signTransaction(@NonNull final String publicAddress, @NonNull final BigDecimal amount,
+		@NonNull final String orderID, @NonNull final String offerID, @NonNull final SignTransactionListener listener)
+		throws OperationFailedException {
+		if (account != null) {
+			eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offerID, orderID));
+			account.sendTransactionSync(publicAddress, amount, new IWhitelistService() {
+				@Override
+				public WhitelistResult onWhitelistableTransactionReady(IWhitelistableTransaction transaction) {
+					listener.onTransactionSigned(transaction.getTransactionPayload());
+					return new WhitelistResult(transaction.getTransactionPayload(), false);
+				}
+			}, orderID);
+		}
+	}
+
+	@Override
 	public void sendTransaction(@NonNull final String publicAddress, @NonNull final BigDecimal amount,
 		@NonNull final String orderID, @NonNull final String offerID) {
 		if (account != null) {
 			eventLogger.send(SpendTransactionBroadcastToBlockchainSubmitted.create(offerID, orderID));
-			account.sendTransaction(publicAddress, amount, generateMemo(orderID)).run(
-				new ResultCallback<TransactionId>() {
-					@Override
-					public void onResult(TransactionId result) {
-						eventLogger
-							.send(SpendTransactionBroadcastToBlockchainSucceeded.create(result.id(), offerID, orderID));
-						Logger.log(new Log().withTag(TAG).put("sendTransaction onResult", result.id()));
-					}
+			account.sendTransaction(publicAddress, amount, new IWhitelistService() {
+				@Override
+				public WhitelistResult onWhitelistableTransactionReady(IWhitelistableTransaction transaction)
+					throws WhitelistTransactionFailedException {
+					return new WhitelistResult(transaction.getTransactionPayload(), true);
+				}
+			}, orderID).run(new ResultCallback<ITransactionId>() {
+				@Override
+				public void onResult(ITransactionId result) {
+					eventLogger
+						.send(SpendTransactionBroadcastToBlockchainSucceeded.create(result.id(), offerID, orderID));
+					Logger.log(new Log().withTag(TAG).put("sendTransaction onResult", result.id()));
+				}
 
-					@Override
-					public void onError(Exception e) {
-						eventLogger
-							.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
-						completedPayment.postValue(new Payment(orderID, false, e));
-						Logger.log(new Log().withTag(TAG).put("sendTransaction onError", e.getMessage()));
-					}
-				});
+				@Override
+				public void onError(Exception e) {
+					eventLogger
+						.send(SpendTransactionBroadcastToBlockchainFailed.create(e.getMessage(), offerID, orderID));
+					completedPayment.postValue(new Payment(orderID, false, e));
+					Logger.log(new Log().withTag(TAG).put("sendTransaction onError", e.getMessage()));
+				}
+			});
 		}
-	}
-
-	@SuppressLint("DefaultLocale")
-	@VisibleForTesting
-	String generateMemo(@NonNull final String orderID) {
-		return String.format(MEMO_FORMAT, MEMO_FORMAT_VERSION, getAppID(), orderID);
 	}
 
 	private String getAppID() {
@@ -236,6 +413,37 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		return appID;
 	}
 
+	@Override
+	public KinSdkVersion getBlockchainVersion() {
+		return local.getBlockchainVersion();
+	}
+
+	@Override
+	public void fetchBlockchainVersion(final KinCallback<KinSdkVersion> callback) {
+		if (getBlockchainVersion() == KinSdkVersion.NEW_KIN_SDK) {
+			callback.onResponse(KinSdkVersion.NEW_KIN_SDK);
+		} else {
+			remote.getBlockchainVersion(new Callback<KinSdkVersion, ApiException>() {
+				@Override
+				public void onResponse(KinSdkVersion version) {
+					local.setBlockchainVersion(version);
+					callback.onResponse(version);
+				}
+
+				@Override
+				public void onFailure(ApiException exception) {
+					callback.onFailure(ErrorUtil.fromApiException(exception));
+				}
+			});
+		}
+	}
+
+	@Override
+	public void deleteAccount(int accountIndex) throws DeleteAccountException {
+		if (local.getAccountIndex() < accountIndex) {
+			kinClient.deleteAccount(accountIndex);
+		}
+	}
 
 	private void initBalance() {
 		reconnectBalanceConnection();
@@ -263,9 +471,9 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			}
 			return;
 		}
-		account.getBalance().run(new ResultCallback<kin.core.Balance>() {
+		account.getBalance().run(new ResultCallback<IBalance>() {
 			@Override
-			public void onResult(final kin.core.Balance balanceObj) {
+			public void onResult(final IBalance balanceObj) {
 				setBalance(balanceObj);
 				if (callback != null) {
 					mainThread.execute(new Runnable() {
@@ -317,7 +525,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@VisibleForTesting
-	void setBalance(final kin.core.Balance balanceObj) {
+	void setBalance(final kin.sdk.migration.common.interfaces.IBalance balanceObj) {
 		Balance balanceTemp = balance.getValue();
 		// if the values are not equals so we need to update,
 		// no need to update for equal values.
@@ -353,13 +561,12 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	private void startBalanceListener() {
 		if (account != null) {
 			Logger.log(new Log().withTag(TAG).text("startBalanceListener"));
-			balanceRegistration = account.blockchainEvents()
-				.addBalanceListener(new EventListener<kin.core.Balance>() {
-					@Override
-					public void onEvent(kin.core.Balance data) {
-						setBalance(data);
-					}
-				});
+			balanceRegistration = account.addBalanceListener(new IEventListener<IBalance>() {
+				@Override
+				public void onEvent(IBalance data) {
+					setBalance(data);
+				}
+			});
 		}
 	}
 
@@ -385,7 +592,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		}
 	}
 
-
 	@Override
 	public String getPublicAddress() throws BlockchainException {
 		if (account == null) {
@@ -398,7 +604,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	@Override
 	@Nullable
 	public String getPublicAddress(final int accountIndex) {
-		KinAccount account = kinClient.getAccount(accountIndex);
+		IKinAccount account = kinClient.getAccount(accountIndex);
 		return account != null ? account.getPublicAddress() : null;
 	}
 
@@ -419,23 +625,22 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private void startPaymentListener() {
 		if (account != null) {
-			paymentRegistration = account.blockchainEvents()
-				.addPaymentListener(new EventListener<PaymentInfo>() {
-					@Override
-					public void onEvent(PaymentInfo data) {
-						final String orderID = extractOrderId(data.memo());
-						Logger.log(new Log().withTag(TAG).put("startPaymentListener onEvent: the orderId", orderID)
-							.put("with memo", data.memo()));
-						final String accountPublicAddress = account.getPublicAddress();
-						if (orderID != null && accountPublicAddress != null) {
-							completedPayment.postValue(PaymentConverter.toPayment(data, orderID, accountPublicAddress));
-							Logger.log(new Log().withTag(TAG).put("completedPayment order id", orderID));
-						}
-
-						// UpdateBalance
-						getBalance(null);
+			paymentRegistration = account.addPaymentListener(new IEventListener<IPaymentInfo>() {
+				@Override
+				public void onEvent(IPaymentInfo data) {
+					final String orderID = extractOrderId(data.memo());
+					Logger.log(new Log().withTag(TAG).put("startPaymentListener onEvent: the orderId", orderID)
+						.put("with memo", data.memo()));
+					final String accountPublicAddress = account.getPublicAddress();
+					if (orderID != null && accountPublicAddress != null) {
+						completedPayment.postValue(PaymentConverter.toPayment(data, orderID, accountPublicAddress));
+						Logger.log(new Log().withTag(TAG).put("completedPayment order id", orderID));
 					}
-				});
+
+					// UpdateBalance
+					getBalance(null);
+				}
+			});
 		}
 	}
 
@@ -515,13 +720,12 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		}
 	}
 
-	private void removeRegistration(ListenerRegistration listenerRegistration) {
+	private void removeRegistration(IListenerRegistration listenerRegistration) {
 		Logger.log(new Log().withTag(TAG).text("removeRegistration"));
 		if (listenerRegistration != null) {
 			listenerRegistration.remove();
 		}
 	}
-
 
 	@VisibleForTesting
 	String extractOrderId(String memo) {

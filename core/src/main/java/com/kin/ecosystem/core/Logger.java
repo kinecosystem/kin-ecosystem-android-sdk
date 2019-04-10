@@ -26,6 +26,10 @@ public class Logger {
 		Logger.shouldLog = enableLogs;
 	}
 
+	public static boolean isEnabled() {
+		return shouldLog;
+	}
+
 	private static String getTag(String tag) {
 		return BASE_TAG + tag;
 	}

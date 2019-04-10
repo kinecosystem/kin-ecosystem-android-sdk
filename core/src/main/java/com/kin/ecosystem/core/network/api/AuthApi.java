@@ -10,21 +10,17 @@
  * Do not edit the class manually.
  */
 
-
 package com.kin.ecosystem.core.network.api;
-
 
 import static com.kin.ecosystem.core.network.ApiClient.PATCH;
 
 import com.google.gson.reflect.TypeToken;
-import com.kin.ecosystem.core.data.internal.ConfigurationImpl;
 import com.kin.ecosystem.core.network.ApiCallback;
 import com.kin.ecosystem.core.network.ApiClient;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.ApiResponse;
 import com.kin.ecosystem.core.network.Pair;
 import com.kin.ecosystem.core.network.model.AccountInfo;
-import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.JWT;
 import com.kin.ecosystem.core.network.model.UserProfile;
 import com.kin.ecosystem.core.network.model.UserProperties;
@@ -35,27 +31,7 @@ import java.util.List;
 import java.util.Map;
 import okhttp3.Call;
 
-
-public class AuthApi {
-
-	private ApiClient apiClient;
-
-	public AuthApi() {
-		this(ConfigurationImpl.getInstance().getDefaultApiClient());
-	}
-
-	public AuthApi(ApiClient apiClient) {
-		this.apiClient = apiClient;
-	}
-
-	public ApiClient getApiClient() {
-		return apiClient;
-	}
-
-	public void setApiClient(ApiClient apiClient) {
-		this.apiClient = apiClient;
-	}
-
+public class AuthApi extends Api {
 	/**
 	 * Build call for signIn
 	 *
@@ -168,7 +144,6 @@ public class AuthApi {
 		apiClient.executeAsync(call, localVarReturnType, callback);
 		return call;
 	}
-
 
 	/**
 	 * Build call for getUserProfile

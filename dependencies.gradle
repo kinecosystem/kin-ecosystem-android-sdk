@@ -9,10 +9,12 @@ ext {
     gsonVersion = '2.8.2'
     hamcrestVersion = '1.3'
     zxingVersion = '3.3.3'
+    kinMigrationVersion = '1.0.6'
     kotlinVersion = kotlin_version
 
     //Packages
     kinFoundationPackage = 'com.github.kinfoundation'
+    kinEcosystemPackage = 'com.github.kinecosystem'
     supportPackage = 'com.android.support'
     constraintLayoutPackage = 'com.android.support.constraint'
     picassoPackage = 'com.squareup.picasso'
@@ -39,7 +41,7 @@ ext {
 
 
     devDependencies = [
-            kinCore           : buildDependency(kinFoundationPackage, 'kin-core-android', kinCoreVersion),
+            kinMigration      : buildDependency(kinEcosystemPackage, 'kin-migration-module-android', kinMigrationVersion),
             appCompat_v7      : buildDependency(supportPackage, 'appcompat-v7', supportVersion),
             recyclerView_v7   : buildDependency(supportPackage, 'recyclerview-v7', supportVersion),
             constraintLayout  : buildDependency(constraintLayoutPackage, 'constraint-layout', constraintLayoutVersion),
@@ -53,13 +55,13 @@ ext {
     ]
 
     testingDependencies = [
-            junit       : buildDependency(junitPackage, 'junit', junitVersion),
-            mockito     : buildDependency(mockitoPackage, 'mockito-core', mockitoVersion),
-            robolectric : buildDependency(robolectricPackage, 'robolectric', robolectricVersion),
-            mockitoKotlin: buildDependency(mokitoKotlinPackage, 'mockito-kotlin', mokitoKotlinVersion),
+            junit            : buildDependency(junitPackage, 'junit', junitVersion),
+            mockito          : buildDependency(mockitoPackage, 'mockito-core', mockitoVersion),
+            robolectric      : buildDependency(robolectricPackage, 'robolectric', robolectricVersion),
+            mockitoKotlin    : buildDependency(mokitoKotlinPackage, 'mockito-kotlin', mokitoKotlinVersion),
             mockitoAndroid   : buildDependency(mockitoPackage, 'mockito-android', mockitoAndroidVersion),
             androidTestRunner: buildDependency(androidTestPackage, 'runner', androidTestVersion),
-            hamcrest          : buildDependency(hamcrestPackage, 'hamcrest-library', hamcrestVersion)
+            hamcrest         : buildDependency(hamcrestPackage, 'hamcrest-library', hamcrestVersion)
     ]
 }
 

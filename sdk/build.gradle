@@ -40,7 +40,6 @@ dependencies {
     testImplementation testingDependencies.mockitoKotlin
     testImplementation testingDependencies.robolectric
 }
-
 repositories {
     mavenCentral()
 }

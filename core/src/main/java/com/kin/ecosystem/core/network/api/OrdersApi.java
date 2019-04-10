@@ -10,7 +10,6 @@ package com.kin.ecosystem.core.network.api;/*
  * Do not edit the class manually.
  */
 
-
 import com.google.gson.reflect.TypeToken;
 import com.kin.ecosystem.core.data.internal.ConfigurationImpl;
 import com.kin.ecosystem.core.network.ApiCallback;
@@ -24,6 +23,7 @@ import com.kin.ecosystem.core.network.model.ExternalOrderRequest;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.OrderList;
+import com.kin.ecosystem.core.network.model.SpendOrderPayload;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,28 +31,7 @@ import java.util.List;
 import java.util.Map;
 import okhttp3.Call;
 
-
-public class OrdersApi {
-
-	private ApiClient apiClient;
-
-	public OrdersApi() {
-		this(ConfigurationImpl.getInstance().getDefaultApiClient());
-	}
-
-	public OrdersApi(ApiClient apiClient) {
-		this.apiClient = apiClient;
-	}
-
-	public ApiClient getApiClient() {
-		return apiClient;
-	}
-
-	public void setApiClient(ApiClient apiClient) {
-		this.apiClient = apiClient;
-	}
-
-
+public class OrdersApi extends Api {
 	/**
 	 * Build call for cancelOrder
 	 *
@@ -268,7 +247,6 @@ public class OrdersApi {
 		apiClient.executeAsync(call, localVarReturnType, callback);
 		return call;
 	}
-
 
 	/**
 	 * Build call for createExternalOrder
@@ -768,12 +746,12 @@ public class OrdersApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 */
-	public Call submitOrderCall(EarnSubmission earnsubmission, String orderId, String X_REQUEST_ID) throws ApiException {
+	public Call submitEarnOrderCall(EarnSubmission earnsubmission, String orderId, String X_REQUEST_ID) throws ApiException {
 		Object localVarPostBody = earnsubmission;
 
 		// create path and map variables
 		String localVarPath = "/orders/{order_id}"
-			.replaceAll("\\{" + "order_id" + "\\}", apiClient.escapeString(orderId.toString()));
+			.replaceAll("\\{" + "order_id" + "\\}", apiClient.escapeString(orderId));
 
 		List<Pair> localVarQueryParams = new ArrayList<Pair>();
 		List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
@@ -799,8 +777,6 @@ public class OrdersApi {
 		final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 		localVarHeaderParams.put("Content-Type", localVarContentType);
 
-
-
 		String[] localVarAuthNames = new String[]{};
 		return apiClient
 			.buildCall(localVarPath, ApiClient.POST, localVarQueryParams, localVarCollectionQueryParams,
@@ -809,7 +785,7 @@ public class OrdersApi {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private Call submitOrderValidateBeforeCall(EarnSubmission earnsubmission, String orderId, String X_REQUEST_ID) throws ApiException {
+	private Call submitEarnOrderValidateBeforeCall(EarnSubmission earnsubmission, String orderId, String X_REQUEST_ID) throws ApiException {
 
 		// verify the required parameter 'earnsubmission' is set
 		if (earnsubmission == null) {
@@ -826,7 +802,7 @@ public class OrdersApi {
 			throw new ApiException("Missing the required parameter 'X_REQUEST_ID' when calling submitOrder(Async)");
 		}
 
-		return submitOrderCall(earnsubmission, orderId, X_REQUEST_ID);
+		return submitEarnOrderCall(earnsubmission, orderId, X_REQUEST_ID);
 
 
 	}
@@ -841,8 +817,8 @@ public class OrdersApi {
 	 * @return Order
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 */
-	public Order submitOrder(EarnSubmission earnsubmission, String orderId, String X_REQUEST_ID) throws ApiException {
-		ApiResponse<Order> resp = submitOrderWithHttpInfo(earnsubmission, orderId, X_REQUEST_ID);
+	public Order submitEarnOrder(EarnSubmission earnsubmission, String orderId, String X_REQUEST_ID) throws ApiException {
+		ApiResponse<Order> resp = submitEarnOrderWithHttpInfo(earnsubmission, orderId, X_REQUEST_ID);
 		return resp.getData();
 	}
 
@@ -856,9 +832,9 @@ public class OrdersApi {
 	 * @return ApiResponse&lt;Order&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 */
-	public ApiResponse<Order> submitOrderWithHttpInfo(EarnSubmission earnsubmission, String orderId,
+	public ApiResponse<Order> submitEarnOrderWithHttpInfo(EarnSubmission earnsubmission, String orderId,
 		String X_REQUEST_ID) throws ApiException {
-		Call call = submitOrderValidateBeforeCall(earnsubmission, orderId, X_REQUEST_ID);
+		Call call = submitEarnOrderValidateBeforeCall(earnsubmission, orderId, X_REQUEST_ID);
 		Type localVarReturnType = new TypeToken<Order>() {
 		}.getType();
 		return apiClient.execute(call, localVarReturnType);
@@ -875,10 +851,78 @@ public class OrdersApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 */
-	public Call submitOrderAsync(EarnSubmission earnsubmission, String orderId, String X_REQUEST_ID,
+	public Call submitEarnOrderAsync(EarnSubmission earnsubmission, String orderId, String X_REQUEST_ID,
 		final ApiCallback<Order> callback) throws ApiException {
 
-		Call call = submitOrderValidateBeforeCall(earnsubmission, orderId, X_REQUEST_ID);
+		Call call = submitEarnOrderValidateBeforeCall(earnsubmission, orderId, X_REQUEST_ID);
+		Type localVarReturnType = new TypeToken<Order>() {
+		}.getType();
+		apiClient.executeAsync(call, localVarReturnType, callback);
+		return call;
+	}
+
+	public Call submitSpendOrderCall(SpendOrderPayload payload, String orderId, String X_REQUEST_ID) throws ApiException {
+		Object localVarPostBody = payload;
+
+		// create path and map variables
+		String localVarPath = "/orders/{order_id}"
+			.replaceAll("\\{" + "order_id" + "\\}", apiClient.escapeString(orderId));
+
+		List<Pair> localVarQueryParams = new ArrayList<Pair>();
+		List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+
+		Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+		if (X_REQUEST_ID != null) {
+			localVarHeaderParams.put("X-REQUEST-ID", apiClient.parameterToString(X_REQUEST_ID));
+		}
+
+		Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+		final String[] localVarAccepts = {
+			"application/json", "application/json", "application/json"
+		};
+		final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+		if (localVarAccept != null) {
+			localVarHeaderParams.put("Accept", localVarAccept);
+		}
+
+		final String[] localVarContentTypes = {
+			"application/json"
+		};
+		final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+		localVarHeaderParams.put("Content-Type", localVarContentType);
+
+		String[] localVarAuthNames = new String[]{};
+		return apiClient
+			.buildCall(localVarPath, ApiClient.POST, localVarQueryParams, localVarCollectionQueryParams,
+				localVarPostBody,
+				localVarHeaderParams, localVarFormParams, localVarAuthNames);
+	}
+
+	private Call submitSpendOrderValidateBeforeCall(SpendOrderPayload payload, String orderId, String X_REQUEST_ID) throws ApiException {
+
+		// verify the required parameter 'payload' is set
+		if (payload == null) {
+			throw new ApiException("Missing the required parameter 'payload' when calling submitOrder(Async)");
+		}
+
+		// verify the required parameter 'orderId' is set
+		if (orderId == null) {
+			throw new ApiException("Missing the required parameter 'orderId' when calling submitOrder(Async)");
+		}
+
+		// verify the required parameter 'X_REQUEST_ID' is set
+		if (X_REQUEST_ID == null) {
+			throw new ApiException("Missing the required parameter 'X_REQUEST_ID' when calling submitOrder(Async)");
+		}
+
+		return submitSpendOrderCall(payload, orderId, X_REQUEST_ID);
+	}
+
+	public Call submitSpendOrderAsync(SpendOrderPayload payload, String orderId, String X_REQUEST_ID,
+		final ApiCallback<Order> callback) throws ApiException {
+
+		Call call = submitSpendOrderValidateBeforeCall(payload, orderId, X_REQUEST_ID);
 		Type localVarReturnType = new TypeToken<Order>() {
 		}.getType();
 		apiClient.executeAsync(call, localVarReturnType, callback);
