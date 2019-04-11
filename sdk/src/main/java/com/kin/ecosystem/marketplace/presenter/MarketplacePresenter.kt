@@ -143,10 +143,6 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
         setCachedOfferLists(cachedOfferList)
     }
 
-    private fun hasOffers(offerList: OfferList?): Boolean {
-        return offerList != null && offerList.offers != null
-    }
-
     private fun setCachedOfferLists(cachedOfferList: OfferList) {
         offerList ?: run { offerList = ArrayList() }
         offerList?.let { offerList ->
@@ -195,15 +191,11 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
         view?.notifyOfferItemRemoved(index)
     }
 
-    private fun notifyOfferItemInserted(index: Int) {
-        view?.notifyOfferItemInserted(index)
-    }
-
     override fun getOffers() {
         this.offerRepository.getOffers(object : KinCallback<OfferList> {
             override fun onResponse(offerList: OfferList) {
                 setupEmptyItemView()
-                syncOffers(offerList)
+                updateOffers(offerList)
             }
 
             override fun onFailure(exception: KinEcosystemException) {
@@ -213,66 +205,15 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
         })
     }
 
+    private fun updateOffers(offerList: OfferList?) {
+        if (offerList != null && offerList.offers != null) {
+            view?.updateOffers(offerList.offers)
+            updateTitle()
+        }
+    }
+
     private fun setupEmptyItemView() {
         view?.setupEmptyItemView()
-    }
-
-    private fun syncOffers(offers: OfferList) {
-        if (hasOffers(offers)) {
-            offerList ?: kotlin.run { offerList = ArrayList() }
-            offerList?.let {
-                syncList(offers.offers, it)
-            }
-        }
-    }
-
-    private fun syncList(newList: List<Offer>, oldList: MutableList<Offer>) {
-        // check if offer should be removed (index changed / removed from list).
-        if (newList.isNotEmpty()) {
-            val iterator = oldList.iterator()
-            iterator.withIndex().forEach {
-                val index = newList.indexOf(it.value)
-                if (index == NOT_FOUND || index != it.index) {
-                    iterator.remove()
-                    notifyItemRemoved(it.index)
-                }
-            }
-
-            // Add missing offers, the order matters
-            for (i in newList.indices) {
-                val offer = newList[i]
-                if (i < oldList.size) {
-                    if (oldList[i] != offer) {
-                        oldList.add(i, offer)
-                        notifyItemInserted(i)
-                    }
-                } else {
-                    oldList.add(offer)
-                    notifyItemInserted(i)
-                }
-            }
-        } else {
-            val size = oldList.size
-            if (size > 0) {
-                oldList.clear()
-                notifyItemRangRemoved(0, size)
-            }
-        }
-
-        updateTitle()
-    }
-
-    private fun notifyItemRangRemoved(fromIndex: Int, size: Int) {
-        view?.notifyOfferItemRangRemoved(fromIndex, size)
-    }
-
-    private fun notifyItemRemoved(index: Int) {
-        notifyOfferItemRemoved(index)
-    }
-
-    private fun notifyItemInserted(index: Int) {
-        notifyOfferItemInserted(index)
-        updateTitle()
     }
 
     override fun onItemClicked(position: Int) {

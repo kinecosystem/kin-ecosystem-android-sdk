@@ -127,6 +127,10 @@ class MarketplaceFragment : Fragment(), IMarketplaceView {
         offersRecyclerAdapter.setNewData(offerList)
     }
 
+    override fun updateOffers(offers: List<Offer>) {
+        offersRecyclerAdapter.updateList(offers)
+    }
+
     override fun setupEmptyItemView() {
         offersRecyclerAdapter.setEmptyView(OffersEmptyView(context))
     }
