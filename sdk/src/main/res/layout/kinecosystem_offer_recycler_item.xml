@@ -17,7 +17,6 @@
         android:layout_marginTop="@dimen/kinrecovery_margin_main"
         android:layout_marginBottom="@dimen/kinrecovery_margin_main"
         android:layout_marginLeft="@dimen/kinecosystem_main_margin"
-        android:background="@drawable/kinecosystem_item_bg_placeholder"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>

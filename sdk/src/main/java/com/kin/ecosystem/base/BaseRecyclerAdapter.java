@@ -108,6 +108,10 @@ public abstract class BaseRecyclerAdapter<T, VH extends BaseViewHolder> extends 
 		return data == null ? 0 : data.size();
 	}
 
+	public List<T> getData() {
+		return data != null ? data : new ArrayList<T>();
+	}
+
 	@Nullable
 	private T getItem(@IntRange(from = 0) int position) {
 		if (position >= 0 && position < data.size()) {

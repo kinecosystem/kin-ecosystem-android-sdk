@@ -33,4 +33,6 @@ interface IMarketplaceView : IBaseView {
     fun showMenuTouchIndicator(isVisible: Boolean)
 
     fun updateTitle(title: Title)
+
+    fun updateOffers(offers: List<Offer>)
 }

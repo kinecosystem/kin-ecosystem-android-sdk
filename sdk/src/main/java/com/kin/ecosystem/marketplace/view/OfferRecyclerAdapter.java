@@ -4,6 +4,8 @@ import static com.kin.ecosystem.core.util.StringUtil.getAmountFormatted;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.util.DiffUtil;
+import android.support.v7.util.DiffUtil.DiffResult;
 import android.view.View;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
@@ -13,6 +15,7 @@ import com.kin.ecosystem.core.network.model.Offer.ContentTypeEnum;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.marketplace.view.OfferRecyclerAdapter.ViewHolder;
+import java.util.List;
 
 class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
 
@@ -30,6 +33,11 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
     @Override
     protected ViewHolder createBaseViewHolder(View view) {
         return new ViewHolder(view);
+    }
+
+    public void updateList(List<Offer> newList) {
+        DiffResult diffResult = DiffUtil.calculateDiff(new OffersDiffUtil(getData(), newList));
+        diffResult.dispatchUpdatesTo(this);
     }
 
     class ViewHolder extends AbstractBaseViewHolder<Offer> {
