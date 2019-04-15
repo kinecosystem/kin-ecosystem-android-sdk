@@ -8,7 +8,9 @@ import com.kin.ecosystem.common.Observer
 import com.kin.ecosystem.common.exception.KinEcosystemException
 import com.kin.ecosystem.common.model.Balance
 import com.kin.ecosystem.core.bi.EventLogger
-import com.kin.ecosystem.core.bi.events.OrderHistoryPageViewed
+import com.kin.ecosystem.core.bi.events.APageViewed
+import com.kin.ecosystem.core.bi.events.ContinueButtonTapped
+import com.kin.ecosystem.core.bi.events.PageCloseTapped
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource
 import com.kin.ecosystem.core.data.order.OrderDataSource
 import com.kin.ecosystem.core.data.settings.SettingsDataSource
@@ -40,7 +42,7 @@ class OrderHistoryPresenter(private val orderRepository: OrderDataSource,
 
     override fun onAttach(view: IOrderHistoryView) {
         super.onAttach(view)
-        eventLogger.send(OrderHistoryPageViewed.create())
+        eventLogger.send(APageViewed.create(APageViewed.PageName.MY_KIN_PAGE))
         getCachedHistory()
         listenToOrders()
     }
@@ -216,10 +218,13 @@ class OrderHistoryPresenter(private val orderRepository: OrderDataSource,
     }
 
     override fun onBackButtonClicked() {
+        eventLogger.send(PageCloseTapped.create(PageCloseTapped.ExitType.ANDROID_NAVIGATOR, PageCloseTapped.PageName.MY_KIN_PAGE))
         navigator?.navigateBack()
     }
 
     override fun onSettingsButtonClicked() {
+        eventLogger.send(ContinueButtonTapped.create(ContinueButtonTapped.PageName.MY_KIN_PAGE,
+                ContinueButtonTapped.PageContinue.MY_KIN_PAGE_CONTINUE_TO_SETTINGS, null))
         navigator?.navigateToSettings()
     }
 

@@ -16,8 +16,6 @@ public interface IMarketplacePresenter extends IBasePresenter<IMarketplaceView> 
 
     void showOfferActivityFailed();
 
-    void backButtonPressed();
-
     void setNavigator(INavigator navigator);
 
 	void closeClicked();

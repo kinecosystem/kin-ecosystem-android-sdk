@@ -29,6 +29,7 @@ import com.kin.ecosystem.marketplace.view.IMarketplaceView.Title
 import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle
 import java.math.BigDecimal
 import java.util.*
+import java.util.concurrent.atomic.AtomicBoolean
 
 class MarketplacePresenter(private val offerRepository: OfferDataSource,
                            private val orderRepository: OrderDataSource,
@@ -47,6 +48,7 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
     private var currentBalance: Balance = blockchainSource.balance
     private var publicAddress: String = blockchainSource.publicAddress
 
+    private var isPageOfferEventSent = AtomicBoolean(false)
     private var lastClickTime = NOT_FOUND.toLong()
     private val isFastClicks: Boolean
         get() {
@@ -67,7 +69,6 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
         super.onAttach(view)
         getCachedOffers()
         getOffers()
-        eventLogger.send(MarketplacePageViewed.create())
     }
 
     override fun onResume() {
@@ -147,12 +148,17 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
         offerList ?: run { offerList = ArrayList() }
         offerList?.let { offerList ->
             offerList.addAll(cachedOfferList.offers)
-            view?.let {view ->
+            view?.let { view ->
                 isListsAdded = true
                 view.setOfferList(offerList)
                 if (offerList.isNotEmpty()) {
                     updateTitle()
                 }
+            }
+
+            // If cached offers are not empty, send event, otherwise will be sent from getOffers()
+            if (offerList.isEmpty()) {
+                sendOfferPageViewed(false)
             }
         }
     }
@@ -193,14 +199,16 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
 
     override fun getOffers() {
         this.offerRepository.getOffers(object : KinCallback<OfferList> {
-            override fun onResponse(offerList: OfferList) {
+            override fun onResponse(newList: OfferList) {
                 setupEmptyItemView()
-                updateOffers(offerList)
+                updateOffers(newList)
+                sendOfferPageViewed(offerList?.isEmpty() ?: true)
             }
 
             override fun onFailure(exception: KinEcosystemException) {
                 setupEmptyItemView()
                 updateTitle()
+                sendOfferPageViewed(offerList?.isEmpty() ?: true)
             }
         })
     }
@@ -209,6 +217,13 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
         if (offerList != null && offerList.offers != null) {
             view?.updateOffers(offerList.offers)
             updateTitle()
+
+        }
+    }
+
+    private fun sendOfferPageViewed(isEmpty: Boolean) {
+        if (isPageOfferEventSent.compareAndSet(false, true)) {
+            eventLogger.send(OffersPageViewed.create(isEmpty))
         }
     }
 
@@ -234,7 +249,7 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
                 val amount = BigDecimal(offer.amount)
 
                 if (balance < amount.toInt()) {
-                    eventLogger.send(NotEnoughKinPageViewed.create())
+                    eventLogger.send(APageViewed.create(APageViewed.PageName.DIALOGS_NOT_ENOUGH_KIN))
                     showToast(Message.NOT_ENOUGH_KIN)
                     return
                 }
@@ -264,7 +279,7 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
 
     private fun updateTitle() {
         offerList?.apply {
-            view?.updateTitle(if(isEmpty()) Title.EMPTY_STATE else Title.DEFAULT)
+            view?.updateTitle(if (isEmpty()) Title.EMPTY_STATE else Title.DEFAULT)
         }
     }
 
@@ -313,19 +328,18 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
         showSomethingWentWrong()
     }
 
-    override fun backButtonPressed() {
-        eventLogger.send(BackButtonOnMarketplacePageTapped.create())
-    }
-
     override fun setNavigator(navigator: INavigator) {
         this.navigator = navigator
     }
 
     override fun closeClicked() {
+        eventLogger.send(PageCloseTapped.create(PageCloseTapped.ExitType.X_BUTTON, PageCloseTapped.PageName.MAIN_PAGE))
         closeMarketplace()
     }
 
     override fun myKinCLicked() {
+        eventLogger.send(ContinueButtonTapped.create(ContinueButtonTapped.PageName.MAIN_PAGE,
+                ContinueButtonTapped.PageContinue.MAIN_PAGE_CONTINUE_TO_MY_KIN, null))
         navigator?.navigateToOrderHistory(customAnimation {
             enter = R.anim.kinecosystem_slide_in_right
             exit = R.anim.kinecosystem_slide_out_left

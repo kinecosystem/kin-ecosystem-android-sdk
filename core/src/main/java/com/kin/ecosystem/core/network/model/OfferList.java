@@ -74,6 +74,10 @@ public class OfferList {
         this.offers = offers;
     }
 
+    public boolean isEmpty() {
+        return offers != null && offers.isEmpty();
+    }
+
     public OfferList paging(Paging paging) {
         this.paging = paging;
         return this;
