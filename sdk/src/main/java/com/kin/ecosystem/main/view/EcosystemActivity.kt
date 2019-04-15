@@ -63,9 +63,8 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
                 SettingsDataSourceImpl(SettingsDataSourceLocal(applicationContext)),
                 BlockchainSourceImpl.getInstance(),
                 EventLoggerImpl.getInstance(),
-                this, savedInstanceState, intent.extras).apply {
-            onAttach(this@EcosystemActivity)
-        }
+                this, savedInstanceState, intent.extras)
+        ecosystemPresenter?.onAttach(this@EcosystemActivity)
     }
 
     @StyleRes
@@ -135,10 +134,6 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
                     tag = ECOSYSTEM_MARKETPLACE_FRAGMENT_TAG,
                     customAnimation = customAnimation)
             setVisibleScreen(MARKETPLACE)
-        }
-
-        if(getCurrentFragment() is MarketplaceFragment) {
-            Toast.makeText(this, "Touched Outside", Toast.LENGTH_SHORT).show()
         }
     }
 

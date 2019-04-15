@@ -26,6 +26,7 @@ class EcosystemPresenter(private val authDataSource: AuthDataSource,
     @EcosystemExperience
     private var experience: Int = EcosystemExperience.NONE
     private var isConsumedIntentExtras: Boolean = false
+    private var isClosing = false
 
     init {
         // Must come before processIntentExtras, so we can define if the intent was consumed already.
@@ -107,6 +108,7 @@ class EcosystemPresenter(private val authDataSource: AuthDataSource,
     }
 
     override fun touchedOutside() {
+
         navigator?.close()
         sendPageCloseEvent(PageCloseTapped.ExitType.BACKROUND_APP)
     }

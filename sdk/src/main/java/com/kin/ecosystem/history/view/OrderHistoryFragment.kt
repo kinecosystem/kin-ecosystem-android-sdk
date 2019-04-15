@@ -58,9 +58,8 @@ open class OrderHistoryFragment : Fragment(), IOrderHistoryView {
         initColors()
         initViews(root)
         orderHistoryPresenter = OrderHistoryPresenter(OrderRepository.getInstance(), BlockchainSourceImpl.getInstance(),
-                SettingsDataSourceImpl(SettingsDataSourceLocal(context)), navigator, EventLoggerImpl.getInstance()).apply {
-            onAttach(this@OrderHistoryFragment)
-        }
+                SettingsDataSourceImpl(SettingsDataSourceLocal(context)), navigator, EventLoggerImpl.getInstance())
+        orderHistoryPresenter?.onAttach(this@OrderHistoryFragment)
         return root
     }
 

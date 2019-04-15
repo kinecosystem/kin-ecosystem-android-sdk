@@ -36,9 +36,8 @@ class SettingsFragment : Fragment(), ISettingsView, OnClickListener {
                 SettingsDataSourceLocal(context))
         settingsPresenter = SettingsPresenter(settingsDataSource, BlockchainSourceImpl.getInstance(),
                 BackupManagerImpl(activity, AccountManagerImpl.getInstance(), EventLoggerImpl.getInstance(),
-                        BlockchainSourceImpl.getInstance(), settingsDataSource), navigator ,EventLoggerImpl.getInstance()).apply {
-            onAttach(this@SettingsFragment)
-        }
+                        BlockchainSourceImpl.getInstance(), settingsDataSource), navigator ,EventLoggerImpl.getInstance())
+        settingsPresenter?.onAttach(this@SettingsFragment)
         return root
     }
 

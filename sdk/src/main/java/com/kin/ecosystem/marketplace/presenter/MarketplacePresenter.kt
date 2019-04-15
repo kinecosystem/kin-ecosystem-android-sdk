@@ -67,6 +67,7 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
 
     override fun onAttach(view: IMarketplaceView) {
         super.onAttach(view)
+        eventLogger.send(APageViewed.create(APageViewed.PageName.MAIN_PAGE))
         getCachedOffers()
         getOffers()
     }

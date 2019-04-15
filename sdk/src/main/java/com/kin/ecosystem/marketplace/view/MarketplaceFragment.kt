@@ -45,9 +45,8 @@ class MarketplaceFragment : Fragment(), IMarketplaceView {
                 BlockchainSourceImpl.getInstance(),
                 SettingsDataSourceImpl(SettingsDataSourceLocal(context)),
                 navigator,
-                EventLoggerImpl.getInstance()).apply {
-            onAttach(this@MarketplaceFragment)
-        }
+                EventLoggerImpl.getInstance())
+        marketplacePresenter?.onAttach(this@MarketplaceFragment)
         return root
     }
 
