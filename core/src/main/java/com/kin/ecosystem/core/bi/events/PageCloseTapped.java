@@ -240,8 +240,8 @@ public class PageCloseTapped implements Event {
 
     public enum ExitType {
 
-        @SerializedName("backround_app")
-        BACKROUND_APP("backround_app"),
+        @SerializedName("background_app")
+        BACKGROUND_APP("background_app"),
         @SerializedName("X_button")
         X_BUTTON("X_button"),
         @SerializedName("Android_navigator")

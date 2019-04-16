@@ -110,7 +110,7 @@ class EcosystemPresenter(private val authDataSource: AuthDataSource,
     override fun touchedOutside() {
 
         navigator?.close()
-        sendPageCloseEvent(PageCloseTapped.ExitType.BACKROUND_APP)
+        sendPageCloseEvent(PageCloseTapped.ExitType.BACKGROUND_APP)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
