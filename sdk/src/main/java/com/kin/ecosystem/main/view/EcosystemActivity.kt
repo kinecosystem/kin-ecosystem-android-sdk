@@ -9,6 +9,7 @@ import android.support.annotation.IdRes
 import android.support.annotation.StyleRes
 import android.support.constraint.ConstraintLayout
 import android.support.v4.app.Fragment
+import android.widget.Toast
 import com.kin.ecosystem.R
 import com.kin.ecosystem.base.AnimConsts
 import com.kin.ecosystem.base.CustomAnimation
@@ -16,6 +17,7 @@ import com.kin.ecosystem.base.KinEcosystemBaseActivity
 import com.kin.ecosystem.base.customAnimation
 import com.kin.ecosystem.common.KinTheme.DARK
 import com.kin.ecosystem.common.KinTheme.LIGHT
+import com.kin.ecosystem.core.bi.EventLoggerImpl
 import com.kin.ecosystem.core.data.auth.AuthRepository
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl
 import com.kin.ecosystem.core.data.internal.ConfigurationImpl
@@ -27,7 +29,6 @@ import com.kin.ecosystem.main.ScreenId
 import com.kin.ecosystem.main.ScreenId.*
 import com.kin.ecosystem.main.presenter.EcosystemPresenter
 import com.kin.ecosystem.main.presenter.IEcosystemPresenter
-import com.kin.ecosystem.marketplace.presenter.IMarketplacePresenter
 import com.kin.ecosystem.marketplace.view.MarketplaceFragment
 import com.kin.ecosystem.onPreDraw
 import com.kin.ecosystem.onboarding.view.OnboardingFragment
@@ -40,7 +41,6 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
         get() = R.layout.kinecosystem_activity_main
 
     private var ecosystemPresenter: IEcosystemPresenter? = null
-    private var marketplacePresenter: IMarketplacePresenter? = null
 
     private lateinit var containerFrame: ConstraintLayout
     private lateinit var contentFrame: ConstraintLayout
@@ -61,9 +61,10 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
         initViews()
         ecosystemPresenter = EcosystemPresenter(AuthRepository.getInstance(),
                 SettingsDataSourceImpl(SettingsDataSourceLocal(applicationContext)),
-                BlockchainSourceImpl.getInstance(), this, savedInstanceState, intent.extras).apply {
-            onAttach(this@EcosystemActivity)
-        }
+                BlockchainSourceImpl.getInstance(),
+                EventLoggerImpl.getInstance(),
+                this, savedInstanceState, intent.extras)
+        ecosystemPresenter?.onAttach(this@EcosystemActivity)
     }
 
     @StyleRes
@@ -123,6 +124,7 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
     override fun navigateToOnboarding() {
         OnboardingFragment.getInstance(intent.extras, this).apply {
             replaceFragment(R.id.fragment_frame, this, ECOSYSTEM_ONBOARDING_FRAGMENT_TAG)
+            setVisibleScreen(ONBOARDING)
         }
     }
 
@@ -135,7 +137,7 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
         }
     }
 
-    private fun setVisibleScreen(@ScreenId id: Int) {
+    private fun setVisibleScreen(id: ScreenId) {
         ecosystemPresenter?.visibleScreen(id)
     }
 
@@ -245,7 +247,6 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
                     })
                 }
                 is MarketplaceFragment -> {
-                    marketplacePresenter?.backButtonPressed()
                     close()
                 }
                 else -> close()

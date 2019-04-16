@@ -13,6 +13,8 @@ import com.kin.ecosystem.core.accountmanager.AccountManager
 import com.kin.ecosystem.core.accountmanager.AccountManager.*
 import com.kin.ecosystem.core.bi.EventLogger
 import com.kin.ecosystem.core.bi.events.APageViewed
+import com.kin.ecosystem.core.bi.events.ContinueButtonTapped
+import com.kin.ecosystem.core.bi.events.PageCloseTapped
 import com.kin.ecosystem.core.data.auth.AuthDataSource
 import com.kin.ecosystem.core.data.settings.SettingsDataSource
 import com.kin.ecosystem.main.INavigator
@@ -26,10 +28,9 @@ class OnboardingPresenterImpl(private val accountManager: AccountManager,
                               private val navigator: INavigator,
                               private val eventLogger: EventLogger,
                               private val timer: Timer, extras: Bundle) : BasePresenter<IOnboardingView>(), OnboardingPresenter {
+
     @EcosystemExperience
     private val nextExperience: Int
-
-
     private val accountStateObserver = object : Observer<Int>() {
         override fun onChanged(@AccountState value: Int?) {
             Logger.log(Log().withTag(TAG).put("accountStateObserver", value))
@@ -76,6 +77,8 @@ class OnboardingPresenterImpl(private val accountManager: AccountManager,
 
     override fun getStartedClicked() {
         Logger.log(Log().withTag(TAG).text("getStartedClicked").put("accountState", accountManager.accountState))
+        eventLogger.send(ContinueButtonTapped.create(ContinueButtonTapped.PageName.ONBOARDING,
+                ContinueButtonTapped.PageContinue.ONBOARDING_CONTINUE_TO_MAIN_PAGE, null))
         if (accountManager.isAccountCreated) {
             navigateToExperience()
         } else {
@@ -153,6 +156,7 @@ class OnboardingPresenterImpl(private val accountManager: AccountManager,
     override fun closeButtonPressed() {
         view?.let {
             navigator.close()
+            eventLogger.send(PageCloseTapped.create(PageCloseTapped.ExitType.X_BUTTON, PageCloseTapped.PageName.ONBOARDING))
         }
     }
 

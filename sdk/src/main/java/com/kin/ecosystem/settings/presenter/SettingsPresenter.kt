@@ -10,8 +10,7 @@ import com.kin.ecosystem.core.Logger
 import com.kin.ecosystem.core.bi.EventLogger
 import com.kin.ecosystem.core.bi.RecoveryBackupEvents
 import com.kin.ecosystem.core.bi.RecoveryRestoreEvents
-import com.kin.ecosystem.core.bi.events.BackupWalletFailed
-import com.kin.ecosystem.core.bi.events.SettingsPageViewed
+import com.kin.ecosystem.core.bi.events.*
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource
 import com.kin.ecosystem.core.data.settings.SettingsDataSource
 import com.kin.ecosystem.main.INavigator
@@ -40,7 +39,7 @@ class SettingsPresenter(private val settingsDataSource: SettingsDataSource,
 
     override fun onAttach(view: ISettingsView) {
         super.onAttach(view)
-        eventLogger.send(SettingsPageViewed.create())
+        eventLogger.send(APageViewed.create(APageViewed.PageName.SETTINGS))
     }
 
     override fun onResume() {
@@ -99,6 +98,8 @@ class SettingsPresenter(private val settingsDataSource: SettingsDataSource,
 
     override fun backupClicked() {
         try {
+            eventLogger.send(ContinueButtonTapped.create(ContinueButtonTapped.PageName.SETTINGS,
+                    ContinueButtonTapped.PageContinue.SETTINGS_PAGE_CONTINUE_TO_OPTIONS, ContinueButtonTapped.SettingOption.BACKUP))
             backupManager.backupFlow()
         } catch (e: ClientException) {
             // Could not happen in this case.
@@ -107,6 +108,8 @@ class SettingsPresenter(private val settingsDataSource: SettingsDataSource,
 
     override fun restoreClicked() {
         try {
+            eventLogger.send(ContinueButtonTapped.create(ContinueButtonTapped.PageName.SETTINGS,
+                    ContinueButtonTapped.PageContinue.SETTINGS_PAGE_CONTINUE_TO_OPTIONS, ContinueButtonTapped.SettingOption.RESTORE))
             backupManager.restoreFlow()
         } catch (e: ClientException) {
             // Could not happen in this case.
@@ -114,6 +117,7 @@ class SettingsPresenter(private val settingsDataSource: SettingsDataSource,
     }
 
     override fun backClicked() {
+        eventLogger.send(PageCloseTapped.create(PageCloseTapped.ExitType.ANDROID_NAVIGATOR, PageCloseTapped.PageName.SETTINGS))
         navigator?.navigateBack()
     }
 
@@ -159,7 +163,7 @@ class SettingsPresenter(private val settingsDataSource: SettingsDataSource,
     }
 
     private fun getErrorMessage(exception: BackupAndRestoreException, defaultMsg: String): String {
-        return exception.cause?.let { cause -> cause.message ?:  exception.message ?: defaultMsg }
+        return exception.cause?.let { cause -> cause.message ?: exception.message ?: defaultMsg }
                 ?: exception.message ?: defaultMsg
     }
 

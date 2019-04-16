@@ -12,20 +12,21 @@ import com.google.gson.annotations.SerializedName;
 
 
 /**
- * User chooses an option in the settings page
+ * User exit on page in new UI
  * 
  */
-public class SettingsOptionTapped implements Event {
-    public static final String EVENT_NAME = "settings_option_tapped";
+public class PageCloseTapped implements Event {
+    public static final String EVENT_NAME = "page_close_tapped";
     public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
-    public static SettingsOptionTapped create(SettingsOptionTapped.SettingOption settingOption) {
-        return new SettingsOptionTapped(
+    public static PageCloseTapped create(PageCloseTapped.ExitType exitType, PageCloseTapped.PageName pageName) {
+        return new PageCloseTapped(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             (Client) EventsStore.client(),
-            settingOption);
+            exitType,
+            pageName);
     }
 
     /**
@@ -73,32 +74,42 @@ public class SettingsOptionTapped implements Event {
      * (Required)
      * 
      */
-    @SerializedName("setting_option")
+    @SerializedName("exit_type")
     @Expose
-    private SettingsOptionTapped.SettingOption settingOption;
+    private PageCloseTapped.ExitType exitType;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("page_name")
+    @Expose
+    private PageCloseTapped.PageName pageName;
 
     /**
      * No args constructor for use in serialization
      * 
      */
-    public SettingsOptionTapped() {
+    public PageCloseTapped() {
     }
 
     /**
      * 
+     * @param exitType
      * @param common
 
      * @param client
 
-     * @param settingOption
      * @param user
+     * @param pageName
      */
-    public SettingsOptionTapped(Common common, User user, Client client, SettingsOptionTapped.SettingOption settingOption) {
+    public PageCloseTapped(Common common, User user, Client client, PageCloseTapped.ExitType exitType, PageCloseTapped.PageName pageName) {
         super();
         this.common = common;
         this.user = user;
         this.client = client;
-        this.settingOption = settingOption;
+        this.exitType = exitType;
+        this.pageName = pageName;
     }
 
     /**
@@ -196,8 +207,8 @@ public class SettingsOptionTapped implements Event {
      * (Required)
      * 
      */
-    public SettingsOptionTapped.SettingOption getSettingOption() {
-        return settingOption;
+    public PageCloseTapped.ExitType getExitType() {
+        return exitType;
     }
 
     /**
@@ -205,26 +216,46 @@ public class SettingsOptionTapped implements Event {
      * (Required)
      * 
      */
-    public void setSettingOption(SettingsOptionTapped.SettingOption settingOption) {
-        this.settingOption = settingOption;
+    public void setExitType(PageCloseTapped.ExitType exitType) {
+        this.exitType = exitType;
     }
 
-    public enum SettingOption {
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public PageCloseTapped.PageName getPageName() {
+        return pageName;
+    }
 
-        @SerializedName("backup")
-        BACKUP("backup"),
-        @SerializedName("restore")
-        RESTORE("restore");
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setPageName(PageCloseTapped.PageName pageName) {
+        this.pageName = pageName;
+    }
+
+    public enum ExitType {
+
+        @SerializedName("background_app")
+        BACKGROUND_APP("background_app"),
+        @SerializedName("X_button")
+        X_BUTTON("X_button"),
+        @SerializedName("Android_navigator")
+        ANDROID_NAVIGATOR("Android_navigator");
         private final String value;
-        private final static Map<String, SettingsOptionTapped.SettingOption> CONSTANTS = new HashMap<String, SettingsOptionTapped.SettingOption>();
+        private final static Map<String, PageCloseTapped.ExitType> CONSTANTS = new HashMap<String, PageCloseTapped.ExitType>();
 
         static {
-            for (SettingsOptionTapped.SettingOption c: values()) {
+            for (PageCloseTapped.ExitType c: values()) {
                 CONSTANTS.put(c.value, c);
             }
         }
 
-        private SettingOption(String value) {
+        private ExitType(String value) {
             this.value = value;
         }
 
@@ -237,8 +268,55 @@ public class SettingsOptionTapped implements Event {
             return this.value;
         }
 
-        public static SettingsOptionTapped.SettingOption fromValue(String value) {
-            SettingsOptionTapped.SettingOption constant = CONSTANTS.get(value);
+        public static PageCloseTapped.ExitType fromValue(String value) {
+            PageCloseTapped.ExitType constant = CONSTANTS.get(value);
+            if (constant == null) {
+                throw new IllegalArgumentException(value);
+            } else {
+                return constant;
+            }
+        }
+
+    }
+
+    public enum PageName {
+
+        @SerializedName("onboarding")
+        ONBOARDING("onboarding"),
+        @SerializedName("main_page")
+        MAIN_PAGE("main_page"),
+        @SerializedName("my_kin_page")
+        MY_KIN_PAGE("my_kin_page"),
+        @SerializedName("settings ")
+        SETTINGS("settings "),
+        @SerializedName("dialogs_not_enough_kin")
+        DIALOGS_NOT_ENOUGH_KIN("dialogs_not_enough_kin"),
+        @SerializedName("dialogs_spend_confirmation_screen")
+        DIALOGS_SPEND_CONFIRMATION_SCREEN("dialogs_spend_confirmation_screen");
+        private final String value;
+        private final static Map<String, PageCloseTapped.PageName> CONSTANTS = new HashMap<String, PageCloseTapped.PageName>();
+
+        static {
+            for (PageCloseTapped.PageName c: values()) {
+                CONSTANTS.put(c.value, c);
+            }
+        }
+
+        private PageName(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
+
+        public String value() {
+            return this.value;
+        }
+
+        public static PageCloseTapped.PageName fromValue(String value) {
+            PageCloseTapped.PageName constant = CONSTANTS.get(value);
             if (constant == null) {
                 throw new IllegalArgumentException(value);
             } else {

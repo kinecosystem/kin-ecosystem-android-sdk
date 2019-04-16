@@ -12,19 +12,20 @@ import com.google.gson.annotations.SerializedName;
 
 
 /**
- * Users views the order history page
+ * Main_page  page views in new UI
  * 
  */
-public class OrderHistoryPageViewed implements Event {
-    public static final String EVENT_NAME = "order_history_page_viewed";
+public class OffersPageViewed implements Event {
+    public static final String EVENT_NAME = "offers_page_viewed";
     public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
-    public static OrderHistoryPageViewed create() {
-        return new OrderHistoryPageViewed(
+    public static OffersPageViewed create(Boolean isEmpty) {
+        return new OffersPageViewed(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
-            (Client) EventsStore.client());
+            (Client) EventsStore.client(),
+            isEmpty);
     }
 
     /**
@@ -67,27 +68,37 @@ public class OrderHistoryPageViewed implements Event {
     @SerializedName("client")
     @Expose
     private Client client;
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @SerializedName("is_empty")
+    @Expose
+    private Boolean isEmpty;
 
     /**
      * No args constructor for use in serialization
      * 
      */
-    public OrderHistoryPageViewed() {
+    public OffersPageViewed() {
     }
 
     /**
      * 
      * @param common
+     * @param isEmpty
 
      * @param client
 
      * @param user
      */
-    public OrderHistoryPageViewed(Common common, User user, Client client) {
+    public OffersPageViewed(Common common, User user, Client client, Boolean isEmpty) {
         super();
         this.common = common;
         this.user = user;
         this.client = client;
+        this.isEmpty = isEmpty;
     }
 
     /**
@@ -178,6 +189,24 @@ public class OrderHistoryPageViewed implements Event {
      */
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public Boolean getIsEmpty() {
+        return isEmpty;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    public void setIsEmpty(Boolean isEmpty) {
+        this.isEmpty = isEmpty;
     }
 
 }

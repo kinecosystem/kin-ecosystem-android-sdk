@@ -6,32 +6,27 @@ import com.kin.ecosystem.EcosystemExperience
 import com.kin.ecosystem.Kin.KEY_ECOSYSTEM_EXPERIENCE
 import com.kin.ecosystem.R
 import com.kin.ecosystem.base.BasePresenter
-import com.kin.ecosystem.base.CustomAnimation
 import com.kin.ecosystem.base.customAnimation
-import com.kin.ecosystem.common.Observer
-import com.kin.ecosystem.common.exception.BlockchainException
-import com.kin.ecosystem.common.exception.ClientException
-import com.kin.ecosystem.common.model.Balance
 import com.kin.ecosystem.core.bi.EventLogger
-import com.kin.ecosystem.core.bi.events.GeneralEcosystemSdkError
+import com.kin.ecosystem.core.bi.events.PageCloseTapped
 import com.kin.ecosystem.core.data.auth.AuthDataSource
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource
 import com.kin.ecosystem.core.data.settings.SettingsDataSource
-import com.kin.ecosystem.core.util.StringUtil
 import com.kin.ecosystem.main.INavigator
 import com.kin.ecosystem.main.ScreenId
 import com.kin.ecosystem.main.view.IEcosystemView
-import java.math.BigDecimal
 
 class EcosystemPresenter(private val authDataSource: AuthDataSource,
                          private val settingsDataSource: SettingsDataSource,
                          private val blockchainSource: BlockchainSource,
+                         private val eventLogger: EventLogger,
                          private val navigator: INavigator?, savedInstanceState: Bundle?, extras: Bundle) : BasePresenter<IEcosystemView>(), IEcosystemPresenter {
-    @ScreenId
-    private var visibleScreen: Int = ScreenId.NONE
+
+    private var visibleScreen: ScreenId = ScreenId.NONE
     @EcosystemExperience
     private var experience: Int = EcosystemExperience.NONE
     private var isConsumedIntentExtras: Boolean = false
+    private var isClosing = false
 
     init {
         // Must come before processIntentExtras, so we can define if the intent was consumed already.
@@ -48,8 +43,8 @@ class EcosystemPresenter(private val authDataSource: AuthDataSource,
         return savedInstanceState?.getBoolean(KEY_CONSUMED_INTENT_EXTRAS) ?: run { false }
     }
 
-    private fun getVisibleScreen(savedInstanceState: Bundle?): Int {
-        return savedInstanceState?.getInt(KEY_SCREEN_ID, ScreenId.NONE) ?: ScreenId.NONE
+    private fun getVisibleScreen(savedInstanceState: Bundle?): ScreenId {
+        return ScreenId.valueOf(savedInstanceState?.getString(KEY_SCREEN_ID, ScreenId.NONE.name) ?: ScreenId.NONE.name)
     }
 
     private fun processIntentExtras(extras: Bundle) {
@@ -67,7 +62,7 @@ class EcosystemPresenter(private val authDataSource: AuthDataSource,
         super.onAttach(view)
         val kinUserId = authDataSource.ecosystemUserID
         if (!settingsDataSource.isSawOnboarding(kinUserId)) {
-            navigateToOnboarding()
+            navigateToVisibleScreen(ScreenId.ONBOARDING)
         } else {
             if (experience == EcosystemExperience.ORDER_HISTORY) {
                 experience = EcosystemExperience.NONE
@@ -75,12 +70,6 @@ class EcosystemPresenter(private val authDataSource: AuthDataSource,
             } else {
                 navigateToVisibleScreen(visibleScreen)
             }
-        }
-    }
-
-    private fun navigateToOnboarding() {
-        view?.let {
-            navigator?.navigateToOnboarding()
         }
     }
 
@@ -93,15 +82,16 @@ class EcosystemPresenter(private val authDataSource: AuthDataSource,
         }
     }
 
-    private fun navigateToVisibleScreen(visibleScreen: Int) {
+    private fun navigateToVisibleScreen(visibleScreen: ScreenId) {
         view?.let {
             when (visibleScreen) {
+                ScreenId.ONBOARDING -> navigator?.navigateToOnboarding()
                 ScreenId.ORDER_HISTORY -> navigator?.navigateToOrderHistory(customAnimation {
                     enter = R.anim.kinecosystem_slide_in_right
                     exit = R.anim.kinecosystem_slide_out_left
                     popEnter = R.anim.kinrecovery_slide_in_left
                     popExit = R.anim.kinecosystem_slide_out_right
-                },addToBackStack = false)
+                }, addToBackStack = false)
                 ScreenId.MARKETPLACE,
                 ScreenId.NONE ->
                     navigator?.navigateToMarketplace()
@@ -118,21 +108,35 @@ class EcosystemPresenter(private val authDataSource: AuthDataSource,
     }
 
     override fun touchedOutside() {
+
         navigator?.close()
+        sendPageCloseEvent(PageCloseTapped.ExitType.BACKGROUND_APP)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         with(outState) {
-            putInt(KEY_SCREEN_ID, visibleScreen)
+            putString(KEY_SCREEN_ID, visibleScreen.name)
             putBoolean(KEY_CONSUMED_INTENT_EXTRAS, isConsumedIntentExtras)
         }
     }
 
     override fun backButtonPressed() {
         view?.navigateBack()
+        sendPageCloseEvent(PageCloseTapped.ExitType.ANDROID_NAVIGATOR)
     }
 
-    override fun visibleScreen(@ScreenId id: Int) {
+    private fun sendPageCloseEvent(exitType: PageCloseTapped.ExitType) {
+        var pageName: PageCloseTapped.PageName? = null
+        when (visibleScreen) {
+            ScreenId.MARKETPLACE -> pageName = PageCloseTapped.PageName.MAIN_PAGE
+            ScreenId.ORDER_HISTORY -> pageName = PageCloseTapped.PageName.MY_KIN_PAGE
+            ScreenId.SETTINGS -> pageName = PageCloseTapped.PageName.SETTINGS
+            ScreenId.ONBOARDING -> pageName = PageCloseTapped.PageName.ONBOARDING
+        }
+        eventLogger.send(PageCloseTapped.create(exitType, pageName))
+    }
+
+    override fun visibleScreen(id: ScreenId) {
         visibleScreen = id
     }
 

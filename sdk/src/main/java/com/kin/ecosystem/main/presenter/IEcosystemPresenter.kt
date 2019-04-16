@@ -13,7 +13,7 @@ interface IEcosystemPresenter : IBasePresenter<IEcosystemView> {
 
     fun backButtonPressed()
 
-    fun visibleScreen(@ScreenId id: Int)
+    fun visibleScreen(id: ScreenId)
 
     fun onSaveInstanceState(outState: Bundle)
 }

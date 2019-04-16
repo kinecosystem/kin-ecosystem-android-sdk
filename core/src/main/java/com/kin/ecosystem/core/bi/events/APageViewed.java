@@ -213,6 +213,8 @@ public class APageViewed implements Event {
 
         @SerializedName("onboarding")
         ONBOARDING("onboarding"),
+        @SerializedName("main_page")
+        MAIN_PAGE("main_page"),
         @SerializedName("my_kin_page")
         MY_KIN_PAGE("my_kin_page"),
         @SerializedName("settings ")
