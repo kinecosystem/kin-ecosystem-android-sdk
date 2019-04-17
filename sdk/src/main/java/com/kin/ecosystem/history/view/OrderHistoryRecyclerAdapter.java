@@ -125,46 +125,47 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
         }
 
         private void setSubtitle(Order item) {
-            StringBuilder subTitle = new StringBuilder();
+            String subTitle = "";
             if (!TextUtils.isEmpty(item.getDescription())) {
-                subTitle.append(item.getDescription());
-            }
-            String dateString = item.getCompletionDate();
-            if (dateString != null && !TextUtils.isEmpty(dateString)) {
-                dateString = getDateFormatted(dateString);
-                if (!TextUtils.isEmpty(dateString)) {
-                    subTitle.append(DASH_DELIMITER).append(dateString);
-                }
+                subTitle = item.getDescription();
             }
             setText(R.id.sub_title, subTitle);
+
+            StringBuilder dateString = new StringBuilder();
+            if (!TextUtils.isEmpty(item.getCompletionDate())) {
+                dateString.append(DASH_DELIMITER).append(getDateFormatted(item.getCompletionDate()));
+            }
+            setText(R.id.date, dateString);
         }
 
         private void setOrderTitle(Order item) {
             String title = item.getTitle();
-            String delimiter =  TextUtils.isEmpty(item.getCallToAction()) && !isFailed(item.getStatus())? "" : DASH_DELIMITER;
-            String actionText = getActionText(item);
-            setText(R.id.action_text, actionText);
-            if(item.getStatus() == Status.FAILED) {
-                setText(R.id.title, title + delimiter);
+            if(isOrderFailed(item.getStatus())) {
+                setText(R.id.title, title);
+                setMaxEMs(R.id.title, 9);
+                setVisibility(R.id.delimiter, VISIBLE);
             } else  {
                 setText(R.id.title, title);
+                setMaxEMs(R.id.title, 12);
+                setVisibility(R.id.delimiter, GONE);
             }
+            setActionText(item);
         }
 
-        private boolean isFailed(Status status) {
+        private boolean isOrderFailed(Status status) {
             return status == Status.FAILED;
         }
 
-        private String getActionText(Order item) {
+        private void setActionText(Order item) {
             String actionText = "";
-            if (item.getStatus() == Status.FAILED) {
+            if (isOrderFailed(item.getStatus())) {
                 actionText = TRANSACTION_FAILED_MSG;
                 if(item.getError() != null) {
                     actionText = TextUtils.isEmpty(item.getError().getMessage()) ? TRANSACTION_FAILED_MSG : item.getError().getMessage();
                 }
 				setTextColor(R.id.action_text, colorFailed);
             }
-            return actionText;
+            setText(R.id.action_text, actionText);
         }
 
         private void updateTimeLine(Order item) {
