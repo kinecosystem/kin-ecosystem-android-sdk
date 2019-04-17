@@ -97,10 +97,6 @@ class KinEcosystemTabs @JvmOverloads constructor(context: Context,
     private fun setSelectedTab(selectedTabIndex: Tab, animate: Boolean = true) {
         if (currentSelectedTab == selectedTabIndex) return
 
-        if (currentSelectedTab != null) {
-            onTabClickedListener?.onTabClicked(selectedTabIndex)
-        }
-        currentSelectedTab = selectedTabIndex
         if (animate) {
 
             if (isAnimating) return
@@ -237,6 +233,11 @@ class KinEcosystemTabs @JvmOverloads constructor(context: Context,
                 leftTab.setTextColor(textDeselectedColor)
             }
         }
+
+        if (currentSelectedTab != null) {
+            onTabClickedListener?.onTabClicked(selectedTabIndex)
+        }
+        currentSelectedTab = selectedTabIndex
     }
 
     fun setOnTabClickedListener(listener: (Tab) -> Unit) {
