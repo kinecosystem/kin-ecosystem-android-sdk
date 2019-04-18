@@ -36,7 +36,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/kinecosystem_block_margin"
         android:maxEms="12"
-        android:maxLines="1"
+        android:singleLine="true"
+        android:ellipsize="marquee"
         app:fontExtra="medium"
         app:layout_constraintBottom_toBottomOf="@+id/kin_logo"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -77,10 +78,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxEms="12"
-        android:maxLines="1"
+        android:singleLine="true"
+        android:ellipsize="marquee"
         android:textColor="@color/kinecosystem_subtitle_order_history"
         app:layout_constraintStart_toStartOf="@+id/title"
         app:layout_constraintTop_toBottomOf="@+id/title"
+        app:layout_constraintEnd_toStartOf="@id/date"
         tools:text="Completed poll"/>
 
     <com.kin.ecosystem.widget.KinEcosystemTextView
@@ -89,10 +92,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxEms="12"
+        android:singleLine="true"
+        android:ellipsize="marquee"
         android:textColor="@color/kinecosystem_subtitle_order_history"
-        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@id/sub_title"
-        app:layout_constraintTop_toBottomOf="@+id/title"
+        app:layout_constraintTop_toTopOf="@id/sub_title"
+        app:layout_constraintBottom_toBottomOf="@id/sub_title"
+        app:layout_constraintHorizontal_chainStyle="packed"
         tools:text=" - 23.1.18"/>
 
     <com.kin.ecosystem.widget.KinEcosystemTextView
