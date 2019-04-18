@@ -22,9 +22,11 @@ import com.kin.ecosystem.widget.util.ThemeUtil;
 
 public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, ViewHolder> {
 
-    private static final int NOT_INITIALIZED = -1;
+	private static final int NOT_INITIALIZED = -1;
+	private static final int MAX_EMS = 12;
+	private static final int MAX_EMS_WITH_ERROR_MSG = 12;
 
-    private static int colorEarn = NOT_INITIALIZED;
+	private static int colorEarn = NOT_INITIALIZED;
     private static int colorSpend = NOT_INITIALIZED;
     private static int primaryTextColor = NOT_INITIALIZED;
     private static int colorFailed = NOT_INITIALIZED;
@@ -142,11 +144,11 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
             String title = item.getTitle();
             if(isOrderFailed(item.getStatus())) {
                 setText(R.id.title, title);
-                setMaxEMs(R.id.title, 9);
+                setMaxEMs(R.id.title, MAX_EMS_WITH_ERROR_MSG);
                 setVisibility(R.id.delimiter, VISIBLE);
             } else  {
                 setText(R.id.title, title);
-                setMaxEMs(R.id.title, 12);
+                setMaxEMs(R.id.title, MAX_EMS);
                 setVisibility(R.id.delimiter, GONE);
             }
             setActionText(item);
