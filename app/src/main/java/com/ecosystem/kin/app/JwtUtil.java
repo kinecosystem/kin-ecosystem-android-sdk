@@ -53,7 +53,7 @@ public class JwtUtil {
 			.setSubject(JWT_SUBJECT_SPEND)
 			.claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject(offerID))
 			.claim(JWT_CLAIM_OBJECT_SENDER_PART,
-				new JWTSenderPart(userID, deviceId, "Bought a sticker", "Lion sticker"))
+				new JWTSenderPart(userID, deviceId, "Bought a sticker from Oren", "Lion sticker is absolutely amazing"))
 			.signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
 	}
 
@@ -62,7 +62,7 @@ public class JwtUtil {
 			.setSubject(JWT_SUBJECT_EARN)
 			.claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject())
 			.claim(JWT_CLAIM_OBJECT_RECIPIENT_PART,
-				new JWTRecipientPart(userID, deviceId, "Received Kin", "upload profile picture"))
+				new JWTRecipientPart(userID, deviceId, "Received Kin from Avishy", "Upload profile picture"))
 			.signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
 	}
 

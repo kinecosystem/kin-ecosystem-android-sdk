@@ -6,6 +6,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputFilter;
 import android.text.Spannable;
 import android.util.SparseArray;
 import android.view.View;
@@ -89,6 +90,15 @@ class BaseViewHolder<T> extends RecyclerView.ViewHolder {
 	protected void setText(@IdRes int viewId, CharSequence value) {
 		TextView view = getView(viewId);
 		view.setText(value);
+	}
+
+	/**
+	 * @param viewId The view id.
+	 * @param maxEms The maximum ems width of the text view.
+	 */
+	protected void setMaxEMs(@IdRes int viewId, int maxEms) {
+		TextView view = getView(viewId);
+		view.setMaxEms(maxEms);
 	}
 
 	/**

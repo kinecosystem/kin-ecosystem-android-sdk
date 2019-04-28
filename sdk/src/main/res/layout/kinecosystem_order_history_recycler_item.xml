@@ -10,11 +10,11 @@
         android:layout_width="1dp"
         android:layout_height="match_parent"
         app:color="@color/kinecosystem_subtitle_order_history"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0"
         app:layout_constraintEnd_toEndOf="@+id/kin_logo"
         app:layout_constraintStart_toStartOf="@+id/kin_logo"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0"
         app:orientation="vertical"/>
 
     <ImageView
@@ -35,11 +35,28 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/kinecosystem_block_margin"
+        android:maxEms="12"
+        android:singleLine="true"
+        android:ellipsize="marquee"
         app:fontExtra="medium"
         app:layout_constraintBottom_toBottomOf="@+id/kin_logo"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/kin_logo"
         app:layout_constraintTop_toTopOf="@+id/kin_logo"
-        tools:text="Spotify - "/>
+        tools:text="Spotify"/>
+
+    <com.kin.ecosystem.widget.KinEcosystemTextView
+        android:id="@+id/delimiter"
+        style="@style/KinecosysTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" - "
+        android:visibility="gone"
+        app:fontExtra="medium"
+        app:layout_constraintBottom_toBottomOf="@+id/kin_logo"
+        app:layout_constraintStart_toEndOf="@+id/title"
+        app:layout_constraintTop_toTopOf="@+id/kin_logo"
+        tools:visibility="visible"/>
 
     <com.kin.ecosystem.widget.KinEcosystemTextView
         android:id="@+id/action_text"
@@ -47,10 +64,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="@dimen/kinecosystem_block_margin"
+        android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="@+id/title"
         app:layout_constraintEnd_toStartOf="@id/amount_text"
         app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toEndOf="@+id/title"
+        app:layout_constraintStart_toEndOf="@+id/delimiter"
         app:layout_constraintTop_toTopOf="@+id/title"
         tools:text="tap to reveal your code"/>
 
@@ -59,10 +77,29 @@
         style="@style/KinecosysSubTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:maxEms="12"
+        android:singleLine="true"
+        android:ellipsize="marquee"
         android:textColor="@color/kinecosystem_subtitle_order_history"
         app:layout_constraintStart_toStartOf="@+id/title"
         app:layout_constraintTop_toBottomOf="@+id/title"
-        tools:text="Completed poll - 23.1.18"/>
+        app:layout_constraintEnd_toStartOf="@id/date"
+        tools:text="Completed poll"/>
+
+    <com.kin.ecosystem.widget.KinEcosystemTextView
+        android:id="@+id/date"
+        style="@style/KinecosysSubTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxEms="12"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:textColor="@color/kinecosystem_subtitle_order_history"
+        app:layout_constraintStart_toEndOf="@id/sub_title"
+        app:layout_constraintTop_toTopOf="@id/sub_title"
+        app:layout_constraintBottom_toBottomOf="@id/sub_title"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        tools:text=" - 23.1.18"/>
 
     <com.kin.ecosystem.widget.KinEcosystemTextView
         android:id="@+id/amount_text"
