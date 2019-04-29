@@ -11,8 +11,6 @@
         android:id="@+id/rectangle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/kinecosystem_main_margin"
-        android:layout_gravity="center_horizontal"
-        app:srcCompat="?attr/offersEmptyStateImage"/>
+        app:srcCompat="@drawable/kinecosystem_mic_drop_dark"/>
 
 </merge>
