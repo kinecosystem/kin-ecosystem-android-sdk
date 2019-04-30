@@ -6,21 +6,16 @@ import android.animation.ValueAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.IdRes
-import android.support.annotation.StyleRes
 import android.support.constraint.ConstraintLayout
 import android.support.v4.app.Fragment
-import android.widget.Toast
 import com.kin.ecosystem.R
 import com.kin.ecosystem.base.AnimConsts
 import com.kin.ecosystem.base.CustomAnimation
 import com.kin.ecosystem.base.KinEcosystemBaseActivity
 import com.kin.ecosystem.base.customAnimation
-import com.kin.ecosystem.common.KinTheme.DARK
-import com.kin.ecosystem.common.KinTheme.LIGHT
 import com.kin.ecosystem.core.bi.EventLoggerImpl
 import com.kin.ecosystem.core.data.auth.AuthRepository
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl
-import com.kin.ecosystem.core.data.internal.ConfigurationImpl
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceImpl
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceLocal
 import com.kin.ecosystem.core.util.DeviceUtils
@@ -56,7 +51,6 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(getKinTheme())
         super.onCreate(savedInstanceState)
         initViews()
         ecosystemPresenter = EcosystemPresenter(AuthRepository.getInstance(),
@@ -65,16 +59,6 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
                 EventLoggerImpl.getInstance(),
                 this, savedInstanceState, intent.extras)
         ecosystemPresenter?.onAttach(this@EcosystemActivity)
-    }
-
-    @StyleRes
-    private fun getKinTheme(): Int {
-        return ConfigurationImpl.getInstance().kinTheme?.let {
-            when (it) {
-                LIGHT -> R.style.KinecosysNoActionBar_Light
-                DARK -> R.style.KinecosysNoActionBar_Dark
-            }
-        } ?: R.style.KinecosysNoActionBar_Light
     }
 
     override fun initViews() {
