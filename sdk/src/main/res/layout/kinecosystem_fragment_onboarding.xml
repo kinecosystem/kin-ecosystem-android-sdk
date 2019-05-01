@@ -35,8 +35,8 @@
         app:srcCompat="?attr/onboardingImage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/close_button"
-        app:layout_constraintBottom_toTopOf="@id/kin_logo"
+        app:layout_constraintTop_toTopOf="@id/close_button"
+        app:layout_constraintBottom_toBottomOf="@id/kin_logo"
         />
 
     <com.kin.ecosystem.widget.KinEcosystemTextView
