@@ -9,10 +9,7 @@ import android.support.annotation.IdRes
 import android.support.constraint.ConstraintLayout
 import android.support.v4.app.Fragment
 import com.kin.ecosystem.R
-import com.kin.ecosystem.base.AnimConsts
-import com.kin.ecosystem.base.CustomAnimation
-import com.kin.ecosystem.base.KinEcosystemBaseActivity
-import com.kin.ecosystem.base.customAnimation
+import com.kin.ecosystem.base.*
 import com.kin.ecosystem.core.bi.EventLoggerImpl
 import com.kin.ecosystem.core.data.auth.AuthRepository
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl
@@ -78,6 +75,11 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
     override fun onStart() {
         super.onStart()
         ecosystemPresenter?.onStart()
+        getCurrentFragment()?.let {
+            if (it is KinEcosystemBaseFragment<*, *>) {
+                it.navigator = this
+            }
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -102,7 +104,6 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
         transaction.replace(containerId, fragment, tag)
 
         if (allowStateLoss) transaction.commitAllowingStateLoss() else transaction.commit()
-
     }
 
     override fun navigateToOnboarding() {
@@ -241,7 +242,7 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
                 MARKETPLACE_TO_ORDER_HISTORY -> {
                     // After pressing back from OrderHistory, should put the attrs again.
                     // This is the only fragment that should set presenter again on back.
-                    savedMarketplaceFragment?.setNavigator(this)
+                    savedMarketplaceFragment?.let { it.navigator = this }
                             ?: navigateToMarketplace(customAnimation {
                                 enter = R.anim.kinecosystem_slide_in_left
                                 exit = R.anim.kinecosystem_slide_out_right
@@ -252,7 +253,7 @@ class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
                 ORDER_HISTORY_TO_SETTINGS -> {
                     // After pressing back from Settings, should put the attrs again.
                     // This is the only fragment that should set presenter again on back.
-                    orderHistoryFragment?.setNavigator(this)
+                    orderHistoryFragment?.let { it.navigator = this }
                             ?: navigateToOrderHistory(customAnimation {
                                 enter = R.anim.kinecosystem_slide_in_left
                                 exit = R.anim.kinecosystem_slide_out_right

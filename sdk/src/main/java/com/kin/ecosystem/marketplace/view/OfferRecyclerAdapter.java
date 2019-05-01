@@ -37,6 +37,8 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
 
     public void updateList(List<Offer> newList) {
         DiffResult diffResult = DiffUtil.calculateDiff(new OffersDiffUtil(getData(), newList));
+        data.clear();
+        data.addAll(newList);
         diffResult.dispatchUpdatesTo(this);
     }
 

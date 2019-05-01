@@ -1,6 +1,7 @@
 package com.kin.ecosystem.settings.presenter
 
 import android.content.Intent
+import com.kin.ecosystem.base.BaseFragmentPresenter
 import com.kin.ecosystem.base.BasePresenter
 import com.kin.ecosystem.common.Observer
 import com.kin.ecosystem.common.exception.ClientException
@@ -25,8 +26,8 @@ import java.math.BigDecimal
 class SettingsPresenter(private val settingsDataSource: SettingsDataSource,
                         private val blockchainSource: BlockchainSource,
                         private var backupManager: BackupManager,
-                        private val navigator: INavigator?,
-                        private val eventLogger: EventLogger) : BasePresenter<ISettingsView>(), ISettingsPresenter {
+                        navigator: INavigator?,
+                        private val eventLogger: EventLogger) : BaseFragmentPresenter<ISettingsView>(navigator), ISettingsPresenter {
 
     private var balanceObserver: Observer<Balance>? = null
     private var currentBalance = blockchainSource.balance

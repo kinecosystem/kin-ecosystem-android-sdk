@@ -2,6 +2,7 @@ package com.kin.ecosystem.marketplace.presenter
 
 
 import com.kin.ecosystem.R
+import com.kin.ecosystem.base.BaseFragmentPresenter
 import com.kin.ecosystem.base.BasePresenter
 import com.kin.ecosystem.base.customAnimation
 import com.kin.ecosystem.common.KinCallback
@@ -35,8 +36,8 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
                            private val orderRepository: OrderDataSource,
                            private val blockchainSource: BlockchainSource,
                            private val settingsDataSource: SettingsDataSource,
-                           private var navigator: INavigator?,
-                           private val eventLogger: EventLogger) : BasePresenter<IMarketplaceView>(), IMarketplacePresenter {
+                           navigator: INavigator?,
+                           private val eventLogger: EventLogger) : BaseFragmentPresenter<IMarketplaceView>(navigator), IMarketplacePresenter {
 
     private var offerList: MutableList<Offer>? = null
     private var nativeOfferRemovedSubscription: Subscription<Offer>? = null
@@ -327,10 +328,6 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
 
     override fun showOfferActivityFailed() {
         showSomethingWentWrong()
-    }
-
-    override fun setNavigator(navigator: INavigator) {
-        this.navigator = navigator
     }
 
     override fun closeClicked() {

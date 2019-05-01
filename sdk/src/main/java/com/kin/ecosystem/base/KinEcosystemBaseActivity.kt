@@ -19,7 +19,7 @@ abstract class KinEcosystemBaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        KinEcosystemInitiator.init(applicationContext)
+        KinEcosystemInitiator.init(this)
         setTheme(getKinTheme())
         setContentView(layoutRes)
         if (Build.VERSION.SDK_INT != Build.VERSION_CODES.O) {

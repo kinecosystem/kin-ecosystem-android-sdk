@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import com.kin.ecosystem.R
+import com.kin.ecosystem.base.KinEcosystemBaseFragment
 import com.kin.ecosystem.core.accountmanager.AccountManagerImpl
 import com.kin.ecosystem.core.bi.EventLoggerImpl
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl
@@ -21,10 +22,8 @@ import com.kin.ecosystem.settings.BackupManagerImpl
 import com.kin.ecosystem.settings.presenter.ISettingsPresenter
 import com.kin.ecosystem.settings.presenter.SettingsPresenter
 
-class SettingsFragment : Fragment(), ISettingsView, OnClickListener {
+class SettingsFragment : KinEcosystemBaseFragment<ISettingsPresenter, ISettingsView>(), ISettingsView, OnClickListener {
 
-    private var navigator: INavigator? = null
-    private var settingsPresenter: ISettingsPresenter? = null
 
     private lateinit var backupItem: SettingsItem
     private lateinit var restoreItem: SettingsItem
@@ -34,10 +33,10 @@ class SettingsFragment : Fragment(), ISettingsView, OnClickListener {
         initViews(root)
         val settingsDataSource = SettingsDataSourceImpl(
                 SettingsDataSourceLocal(context))
-        settingsPresenter = SettingsPresenter(settingsDataSource, BlockchainSourceImpl.getInstance(),
+        presenter = SettingsPresenter(settingsDataSource, BlockchainSourceImpl.getInstance(),
                 BackupManagerImpl(activity, AccountManagerImpl.getInstance(), EventLoggerImpl.getInstance(),
                         BlockchainSourceImpl.getInstance(), settingsDataSource), navigator ,EventLoggerImpl.getInstance())
-        settingsPresenter?.onAttach(this@SettingsFragment)
+        presenter?.onAttach(this@SettingsFragment)
         return root
     }
 
@@ -55,16 +54,16 @@ class SettingsFragment : Fragment(), ISettingsView, OnClickListener {
 
     override fun onResume() {
         super.onResume()
-        settingsPresenter?.onResume()
+        presenter?.onResume()
     }
 
     override fun onPause() {
         super.onPause()
-        settingsPresenter?.onPause()
+        presenter?.onPause()
     }
 
     override fun onDestroyView() {
-        settingsPresenter?.onDetach()
+        presenter?.onDetach()
         navigator = null
         super.onDestroyView()
     }
@@ -72,9 +71,9 @@ class SettingsFragment : Fragment(), ISettingsView, OnClickListener {
     override fun onClick(v: View) {
         val vId = v.id
         when(vId) {
-            R.id.back_btn -> settingsPresenter?.backClicked()
-            R.id.keep_your_kin_safe -> settingsPresenter?.backupClicked()
-            R.id.restore_prev_wallet -> settingsPresenter?.restoreClicked()
+            R.id.back_btn -> presenter?.backClicked()
+            R.id.keep_your_kin_safe -> presenter?.backupClicked()
+            R.id.restore_prev_wallet -> presenter?.restoreClicked()
         }
     }
 
@@ -110,7 +109,7 @@ class SettingsFragment : Fragment(), ISettingsView, OnClickListener {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        settingsPresenter?.onActivityResult(requestCode, resultCode, data)
+        presenter?.onActivityResult(requestCode, resultCode, data)
     }
 
     companion object {

@@ -20,6 +20,7 @@ import android.widget.ImageView
 import android.widget.TextSwitcher
 import android.widget.TextView
 import com.kin.ecosystem.R
+import com.kin.ecosystem.base.KinEcosystemBaseFragment
 import com.kin.ecosystem.core.bi.EventLoggerImpl
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl
 import com.kin.ecosystem.core.data.order.OrderRepository
@@ -38,10 +39,7 @@ import com.kin.ecosystem.widget.util.ThemeUtil
 import com.kin.ecosystem.withActions
 
 
-open class OrderHistoryFragment : Fragment(), IOrderHistoryView {
-
-    private var navigator: INavigator? = null
-    private var orderHistoryPresenter: IOrderHistoryPresenter? = null
+open class OrderHistoryFragment : KinEcosystemBaseFragment<IOrderHistoryPresenter, IOrderHistoryView>(), IOrderHistoryView {
 
     private lateinit var earnRecyclerAdapter: OrderHistoryRecyclerAdapter
     private lateinit var spendRecyclerAdapter: OrderHistoryRecyclerAdapter
@@ -49,17 +47,15 @@ open class OrderHistoryFragment : Fragment(), IOrderHistoryView {
     private lateinit var spendOrderRecyclerView: RecyclerView
     private lateinit var settingsMenuIcon: TouchIndicatorIcon
     private lateinit var orderDescription: TextSwitcher
-    private val mainHandler by lazy {
-        Handler(Looper.getMainLooper())
-    }
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.kinecosystem_fragment_order_history, container, false)
         initColors()
         initViews(root)
-        orderHistoryPresenter = OrderHistoryPresenter(OrderRepository.getInstance(), BlockchainSourceImpl.getInstance(),
+        presenter = OrderHistoryPresenter(OrderRepository.getInstance(), BlockchainSourceImpl.getInstance(),
                 SettingsDataSourceImpl(SettingsDataSourceLocal(context)), navigator, EventLoggerImpl.getInstance())
-        orderHistoryPresenter?.onAttach(this@OrderHistoryFragment)
+        presenter?.onAttach(this@OrderHistoryFragment)
         return root
     }
 
@@ -89,22 +85,22 @@ open class OrderHistoryFragment : Fragment(), IOrderHistoryView {
 
     private fun onEnterTransitionEnded(enter: Boolean) {
         if (enter) {
-            orderHistoryPresenter?.onEnterTransitionEnded()
+            presenter?.onEnterTransitionEnded()
         }
     }
 
     override fun onResume() {
         super.onResume()
-        orderHistoryPresenter?.onResume()
+        presenter?.onResume()
     }
 
     override fun onPause() {
         super.onPause()
-        orderHistoryPresenter?.onPause()
+        presenter?.onPause()
     }
 
     override fun onDestroyView() {
-        orderHistoryPresenter?.onDetach()
+        presenter?.onDetach()
         navigator = null
         super.onDestroyView()
     }
@@ -133,11 +129,11 @@ open class OrderHistoryFragment : Fragment(), IOrderHistoryView {
         }
 
         root.findViewById<ImageView>(R.id.back_btn).apply {
-            setOnClickListener { orderHistoryPresenter?.onBackButtonClicked() }
+            setOnClickListener { presenter?.onBackButtonClicked() }
         }
 
         settingsMenuIcon = root.findViewById<TouchIndicatorIcon>(R.id.settings_icon).apply {
-            setOnClickListener { orderHistoryPresenter?.onSettingsButtonClicked() }
+            setOnClickListener { presenter?.onSettingsButtonClicked() }
         }
 
         //Earn Recycler
@@ -157,7 +153,7 @@ open class OrderHistoryFragment : Fragment(), IOrderHistoryView {
         }
 
         root.findViewById<KinEcosystemTabs>(R.id.order_history_tabs).apply {
-            setOnTabClickedListener { orderHistoryPresenter?.onTabSelected(it) }
+            setOnTabClickedListener { presenter?.onTabSelected(it) }
         }
     }
 
@@ -274,10 +270,6 @@ open class OrderHistoryFragment : Fragment(), IOrderHistoryView {
 
     override fun notifySpendDataChanged(range: IntRange) {
         spendRecyclerAdapter.notifyItemRangeChanged(range.start, range.last)
-    }
-
-    override fun setNavigator(navigator: INavigator) {
-        this.navigator = navigator
     }
 
     companion object {
