@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.graphics.drawable.Animatable
 import android.os.Bundle
 import android.support.annotation.StringRes
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.kin.ecosystem.R
 import com.kin.ecosystem.base.AnimConsts
+import com.kin.ecosystem.base.KinEcosystemBaseFragment
 import com.kin.ecosystem.core.accountmanager.AccountManagerImpl
 import com.kin.ecosystem.core.bi.EventLoggerImpl
 import com.kin.ecosystem.core.data.auth.AuthRepository
@@ -25,10 +25,7 @@ import com.kin.ecosystem.onboarding.presenter.OnboardingPresenter.Message
 import com.kin.ecosystem.onboarding.presenter.OnboardingPresenterImpl
 import java.util.*
 
-class OnboardingFragment: Fragment(), IOnboardingView {
-
-    private lateinit var onboardingPresenter: OnboardingPresenter
-    private lateinit var navigator: INavigator
+class OnboardingFragment : KinEcosystemBaseFragment<OnboardingPresenter, IOnboardingView>(), IOnboardingView {
 
     private lateinit var welcomeImage: ImageView
     private lateinit var closeButton: ImageView
@@ -39,11 +36,11 @@ class OnboardingFragment: Fragment(), IOnboardingView {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.kinecosystem_fragment_onboarding, container, false)
-        onboardingPresenter = OnboardingPresenterImpl(AccountManagerImpl.getInstance(),
+        presenter = OnboardingPresenterImpl(AccountManagerImpl.getInstance(),
                 AuthRepository.getInstance(),
                 SettingsDataSourceImpl(SettingsDataSourceLocal(context.applicationContext)),
                 navigator, EventLoggerImpl.getInstance(), Timer(), arguments)
-        onboardingPresenter.onAttach(this)
+        presenter?.onAttach(this)
         initViews(root)
         return root
     }
@@ -54,13 +51,12 @@ class OnboardingFragment: Fragment(), IOnboardingView {
         loadingText = root.findViewById(R.id.loading_text)
         loadingAVD = root.findViewById(R.id.loading_image);
         closeButton = root.findViewById<ImageView>(R.id.close_button).apply {
-            setOnClickListener { onboardingPresenter.closeButtonPressed() }
+            setOnClickListener { presenter?.closeButtonPressed() }
         }
         letsGetStartedBtn = root.findViewById<Button>(R.id.lets_start_button).apply {
-            setOnClickListener { onboardingPresenter.getStartedClicked() }
+            setOnClickListener { presenter?.getStartedClicked() }
         }
     }
-
 
     @SuppressLint("NewApi")
     override fun animateLoading() {
@@ -120,7 +116,7 @@ class OnboardingFragment: Fragment(), IOnboardingView {
     }
 
     override fun onDestroy() {
-        onboardingPresenter.onDetach()
+        presenter?.onDetach()
         super.onDestroy()
     }
 

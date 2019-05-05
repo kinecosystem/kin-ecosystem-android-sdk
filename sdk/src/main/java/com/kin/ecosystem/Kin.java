@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatDelegate;
+import com.kin.ecosystem.base.KinEcosystemBaseActivity;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.KinEnvironment;
 import com.kin.ecosystem.common.KinTheme;
@@ -56,7 +57,6 @@ import com.kin.ecosystem.core.data.order.OrderRemoteData;
 import com.kin.ecosystem.core.data.order.OrderRepository;
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceImpl;
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceLocal;
-import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.core.util.ErrorUtil;
@@ -70,6 +70,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import kin.sdk.migration.MigrationManager;
 import kin.sdk.migration.MigrationNetworkInfo;
 import kin.sdk.migration.common.KinSdkVersion;
+import kin.sdk.migration.common.interfaces.IKinAccount;
 
 public class Kin {
 
@@ -89,7 +90,6 @@ public class Kin {
 		executorsUtil = new ExecutorsUtil();
 		// use application context to avoid leaks.
 		kinContext = new KinContext(appContext.getApplicationContext());
-
 	}
 
 	private static Kin getInstance(Context appContext) {
@@ -102,7 +102,6 @@ public class Kin {
 		}
 
 		return instance;
-
 	}
 
 	/**
@@ -115,15 +114,14 @@ public class Kin {
 	public synchronized static void initialize(Context appContext, KinTheme kinTheme) throws ClientException {
 		if (isInstanceNull()) {
 			instance = getInstance(appContext);
-			// use application context to avoid leaks.
-			appContext = appContext.getApplicationContext();
+
 			AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
 			//Load data from manifest, can throw ClientException if no data available.
 			loadDefaultsFromMetadata(getKinContext());
 
 			//Set Environment
-			ConfigurationImpl.init(environmentName, new ConfigurationLocalImpl(appContext));
+			ConfigurationImpl.init(environmentName, new ConfigurationLocalImpl(getKinContext()));
 			eventLogger = EventLoggerImpl.getInstance();
 
 			AuthRepository
@@ -148,10 +146,28 @@ public class Kin {
 			OfferRepository.init(OfferRemoteData.getInstance(instance.executorsUtil), OrderRepository.getInstance());
 
 			DeviceUtils.init(getKinContext());
-			FontUtil.Companion.init(appContext.getAssets());
+			FontUtil.Companion.init(getKinContext().getAssets());
 
 			if (AuthRepository.getInstance().getAppID() != null) {
 				eventLogger.send(KinSdkInitiated.create());
+			}
+
+			if (appContext instanceof KinEcosystemBaseActivity) {
+				// The app is after process restart and the sdk's views are visible.
+				// load the account.
+				IKinAccount account = BlockchainSourceImpl.getInstance().getKinAccount();
+				if (account == null) {
+					try {
+						final String kinUserId = AuthRepository.getInstance().getEcosystemUserID();
+						MigrationManager migrationManager = createMigrationManager(getKinContext(), AuthRepository.getInstance().getAppID());
+						BlockchainSourceImpl.getInstance().setMigrationManager(migrationManager);
+						BlockchainSourceImpl.getInstance().loadAccount(kinUserId);
+						isAccountLoggedIn.getAndSet(true);
+
+					} catch (BlockchainException e) {
+						// Account not found can't load it, client should login again.
+					}
+				}
 			}
 		}
 
@@ -286,19 +302,20 @@ public class Kin {
 
 	private static void migrate(final KinCallback<Void> loginCallback, final int loginState) {
 		BlockchainSourceImpl.getInstance().startMigrationProcess(new MigrationProcessListener() {
-				@Override
-				public void onMigrationStart() {}
+			@Override
+			public void onMigrationStart() {
+			}
 
-				@Override
-				public void onMigrationEnd() {
-					onboard(loginCallback, loginState);
-				}
+			@Override
+			public void onMigrationEnd() {
+				onboard(loginCallback, loginState);
+			}
 
-				@Override
-				public void onMigrationError(BlockchainException error) {
-					sendLoginFailed(error, loginCallback);
-				}
-			});
+			@Override
+			public void onMigrationError(BlockchainException error) {
+				sendLoginFailed(error, loginCallback);
+			}
+		});
 	}
 
 	private static void onboard(final KinCallback<Void> loginCallback, final int loginState) {
@@ -345,7 +362,7 @@ public class Kin {
 		});
 	}
 
-	private static MigrationManager createMigrationManager(Context context,@NonNull String appId) {
+	private static MigrationManager createMigrationManager(Context context, @NonNull String appId) {
 		KinEnvironment kinEnvironment = ConfigurationImpl.getInstance().getEnvironment();
 
 		final String oldNetworkUrl = kinEnvironment.getOldBlockchainNetworkUrl();
@@ -361,7 +378,8 @@ public class Kin {
 			newNetworkUrl, newNetworkId, issuer, migrationServiceUrl);
 
 		final BlockchainSource.Local local = BlockchainSourceLocal.getInstance(context);
-		final BlockchainSource.Remote remote = BlockchainSourceRemote.getInstance(getInstance(context).executorsUtil, eventLogger);
+		final BlockchainSource.Remote remote = BlockchainSourceRemote
+			.getInstance(getInstance(context).executorsUtil, eventLogger);
 		MigrationManager migrationManager = new MigrationManager(context, appId, migrationNetworkInfo,
 			new KinBlockchainVersionProvider(local, remote),
 			new MigrationEventsListener(EventLoggerImpl.getInstance()), KIN_ECOSYSTEM_STORE_PREFIX_KEY);

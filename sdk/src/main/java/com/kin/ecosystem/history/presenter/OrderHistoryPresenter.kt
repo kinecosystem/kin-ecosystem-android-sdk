@@ -2,7 +2,7 @@ package com.kin.ecosystem.history.presenter
 
 
 import android.support.annotation.NonNull
-import com.kin.ecosystem.base.BasePresenter
+import com.kin.ecosystem.base.BaseFragmentPresenter
 import com.kin.ecosystem.common.KinCallback
 import com.kin.ecosystem.common.Observer
 import com.kin.ecosystem.common.exception.KinEcosystemException
@@ -27,8 +27,8 @@ import java.math.BigDecimal
 class OrderHistoryPresenter(private val orderRepository: OrderDataSource,
                             private val blockchainSource: BlockchainSource,
                             private val settingsDataSource: SettingsDataSource,
-                            private var navigator: INavigator?,
-                            private val eventLogger: EventLogger) : BasePresenter<IOrderHistoryView>(), IOrderHistoryPresenter {
+                            navigator: INavigator?,
+                            private val eventLogger: EventLogger) : BaseFragmentPresenter<IOrderHistoryView>(navigator), IOrderHistoryPresenter {
 
     private var earnOrderList: MutableList<Order> = ArrayList()
     private var spendOrderList: MutableList<Order> = ArrayList()

@@ -4,6 +4,7 @@ import android.os.Bundle
 import com.kin.ecosystem.EcosystemExperience
 import com.kin.ecosystem.Kin.KEY_ECOSYSTEM_EXPERIENCE
 import com.kin.ecosystem.R
+import com.kin.ecosystem.base.BaseFragmentPresenter
 import com.kin.ecosystem.base.BasePresenter
 import com.kin.ecosystem.base.customAnimation
 import com.kin.ecosystem.common.Observer
@@ -25,9 +26,9 @@ import java.util.*
 class OnboardingPresenterImpl(private val accountManager: AccountManager,
                               private val authDataSource: AuthDataSource,
                               private val settingsDataSource: SettingsDataSource,
-                              private val navigator: INavigator,
+                              navigator: INavigator?,
                               private val eventLogger: EventLogger,
-                              private val timer: Timer, extras: Bundle) : BasePresenter<IOnboardingView>(), OnboardingPresenter {
+                              private val timer: Timer, extras: Bundle) : BaseFragmentPresenter<IOnboardingView>(navigator), OnboardingPresenter {
 
     @EcosystemExperience
     private val nextExperience: Int
@@ -142,12 +143,14 @@ class OnboardingPresenterImpl(private val accountManager: AccountManager,
         if (accountManager.isAccountCreated) {
             view?.let {
                 settingsDataSource.setSawOnboarding(authDataSource.ecosystemUserID)
-                when (nextExperience) {
-                    EcosystemExperience.MARKETPLACE -> navigator.navigateToMarketplace(customAnimation {
-                        enter = R.anim.kinecosystem_fade_in
-                        exit = R.anim.kinecosystem_fade_out
-                    })
-                    EcosystemExperience.ORDER_HISTORY -> navigator.navigateToOrderHistory(addToBackStack = false)
+                navigator?.let { navigator ->
+                    when (nextExperience) {
+                        EcosystemExperience.MARKETPLACE -> navigator.navigateToMarketplace(customAnimation {
+                            enter = R.anim.kinecosystem_fade_in
+                            exit = R.anim.kinecosystem_fade_out
+                        })
+                        EcosystemExperience.ORDER_HISTORY -> navigator.navigateToOrderHistory(addToBackStack = false)
+                    }
                 }
             }
         }
@@ -155,7 +158,7 @@ class OnboardingPresenterImpl(private val accountManager: AccountManager,
 
     override fun closeButtonPressed() {
         view?.let {
-            navigator.close()
+            navigator?.close()
             eventLogger.send(PageCloseTapped.create(PageCloseTapped.ExitType.X_BUTTON, PageCloseTapped.PageName.ONBOARDING))
         }
     }

@@ -24,7 +24,7 @@ public abstract class BaseRecyclerAdapter<T, VH extends BaseViewHolder> extends 
 	private FrameLayout emptyLayout;
 	private RecyclerView recyclerView;
 
-	private List<T> data;
+	protected List<T> data;
 
 	public BaseRecyclerAdapter(@LayoutRes int layoutResId) {
 		this.layoutResId = layoutResId;

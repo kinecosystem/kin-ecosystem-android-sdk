@@ -1,10 +1,12 @@
 package com.kin.ecosystem.history.presenter
 
+import com.kin.ecosystem.base.IBaseFragmentPresenter
 import com.kin.ecosystem.base.IBasePresenter
 import com.kin.ecosystem.history.view.IOrderHistoryView
+import com.kin.ecosystem.main.INavigator
 import com.kin.ecosystem.widget.KinEcosystemTabs
 
-interface IOrderHistoryPresenter : IBasePresenter<IOrderHistoryView> {
+interface IOrderHistoryPresenter : IBaseFragmentPresenter<IOrderHistoryView> {
 
     fun onEnterTransitionEnded()
 
@@ -17,5 +19,4 @@ interface IOrderHistoryPresenter : IBasePresenter<IOrderHistoryView> {
     fun onSettingsButtonClicked()
 
     fun onTabSelected(tab: KinEcosystemTabs.Tab)
-
 }

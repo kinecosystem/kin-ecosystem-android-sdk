@@ -27,8 +27,6 @@ interface IOrderHistoryView : IBaseView {
 
     fun notifySpendDataChanged(range: IntRange)
 
-    fun setNavigator(navigator: INavigator)
-
     fun showMenuTouchIndicator(visibility: Boolean)
 
     fun updateSubTitle(amount: Int, orderStatus: OrderHistoryPresenter.OrderStatus, orderType: OrderHistoryPresenter.OrderType)

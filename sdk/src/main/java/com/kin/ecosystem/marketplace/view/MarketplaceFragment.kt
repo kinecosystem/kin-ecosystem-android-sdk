@@ -2,7 +2,6 @@ package com.kin.ecosystem.marketplace.view
 
 import android.os.Bundle
 import android.support.annotation.StringRes
-import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.kin.ecosystem.R
+import com.kin.ecosystem.base.KinEcosystemBaseFragment
 import com.kin.ecosystem.common.exception.ClientException
 import com.kin.ecosystem.core.bi.EventLoggerImpl
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl
@@ -27,10 +27,7 @@ import com.kin.ecosystem.poll.view.PollWebViewActivity.PollBundle
 import com.kin.ecosystem.widget.TouchIndicatorIcon
 
 
-class MarketplaceFragment : Fragment(), IMarketplaceView {
-
-    private var navigator: INavigator? = null
-    private var marketplacePresenter: IMarketplacePresenter? = null
+class MarketplaceFragment : KinEcosystemBaseFragment<IMarketplacePresenter, IMarketplaceView>(), IMarketplaceView {
 
     private lateinit var offersRecyclerAdapter: OfferRecyclerAdapter
     private lateinit var offersRecycler: RecyclerView
@@ -40,28 +37,28 @@ class MarketplaceFragment : Fragment(), IMarketplaceView {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.kinecosystem_fragment_marketplce, container, false)
         initViews(root)
-        marketplacePresenter = MarketplacePresenter(OfferRepository.getInstance(),
+        presenter = MarketplacePresenter(OfferRepository.getInstance(),
                 OrderRepository.getInstance(),
                 BlockchainSourceImpl.getInstance(),
                 SettingsDataSourceImpl(SettingsDataSourceLocal(context)),
                 navigator,
                 EventLoggerImpl.getInstance())
-        marketplacePresenter?.onAttach(this@MarketplaceFragment)
+        presenter?.onAttach(this@MarketplaceFragment)
         return root
     }
 
     override fun onResume() {
         super.onResume()
-        marketplacePresenter?.onResume()
+        presenter?.onResume()
     }
 
     override fun onPause() {
         super.onPause()
-        marketplacePresenter?.onPause()
+        presenter?.onPause()
     }
 
     override fun onDestroyView() {
-        marketplacePresenter?.onDetach()
+        presenter?.onDetach()
         navigator = null
         super.onDestroyView()
     }
@@ -69,10 +66,10 @@ class MarketplaceFragment : Fragment(), IMarketplaceView {
     private fun initViews(root: View) {
         screenTitle = root.findViewById(R.id.title)
         root.findViewById<ImageView>(R.id.close_btn).apply {
-            setOnClickListener { marketplacePresenter?.closeClicked() }
+            setOnClickListener { presenter?.closeClicked() }
         }
         myKinButton = root.findViewById<TouchIndicatorIcon>(R.id.my_kin_btn).apply {
-            setOnClickListener { marketplacePresenter?.myKinCLicked() }
+            setOnClickListener { presenter?.myKinCLicked() }
         }
 
         //Space item decoration for both of the recyclers
@@ -84,7 +81,7 @@ class MarketplaceFragment : Fragment(), IMarketplaceView {
         }
         offersRecyclerAdapter = OfferRecyclerAdapter().apply {
             bindToRecyclerView(offersRecycler)
-            setOnItemClickListener { _, _, position -> marketplacePresenter?.onItemClicked(position) }
+            setOnItemClickListener { _, _, position -> presenter?.onItemClicked(position) }
         }
     }
 
@@ -94,7 +91,7 @@ class MarketplaceFragment : Fragment(), IMarketplaceView {
             startActivity(intent)
             activity.overridePendingTransition(R.anim.kinecosystem_slide_in_right, R.anim.kinecosystem_slide_out_left)
         } catch (e: ClientException) {
-            marketplacePresenter?.showOfferActivityFailed()
+            presenter?.showOfferActivityFailed()
         }
     }
 
@@ -149,11 +146,6 @@ class MarketplaceFragment : Fragment(), IMarketplaceView {
 
     override fun showMenuTouchIndicator(isVisible: Boolean) {
         myKinButton.setTouchIndicatorVisibility(isVisible)
-    }
-
-    fun setNavigator(nav: INavigator) {
-        navigator = nav
-        marketplacePresenter?.setNavigator(navigator)
     }
 
     companion object {
