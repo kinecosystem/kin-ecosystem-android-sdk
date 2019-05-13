@@ -25,6 +25,11 @@ public abstract class NativeOfferBuilder {
 		return this;
 	}
 
+	public NativeOfferBuilder dismissOnTap(boolean dismissOnTap) {
+		nativeOffer.setDismissOnTap(dismissOnTap);
+		return this;
+	}
+
 	public NativeOffer build() {
 		return nativeOffer;
 	}

@@ -34,6 +34,8 @@ public class Offer {
     @SerializedName("amount")
     private Integer amount = null;
 
+    private boolean dismissOnTap;
+
     /**
      * Gets or Sets offerType
      */
@@ -313,6 +315,15 @@ public class Offer {
 
     public void setBlockchainData(BlockchainData blockchainData) {
         this.blockchainData = blockchainData;
+    }
+
+    public boolean isDismissOnTap() {
+        return dismissOnTap;
+    }
+
+    public Offer setDismissOnTap(boolean dismissOnTap) {
+        this.dismissOnTap = dismissOnTap;
+        return this;
     }
 
     @Override

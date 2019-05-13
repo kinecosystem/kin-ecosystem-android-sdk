@@ -7,6 +7,7 @@ public abstract class NativeOffer {
 	private String description;
 	private int amount;
 	private String image;
+	private boolean dismissOnTap;
 
 	public NativeOffer(String id) {
 		this.id = id;
@@ -50,6 +51,14 @@ public abstract class NativeOffer {
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+
+	public boolean isDismissOnTap() {
+		return dismissOnTap;
+	}
+
+	public void setDismissOnTap(boolean dismissOnTap) {
+		this.dismissOnTap = dismissOnTap;
 	}
 
 	public abstract OfferType getOfferType();

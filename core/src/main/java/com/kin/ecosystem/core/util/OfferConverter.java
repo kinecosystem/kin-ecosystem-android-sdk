@@ -9,6 +9,8 @@ import com.kin.ecosystem.common.model.NativeSpendOfferBuilder;
 import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.Offer.ContentTypeEnum;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OfferConverter {
 
@@ -28,6 +30,7 @@ public class OfferConverter {
 				.description(nativeOffer.getDescription())
 				.amount(nativeOffer.getAmount())
 				.image(nativeOffer.getImage())
+				.setDismissOnTap(nativeOffer.isDismissOnTap())
 				.contentType(ContentTypeEnum.EXTERNAL);
 		} else {
 			return null;
@@ -35,10 +38,26 @@ public class OfferConverter {
 	}
 
 	public static NativeOffer toNativeOffer(@NonNull Offer offer) {
-		NativeOfferBuilder nativeOfferBuilder =
-			(offer.getOfferType() == OfferType.EARN) ? new NativeEarnOfferBuilder(offer.getId())
-				: new NativeSpendOfferBuilder(offer.getId());
-		return nativeOfferBuilder.title(offer.getTitle()).description(offer.getDescription()).amount(offer.getAmount())
-			.image(offer.getImage()).build();
+		NativeOfferBuilder nativeOfferBuilder = (offer.getOfferType() == OfferType.EARN) ?
+			new NativeEarnOfferBuilder(offer.getId()) : new NativeSpendOfferBuilder(offer.getId());
+
+		return nativeOfferBuilder
+			.title(offer.getTitle())
+			.description(offer.getDescription())
+			.amount(offer.getAmount())
+			.image(offer.getImage())
+			.dismissOnTap(offer.isDismissOnTap())
+			.build();
+	}
+
+	public static List<Offer> toOfferList(@NonNull List<NativeOffer> nativeOfferList) {
+		List<Offer> offers = new ArrayList<>();
+		for (int i = 0; i < nativeOfferList.size(); i++) {
+			Offer offer = toOffer(nativeOfferList.get(i));
+			if (offer != null) {
+				offers.add(offer);
+			}
+		}
+		return offers;
 	}
 }
