@@ -11,9 +11,9 @@ interface IPollWebView : IBaseView {
 
     fun showToast(msg: Message)
 
-    fun initWebView(kinTheme: String)
+    fun initWebView()
 
-    fun renderJson(pollJsonString: String)
+    fun renderJson(pollJsonString: String, kinTheme: String)
 
     fun close()
 }

@@ -63,13 +63,13 @@ class PollWebViewActivity : KinEcosystemBaseActivity(), IPollWebView {
         }
     }
 
-    override fun initWebView(kinTheme: String) {
+    override fun initWebView() {
         webView?.setListener(pollWebViewPresenter)
         webView?.load()
-        webView?.setTheme(kinTheme)
     }
 
-    override fun renderJson(pollJsonString: String) {
+    override fun renderJson(pollJsonString: String, kinTheme: String) {
+        webView?.setTheme(kinTheme)
         webView?.render(pollJsonString)
     }
 

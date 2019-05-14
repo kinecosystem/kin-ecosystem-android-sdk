@@ -34,7 +34,7 @@ class PollWebViewPresenter(private val pollJsonString: String, private val offer
     }
 
     private fun initWebView() {
-        view?.initWebView(configuration.kinTheme!!.name)
+        view?.initWebView()
     }
 
     private fun createOrder() {
@@ -80,7 +80,7 @@ class PollWebViewPresenter(private val pollJsonString: String, private val offer
             //TODO: add general error event
         }
 
-        view?.renderJson(pollJsonString)
+        view?.renderJson(pollJsonString, configuration.kinTheme!!.name)
     }
 
 

@@ -96,7 +96,7 @@ public class EcosystemWebView extends WebView {
             return;
         }
 
-        final StringBuilder js = new StringBuilder("kin.setTheme(").append(kinTheme).append(")");
+        final StringBuilder js = new StringBuilder("kin.setTheme(\"").append(kinTheme).append("\")");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             evaluateJavascript(js.toString(), null);
