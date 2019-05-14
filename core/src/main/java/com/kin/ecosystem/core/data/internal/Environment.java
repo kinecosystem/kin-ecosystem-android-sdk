@@ -37,7 +37,7 @@ class Environment implements KinEnvironment {
 		"Kin Testnet ; December 2018",
 		"https://migration-service.kinecosystemtest.com/migrate?address=",
 		"http://api.kinecosystemtest.com/" + API_VERSION,
-		"https://tantum.serveo.net/",
+		"https://s3.amazonaws.com/assets.kinecosystemtest.com/web-offers/cards-based/index.html",
 		"https://bi.kinecosystembi.com/eco_play_");
 
 	private final String oldBlockchainNetworkUrl;
