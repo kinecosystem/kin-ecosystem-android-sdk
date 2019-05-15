@@ -339,7 +339,6 @@ public class MainActivity extends AppCompatActivity {
 		try {
 			//Add offers to the top
 			if (Kin.addAllNativeOffers(nativeOfferList)) {
-				Kin.addAllNativeOffers(nativeOfferList);
 				showToast("Native offer LIST was added");
 			} else {
 				showToast("Could not add native offer LIST");
