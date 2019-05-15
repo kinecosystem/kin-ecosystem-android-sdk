@@ -66,8 +66,12 @@ class PollWebViewPresenter(private val pollJsonString: String, private val offer
     }
 
     private fun release() {
-        if (openOrderObserver != null) {
-            orderRepository.openOrder.removeObserver(openOrderObserver)
+        removeOrderObserver()
+    }
+
+    private fun removeOrderObserver() {
+        openOrderObserver?.let {
+            orderRepository.openOrder.removeObserver(it)
             openOrderObserver = null
         }
     }
@@ -104,9 +108,9 @@ class PollWebViewPresenter(private val pollJsonString: String, private val offer
 
     override fun onPageResult(result: String) {
         sendEarnOrderCompleted()
-        if (openOrder != null) {
+        openOrder?.let { openOrder ->
             isOrderSubmitted = true
-            val orderId = openOrder!!.id
+            val orderId = openOrder.id
             eventLogger.send(EarnOrderCompletionSubmitted.create(offerID, orderId, EarnOrderCompletionSubmitted.Origin.MARKETPLACE))
             orderRepository.submitEarnOrder(offerID, result, orderId, object : KinCallback<Order> {
                 override fun onResponse(response: Order) {}
@@ -134,8 +138,9 @@ class PollWebViewPresenter(private val pollJsonString: String, private val offer
     }
 
     private fun listenToOpenOrders() {
+        removeOrderObserver()
         openOrderObserver = object : Observer<OpenOrder>() {
-            override fun onChanged(value: OpenOrder) {
+            override fun onChanged(value: OpenOrder?) {
                 openOrder = value
             }
         }
