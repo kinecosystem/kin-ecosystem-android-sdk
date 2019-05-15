@@ -66,6 +66,7 @@ import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.recovery.BackupAndRestore;
 import com.kin.ecosystem.recovery.BackupAndRestoreImpl;
 import com.kin.ecosystem.widget.util.FontUtil;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import kin.sdk.migration.MigrationManager;
 import kin.sdk.migration.MigrationNetworkInfo;
@@ -651,6 +652,7 @@ public class Kin {
 	}
 
 	/**
+	 * @deprecated use {@link Kin#addNativeOffer(NativeOffer) instead and set dismissOnTap as value inside the {@link NativeOffer} object}
 	 * Adds an {@link NativeOffer} to spend or earn offer list on Kin Marketplace activity.
 	 * The offer will be added at index 0 in the spend list.
 	 *
@@ -659,10 +661,41 @@ public class Kin {
 	 * @return true if the offer added successfully, the list was changed.
 	 * @throws ClientException - sdk not initialized.
 	 */
+	@Deprecated
 	public static boolean addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissOnTap)
 		throws ClientException {
 		checkInstanceNotNull();
-		return OfferRepository.getInstance().addNativeOffer(nativeOffer, dismissOnTap);
+		nativeOffer.setDismissOnTap(dismissOnTap);
+		return OfferRepository.getInstance().addNativeOffer(nativeOffer);
+	}
+
+	/**
+	 * Adds an {@link NativeOffer} to spend or earn offer list on Kin Marketplace activity.
+	 * The offer will be added at index 0 in the spend list.
+	 *
+	 * @param nativeOffer The spend or earn offer you want to add to the spend list.
+	 * @return true if the offer added successfully, the list was changed.
+	 * @throws ClientException - sdk not initialized.
+	 */
+	public static boolean addNativeOffer(@NonNull NativeOffer nativeOffer)
+		throws ClientException {
+		checkInstanceNotNull();
+		return OfferRepository.getInstance().addNativeOffer(nativeOffer);
+	}
+
+	/**
+	 * Adds an {@link NativeOffer} to spend or earn offer list on Kin Marketplace activity.
+	 * The offer will be added at index 0 in the spend list.
+	 *
+	 * @param nativeOfferList The native offers list you want to add.
+	 * @return true the list was added successfully, the list was changed.
+	 * 		   false if one or more offers was not added successfully.
+	 * @throws ClientException - sdk not initialized.
+	 */
+	public static boolean addAllNativeOffers(@NonNull List<NativeOffer> nativeOfferList)
+		throws ClientException {
+		checkInstanceNotNull();
+		return OfferRepository.getInstance().addAllNativeOffers(nativeOfferList);
 	}
 
 	/**

@@ -258,11 +258,10 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
             }
 
             if (isExternalOffer(offer)) {
-                val dismissOnTap = offerRepository.shouldDismissOnTap(offer.id)
-                if (dismissOnTap) {
+                if (offer.isDismissOnTap) {
                     closeMarketplace()
                 }
-                onNativeOfferClicked(offer, dismissOnTap)
+                onNativeOfferClicked(offer)
             } else {
                 view?.let { view ->
                     val pollBundle = PollBundle()
@@ -313,12 +312,12 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
         }
     }
 
-    private fun onNativeOfferClicked(offer: Offer, dismissMarketplace: Boolean) {
+    private fun onNativeOfferClicked(offer: Offer) {
         val nativeOffer = OfferConverter.toNativeOffer(offer)
         offerRepository.nativeSpendOfferObservable.postValue(
                 NativeOfferClickEvent.Builder()
                         .nativeOffer(nativeOffer)
-                        .isDismissed(dismissMarketplace)
+                        .isDismissed(nativeOffer.isDismissOnTap)
                         .build())
     }
 
