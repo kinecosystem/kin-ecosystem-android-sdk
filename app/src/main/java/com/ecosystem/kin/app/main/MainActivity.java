@@ -45,6 +45,10 @@ import com.kin.ecosystem.common.model.UserStats;
 import com.kin.ecosystem.recovery.BackupAndRestore;
 import com.kin.ecosystem.recovery.BackupAndRestoreCallback;
 import com.kin.ecosystem.recovery.exception.BackupAndRestoreException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -84,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
 			.description("More details on native spend\ncan be placed here")
 			.amount(100)
 			.image("https://s3.amazonaws.com/assets.kinecosystembeta.com/images/spend_test.png")
+			.dismissOnTap(true)
 			.build();
 	}
 
@@ -94,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
 			.description("Upgrade your profile")
 			.amount(100)
 			.image("https://s3.amazonaws.com/assets.kinecosystembeta.com/images/native_earn_padding.png")
+			.dismissOnTap(false)
 			.build();
 	}
 
@@ -189,7 +195,6 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 
-
 		final TextView userIdTextView = findViewById(R.id.user_id_textview);
 		SpannableString userIdSpan = getUnderlineSpan(getString(R.string.user_id, userID));
 		userIdTextView.setText(userIdSpan);
@@ -211,7 +216,8 @@ public class MainActivity extends AppCompatActivity {
 				launchExperience(EcosystemExperience.ORDER_HISTORY);
 			}
 		});
-		((TextView) findViewById(R.id.sample_app_version)).setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
+		((TextView) findViewById(R.id.sample_app_version))
+			.setText(getString(R.string.version_name, BuildConfig.VERSION_NAME));
 		findViewById(R.id.logout_user).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -219,10 +225,16 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 
-		addNativeOffer();
+		if (HeadsOrTails.flip() == HeadsOrTails.HEADS) {
+			addNativeOffersOneByOne();
+		} else {
+			addNativeOfferList();
+		}
+
 		addNativeOfferClickedObserver();
 
 	}
+
 
 	private void addBackupAndRestoreCallbacks() {
 		backupAndRestore.registerBackupCallback(new BackupAndRestoreCallback() {
@@ -291,12 +303,51 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	private void addNativeOffer() {
+	private void addNativeOffersOneByOne() {
+		Log.d(TAG, "addNativeOffersOneByOne");
+		removeNativeOffers();
+		nativeEarnOffer = getNativeEarnOffer();
+		nativeSpendOffer = getNativeSpendOffer();
+
+		//Add offer to the top
+		addNativeOffer(nativeEarnOffer);
+
+		//Add offer to the top
+		addNativeOffer(nativeSpendOffer);
+	}
+
+	private void addNativeOffer(@NonNull NativeOffer nativeOffer) {
+		try {
+			if (Kin.addNativeOffer(nativeOffer)) {
+				showToast("Native offer added");
+			} else {
+				showToast("Could not add native offer");
+			}
+		} catch (ClientException e) {
+			showSnackbar("ClientException  " + e.getMessage(), true);
+			e.printStackTrace();
+		}
+	}
+
+	private void addNativeOfferList() {
+		Log.d(TAG, "addNativeOfferList");
 		removeNativeOffers();
 		nativeSpendOffer = getNativeSpendOffer();
-		addNativeOffer(nativeSpendOffer, true);
 		nativeEarnOffer = getNativeEarnOffer();
-		addNativeOffer(nativeEarnOffer, false);
+		List<NativeOffer> nativeOfferList = new ArrayList<>(2);
+		Collections.addAll(nativeOfferList, nativeSpendOffer, nativeEarnOffer);
+		try {
+			//Add offers to the top
+			if (Kin.addAllNativeOffers(nativeOfferList)) {
+				showToast("Native offer LIST was added");
+			} else {
+				showToast("Could not add native offer LIST");
+			}
+		} catch (ClientException e) {
+			showSnackbar("ClientException  " + e.getMessage(), true);
+			e.printStackTrace();
+		}
+
 	}
 
 	private void removeNativeOffers() {
@@ -423,19 +474,6 @@ public class MainActivity extends AppCompatActivity {
 		return nativeOfferClickedObserver;
 	}
 
-	private void addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissMarketPlaceOnTap) {
-		try {
-			if (Kin.addNativeOffer(nativeOffer, dismissMarketPlaceOnTap)) {
-				showToast("Native offer added");
-			} else {
-				showToast("Could not add native offer");
-			}
-		} catch (ClientException e) {
-			showSnackbar("ClientException  " + e.getMessage(), true);
-			e.printStackTrace();
-		}
-	}
-
 	private void getPublicAddress() {
 
 		try {
@@ -509,7 +547,8 @@ public class MainActivity extends AppCompatActivity {
 
 	private void createNativeSpendOffer() {
 		spendOfferID = String.valueOf(getRandomID());
-		String offerJwt = JwtUtil.generateSpendOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID, deviceID, spendOfferID);
+		String offerJwt = JwtUtil
+			.generateSpendOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID, deviceID, spendOfferID);
 		Log.d(TAG, "createNativeSpendOffer: " + offerJwt);
 		try {
 			Kin.purchase(offerJwt, getNativeSpendOrderConfirmationCallback());
@@ -530,7 +569,8 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void createPayToUserOffer(String recipientUserID) {
-		String offerJwt = JwtUtil.generatePayToUserOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID, deviceID, recipientUserID);
+		String offerJwt = JwtUtil
+			.generatePayToUserOfferExampleJWT(BuildConfig.SAMPLE_APP_ID, userID, deviceID, recipientUserID);
 		try {
 			Kin.payToUser(offerJwt, getNativePayToUserOrderConfirmationCallback());
 		} catch (ClientException e) {
@@ -706,7 +746,7 @@ public class MainActivity extends AppCompatActivity {
 		backupAndRestore.release();
 		try {
 			removeNativeOffers();
-			if(nativeOfferClickedObserver != null) {
+			if (nativeOfferClickedObserver != null) {
 				Kin.removeNativeOfferClickedObserver(nativeOfferClickedObserver);
 			}
 		} catch (ClientException e) {

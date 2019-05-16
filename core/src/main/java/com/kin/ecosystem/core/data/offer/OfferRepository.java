@@ -2,6 +2,7 @@ package com.kin.ecosystem.core.data.offer;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Pair;
 import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
@@ -13,16 +14,12 @@ import com.kin.ecosystem.core.data.order.OrderDataSource;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.Offer;
 import com.kin.ecosystem.core.network.model.Offer.ContentTypeEnum;
-import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.core.network.model.OfferList;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.Order.Status;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.OfferConverter;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import kotlin.Pair;
 
 public class OfferRepository implements OfferDataSource {
 
@@ -31,10 +28,7 @@ public class OfferRepository implements OfferDataSource {
 	private final OfferDataSource.Remote remoteData;
 	private final OrderDataSource orderRepository;
 
-	//Saves offerId with a value dismissOnTap
-	private HashMap<String, Boolean> nativeOfferMap = new HashMap<>();
-	private OfferList nativeSpendOfferList = new OfferList();
-	private OfferList nativeEarnOfferList = new OfferList();
+	private OfferList nativeOfferList = new OfferList();
 	private OfferList cachedOfferList = new OfferList();
 
 	private ObservableData<NativeOfferClickEvent> nativeSpendOfferObservable = ObservableData.create();
@@ -97,55 +91,44 @@ public class OfferRepository implements OfferDataSource {
 		});
 	}
 
-	private OfferList getList() {
-		OfferList masterList = new OfferList();
-
-		Offer tutorial = getTutorialOffer(cachedOfferList);
-		// Tutorial offer should be first
-		if (tutorial != null) {
-			masterList.add(tutorial);
-		}
-
-		Iterator<Offer> nativeSpendItr = nativeSpendOfferList.getOffers().iterator();
-		Iterator<Offer> nativeEarnItr = nativeEarnOfferList.getOffers().iterator();
-		Iterator<Offer> earnMPItr = cachedOfferList.getOffers().iterator();
-
-		while (nativeSpendItr.hasNext() || nativeEarnItr.hasNext() || earnMPItr.hasNext()) {
-			// 1st nativeSpendItr, 2ns nativeEarnItr
-			if(nativeSpendItr.hasNext()) {
-				masterList.add(nativeSpendItr.next());
-				if(nativeEarnItr.hasNext()) {
-					masterList.add(nativeEarnItr.next());
-				}
-			} else {
-				// 1st nativeEarnItr, 2nd earnMPItr
-				if(nativeEarnItr.hasNext()) {
-					masterList.add(nativeEarnItr.next());
-				} else {
-					if(earnMPItr.hasNext()) {
-						Offer offer = earnMPItr.next();
-						if((tutorial != null && !tutorial.equals(offer)) || (tutorial == null)) {
-							masterList.add(offer);
-						}
-					}
-				}
-			}
-		}
-
-		masterList.setPaging(cachedOfferList.getPaging());
-		return masterList;
-	}
-
-	private Offer getTutorialOffer(OfferList offerList) {
+	private Pair<Offer, Integer> getTutorialOffer(OfferList offerList) {
 		if (offerList != null && offerList.getOffers() != null) {
 			List<Offer> offers = offerList.getOffers();
-			for (Offer offer: offers) {
+			for (int index = 0; index < offers.size(); index++) {
+				Offer offer = offers.get(index);
 				if (offer.getContentType() == ContentTypeEnum.TUTORIAL) {
-					return offer;
+					return new Pair<>(offer, index);
 				}
 			}
 		}
 		return null;
+	}
+
+	private OfferList getList() {
+		OfferList masterList = new OfferList();
+
+		// First add the tutorial offer if exists above all
+		Pair<Offer, Integer> tutorialPair = getTutorialOffer(cachedOfferList);
+		if (tutorialPair != null) {
+			masterList.add(tutorialPair.first);
+		}
+
+		// Second add all native offers
+		masterList.addAll(nativeOfferList.getOffers());
+
+		// Lastly add all the rest of MP offers
+		List<Offer> marketplaceOffers = cachedOfferList.getOffers();
+		if (tutorialPair != null) {
+			masterList.addAll(marketplaceOffers.subList(0, tutorialPair.second));
+			if (marketplaceOffers.size() > tutorialPair.second) {
+				masterList.addAll(marketplaceOffers.subList(tutorialPair.second + 1, marketplaceOffers.size()));
+			}
+		} else {
+			masterList.addAll(marketplaceOffers);
+		}
+
+		masterList.setPaging(cachedOfferList.getPaging());
+		return masterList;
 	}
 
 	private void removeFromCachedOfferList(String offerID) {
@@ -178,24 +161,28 @@ public class OfferRepository implements OfferDataSource {
 	}
 
 	@Override
-	public boolean addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissOnTap) {
+	public boolean addNativeOffer(@NonNull NativeOffer nativeOffer) {
 		String offerId = nativeOffer.getId();
 		if (offerId != null) {
 			Offer offer = OfferConverter.toOffer(nativeOffer);
 			if (offer != null) {
-				nativeOfferMap.put(offerId, dismissOnTap);
-
-				if (offer.getOfferType() == OfferType.EARN) {
-					addOrUpdate(nativeEarnOfferList, offer);
-				} else {
-					addOrUpdate(nativeSpendOfferList, offer);
-				}
-
+				addOrUpdate(nativeOfferList, offer);
 				return true;
 			}
 			return false;
 		}
 		return false;
+	}
+
+	@Override
+	public boolean addAllNativeOffers(List<NativeOffer> nativeOfferList) {
+		boolean result = true;
+		for (int i = nativeOfferList.size() - 1; i >= 0; i--) {
+			if (!addNativeOffer(nativeOfferList.get(i))) {
+				result = false;
+			}
+		}
+		return result;
 	}
 
 	private void addOrUpdate(OfferList offerList, Offer offer) {
@@ -216,24 +203,13 @@ public class OfferRepository implements OfferDataSource {
 			Offer offer = OfferConverter.toOffer(nativeOffer);
 			if (offer != null) {
 				nativeOfferRemoved.postValue(offer);
-				nativeOfferMap.remove(offerId);
-				if (offer.getOfferType() == OfferType.EARN) {
-					return nativeEarnOfferList.remove(offer);
-				} else {
-					return nativeSpendOfferList.remove(offer);
-				}
+				return nativeOfferList.remove(offer);
 			}
 			return false;
 
 		} else {
 			return false;
 		}
-	}
-
-	@Override
-	public boolean shouldDismissOnTap(@NonNull String offerId) {
-		final Boolean shouldDismissOnTap = nativeOfferMap.get(offerId);
-		return shouldDismissOnTap == null ? false : shouldDismissOnTap;
 	}
 
 	@Override
