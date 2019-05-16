@@ -38,12 +38,8 @@ class PollWebViewPresenter(private val pollJsonString: String, private val offer
     }
 
     private fun createOrder() {
-        try {
-            eventLogger.send(EarnOrderCreationRequested
-                    .create(EarnOrderCreationRequested.OfferType.fromValue(contentType), amount.toDouble(), offerID, EarnOrderCreationRequested.Origin.MARKETPLACE))
-        } catch (ex: IllegalArgumentException) {
-            //TODO: add general error event
-        }
+        eventLogger.send(EarnOrderCreationRequested.create(EarnOrderCreationRequested.OfferType.fromValue(contentType),
+                amount.toDouble(), offerID, EarnOrderCreationRequested.Origin.MARKETPLACE))
 
         orderRepository.createOrder(offerID, object : KinCallback<OpenOrder> {
             override fun onResponse(response: OpenOrder?) {
@@ -77,16 +73,9 @@ class PollWebViewPresenter(private val pollJsonString: String, private val offer
     }
 
     override fun onPageLoaded() {
-        try {
-            eventLogger.send(EarnPageLoaded.create(EarnPageLoaded.OfferType.fromValue(contentType)))
-
-        } catch (ex: IllegalArgumentException) {
-            //TODO: add general error event
-        }
-
+        eventLogger.send(EarnPageLoaded.create(EarnPageLoaded.OfferType.fromValue(contentType)))
         view?.renderJson(pollJsonString, configuration.kinTheme!!.name)
     }
-
 
     override fun closeClicked() {
         eventLogger.send(CloseButtonOnOfferPageTapped.create(offerID, orderId))
@@ -124,13 +113,7 @@ class PollWebViewPresenter(private val pollJsonString: String, private val offer
     }
 
     private fun sendEarnOrderCompleted() {
-        try {
-            eventLogger.send(
-                    EarnOrderCompleted.create(OfferType.fromValue(contentType), amount.toDouble(), offerID, orderId, EarnOrderCompleted.Origin.MARKETPLACE))
-        } catch (e: IllegalArgumentException) {
-            //TODO: add general error event
-        }
-
+        eventLogger.send(EarnOrderCompleted.create(OfferType.fromValue(contentType), amount.toDouble(), offerID, orderId, EarnOrderCompleted.Origin.MARKETPLACE))
     }
 
     override fun onPageClosed() {

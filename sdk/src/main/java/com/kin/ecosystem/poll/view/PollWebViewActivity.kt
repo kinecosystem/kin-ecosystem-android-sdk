@@ -6,17 +6,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.StringRes
-import android.view.View
-import android.widget.LinearLayout
 import android.widget.Toast
 import com.kin.ecosystem.R
-import com.kin.ecosystem.base.BaseToolbarActivity
 import com.kin.ecosystem.base.KinEcosystemBaseActivity
-import com.kin.ecosystem.common.KinTheme
 import com.kin.ecosystem.common.exception.ClientException
 import com.kin.ecosystem.core.bi.EventLoggerImpl
 import com.kin.ecosystem.core.data.internal.ConfigurationImpl
 import com.kin.ecosystem.core.data.order.OrderRepository
+import com.kin.ecosystem.core.network.model.Offer
 import com.kin.ecosystem.core.util.ErrorUtil
 import com.kin.ecosystem.poll.presenter.IPollWebViewPresenter
 import com.kin.ecosystem.poll.presenter.PollWebViewPresenter
@@ -64,13 +61,17 @@ class PollWebViewActivity : KinEcosystemBaseActivity(), IPollWebView {
     }
 
     override fun initWebView() {
-        webView?.setListener(pollWebViewPresenter)
-        webView?.load()
+        webView?.let {
+            it.setListener(pollWebViewPresenter)
+            it.load()
+        }
     }
 
     override fun renderJson(pollJsonString: String, kinTheme: String) {
-        webView?.setTheme(kinTheme)
-        webView?.render(pollJsonString)
+        webView?.let {
+            it.setTheme(kinTheme)
+            it.renderPoll(pollJsonString)
+        }
     }
 
     override fun close() {
@@ -126,8 +127,8 @@ class PollWebViewActivity : KinEcosystemBaseActivity(), IPollWebView {
             return this
         }
 
-        fun setContentType(contentType: String): PollBundle {
-            this.bundle.putString(EXTRA_CONTENT_TYPE_KEY, contentType)
+        fun setContentType(contentType: Offer.ContentTypeEnum): PollBundle {
+            this.bundle.putString(EXTRA_CONTENT_TYPE_KEY, contentType.value)
             return this
         }
 
