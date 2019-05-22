@@ -10,6 +10,7 @@ import android.support.constraint.ConstraintLayout
 import android.support.v4.app.Fragment
 import com.kin.ecosystem.R
 import com.kin.ecosystem.base.*
+import com.kin.ecosystem.base.widget.onPreDraw
 import com.kin.ecosystem.core.bi.EventLoggerImpl
 import com.kin.ecosystem.core.data.auth.AuthRepository
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl
@@ -22,10 +23,9 @@ import com.kin.ecosystem.main.ScreenId.*
 import com.kin.ecosystem.main.presenter.EcosystemPresenter
 import com.kin.ecosystem.main.presenter.IEcosystemPresenter
 import com.kin.ecosystem.marketplace.view.MarketplaceFragment
-import com.kin.ecosystem.onPreDraw
 import com.kin.ecosystem.onboarding.view.OnboardingFragment
 import com.kin.ecosystem.settings.view.SettingsFragment
-import com.kin.ecosystem.withEndAction
+import com.kin.ecosystem.base.widget.withEndAction
 
 class EcosystemActivity : KinEcosystemBaseActivity(), IEcosystemView {
 

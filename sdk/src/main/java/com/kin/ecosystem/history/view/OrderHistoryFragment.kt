@@ -6,7 +6,6 @@ import android.animation.ValueAnimator
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -21,6 +20,7 @@ import android.widget.TextSwitcher
 import android.widget.TextView
 import com.kin.ecosystem.R
 import com.kin.ecosystem.base.KinEcosystemBaseFragment
+import com.kin.ecosystem.base.widget.withActions
 import com.kin.ecosystem.core.bi.EventLoggerImpl
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl
 import com.kin.ecosystem.core.data.order.OrderRepository
@@ -34,9 +34,6 @@ import com.kin.ecosystem.history.presenter.OrderHistoryPresenter
 import com.kin.ecosystem.main.INavigator
 import com.kin.ecosystem.widget.KinEcosystemTabs
 import com.kin.ecosystem.widget.TouchIndicatorIcon
-import com.kin.ecosystem.widget.util.FontUtil
-import com.kin.ecosystem.widget.util.ThemeUtil
-import com.kin.ecosystem.withActions
 
 
 open class OrderHistoryFragment : KinEcosystemBaseFragment<IOrderHistoryPresenter, IOrderHistoryView>(), IOrderHistoryView {
@@ -110,7 +107,7 @@ open class OrderHistoryFragment : KinEcosystemBaseFragment<IOrderHistoryPresente
             colorOrange = ContextCompat.getColor(context, R.color.kinecosystem_orange)
         }
         if (colorPrimary == NOT_INITIALIZED) {
-            colorPrimary = ThemeUtil.themeAttributeToColor(context, R.attr.primaryTextColor, R.color.kinecosystem_subtitle_order_history)
+            colorPrimary = com.kin.ecosystem.base.ThemeUtil.themeAttributeToColor(context, R.attr.primaryTextColor, R.color.kinecosystem_subtitle_gray)
         }
         if (colorFailed == NOT_INITIALIZED) {
             colorFailed = ContextCompat.getColor(context, R.color.kinecosystem_failed)
@@ -122,7 +119,7 @@ open class OrderHistoryFragment : KinEcosystemBaseFragment<IOrderHistoryPresente
             setFactory {
                 val balanceText = TextView(context)
                 balanceText.setTextAppearance(context, R.style.KinecosysSubTitle)
-                balanceText.typeface = FontUtil.SAILEC
+                balanceText.typeface = com.kin.ecosystem.base.FontUtil.SAILEC
                 balanceText.setTextColor(colorPrimary)
                 balanceText
             }

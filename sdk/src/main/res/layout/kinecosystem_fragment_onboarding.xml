@@ -39,7 +39,7 @@
         app:layout_constraintBottom_toBottomOf="@id/kin_logo"
         />
 
-    <com.kin.ecosystem.widget.KinEcosystemTextView
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
         android:id="@+id/whats_kin_title"
         style="@style/KinecosysTitleMedium"
         android:layout_width="wrap_content"
@@ -53,7 +53,7 @@
         android:layout_marginBottom="@dimen/kinrecovery_margin_medium"
         />
 
-    <com.kin.ecosystem.widget.KinEcosystemTextView
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
         android:id="@+id/whats_kin_description"
         style="@style/KinecosysTitle"
         android:layout_width="wrap_content"
@@ -94,7 +94,7 @@
         app:layout_constraintStart_toStartOf="@id/loading_text"
         app:srcCompat="@drawable/kinecosystem_avd_loading"/>
 
-    <com.kin.ecosystem.widget.KinEcosystemTextView
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
         android:id="@+id/loading_text"
         style="@style/KinecosysTitle"
         android:layout_width="wrap_content"

@@ -6,7 +6,6 @@
     <dimen name="kinrecovery_btn_frame_height">50dp</dimen>
     <dimen name="kinrecovery_upload_btn_frame_margin_bottom">35dp</dimen>
     <dimen name="kinrecovery_btn_frame_margin_sides">30dp</dimen>
-    <dimen name="kinrecovery_button_corners_radius">25dp</dimen>
     <dimen name="kinrecovery_button_dash_width">2dp</dimen>
     <dimen name="kinrecovery_upload_qr_icon_size">84dp</dimen>
     <dimen name="kinrecovery_upload_content_title_margin_top">38dp</dimen>
@@ -42,10 +41,10 @@
 
     <dimen name="kinrecovery_line_spacing">4dp</dimen>
     <dimen name="kinrecovery_btn_width">300dp</dimen>
-    <dimen name="kinrecovery_edittext_margin">15dp</dimen>
+    <dimen name="kinrecovery_edittext_margin">18dp</dimen>
     <dimen name="kinrecovery_edittext_height">40dp</dimen>
     <dimen name="kinrecovery_edittext_stroke_width">1dp</dimen>
-    <dimen name="kinrecovery_edittext_corners_radius">20dp</dimen>
+    <dimen name="kinrecovery_edittext_corners_radius">3dp</dimen>
     <dimen name="kinrecovery_password_edit_text_size">14sp</dimen>
     <dimen name="kinrecovery_password_edittext_error_size">13sp</dimen>
     <dimen name="kinrecovery_text_align_top_checkbox_margin">5dp</dimen>

@@ -15,6 +15,7 @@ import com.kin.ecosystem.base.KinEcosystemBaseFragment
 import com.kin.ecosystem.core.accountmanager.AccountManagerImpl
 import com.kin.ecosystem.core.bi.EventLoggerImpl
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl
+import com.kin.ecosystem.core.data.internal.ConfigurationImpl
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceImpl
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceLocal
 import com.kin.ecosystem.main.INavigator
@@ -35,7 +36,7 @@ class SettingsFragment : KinEcosystemBaseFragment<ISettingsPresenter, ISettingsV
                 SettingsDataSourceLocal(context))
         presenter = SettingsPresenter(settingsDataSource, BlockchainSourceImpl.getInstance(),
                 BackupManagerImpl(activity, AccountManagerImpl.getInstance(), EventLoggerImpl.getInstance(),
-                        BlockchainSourceImpl.getInstance(), settingsDataSource), navigator ,EventLoggerImpl.getInstance())
+                        BlockchainSourceImpl.getInstance(), settingsDataSource, ConfigurationImpl.getInstance()), navigator ,EventLoggerImpl.getInstance())
         presenter?.onAttach(this@SettingsFragment)
         return root
     }

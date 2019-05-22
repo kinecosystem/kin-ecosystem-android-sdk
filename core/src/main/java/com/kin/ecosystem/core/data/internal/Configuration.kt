@@ -7,10 +7,10 @@ interface Configuration {
 
     val environment: KinEnvironment
 
-    var kinTheme: KinTheme?
+    var kinTheme: KinTheme
 
     interface Local {
 
-        var kinTheme: KinTheme?
+        var kinTheme: KinTheme
     }
 }

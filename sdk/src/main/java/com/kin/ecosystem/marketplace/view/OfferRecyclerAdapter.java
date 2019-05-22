@@ -60,8 +60,8 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
         @Override
         protected void init(Context context) {
             imageSize = (int) (DeviceUtils.getScreenWidth() * WIDTH_RATIO);
-            earnColor = ContextCompat.getColor(context, R.color.kinecosystem_earn);
-            spendColor = ContextCompat.getColor(context, R.color.kinecosystem_spend);
+            earnColor = ContextCompat.getColor(context, R.color.kinecosystem_purple);
+            spendColor = ContextCompat.getColor(context, R.color.kinecosystem_green);
         }
 
         @Override

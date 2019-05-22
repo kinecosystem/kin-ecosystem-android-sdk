@@ -1,32 +1,51 @@
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/balance_container"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="?android:attr/actionBarSize"
+    tools:background="@color/kinecosystem_dark_blue"
+    tools:parentTag="android.support.constraint.ConstraintLayout">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:theme="@style/KinrecoveryToolbarTheme"
-        app:contentInsetLeft="0dp"
-        app:contentInsetStart="0dp"
-        app:contentInsetStartWithNavigation="0dp"
-        app:titleTextAppearance="@style/KinrecoveryToolbar.TitleText"/>
-
-    <TextView
-        android:id="@+id/steps_text"
+    <ImageView
+        android:id="@+id/navigation_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif"
-        android:layout_marginRight="@dimen/kinrecovery_margin_main"
+        android:layout_marginLeft="@dimen/kinecosystem_main_xsmall_margin"
+        android:paddingLeft="@dimen/kinecosystem_tiny_margin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/kinecosystem_ic_back_new"/>
+
+
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
+        android:id="@+id/title"
+        style="@style/KinecosysTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/kinecosystem_main_margin"
+        app:fontExtra="medium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/navigation_icon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Title is here"/>
+
+
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
+        android:id="@+id/steps_text"
+        style="@style/KinecosysTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/kinecosystem_main_margin"
         android:gravity="center"
         android:letterSpacing="-0.04"
-        android:textColor="@color/kinrecovery_black"
-        android:textSize="14sp"
+        android:textSize="@dimen/kinecosystem_sub_title_size"
+        app:fontExtra="regular"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="2/3"/>
 
-</android.support.constraint.ConstraintLayout>
+</merge>
 

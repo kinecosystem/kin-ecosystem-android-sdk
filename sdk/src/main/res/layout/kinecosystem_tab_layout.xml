@@ -21,7 +21,7 @@
 
     </LinearLayout>
 
-    <com.kin.ecosystem.widget.KinEcosystemTextView
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
         android:id="@+id/left_tab"
         android:layout_width="0dp"
         android:layout_height="30dp"
@@ -34,7 +34,7 @@
         tools:text="Earned"/>
 
 
-    <com.kin.ecosystem.widget.KinEcosystemTextView
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
         android:id="@+id/right_tab"
         android:layout_width="0dp"
         android:layout_height="30dp"

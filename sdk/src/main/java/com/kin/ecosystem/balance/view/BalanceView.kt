@@ -3,7 +3,6 @@ package com.kin.ecosystem.balance.view
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Animatable
-
 import android.support.v7.app.AppCompatDelegate
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -14,11 +13,10 @@ import android.widget.TextView
 import com.kin.ecosystem.R
 import com.kin.ecosystem.balance.presenter.BalancePresenter
 import com.kin.ecosystem.balance.presenter.IBalancePresenter
+import com.kin.ecosystem.base.widget.obtainAttrs
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl
 import com.kin.ecosystem.core.data.order.OrderRepository
 import com.kin.ecosystem.core.util.StringUtil.getAmountFormatted
-import com.kin.ecosystem.obtainAttrs
-import com.kin.ecosystem.widget.util.FontUtil
 
 
 class BalanceView @JvmOverloads constructor(context: Context,
@@ -47,7 +45,7 @@ class BalanceView @JvmOverloads constructor(context: Context,
             setFactory {
                 val balanceText = TextView(context)
                 balanceText.setTextAppearance(context, textStyle)
-                balanceText.typeface = FontUtil.SAILEC_MEDIUM
+                balanceText.typeface = com.kin.ecosystem.base.FontUtil.SAILEC_MEDIUM
                 balanceText
             }
         }

@@ -13,12 +13,11 @@ import android.view.View;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.base.AbstractBaseViewHolder;
 import com.kin.ecosystem.base.BaseRecyclerAdapter;
+import com.kin.ecosystem.base.ThemeUtil;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.Order.Status;
 import com.kin.ecosystem.history.view.OrderHistoryRecyclerAdapter.ViewHolder;
-import com.kin.ecosystem.widget.util.ThemeUtil;
-
 
 public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, ViewHolder> {
 
@@ -43,13 +42,13 @@ public class OrderHistoryRecyclerAdapter extends BaseRecyclerAdapter<Order, View
 
     private void initColors(Context context) {
         if (colorEarn == NOT_INITIALIZED) {
-            colorEarn = ContextCompat.getColor(context, R.color.kinecosystem_earn);
+            colorEarn = ContextCompat.getColor(context, R.color.kinecosystem_purple);
         }
         if (colorSpend == NOT_INITIALIZED) {
-            colorSpend = ContextCompat.getColor(context, R.color.kinecosystem_spend);
+            colorSpend = ContextCompat.getColor(context, R.color.kinecosystem_green);
         }
         if (primaryTextColor == NOT_INITIALIZED) {
-            primaryTextColor = ThemeUtil.Companion.themeAttributeToColor(context, R.attr.primaryTextColor, R.color.kinecosystem_subtitle_order_history);
+            primaryTextColor = ThemeUtil.Companion.themeAttributeToColor(context, R.attr.primaryTextColor, R.color.kinecosystem_subtitle_gray);
         }
         if (colorFailed == NOT_INITIALIZED) {
             colorFailed = ContextCompat.getColor(context, R.color.kinecosystem_failed);

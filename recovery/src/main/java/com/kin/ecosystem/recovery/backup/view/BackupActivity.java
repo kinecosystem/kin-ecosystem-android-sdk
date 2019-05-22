@@ -21,7 +21,6 @@ import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
 public class BackupActivity extends BaseToolbarActivity implements BackupView {
 
 	public static final String MOVE_TO_SAVE_AND_SHARE = "move_to_save_and_share";
-	public static final int TOOLBAR_COLOR_ANIM_DURATION = 500;
 	public static final String TAG_WELL_DONE_PAGE = WellDoneBackupFragment.class.getSimpleName();
 	public static final String TAG_SAVE_AND_SHARE_PAGE = SaveAndShareFragment.class.getSimpleName();
 	public static final String TAG_CREATE_PASSWORD_PAGE = CreatePasswordFragment.class.getSimpleName();
@@ -54,8 +53,7 @@ public class BackupActivity extends BaseToolbarActivity implements BackupView {
 
 	@Override
 	public void startBackupFlow() {
-		setToolbarColor(R.color.kinrecovery_bluePrimary);
-		setNavigationIcon(R.drawable.kinrecovery_ic_back);
+		setNavigationIcon(R.drawable.kinecosystem_ic_back_new);
 		setToolbarTitle(EMPTY_TITLE);
 		BackupInfoFragment backupInfoFragment = (BackupInfoFragment) getSupportFragmentManager()
 			.findFragmentByTag(BackupInfoFragment.class.getSimpleName());
@@ -73,8 +71,7 @@ public class BackupActivity extends BaseToolbarActivity implements BackupView {
 
 	@Override
 	public void moveToCreatePasswordPage() {
-		setToolbarColorWithAnim(R.color.kinrecovery_white, TOOLBAR_COLOR_ANIM_DURATION);
-		setNavigationIcon(R.drawable.kinrecovery_ic_back_black);
+		setNavigationIcon(R.drawable.kinecosystem_ic_back_new);
 		setToolbarTitle(R.string.kinrecovery_keep_your_kin_safe);
 		setStep(1, 2);
 		CreatePasswordFragment createPasswordFragment = getSavedCreatePasswordFragment();
@@ -90,7 +87,7 @@ public class BackupActivity extends BaseToolbarActivity implements BackupView {
 
 	@Override
 	public void moveToSaveAndSharePage(String key) {
-		setNavigationIcon(R.drawable.kinrecovery_ic_back_black);
+		setNavigationIcon(R.drawable.kinecosystem_ic_back_new);
 		setToolbarTitle(R.string.kinrecovery_keep_your_kin_safe);
 		setStep(2, 2);
 		backupPresenter.setAccountKey(key);
@@ -109,8 +106,7 @@ public class BackupActivity extends BaseToolbarActivity implements BackupView {
 
 	@Override
 	public void moveToWellDonePage() {
-		setToolbarColorWithAnim(R.color.kinrecovery_bluePrimary, TOOLBAR_COLOR_ANIM_DURATION);
-		setNavigationIcon(R.drawable.kinrecovery_close_icon);
+		setNavigationIcon(R.drawable.kinecosystem_ic_close_new);
 		setToolbarTitle(EMPTY_TITLE);
 		clearSteps();
 		WellDoneBackupFragment wellDoneFragment = (WellDoneBackupFragment) getSupportFragmentManager()

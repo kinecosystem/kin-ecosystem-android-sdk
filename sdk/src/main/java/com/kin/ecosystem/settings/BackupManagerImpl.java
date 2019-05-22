@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.kin.ecosystem.core.accountmanager.AccountManager;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
+import com.kin.ecosystem.core.data.internal.Configuration;
 import com.kin.ecosystem.core.data.settings.SettingsDataSource;
 import com.kin.ecosystem.recovery.BackupAndRestoreImpl;
 import com.kin.ecosystem.recovery.BackupEvents;
@@ -13,8 +14,8 @@ import com.kin.ecosystem.recovery.RestoreEvents;
 public final class BackupManagerImpl extends BackupAndRestoreImpl implements BackupManager {
 
 	public BackupManagerImpl(@NonNull Activity activity, @NonNull AccountManager accountManager,@NonNull  EventLogger eventLogger, @NonNull
-		BlockchainSource blockchainSource, @NonNull SettingsDataSource settingsDataSource) {
-		super(activity, accountManager, eventLogger, blockchainSource, settingsDataSource);
+		BlockchainSource blockchainSource, @NonNull SettingsDataSource settingsDataSource, @NonNull Configuration configuration) {
+		super(activity, accountManager, eventLogger, blockchainSource, settingsDataSource, configuration);
 	}
 
 	@Override

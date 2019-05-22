@@ -1,72 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="KinrecoveryNoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/kinrecovery_bluePrimary</item>
-        <item name="colorPrimaryDark">@color/kinrecovery_bluePrimaryDark</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowBackground">@color/kinrecovery_white</item>
+    <style name="KinRecovery.Light" parent="KinEcosystem.Light">
+        <item name="colorPrimaryDark">@color/kinrecovery_colorPrimaryDark_light</item>
+        <item name="editTextStrokeColor">@color/kinrecovery_edittext_stroke_light</item>
+        <item name="qrSquaresColor">@color/kinrecovery_qr_squares_light</item>
     </style>
 
-    <style name="KinrecoveryToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-        <!-- Enable clicking icons to trigger a ripple effect -->
-        <item name="selectableItemBackground">?android:selectableItemBackground</item>
-        <item name="selectableItemBackgroundBorderless">?android:selectableItemBackground</item>
-
-    </style>
-    <!-- This configures the styles for the title within the Toolbar  -->
-    <style name="KinrecoveryToolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textSize">@dimen/kinrecovery_medium_size</item>
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textColor">@color/kinrecovery_black</item>
+    <style name="KinRecovery.Dark" parent="KinEcosystem.Dark">
+        <item name="colorPrimaryDark">@color/kinrecovery_colorPrimaryDark_dark</item>
+        <item name="editTextStrokeColor">@color/kinrecovery_edittext_stroke_dark</item>
+        <item name="qrSquaresColor">@color/kinrecovery_qr_squares_dark</item>
     </style>
 
     <style name="KinrecoveryAlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="buttonBarNegativeButtonStyle">@style/KinrecoveryDialogButtonStyle</item>
-        <item name="buttonBarPositiveButtonStyle">@style/KinrecoveryDialogButtonStyle</item>
+        <item name="android:background">?attr/kinBackgroundColor</item>
+        <item name="android:textColor">?attr/primaryTextColor</item>
+        <item name="android:textColorPrimary">@color/kinecosystem_button_disabled_dark</item>
+        <item name="buttonBarNegativeButtonStyle">@style/KinrecoveryDialogNegativeButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/KinrecoveryDialogPositiveButtonStyle</item>
     </style>
 
-    <style name="KinrecoveryDialogButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
-        <item name="android:textColor">@color/kinrecovery_bluePrimary</item>
-    </style>
-    
-    <style name="KinrecoveryTitleBase">
-        <item name="android:textColor">@color/kinrecovery_white</item>
-        <item name="android:ellipsize">end</item>
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textAllCaps">false</item>
+    <style name="KinrecoveryDialogNegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/kinecosystem_button_disabled_dark</item>
     </style>
 
-    <style name="KinrecoveryTitle" parent="KinrecoveryTitleBase">
-        <item name="android:textSize">@dimen/kinrecovery_regular_size</item>
-    </style>
-
-    <style name="KinrecoveryTitleGray" parent="KinrecoveryTitle">
-        <item name="android:textColor">@color/kinrecovery_gray</item>
-    </style>
-
-    <style name="KinrecoveryTitleSmall" parent="KinrecoveryTitleBase">
-        <item name="android:textColor">@color/kinrecovery_gray</item>
-        <item name="android:textSize">@dimen/kinrecovery_small_size</item>
-    </style>
-
-    <style name="KinrecoveryTitleLarge" parent="KinrecoveryTitleBase">
-        <item name="android:textSize">@dimen/kinrecovery_large_size</item>
-    </style>
-
-    <style name="KinrecoveryTitleLargeLight" parent="KinrecoveryTitleBase">
-        <item name="android:textSize">@dimen/kinrecovery_large_size</item>
-        <item name="android:fontFamily">sans-serif-light</item>
-    </style>
-
-    <style name="KinrecoveryTitleLargeBlue" parent="KinrecoveryTitleLarge">
-        <item name="android:textColor">@color/kinrecovery_bluePrimary</item>
+    <style name="KinrecoveryDialogPositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/kinecosystem_purple</item>
     </style>
 
     <style name="KinrecoveryCheckBox" parent="Theme.AppCompat.Light">
-        <item name="colorControlNormal">@color/kinrecovery_gray</item>
-        <item name="colorControlActivated">@color/kinrecovery_bluePrimary</item>
+        <item name="colorControlNormal">@color/kinecosystem_gray_light</item>
+        <item name="colorControlActivated">@color/kinecosystem_purple</item>
     </style>
         
 </resources>

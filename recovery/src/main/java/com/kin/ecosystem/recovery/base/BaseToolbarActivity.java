@@ -1,80 +1,59 @@
 package com.kin.ecosystem.recovery.base;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
-import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.TextView;
+import com.kin.ecosystem.recovery.KinRecoveryTheme;
 import com.kin.ecosystem.recovery.R;
+import com.kin.ecosystem.recovery.widget.KinRecoveryToolbar;
 
 
 public abstract class BaseToolbarActivity extends AppCompatActivity implements KeyboardHandler {
 
 	public static final int EMPTY_TITLE = -1;
-	public static final String BACKGROUND_COLOR = "background_color";
+	public static final String KEY_THEME = "kin_recovery_theme";
 
 	protected abstract @LayoutRes
 	int getContentLayout();
 
-	private Toolbar topToolBar;
-	private TextView stepsText;
-	private ValueAnimator colorAnimation;
+	private KinRecoveryToolbar topToolBar;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setTheme(getKinRecoveryTheme());
 		setContentView(getContentLayout());
-		setupToolbar(savedInstanceState);
+		topToolBar = findViewById(R.id.toolbar);
 	}
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		saveToolbarBackgroundColor(outState);
-		super.onSaveInstanceState(outState);
-
-	}
-
-	private void saveToolbarBackgroundColor(Bundle outState) {
-		ColorDrawable colorDrawable = ((ColorDrawable) topToolBar.getBackground());
-		if (colorDrawable != null) {
-			outState.putInt(BACKGROUND_COLOR, colorDrawable.getColor());
+	private int getKinRecoveryTheme() {
+		final String theme = getIntent().getStringExtra(KEY_THEME);
+		if (theme == null) {
+			return R.style.KinEcosystem_Light;
+		} else {
+			KinRecoveryTheme kinRecoveryTheme = KinRecoveryTheme.valueOf(theme);
+			switch (kinRecoveryTheme) {
+				default:
+				case LIGHT:
+					return R.style.KinRecovery_Light;
+				case DARK:
+					return R.style.KinRecovery_Dark;
+			}
 		}
 	}
 
-	private void setupToolbar(Bundle savedInstanceState) {
-		topToolBar = findViewById(R.id.toolbar);
-		int color = getColorFromBundle(savedInstanceState);
-		topToolBar.setBackgroundColor(color);
-		setSupportActionBar(topToolBar);
-	}
-
-	private int getColorFromBundle(Bundle savedInstanceState) {
-		final int defaultColor = ContextCompat.getColor(getApplicationContext(), R.color.kinrecovery_white);
-		return savedInstanceState != null ? savedInstanceState
-			.getInt(BACKGROUND_COLOR, defaultColor) : defaultColor;
-	}
-
 	public void setToolbarTitle(@StringRes int titleRes) {
-		topToolBar = findViewById(R.id.toolbar);
-		stepsText = findViewById(R.id.steps_text);
 		if (titleRes != EMPTY_TITLE) {
-			getSupportActionBar().setTitle(titleRes);
+			topToolBar.setTitle(titleRes);
 		} else {
-			getSupportActionBar().setTitle("");
+			topToolBar.setTitle("");
 		}
 	}
 
@@ -82,39 +61,12 @@ public abstract class BaseToolbarActivity extends AppCompatActivity implements K
 		topToolBar.setNavigationIcon(iconRes);
 	}
 
-	public void setToolbarColor(@ColorRes int colorRes) {
-		stopToolbarColorAnim();
-		topToolBar.setBackgroundResource(colorRes);
-	}
-
-	private void stopToolbarColorAnim() {
-		if (colorAnimation != null) {
-			colorAnimation.cancel();
-		}
-	}
-
-	public void setToolbarColorWithAnim(@ColorRes int toColorRes, final int durationMilis) {
-		int colorFrom = ((ColorDrawable) topToolBar.getBackground()).getColor();
-		int colorTo = ContextCompat.getColor(getApplicationContext(), toColorRes);
-		colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-		colorAnimation.setDuration(durationMilis); // milliseconds
-		colorAnimation.addUpdateListener(new AnimatorUpdateListener() {
-
-			@Override
-			public void onAnimationUpdate(ValueAnimator animator) {
-				topToolBar.setBackgroundColor((int) animator.getAnimatedValue());
-			}
-		});
-
-		colorAnimation.start();
-	}
-
 	public void setStep(int current, int total) {
-		stepsText.setText(getString(R.string.kinrecovery_steps_format, current, total));
+		topToolBar.setStepText(getString(R.string.kinrecovery_steps_format, current, total));
 	}
 
 	public void clearSteps() {
-		stepsText.setText("");
+		topToolBar.setStepText("");
 	}
 
 	public void setNavigationClickListener(View.OnClickListener clickListener) {

@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatDelegate;
+import com.kin.ecosystem.base.FontUtil;
 import com.kin.ecosystem.base.KinEcosystemBaseActivity;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.KinEnvironment;
@@ -65,7 +66,6 @@ import com.kin.ecosystem.core.util.Validator;
 import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.recovery.BackupAndRestore;
 import com.kin.ecosystem.recovery.BackupAndRestoreImpl;
-import com.kin.ecosystem.widget.util.FontUtil;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import kin.sdk.migration.MigrationManager;
@@ -160,7 +160,8 @@ public class Kin {
 				if (account == null) {
 					try {
 						final String kinUserId = AuthRepository.getInstance().getEcosystemUserID();
-						MigrationManager migrationManager = createMigrationManager(getKinContext(), AuthRepository.getInstance().getAppID());
+						MigrationManager migrationManager = createMigrationManager(getKinContext(),
+							AuthRepository.getInstance().getAppID());
 						BlockchainSourceImpl.getInstance().setMigrationManager(migrationManager);
 						BlockchainSourceImpl.getInstance().loadAccount(kinUserId);
 						isAccountLoggedIn.getAndSet(true);
@@ -173,7 +174,9 @@ public class Kin {
 		}
 
 		//Instance not null, update KinTheme
-		ConfigurationImpl.getInstance().setKinTheme(kinTheme);
+		if (kinTheme != null) {
+			ConfigurationImpl.getInstance().setKinTheme(kinTheme);
+		}
 	}
 
 	private static Context getKinContext() {
@@ -261,7 +264,8 @@ public class Kin {
 	}
 
 	private static void internalLogin(@NonNull final int loginState, final KinCallback<Void> loginCallback) {
-		MigrationManager migrationManager = createMigrationManager(getKinContext(), AuthRepository.getInstance().getAppID());
+		MigrationManager migrationManager = createMigrationManager(getKinContext(),
+			AuthRepository.getInstance().getAppID());
 		BlockchainSourceImpl.getInstance().setMigrationManager(migrationManager);
 
 		AuthRepository.getInstance().getAccountInfo(new KinCallback<AccountInfo>() {
@@ -652,14 +656,13 @@ public class Kin {
 	}
 
 	/**
-	 * @deprecated use {@link Kin#addNativeOffer(NativeOffer) instead and set dismissOnTap as value inside the {@link NativeOffer} object}
-	 * Adds an {@link NativeOffer} to spend or earn offer list on Kin Marketplace activity.
-	 * The offer will be added at index 0 in the spend list.
-	 *
 	 * @param nativeOffer The spend or earn offer you want to add to the spend list.
 	 * @param dismissOnTap An indication if the sdk should close the marketplace when this offer tapped.
 	 * @return true if the offer added successfully, the list was changed.
 	 * @throws ClientException - sdk not initialized.
+	 * @deprecated use {@link Kin#addNativeOffer(NativeOffer) instead and set dismissOnTap as value inside the {@link NativeOffer} object}
+	 * Adds an {@link NativeOffer} to spend or earn offer list on Kin Marketplace activity.
+	 * The offer will be added at index 0 in the spend list.
 	 */
 	@Deprecated
 	public static boolean addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissOnTap)
@@ -689,7 +692,7 @@ public class Kin {
 	 *
 	 * @param nativeOfferList The native offers list you want to add.
 	 * @return true the list was added successfully, the list was changed.
-	 * 		   false if one or more offers was not added successfully.
+	 * false if one or more offers was not added successfully.
 	 * @throws ClientException - sdk not initialized.
 	 */
 	public static boolean addAllNativeOffers(@NonNull List<NativeOffer> nativeOfferList)
@@ -714,6 +717,7 @@ public class Kin {
 		checkInstanceNotNull();
 		return new BackupAndRestoreImpl(activity, AccountManagerImpl.getInstance(),
 			eventLogger, BlockchainSourceImpl.getInstance(),
-			new SettingsDataSourceImpl(new SettingsDataSourceLocal(activity.getApplicationContext())));
+			new SettingsDataSourceImpl(new SettingsDataSourceLocal(activity.getApplicationContext())),
+			ConfigurationImpl.getInstance());
 	}
 }

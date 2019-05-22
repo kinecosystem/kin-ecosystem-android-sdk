@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <declare-styleable name="KinRecoveryTheme">
+        <attr format="color" name="editTextStrokeColor"/>
+        <attr format="color" name="qrSquaresColor"/>
+    </declare-styleable>
+
     <declare-styleable name="KinRecoveryPasswordEditText" >
         <attr format="boolean" name="kinrecovery_show_reveal_icon"/>
         <attr format="string" name="kinrecovery_hint"/>

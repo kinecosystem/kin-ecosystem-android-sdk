@@ -33,9 +33,4 @@
     <string name="kinecosystem_failed">Falhou</string>
     <string name="kinecosystem_you_dont_have_enough_kin">Você não tem suficiente Kin</string>
     <string name="kinecosystem_order_submission_failed">A submissão do pedido falhou</string>
-
-    <!--Menu-->
-    <string name="kinecosystem_info_menu">Informações</string>
-
-
 </resources>

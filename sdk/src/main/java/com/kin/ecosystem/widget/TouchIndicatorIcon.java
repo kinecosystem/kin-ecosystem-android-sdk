@@ -15,7 +15,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import com.kin.ecosystem.R;
-import com.kin.ecosystem.widget.util.ThemeUtil;
+import com.kin.ecosystem.base.ThemeUtil;
 
 public class TouchIndicatorIcon extends View {
 

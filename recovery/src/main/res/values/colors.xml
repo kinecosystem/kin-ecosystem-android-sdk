@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="kinrecovery_bluePrimary">#0000ff</color>
-    <color name="kinrecovery_bluePrimaryDark">#0365ce</color>
+    <color name="kinrecovery_colorPrimaryDark_light">#50515A</color>
+    <color name="kinrecovery_colorPrimaryDark_dark">#272626</color>
 
-    <color name="kinrecovery_black">#000</color>
-    <color name="kinrecovery_white">#ffffff</color>
-    <color name="kinrecovery_gray">#7884a5</color>
+    <color name="kinrecovery_edittext_stroke_light">@color/kinecosystem_background_dark</color>
+    <color name="kinrecovery_edittext_stroke_dark">#3d3d3d</color>
 
-    <color name="kinrecovery_red">#ff0232</color>
 
-    <color name="kinrecovery_btn_disabled">#d7dce9</color>
-
+    <color name="kinrecovery_qr_squares_light">#EAE5FA</color>
+    <color name="kinrecovery_qr_squares_dark">@color/kinecosystem_purple</color>
 </resources>

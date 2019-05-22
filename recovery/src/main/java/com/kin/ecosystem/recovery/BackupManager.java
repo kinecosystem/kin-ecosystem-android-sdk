@@ -3,6 +3,7 @@ package com.kin.ecosystem.recovery;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatDelegate;
 import com.kin.ecosystem.recovery.events.BroadcastManagerImpl;
 import com.kin.ecosystem.recovery.events.CallbackManager;
 import com.kin.ecosystem.recovery.events.EventDispatcherImpl;
@@ -19,18 +20,21 @@ public final class BackupManager {
 		this.activity = activity;
 		this.callbackManager = new CallbackManager(
 			new EventDispatcherImpl(new BroadcastManagerImpl(activity)));
+		if(!AppCompatDelegate.isCompatVectorFromResourcesEnabled()) {
+			AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+		}
 	}
 
 	public static KeyStoreProvider getKeyStoreProvider() {
 		return keyStoreProvider;
 	}
 
-	public void backupFlow() {
-		new Launcher(activity).backupFlow();
+	public void backupFlow(KinRecoveryTheme kinRecoveryTheme) {
+		new Launcher(activity).backupFlow(kinRecoveryTheme);
 	}
 
-	public void restoreFlow() {
-		new Launcher(activity).restoreFlow();
+	public void restoreFlow(KinRecoveryTheme kinRecoveryTheme) {
+		new Launcher(activity).restoreFlow(kinRecoveryTheme);
 	}
 
 	public void registerBackupCallback(@NonNull final BackupCallback backupCallback) {

@@ -6,10 +6,15 @@
     android:orientation="vertical"
     android:weightSum="1">
 
-    <include layout="@layout/kinrecovery_toolbar_layout"/>
+    <com.kin.ecosystem.recovery.widget.KinRecoveryToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:background="?attr/kinBackgroundColor"/>
 
     <FrameLayout
         android:id="@+id/fragment_frame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:background="?attr/kinBackgroundColor"/>
 </LinearLayout>

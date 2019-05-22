@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="KinEcosystemThemeBase">
+        <attr format="color" name="primaryTextColor"/>
+        <attr format="color" name="kinBackgroundColor"/>
+        <attr format="color" name="buttonDisabledColor"/>
+    </declare-styleable>
+
+    <declare-styleable name="KinEcosystemTextView">
+        <attr format="enum" name="fontExtra">
+            <enum name="regular" value="0"/>
+            <enum name="medium" value="1"/>
+        </attr>
+    </declare-styleable>
+
+</resources>

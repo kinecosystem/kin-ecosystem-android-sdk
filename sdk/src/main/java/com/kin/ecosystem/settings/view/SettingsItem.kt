@@ -15,8 +15,9 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.kin.ecosystem.R
+import com.kin.ecosystem.base.ThemeUtil
 import com.kin.ecosystem.widget.TouchIndicatorIcon
-import com.kin.ecosystem.widget.util.ThemeUtil
+
 
 class SettingsItem @JvmOverloads constructor(context: Context,
                                             attrs: AttributeSet? = null,
