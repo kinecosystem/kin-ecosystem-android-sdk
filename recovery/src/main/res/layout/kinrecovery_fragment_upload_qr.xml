@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/kinrecovery_upload_content_title_margin_top"
         android:layout_gravity="center_horizontal"
-        android:text="@string/kinrecovery_upload_qr_title"
+        android:text="@string/kinrecovery_load_your_kin_from_backup"
         android:textSize="@dimen/kinrecovery_upload_content_title_text_size"
         app:fontExtra="medium"
         app:layout_constraintEnd_toEndOf="parent"

@@ -72,7 +72,7 @@ public class BackupActivity extends BaseToolbarActivity implements BackupView {
 	@Override
 	public void moveToCreatePasswordPage() {
 		setNavigationIcon(R.drawable.kinecosystem_ic_back_new);
-		setToolbarTitle(R.string.kinrecovery_keep_your_kin_safe);
+		setToolbarTitle(R.string.kinrecovery_create_password);
 		setStep(1, 2);
 		CreatePasswordFragment createPasswordFragment = getSavedCreatePasswordFragment();
 
@@ -88,7 +88,7 @@ public class BackupActivity extends BaseToolbarActivity implements BackupView {
 	@Override
 	public void moveToSaveAndSharePage(String key) {
 		setNavigationIcon(R.drawable.kinecosystem_ic_back_new);
-		setToolbarTitle(R.string.kinrecovery_keep_your_kin_safe);
+		setToolbarTitle(R.string.kinrecovery_save_your_qr_code);
 		setStep(2, 2);
 		backupPresenter.setAccountKey(key);
 		SaveAndShareFragment saveAndShareFragment = (SaveAndShareFragment) getSupportFragmentManager()

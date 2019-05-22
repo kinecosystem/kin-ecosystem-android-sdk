@@ -32,7 +32,7 @@ import com.kin.ecosystem.recovery.widget.PasswordEditText;
 
 public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnterPasswordView {
 
-	public static final int VIEW_MIN_DELAY_MILLIS = 50;
+	public static final int VIEW_MIN_DELAY_MILLIS = 150;
 
 	private RestoreEnterPasswordPresenter presenter;
 	private KeyboardHandler keyboardHandler;
@@ -102,7 +102,7 @@ public class RestoreEnterPasswordFragment extends Fragment implements RestoreEnt
 	private void initToolbar() {
 		BaseToolbarActivity toolbarActivity = (BaseToolbarActivity) getActivity();
 		toolbarActivity.setNavigationIcon(R.drawable.kinecosystem_ic_back_new);
-		toolbarActivity.setToolbarTitle(R.string.kinrecovery_password_restore_title);
+		toolbarActivity.setToolbarTitle(R.string.kinrecovery_load_your_kin_from_backup);
 		toolbarActivity.setNavigationClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

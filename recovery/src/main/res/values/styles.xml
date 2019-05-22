@@ -5,12 +5,16 @@
         <item name="colorPrimaryDark">@color/kinrecovery_colorPrimaryDark_light</item>
         <item name="editTextStrokeColor">@color/kinrecovery_edittext_stroke_light</item>
         <item name="qrSquaresColor">@color/kinrecovery_qr_squares_light</item>
+        <item name="android:windowBackground">?attr/kinBackgroundColor</item>
+        <item name="android:windowIsTranslucent">false</item>
     </style>
 
     <style name="KinRecovery.Dark" parent="KinEcosystem.Dark">
         <item name="colorPrimaryDark">@color/kinrecovery_colorPrimaryDark_dark</item>
         <item name="editTextStrokeColor">@color/kinrecovery_edittext_stroke_dark</item>
         <item name="qrSquaresColor">@color/kinrecovery_qr_squares_dark</item>
+        <item name="android:windowBackground">?attr/kinBackgroundColor</item>
+        <item name="android:windowIsTranslucent">false</item>
     </style>
 
     <style name="KinrecoveryAlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">

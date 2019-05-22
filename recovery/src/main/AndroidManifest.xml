@@ -18,14 +18,14 @@
             android:label="@string/kinrecovery_backup"
             android:name=".backup.view.BackupActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/KinEcosystem.Light"/>
+            android:theme="@style/KinRecovery.Light"/>
 
         <activity
             android:label="@string/kinrecovery_restore"
             android:name="com.kin.ecosystem.recovery.restore.view.RestoreActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
-            android:theme="@style/KinEcosystem.Light"/>
+            android:theme="@style/KinRecovery.Light"/>
 
     </application>
 </manifest>

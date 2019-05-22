@@ -32,7 +32,6 @@ public class RestorePresenterImpl extends BasePresenterImpl<RestoreView> impleme
 		this.callbackManager.setCancelledResult();
 	}
 
-
 	@Override
 	public void onAttach(RestoreView view) {
 		super.onAttach(view);
@@ -115,8 +114,8 @@ public class RestorePresenterImpl extends BasePresenterImpl<RestoreView> impleme
 				getView().close();
 				break;
 			case STEP_ENTER_PASSWORD:
-				getView().navigateBack();
 				getView().closeKeyboard();
+				getView().navigateBack();
 				break;
 			case STEP_RESTORE_COMPLETED:
 				getView().navigateBack();
