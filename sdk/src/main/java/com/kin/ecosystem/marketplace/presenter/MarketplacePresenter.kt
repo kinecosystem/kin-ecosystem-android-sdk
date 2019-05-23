@@ -267,7 +267,7 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
                     val pollBundle = PollBundle()
                             .setJsonData(offer.content)
                             .setOfferID(offer.id)
-                            .setContentType(offer.contentType.value)
+                            .setContentType(offer.contentType)
                             .setAmount(offer.amount)
                             .setTitle(offer.title)
                     view.showOfferActivity(pollBundle)
