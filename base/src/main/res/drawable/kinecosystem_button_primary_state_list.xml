@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:color="@color/kinecosystem_purple"
+        android:drawable="@drawable/kinecosystem_button_primary_bg_rounded"
         android:state_enabled="true"/>
     <item
-        android:color="@color/kinecosystem_button_disabled"
+        android:drawable="@drawable/kinecosystem_button_disabled_bg_rounded"
         android:state_enabled="false"/>
 </selector>
