@@ -47,7 +47,7 @@ class SaveAndSharePresenterImplTest {
     @Test
     fun `send qr code is clicked, show send intent and saved checkbox`() {
         createPresenter()
-        presenter.sendQREmailClicked()
+        presenter.actionButtonClicked()
         verify(callbackManager).sendBackupEvent(BACKUP_QR_PAGE_SEND_QR_TAPPED)
         verify(saveAndShareView).showSendIntent(any())
         verify(saveAndShareView).showIHaveSavedQRState()
@@ -61,19 +61,36 @@ class SaveAndSharePresenterImplTest {
     }
 
     @Test
-    fun `i have saved is checked navigate to well done page`() {
+    fun `i have saved is checked, enable done button`() {
         createPresenter()
         presenter.iHaveSavedChecked(true)
         verify(callbackManager).sendBackupEvent(BACKUP_QR_PAGE_QR_SAVED_TAPPED)
+        verify(saveAndShareView).setActionButtonEnabled(true)
+    }
+
+    @Test
+    fun `i have saved is checked and done was pressed, navigate to well done page`() {
+        createPresenter()
+        presenter.actionButtonClicked() // send the qr
+        presenter.iHaveSavedChecked(true) // saved
+        presenter.actionButtonClicked() // done
         verify(backupNavigator).navigateToWellDonePage()
     }
 
     @Test
-    fun `i have saved is unchecked , do nothing`() {
+    fun `i have saved is not checked and done was pressed, do nothing`() {
+        createPresenter()
+        presenter.actionButtonClicked() // send the qr
+        presenter.actionButtonClicked() // done
+        verifyNoMoreInteractions(backupNavigator)
+    }
+
+    @Test
+    fun `i have saved is unchecked , disable done button`() {
         createPresenter()
         presenter.iHaveSavedChecked(false)
         verify(saveAndShareView).setQRImage(uri)
-        verifyNoMoreInteractions(saveAndShareView)
+        verify(saveAndShareView).setActionButtonEnabled(false)
     }
 
     @Test
@@ -94,7 +111,7 @@ class SaveAndSharePresenterImplTest {
     fun `save instance state is being updated, show i have saved checkbox`() {
         createPresenter()
         presenter.apply {
-            sendQREmailClicked()
+            actionButtonClicked()
             onSaveInstanceState(saveInstanceState)
             onAttach(view)
         }

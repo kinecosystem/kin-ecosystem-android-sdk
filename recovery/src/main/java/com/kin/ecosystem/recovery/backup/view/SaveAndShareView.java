@@ -11,7 +11,7 @@ public interface SaveAndShareView extends BaseView {
 
 	void showIHaveSavedQRState();
 
-	void updateDoneState(boolean isEnabled);
+	void setActionButtonEnabled(boolean isEnabled);
 
 	void showErrorTryAgainLater();
 }

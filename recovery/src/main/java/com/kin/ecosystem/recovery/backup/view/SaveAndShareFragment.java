@@ -20,7 +20,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
-import android.widget.TextView;
 import com.kin.ecosystem.recovery.R;
 import com.kin.ecosystem.recovery.backup.presenter.SaveAndSharePresenter;
 import com.kin.ecosystem.recovery.backup.presenter.SaveAndSharePresenterImpl;
@@ -52,7 +51,7 @@ public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 
 	private CheckBox iHaveSavedCheckbox;
 	private ImageView qrImageView;
-	private Button sendEmailButton;
+	private Button actionButton;
 
 	@Nullable
 	@Override
@@ -73,7 +72,7 @@ public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 	private void initViews(View root) {
 		iHaveSavedCheckbox = root.findViewById(R.id.i_saved_my_qr_checkbox);
 		qrImageView = root.findViewById(R.id.qr_image);
-		sendEmailButton = root.findViewById(R.id.send_email_button);
+		actionButton = root.findViewById(R.id.action_button);
 
 		iHaveSavedCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
@@ -82,10 +81,10 @@ public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 			}
 		});
 
-		root.findViewById(R.id.send_email_button).setOnClickListener(new OnClickListener() {
+		root.findViewById(R.id.action_button).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				saveAndSharePresenter.sendQREmailClicked();
+				saveAndSharePresenter.actionButtonClicked();
 			}
 		});
 
@@ -100,14 +99,14 @@ public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 	@Override
 	public void showIHaveSavedQRState() {
 		iHaveSavedCheckbox.setVisibility(View.VISIBLE);
-		sendEmailButton.setText(R.string.kinrecovery_done);
-		updateDoneState(iHaveSavedCheckbox.isChecked());
+		actionButton.setText(R.string.kinrecovery_done);
+		setActionButtonEnabled(iHaveSavedCheckbox.isChecked());
 	}
 
 	@Override
-	public void updateDoneState(boolean isEnabled) {
-		sendEmailButton.setEnabled(isEnabled);
-		sendEmailButton.setClickable(true);
+	public void setActionButtonEnabled(boolean isEnabled) {
+		actionButton.setEnabled(isEnabled);
+		actionButton.setClickable(true);
 	}
 
 	@Override
