@@ -50,7 +50,7 @@ class SaveAndSharePresenterImplTest {
         presenter.sendQREmailClicked()
         verify(callbackManager).sendBackupEvent(BACKUP_QR_PAGE_SEND_QR_TAPPED)
         verify(saveAndShareView).showSendIntent(any())
-        verify(saveAndShareView).showIHaveSavedCheckBox()
+        verify(saveAndShareView).showIHaveSavedQRState()
     }
 
     @Test
@@ -80,7 +80,7 @@ class SaveAndSharePresenterImplTest {
     fun `save instance state send qr has been clicked, show i saved checkbox`() {
         whenever(saveInstanceState.getBoolean(IS_SEND_EMAIL_CLICKED)) doReturn (true)
         createPresenter()
-        verify(saveAndShareView).showIHaveSavedCheckBox()
+        verify(saveAndShareView).showIHaveSavedQRState()
     }
 
     @Test
@@ -98,7 +98,7 @@ class SaveAndSharePresenterImplTest {
             onSaveInstanceState(saveInstanceState)
             onAttach(view)
         }
-        verify(saveAndShareView, times(2)).showIHaveSavedCheckBox()
+        verify(saveAndShareView, times(2)).showIHaveSavedQRState()
     }
 
     private fun createPresenter() {

@@ -9,6 +9,7 @@
     <color name="kinecosystem_title">@color/kinecosystem_background_dark</color>
     <color name="kinecosystem_subtitle">@color/kinecosystem_gray_dark</color>
     <color name="kinecosystem_subtitle_gray">#a6a6a6</color>
+    <color name="kinecosystem_subtitle_gray_dark">#8c8c8c</color>
 
     <color name="kinecosystem_white">#fff</color>
 
@@ -37,6 +38,5 @@
     <color name="kinecosystem_green">#1dc2a4</color>
     <color name="kinecosystem_purple">@color/kinecosystem_primary</color>
 
-    <color name="kinecosystem_button_disabled_light">#e7e7e7</color>
-    <color name="kinecosystem_button_disabled_dark">#8c8c8c</color>
+    <color name="kinecosystem_button_disabled">@color/kinecosystem_subtitle_gray_dark</color>
 </resources>

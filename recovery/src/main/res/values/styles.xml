@@ -22,13 +22,13 @@
     <style name="KinrecoveryAlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:background">?attr/kinBackgroundColor</item>
         <item name="android:textColor">?attr/primaryTextColor</item>
-        <item name="android:textColorPrimary">@color/kinecosystem_button_disabled_dark</item>
+        <item name="android:textColorPrimary">@color/kinecosystem_subtitle_gray_dark</item>
         <item name="buttonBarNegativeButtonStyle">@style/KinrecoveryDialogNegativeButtonStyle</item>
         <item name="buttonBarPositiveButtonStyle">@style/KinrecoveryDialogPositiveButtonStyle</item>
     </style>
 
     <style name="KinrecoveryDialogNegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
-        <item name="android:textColor">@color/kinecosystem_button_disabled_dark</item>
+        <item name="android:textColor">@color/kinecosystem_subtitle_gray_dark</item>
     </style>
 
     <style name="KinrecoveryDialogPositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
@@ -36,6 +36,7 @@
     </style>
 
     <style name="KinrecoveryCheckBox" parent="Theme.AppCompat.Light">
+        <item name="android:textSize">@dimen/kinecosystem_small_title_size</item>
         <item name="colorControlNormal">@color/kinecosystem_gray_light</item>
         <item name="colorControlActivated">@color/kinecosystem_purple</item>
     </style>

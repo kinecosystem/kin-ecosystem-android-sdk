@@ -52,23 +52,13 @@
         android:textColorHighlight="@color/kinecosystem_purple"
         android:theme="@style/KinrecoveryCheckBox"
         android:visibility="gone"
+        android:text="@string/kinrecovery_i_ve_saved_my_qr"
+        android:textColor="?attr/primaryTextColor"
         app:layout_constraintBottom_toTopOf="@+id/send_email_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.3"
         app:layout_constraintVertical_bias="0.9"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/remember_description"/>
-
-    <TextView
-        android:id="@+id/i_saved_my_qr_text"
-        style="@style/KinecosysTitleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/kinrecovery_i_ve_saved_my_qr"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/i_saved_my_qr_checkbox"
-        app:layout_constraintStart_toEndOf="@id/i_saved_my_qr_checkbox"
-        app:layout_constraintTop_toTopOf="@id/i_saved_my_qr_checkbox"/>
 
     <Button
         android:id="@+id/send_email_button"

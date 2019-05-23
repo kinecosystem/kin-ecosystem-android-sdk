@@ -19,7 +19,6 @@
         <item name="kinBackgroundColor">@color/kinecosystem_background_light</item>
         <item name="android:windowBackground">@color/kinecosystem_background_light</item>
         <item name="android:windowIsTranslucent">false</item>
-        <item name="buttonDisabledColor">@color/kinecosystem_button_disabled_light</item>
     </style>
 
     <style name="KinEcosystem.Dark" parent="KinEcosystemNoActionBar">
@@ -27,19 +26,16 @@
         <item name="kinBackgroundColor">@color/kinecosystem_background_dark</item>
         <item name="android:windowBackground">@color/kinecosystem_background_dark</item>
         <item name="android:windowIsTranslucent">false</item>
-        <item name="buttonDisabledColor">@color/kinecosystem_button_disabled_dark</item>
     </style>
 
     <style name="KinEcosystemTranslucent.Light" parent="KinEcosystemTranslucent">
         <item name="primaryTextColor">@color/kinecosystem_title</item>
         <item name="kinBackgroundColor">@color/kinecosystem_background_light</item>
-        <item name="buttonDisabledColor">@color/kinecosystem_button_disabled_light</item>
     </style>
 
     <style name="KinEcosystemTranslucent.Dark" parent="KinEcosystemTranslucent">
         <item name="primaryTextColor">@color/kinecosystem_white</item>
         <item name="kinBackgroundColor">@color/kinecosystem_background_dark</item>
-        <item name="buttonDisabledColor">@color/kinecosystem_button_disabled_dark</item>
     </style>
 
 

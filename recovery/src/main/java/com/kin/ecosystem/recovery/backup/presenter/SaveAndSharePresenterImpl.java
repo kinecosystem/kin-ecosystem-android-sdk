@@ -25,7 +25,6 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 	private boolean isSendQREmailClicked;
 	private boolean couldNotGenerateQR = false;
 
-
 	public SaveAndSharePresenterImpl(@NonNull final CallbackManager callbackManager,
 		BackupNavigator backupNavigator,
 		QRBarcodeGenerator qrBarcodeGenerator, String key, Bundle savedInstanceState) {
@@ -58,7 +57,7 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 			setQRImage();
 		}
 		if (isSendQREmailClicked && view != null) {
-			view.showIHaveSavedCheckBox();
+			view.showIHaveSavedQRState();
 		}
 	}
 
@@ -77,17 +76,22 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 	public void iHaveSavedChecked(boolean isChecked) {
 		if (isChecked) {
 			callbackManager.sendBackupEvent(BACKUP_QR_PAGE_QR_SAVED_TAPPED);
-			backupNavigator.navigateToWellDonePage();
 		}
+		view.updateDoneState(isChecked);
 	}
 
 	@Override
 	public void sendQREmailClicked() {
-		callbackManager.sendBackupEvent(BACKUP_QR_PAGE_SEND_QR_TAPPED);
-		isSendQREmailClicked = true;
-		if (qrURI != null && view != null) {
-			view.showSendIntent(qrURI);
-			view.showIHaveSavedCheckBox();
+		if (!isSendQREmailClicked) {
+			isSendQREmailClicked = true;
+			callbackManager.sendBackupEvent(BACKUP_QR_PAGE_SEND_QR_TAPPED);
+			if (qrURI != null && view != null) {
+				view.showSendIntent(qrURI);
+				view.showIHaveSavedQRState();
+			}
+		} else {
+			// Done
+			backupNavigator.navigateToWellDonePage();
 		}
 	}
 

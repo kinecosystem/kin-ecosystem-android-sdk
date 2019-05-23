@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -50,8 +51,8 @@ public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 	private SaveAndSharePresenter saveAndSharePresenter;
 
 	private CheckBox iHaveSavedCheckbox;
-	private TextView iHaveSavedText;
 	private ImageView qrImageView;
+	private Button sendEmailButton;
 
 	@Nullable
 	@Override
@@ -71,19 +72,13 @@ public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 
 	private void initViews(View root) {
 		iHaveSavedCheckbox = root.findViewById(R.id.i_saved_my_qr_checkbox);
-		iHaveSavedText = root.findViewById(R.id.i_saved_my_qr_text);
 		qrImageView = root.findViewById(R.id.qr_image);
+		sendEmailButton = root.findViewById(R.id.send_email_button);
 
 		iHaveSavedCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				saveAndSharePresenter.iHaveSavedChecked(isChecked);
-			}
-		});
-		iHaveSavedText.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				iHaveSavedCheckbox.performClick();
 			}
 		});
 
@@ -103,9 +98,16 @@ public class SaveAndShareFragment extends Fragment implements SaveAndShareView {
 	}
 
 	@Override
-	public void showIHaveSavedCheckBox() {
+	public void showIHaveSavedQRState() {
 		iHaveSavedCheckbox.setVisibility(View.VISIBLE);
-		iHaveSavedText.setVisibility(View.VISIBLE);
+		sendEmailButton.setText(R.string.kinrecovery_done);
+		updateDoneState(iHaveSavedCheckbox.isChecked());
+	}
+
+	@Override
+	public void updateDoneState(boolean isEnabled) {
+		sendEmailButton.setEnabled(isEnabled);
+		sendEmailButton.setClickable(true);
 	}
 
 	@Override

@@ -4,6 +4,6 @@
         android:color="@color/kinecosystem_purple"
         android:state_enabled="true"/>
     <item
-        android:color="?attr/buttonDisabledColor"
+        android:color="@color/kinecosystem_button_disabled"
         android:state_enabled="false"/>
 </selector>
