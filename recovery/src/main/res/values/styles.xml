@@ -3,6 +3,7 @@
 
     <style name="KinRecovery.Light" parent="KinEcosystem.Light">
         <item name="colorPrimaryDark">@color/kinrecovery_colorPrimaryDark_light</item>
+        <item name="editTextFrame">@drawable/kinrecovery_edittext_frame_light</item>
         <item name="editTextStrokeColor">@color/kinrecovery_edittext_stroke_light</item>
         <item name="qrSquaresColor">@color/kinrecovery_qr_squares_light</item>
         <item name="android:windowBackground">?attr/kinBackgroundColor</item>
@@ -11,6 +12,7 @@
 
     <style name="KinRecovery.Dark" parent="KinEcosystem.Dark">
         <item name="colorPrimaryDark">@color/kinrecovery_colorPrimaryDark_dark</item>
+        <item name="editTextFrame">@drawable/kinrecovery_edittext_frame_dark</item>
         <item name="editTextStrokeColor">@color/kinrecovery_edittext_stroke_dark</item>
         <item name="qrSquaresColor">@color/kinrecovery_qr_squares_dark</item>
         <item name="android:windowBackground">?attr/kinBackgroundColor</item>

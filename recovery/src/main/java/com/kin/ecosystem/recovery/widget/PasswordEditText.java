@@ -30,6 +30,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.kin.ecosystem.base.ThemeUtil;
 import com.kin.ecosystem.recovery.R;
 
 
@@ -67,6 +68,7 @@ public class PasswordEditText extends LinearLayout {
 		TypedArray styledAttributes = context.getTheme()
 			.obtainStyledAttributes(attrs, R.styleable.KinRecoveryPasswordEditText, 0, 0);
 
+
 		try {
 			addRevealIcon = styledAttributes
 				.getBoolean(R.styleable.KinRecoveryPasswordEditText_kinrecovery_show_reveal_icon, false);
@@ -89,6 +91,8 @@ public class PasswordEditText extends LinearLayout {
 	private void setupPasswordField(boolean addRevealIcon, String hint) {
 		final int topBottomPadding = getResources().getDimensionPixelSize(R.dimen.kinrecovery_margin_block);
 		final int textSize = getResources().getDimensionPixelSize(R.dimen.kinrecovery_password_edit_text_size);
+		Drawable frameDrawable = ThemeUtil.Companion.themeAttributeToDrawable(getContext(), R.attr.editTextFrame,
+			R.drawable.kinrecovery_edittext_frame_dark);
 
 		if (!TextUtils.isEmpty(hint)) {
 			passwordField.setHint(hint);
@@ -113,7 +117,7 @@ public class PasswordEditText extends LinearLayout {
 			}
 		});
 		passwordField.setGravity(Gravity.CENTER_VERTICAL);
-		passwordField.setBackgroundResource(R.drawable.kinrecovery_edittext_frame);
+		passwordField.setBackground(frameDrawable);
 		passwordField.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
