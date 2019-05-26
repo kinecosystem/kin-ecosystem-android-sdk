@@ -36,7 +36,7 @@ public class LargePasswordDotsTransformationMethod extends PasswordTransformatio
 		}
 
 		public char charAt(int index) {
-			return '⬤'; // large dot unicode char (https://unicode-table.com/en/2B24/)
+			return '●'; // large dot unicode char (https://unicode-table.com/en/25CF/)
 		}
 
 		public int length() {

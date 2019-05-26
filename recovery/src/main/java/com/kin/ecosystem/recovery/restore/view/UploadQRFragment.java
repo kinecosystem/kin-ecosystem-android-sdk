@@ -68,8 +68,7 @@ public class UploadQRFragment extends Fragment implements UploadQRView {
 
 	private void initToolbar() {
 		BaseToolbarActivity toolbarActivity = (BaseToolbarActivity) getActivity();
-		toolbarActivity.setNavigationIcon(R.drawable.kinrecovery_ic_back);
-		toolbarActivity.setToolbarColor(R.color.kinrecovery_bluePrimary);
+		toolbarActivity.setNavigationIcon(R.drawable.kinecosystem_ic_back_new);
 		toolbarActivity.setToolbarTitle(EMPTY_TITLE);
 		toolbarActivity.setNavigationClickListener(new OnClickListener() {
 			@Override

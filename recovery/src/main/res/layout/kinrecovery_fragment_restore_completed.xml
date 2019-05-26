@@ -7,32 +7,34 @@
 
     <ImageView
         android:id="@+id/kinrecovery_password_qr_icon"
-        android:layout_width="@dimen/kinrecovery_password_qr_icon_size"
-        android:layout_height="@dimen/kinrecovery_password_qr_icon_size"
-        android:layout_marginTop="@dimen/kinrecovery_margin_block"
-        android:src="@drawable/kinrecovery_password_recovery_qr_code_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/kinrecovery_qr_code"
+        android:layout_marginTop="@dimen/kinecosystem_margin_large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <ImageView
-        android:layout_width="@dimen/kinrecovery_password_blue_v_size"
-        android:layout_height="@dimen/kinrecovery_password_blue_v_size"
-        android:src="@drawable/kinrecovery_blue_v_mark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/kinrecovery_purple_v_mark"
+        app:layout_constraintTop_toTopOf="@id/kinrecovery_password_qr_icon"
+        app:layout_constraintStart_toStartOf="@id/kinrecovery_password_qr_icon"
+        app:layout_constraintVertical_bias="1.3"
+        app:layout_constraintHorizontal_bias="1.3"
         app:layout_constraintBottom_toBottomOf="@id/kinrecovery_password_qr_icon"
         app:layout_constraintEnd_toEndOf="@+id/kinrecovery_password_qr_icon"
         />
 
-    <TextView
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
         android:id="@+id/kinrecovery_password_recovery_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/kinrecovery_password_recovery_content_margin_top"
-        android:fontFamily="sans-serif"
+        android:layout_marginTop="@dimen/kinecosystem_main_margin"
         android:gravity="center_horizontal"
         android:text="@string/kinrecovery_thank_you"
-        android:textColor="@color/kinrecovery_gray"
-        android:textSize="@dimen/kinrecovery_password_recovery_content_text_size"
+        style="@style/KinecosysTitleSmall"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/kinrecovery_password_qr_icon"/>
@@ -42,7 +44,7 @@
         android:layout_width="@dimen/kinrecovery_circle_v_size"
         android:layout_height="@dimen/kinrecovery_circle_v_size"
         android:layout_marginBottom="@dimen/kinrecovery_circle_v_margin_bottom"
-        android:background="@drawable/kinrecovery_circle_v_mark_icon"
+        app:srcCompat="@drawable/kinrecovery_circle_v_mark_icon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>

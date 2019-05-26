@@ -30,11 +30,10 @@ abstract class KinEcosystemBaseActivity : AppCompatActivity() {
 
     @StyleRes
     private fun getKinTheme(): Int {
-        return ConfigurationImpl.getInstance().kinTheme?.let {
-            when (it) {
-                KinTheme.LIGHT -> R.style.KinecosysNoActionBar_Light
-                KinTheme.DARK -> R.style.KinecosysNoActionBar_Dark
-            }
-        } ?: R.style.KinecosysNoActionBar_Light
+        return when (ConfigurationImpl.getInstance().kinTheme) {
+            KinTheme.LIGHT -> R.style.KinEcosystem_Light
+            KinTheme.DARK -> R.style.KinEcosystem_Dark
+        }
+
     }
 }

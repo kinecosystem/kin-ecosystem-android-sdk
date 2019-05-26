@@ -208,13 +208,14 @@ public class ConfigurationImpl implements Configuration {
 		return acceptedLanguage;
 	}
 
+	@NonNull
 	@Override
 	public KinTheme getKinTheme() {
 		return local.getKinTheme();
 	}
 
 	@Override
-	public void setKinTheme(KinTheme kinTheme) {
+	public void setKinTheme(@NonNull KinTheme kinTheme) {
 		local.setKinTheme(kinTheme);
 	}
 }

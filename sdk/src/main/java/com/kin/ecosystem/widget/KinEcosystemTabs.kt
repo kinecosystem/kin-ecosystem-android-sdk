@@ -19,10 +19,10 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.kin.ecosystem.R
-import com.kin.ecosystem.obtainAttrs
-import com.kin.ecosystem.onPreDraw
-import com.kin.ecosystem.widget.util.ThemeUtil
-import com.kin.ecosystem.withEndAction
+import com.kin.ecosystem.base.ThemeUtil
+import com.kin.ecosystem.base.widget.obtainAttrs
+import com.kin.ecosystem.base.widget.onPreDraw
+import com.kin.ecosystem.base.widget.withEndAction
 
 
 //  <declare-styleable name="KinEcosystemTabsView">
@@ -58,8 +58,8 @@ class KinEcosystemTabs @JvmOverloads constructor(context: Context,
             attributes?.let {
                 leftTabText = it.getText(R.styleable.KinEcosystemTabsView_leftTabText).toString()
                 rightTabText = it.getText(R.styleable.KinEcosystemTabsView_rightTabText).toString()
-                leftColor = it.getColor(R.styleable.KinEcosystemTabsView_leftColor, ContextCompat.getColor(context, R.color.kinecosystem_earn))
-                rightColor = it.getColor(R.styleable.KinEcosystemTabsView_rightColor, ContextCompat.getColor(context, R.color.kinecosystem_spend))
+                leftColor = it.getColor(R.styleable.KinEcosystemTabsView_leftColor, ContextCompat.getColor(context, R.color.kinecosystem_purple))
+                rightColor = it.getColor(R.styleable.KinEcosystemTabsView_rightColor, ContextCompat.getColor(context, R.color.kinecosystem_green))
                 defaultSelectedTab = Tab.fromInt(it.getInt(R.styleable.KinEcosystemTabsView_defaultSelected, Tab.LEFT.ordinal))
             }
         } finally {
@@ -290,8 +290,8 @@ class KinEcosystemTabs @JvmOverloads constructor(context: Context,
 
         companion object {
 
-            fun fromInt(tabIndex: Int ): Tab {
-                return when(tabIndex) {
+            fun fromInt(tabIndex: Int): Tab {
+                return when (tabIndex) {
                     LEFT.ordinal -> LEFT
                     RIGHT.ordinal -> RIGHT
                     else -> LEFT

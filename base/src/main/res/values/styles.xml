@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="KinEcosystemNoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/kinecosystem_white</item>
+        <item name="colorPrimaryDark">@color/kinecosystem_transparent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="KinEcosystemTranslucent" parent="KinEcosystemNoActionBar">
+        <item name="android:windowBackground">@color/kinecosystem_transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <style name="KinEcosystem.Light" parent="KinEcosystemNoActionBar">
+        <item name="primaryTextColor">@color/kinecosystem_title</item>
+        <item name="kinBackgroundColor">@color/kinecosystem_background_light</item>
+        <item name="android:windowBackground">@color/kinecosystem_background_light</item>
+        <item name="android:windowIsTranslucent">false</item>
+    </style>
+
+    <style name="KinEcosystem.Dark" parent="KinEcosystemNoActionBar">
+        <item name="primaryTextColor">@color/kinecosystem_white</item>
+        <item name="kinBackgroundColor">@color/kinecosystem_background_dark</item>
+        <item name="android:windowBackground">@color/kinecosystem_background_dark</item>
+        <item name="android:windowIsTranslucent">false</item>
+    </style>
+
+    <style name="KinEcosystemTranslucent.Light" parent="KinEcosystemTranslucent">
+        <item name="primaryTextColor">@color/kinecosystem_title</item>
+        <item name="kinBackgroundColor">@color/kinecosystem_background_light</item>
+    </style>
+
+    <style name="KinEcosystemTranslucent.Dark" parent="KinEcosystemTranslucent">
+        <item name="primaryTextColor">@color/kinecosystem_white</item>
+        <item name="kinBackgroundColor">@color/kinecosystem_background_dark</item>
+    </style>
+
+
+    <style name="KinecosysTextBase">
+        <item name="android:textColor">?attr/primaryTextColor</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <!--Title-->
+    <style name="KinecosysTitle" parent="KinecosysTextBase">
+        <item name="android:textSize">@dimen/kinecosystem_title_size</item>
+    </style>
+
+    <style name="KinecosysTitleSmall" parent="KinecosysTextBase">
+        <item name="android:textSize">@dimen/kinecosystem_small_title_size</item>
+    </style>
+
+    <style name="KinecosysTitleMedium" parent="KinecosysTextBase">
+        <item name="android:textSize">@dimen/kinecosystem_title_medium_size</item>
+    </style>
+
+    <style name="KinecosysTitleLarge" parent="KinecosysTextBase">
+        <item name="android:textSize">@dimen/kinecosystem_title_large_size</item>
+    </style>
+
+    <!--Subtitle-->
+    <style name="KinecosysSubTitle" parent="KinecosysTextBase">
+        <item name="android:textSize">@dimen/kinecosystem_sub_title_size</item>
+        <item name="android:textColor">@color/kinecosystem_subtitle</item>
+    </style>
+
+    <style name="KinecosysButton">
+        <item name="android:textSize">@dimen/kinecosystem_title_size</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/kinecosystem_white</item>
+        <item name="android:background">@drawable/kinecosystem_button_primary_state_list</item>
+
+    </style>
+</resources>

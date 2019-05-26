@@ -16,7 +16,7 @@
         app:srcCompat="@drawable/kinecosystem_ic_back"
         />
 
-    <com.kin.ecosystem.widget.KinEcosystemTextView
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
         android:id="@+id/title"
         style="@style/KinecosysTitleMedium"
         android:layout_width="wrap_content"

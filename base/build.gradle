@@ -1,0 +1,22 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply from: '../dependencies.gradle'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        vectorDrawables.useSupportLibrary = true
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "${KIN_ECOSYSTEM_SDK_VERSION_NAME}"
+        consumerProguardFiles 'proguard-rules.pro'
+    }
+}
+
+dependencies {
+    implementation devDependencies.supportAnnotations
+    implementation devDependencies.appCompat_v7
+    implementation devDependencies.kotlin
+}

@@ -8,16 +8,12 @@ class ConfigurationLocalImpl(val context: Context) : Configuration.Local {
 
     private val configurationSharedPref: SharedPreferences
 
-    override var kinTheme: KinTheme?
+    override var kinTheme
         get() = KinTheme.valueOf(configurationSharedPref.getString(KIN_THEME_KEY, KinTheme.LIGHT.name))
         set(value) {
             with(configurationSharedPref.edit()) {
-                kinTheme?.let { currentTheme ->
-                    if(currentTheme != value ) {
-                        value?.let { value ->
-                            putString(KIN_THEME_KEY, value.name).apply()
-                        }
-                    }
+                if(kinTheme != value ) {
+                    putString(KIN_THEME_KEY, value.name).apply()
                 }
             }
         }

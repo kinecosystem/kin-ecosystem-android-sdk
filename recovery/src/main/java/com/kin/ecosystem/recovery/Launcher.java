@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.recovery.backup.view.BackupActivity;
+import com.kin.ecosystem.recovery.base.BaseToolbarActivity;
 import com.kin.ecosystem.recovery.restore.view.RestoreActivity;
 
 class Launcher {
@@ -18,12 +19,16 @@ class Launcher {
 		this.activity = activity;
 	}
 
-	void backupFlow() {
-		startForResult(new Intent(activity, BackupActivity.class), REQ_CODE_BACKUP);
+	void backupFlow(KinRecoveryTheme kinRecoveryTheme) {
+		Intent backupIntent = new Intent(activity, BackupActivity.class);
+		backupIntent.putExtra(BaseToolbarActivity.KEY_THEME, kinRecoveryTheme.name());
+		startForResult(backupIntent, REQ_CODE_BACKUP);
 	}
 
-	void restoreFlow() {
-		startForResult(new Intent(activity, RestoreActivity.class), REQ_CODE_RESTORE);
+	void restoreFlow(KinRecoveryTheme kinRecoveryTheme) {
+		Intent restoreIntent = new Intent(activity, RestoreActivity.class);
+		restoreIntent.putExtra(BaseToolbarActivity.KEY_THEME, kinRecoveryTheme.name());
+		startForResult(restoreIntent, REQ_CODE_RESTORE);
 	}
 
 	private void startForResult(@NonNull final Intent intent, final int reqCode) {

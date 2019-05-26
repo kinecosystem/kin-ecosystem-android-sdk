@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/kinrecovery_bluePrimary"
+    android:background="?attr/kinBackgroundColor"
     >
 
     <ImageView
@@ -12,30 +12,34 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/kinrecovery_margin_xlarge"
-        android:src="@drawable/kinrecovery_safe_icon"
+        app:srcCompat="@drawable/kinrecovery_safe_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <TextView
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
         android:id="@+id/keep_safe_title"
-        style="@style/KinrecoveryTitleLargeLight"
+        style="@style/KinecosysTitleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/kinrecovery_margin_xlarge"
         android:text="@string/kinrecovery_keep_your_kin_safe"
+        app:fontExtra="medium"
         app:layout_constraintEnd_toEndOf="@+id/safe_icon"
         app:layout_constraintStart_toStartOf="@+id/safe_icon"
         app:layout_constraintTop_toBottomOf="@+id/safe_icon"/>
 
-    <TextView
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
         android:id="@+id/description"
+        style="@style/KinecosysTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
         android:gravity="center"
-        style="@style/KinrecoveryTitle"
-        android:lineSpacingExtra="@dimen/kinrecovery_line_spacing"
+        app:fontExtra="regular"
+        android:textSize="@dimen/kinecosystem_sub_title_size"
+        android:letterSpacing="-0.02"
+        android:lineSpacingMultiplier="1.5"
         android:text="@string/kinrecovery_backup_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,11 +51,9 @@
         android:layout_height="@dimen/kinrecovery_btn_frame_height"
         android:layout_marginBottom="@dimen/kinrecovery_margin_xlarge"
         android:text="@string/kinrecovery_let_s_go"
-        style="@style/KinrecoveryTitleLargeBlue"
-        android:textSize="@dimen/kinrecovery_btn_text_size"
+        style="@style/KinecosysButton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:background="@drawable/kinrecovery_btn_rounded_white"/>
+        app:layout_constraintStart_toStartOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import com.kin.ecosystem.base.ThemeUtil;
 import com.kin.ecosystem.recovery.BackupManager;
 import com.kin.ecosystem.recovery.R;
 import com.kin.ecosystem.recovery.backup.presenter.CreatePasswordPresenter;
@@ -46,12 +47,14 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 	private PasswordEditText enterPassEditText;
 	private PasswordEditText confirmPassEditText;
 	private Button nextButton;
+	private int strokeRegularColor;
 
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
 		@Nullable Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.kinrecovery_fragment_backup_create_password, container, false);
+		strokeRegularColor = ThemeUtil.Companion.themeAttributeToColor(getContext(), R.attr.editTextStrokeColor, R.color.kinecosystem_subtitle_gray);
 		initViews(root);
 		createPasswordPresenter = new CreatePasswordPresenterImpl(
 			new CallbackManager(new EventDispatcherImpl(new BroadcastManagerImpl(getActivity()))), nextStepListener,
@@ -116,7 +119,7 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 			}
 		});
 		enterPassEditText.addTextChangedListener(enterPassTextWatcherAdapter);
-		enterPassEditText.setFrameBackgroundColor(R.color.kinrecovery_gray);
+		enterPassEditText.setFrameBackgroundColor(strokeRegularColor);
 		openKeyboard(enterPassEditText);
 	}
 
@@ -129,8 +132,7 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 			}
 		});
 		confirmPassEditText.addTextChangedListener(confirmPassTextWatcherAdapter);
-
-		confirmPassEditText.setFrameBackgroundColor(R.color.kinrecovery_gray);
+		confirmPassEditText.setFrameBackgroundColor(strokeRegularColor);
 	}
 
 	public void setNextStepListener(@NonNull final BackupNavigator nextStepListener) {
@@ -152,23 +154,23 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 
 	@Override
 	public void resetEnterPasswordField() {
-		enterPassEditText.setFrameBackgroundColor(R.color.kinrecovery_gray);
+		enterPassEditText.setFrameBackgroundColor(strokeRegularColor);
 		enterPassEditText.removeError();
 	}
 
 	@Override
 	public void resetConfirmPasswordField() {
-		confirmPassEditText.setFrameBackgroundColor(R.color.kinrecovery_gray);
+		confirmPassEditText.setFrameBackgroundColor(strokeRegularColor);
 		confirmPassEditText.removeError();
 	}
 
 	@Override
 	public void setEnterPasswordIsCorrect(boolean isCorrect) {
 		if (isCorrect) {
-			enterPassEditText.setFrameBackgroundColor(R.color.kinrecovery_bluePrimary);
+			enterPassEditText.setFrameBackgroundColorRes(R.color.kinecosystem_purple);
 			enterPassEditText.removeError();
 		} else {
-			enterPassEditText.setFrameBackgroundColor(R.color.kinrecovery_red);
+			enterPassEditText.setFrameBackgroundColorRes(R.color.kinecosystem_failed);
 			enterPassEditText.showError(R.string.kinrecovery_password_does_not_meet_req_above);
 		}
 	}
@@ -176,10 +178,10 @@ public class CreatePasswordFragment extends Fragment implements CreatePasswordVi
 	@Override
 	public void setConfirmPasswordIsCorrect(boolean isCorrect) {
 		if (isCorrect) {
-			confirmPassEditText.setFrameBackgroundColor(R.color.kinrecovery_bluePrimary);
+			confirmPassEditText.setFrameBackgroundColorRes(R.color.kinecosystem_purple);
 			confirmPassEditText.removeError();
 		} else {
-			confirmPassEditText.setFrameBackgroundColor(R.color.kinrecovery_red);
+			confirmPassEditText.setFrameBackgroundColorRes(R.color.kinecosystem_failed);
 			confirmPassEditText.showError(R.string.kinrecovery_password_does_not_match);
 		}
 	}

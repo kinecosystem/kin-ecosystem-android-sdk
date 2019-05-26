@@ -17,14 +17,15 @@ import com.kin.ecosystem.recovery.qr.QRBarcodeGenerator.QRBarcodeGeneratorExcept
 public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareView> implements SaveAndSharePresenter {
 
 	static final String IS_SEND_EMAIL_CLICKED = "is_send_email_clicked";
+	static final String IS_SAVED_QR_CHECKED = "is_saved_qr_checked";
 	private final BackupNavigator backupNavigator;
 	private final QRBarcodeGenerator qrBarcodeGenerator;
 	private final CallbackManager callbackManager;
 
 	private Uri qrURI;
 	private boolean isSendQREmailClicked;
+	private boolean isSavedQRChecked;
 	private boolean couldNotGenerateQR = false;
-
 
 	public SaveAndSharePresenterImpl(@NonNull final CallbackManager callbackManager,
 		BackupNavigator backupNavigator,
@@ -33,12 +34,17 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 		this.qrBarcodeGenerator = qrBarcodeGenerator;
 		this.callbackManager = callbackManager;
 		this.isSendQREmailClicked = getIsSendQrEmailClicked(savedInstanceState);
+		this.isSavedQRChecked = getIsSavedQRChecked(savedInstanceState);
 		this.callbackManager.sendBackupEvent(BACKUP_QR_CODE_PAGE_VIEWED);
 		createQR(key);
 	}
 
 	private boolean getIsSendQrEmailClicked(Bundle savedInstanceState) {
 		return savedInstanceState != null && savedInstanceState.getBoolean(IS_SEND_EMAIL_CLICKED);
+	}
+
+	private boolean getIsSavedQRChecked(Bundle savedInstanceState) {
+		return savedInstanceState != null && savedInstanceState.getBoolean(IS_SAVED_QR_CHECKED);
 	}
 
 	private void createQR(String key) {
@@ -58,7 +64,7 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 			setQRImage();
 		}
 		if (isSendQREmailClicked && view != null) {
-			view.showIHaveSavedCheckBox();
+			view.showIHaveSavedQRState();
 		}
 	}
 
@@ -75,19 +81,26 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 
 	@Override
 	public void iHaveSavedChecked(boolean isChecked) {
+		isSavedQRChecked = isChecked;
 		if (isChecked) {
 			callbackManager.sendBackupEvent(BACKUP_QR_PAGE_QR_SAVED_TAPPED);
-			backupNavigator.navigateToWellDonePage();
 		}
+		view.setActionButtonEnabled(isChecked);
 	}
 
 	@Override
-	public void sendQREmailClicked() {
-		callbackManager.sendBackupEvent(BACKUP_QR_PAGE_SEND_QR_TAPPED);
-		isSendQREmailClicked = true;
-		if (qrURI != null && view != null) {
-			view.showSendIntent(qrURI);
-			view.showIHaveSavedCheckBox();
+	public void actionButtonClicked() {
+		if (!isSendQREmailClicked) {
+			isSendQREmailClicked = true;
+			callbackManager.sendBackupEvent(BACKUP_QR_PAGE_SEND_QR_TAPPED);
+			if (qrURI != null && view != null) {
+				view.showSendIntent(qrURI);
+				view.showIHaveSavedQRState();
+			}
+		} else {
+			if (isSavedQRChecked) {
+				backupNavigator.navigateToWellDonePage();
+			}
 		}
 	}
 
@@ -101,5 +114,6 @@ public class SaveAndSharePresenterImpl extends BasePresenterImpl<SaveAndShareVie
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putBoolean(IS_SEND_EMAIL_CLICKED, isSendQREmailClicked);
+		outState.putBoolean(IS_SAVED_QR_CHECKED, isSavedQRChecked);
 	}
 }
