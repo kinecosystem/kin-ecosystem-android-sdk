@@ -21,6 +21,7 @@ public class BlockchainException extends KinEcosystemException {
 	public static final int TRANSACTION_FAILED = 6005;
 	public static final int ACCOUNT_LOADING_FAILED = 6006;
 	public static final int MIGRATION_FAILED = 6007;
+	public static final int SIGN_TRANSACTION_FAILED = 6008;
 
 	public BlockchainException(@BlockchainErrorCodes int code, String message, Throwable cause) {
 		super(code, message, cause);

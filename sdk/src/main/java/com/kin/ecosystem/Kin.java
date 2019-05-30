@@ -2,6 +2,7 @@ package com.kin.ecosystem;
 
 import static com.kin.ecosystem.common.exception.ClientException.ACCOUNT_NOT_LOGGED_IN;
 import static com.kin.ecosystem.common.exception.ClientException.BAD_CONFIGURATION;
+import static com.kin.ecosystem.common.exception.ClientException.INTERNAL_INCONSISTENCY;
 import static com.kin.ecosystem.common.exception.ClientException.SDK_NOT_STARTED;
 
 import android.app.Activity;
@@ -263,7 +264,7 @@ public class Kin {
 		}
 	}
 
-	private static void internalLogin(@NonNull final int loginState, final KinCallback<Void> loginCallback) {
+	private static void internalLogin(final int loginState, final KinCallback<Void> loginCallback) {
 		MigrationManager migrationManager = createMigrationManager(getKinContext(),
 			AuthRepository.getInstance().getAppID());
 		BlockchainSourceImpl.getInstance().setMigrationManager(migrationManager);
@@ -334,7 +335,12 @@ public class Kin {
 						AccountManagerImpl.getInstance().removeAccountStateObserver(this);
 						break;
 					case AccountManager.ERROR:
-						sendLoginFailed(AccountManagerImpl.getInstance().getError(), loginCallback);
+						final KinEcosystemException onboardingException = AccountManagerImpl.getInstance().getError();
+						if (onboardingException != null) {
+							sendLoginFailed(onboardingException, loginCallback);
+						} else {
+							sendLoginFailed(ErrorUtil.getClientException(INTERNAL_INCONSISTENCY, null), loginCallback);
+						}
 						AccountManagerImpl.getInstance().removeAccountStateObserver(this);
 						break;
 				}
@@ -357,7 +363,8 @@ public class Kin {
 	}
 
 	private static void sendLoginFailed(final KinEcosystemException exception, final KinCallback<Void> loginCallback) {
-		eventLogger.send(UserLoginFailed.create(getMessage(exception)));
+		eventLogger
+			.send(UserLoginFailed.create(ErrorUtil.getMessage(exception, "User login failed with unknown exception")));
 		isAccountLoggedIn.getAndSet(false);
 		instance.executorsUtil.mainThread().execute(new Runnable() {
 			@Override
@@ -390,10 +397,6 @@ public class Kin {
 			new MigrationEventsListener(EventLoggerImpl.getInstance()), KIN_ECOSYSTEM_STORE_PREFIX_KEY);
 		migrationManager.enableLogs(Logger.isEnabled());
 		return migrationManager;
-	}
-
-	private static String getMessage(KinEcosystemException exception) {
-		return exception.getCause() != null ? exception.getCause().getMessage() : exception.getMessage();
 	}
 
 	private static boolean isInstanceNull() {

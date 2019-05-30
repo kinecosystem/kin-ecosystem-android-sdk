@@ -141,18 +141,6 @@ public class BlockchainSourceRemote implements Remote {
 	}
 
 	@Override
-	public MigrationInfo getMigrationInfo(@NonNull String publicAddress) throws ApiException {
-		try {
-			final MigrationInfo info = migrationApi.getMigrationInfoSync(publicAddress);
-			sendMigrationInfoSuccessEvent(publicAddress, info);
-			return info;
-		} catch (ApiException e) {
-			eventLogger.send(MigrationStatusCheckFailed.create(getPublicAddress(), getErrorMessage(e)));
-			throw e;
-		}
-	}
-
-	@Override
 	public void getMigrationInfo(final String publicAddress, final @NonNull Callback<MigrationInfo, ApiException> callback) {
 		try {
 			migrationApi.getMigrationInfoAsync(publicAddress, new ApiCallback<MigrationInfo>() {

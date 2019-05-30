@@ -10,7 +10,7 @@ class KinBlockchainVersionProvider implements IKinVersionProvider {
 	private final BlockchainSource.Local local;
 	private final BlockchainSource.Remote remote;
 
-	public KinBlockchainVersionProvider(BlockchainSource.Local local, BlockchainSource.Remote remote) {
+	KinBlockchainVersionProvider(BlockchainSource.Local local, BlockchainSource.Remote remote) {
 		this.local = local;
 		this.remote = remote;
 	}

@@ -8,7 +8,7 @@ public class KinEcosystemException extends Exception {
 
 	private int code;
 
-	public KinEcosystemException(@NonNull int code, @NonNull String message, @NonNull Throwable cause) {
+	public KinEcosystemException(int code, @NonNull String message, @NonNull Throwable cause) {
 		super(message, cause);
 		this.code = code;
 	}
