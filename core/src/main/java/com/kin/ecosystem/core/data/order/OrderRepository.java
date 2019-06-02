@@ -374,8 +374,9 @@ public class OrderRepository implements OrderDataSource {
 				}
 
 				private void handleOnFailure(final String offerId, final String orderId, KinEcosystemException exception) {
-					eventLogger.send(SpendOrderFailed
-						.create(exception.getMessage(), offerId, orderId, true, SpendOrderFailed.Origin.EXTERNAL));
+					final String finalOfferId = StringUtil.safeGuardNullString(offerId);
+					final String finalOrderId = StringUtil.safeGuardNullString(orderId);
+					eventLogger.send(SpendOrderFailed.create(exception.getMessage(), finalOfferId, finalOrderId, true, SpendOrderFailed.Origin.EXTERNAL));
 
 					if (callback != null) {
 						callback.onFailure(exception);
@@ -433,7 +434,9 @@ public class OrderRepository implements OrderDataSource {
 				if (callback != null) {
 					callback.onFailure(exception);
 				}
-				eventLogger.send(EarnOrderFailed.create(exception.getMessage(), offerId, orderId, EarnOrderFailed.Origin.EXTERNAL));
+				final String finalOfferId = StringUtil.safeGuardNullString(offerId);
+				final String finalOrderId = StringUtil.safeGuardNullString(orderId);
+				eventLogger.send(EarnOrderFailed.create(exception.getMessage(), finalOfferId, finalOrderId, EarnOrderFailed.Origin.EXTERNAL));
 			}
 		}).start();
 	}

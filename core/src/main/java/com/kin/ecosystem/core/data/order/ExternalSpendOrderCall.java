@@ -13,6 +13,7 @@ import com.kin.ecosystem.core.data.blockchain.BlockchainSource.SignTransactionLi
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.util.ErrorUtil;
+import com.kin.ecosystem.core.util.StringUtil;
 import java.math.BigDecimal;
 import kin.sdk.migration.common.exception.OperationFailedException;
 
@@ -30,17 +31,22 @@ class ExternalSpendOrderCall extends CreateExternalOrderCall {
 	@Override
 	void sendOrderCreationFailedEvent(String offerId, KinEcosystemException exception) {
 		final String reason = exception.getMessage();
-		eventLogger.send(SpendOrderCreationFailed.create(reason, offerId, true, SpendOrderCreationFailed.Origin.EXTERNAL));
+		final String finalOfferId = StringUtil.safeGuardNullString(offerId);
+		eventLogger.send(SpendOrderCreationFailed.create(reason, finalOfferId, true, SpendOrderCreationFailed.Origin.EXTERNAL));
 	}
 
 	@Override
 	void sendOrderCreationReceivedEvent(String offerId, String orderId) {
-		eventLogger.send(SpendOrderCreationReceived.create(offerId, orderId, true, SpendOrderCreationReceived.Origin.EXTERNAL));
+		final String finalOfferId = StringUtil.safeGuardNullString(offerId);
+		final String finalOrderId = StringUtil.safeGuardNullString(orderId);
+		eventLogger.send(SpendOrderCreationReceived.create(finalOfferId, finalOrderId, true, SpendOrderCreationReceived.Origin.EXTERNAL));
 	}
 
 	@Override
 	void sendCompletionSubmittedEvent(String offerId, String orderId) {
-		eventLogger.send(SpendOrderCompletionSubmitted.create(offerId, orderId, true, SpendOrderCompletionSubmitted.Origin.EXTERNAL));
+		final String finalOfferId = StringUtil.safeGuardNullString(offerId);
+		final String finalOrderId = StringUtil.safeGuardNullString(orderId);
+		eventLogger.send(SpendOrderCompletionSubmitted.create(finalOfferId, finalOrderId, true, SpendOrderCompletionSubmitted.Origin.EXTERNAL));
 	}
 
 	@Override
