@@ -97,6 +97,33 @@ class ExternalEarnOrderCallTest : BaseTestClass() {
 		}
 	}
 
+	@Test
+	fun `run kin3 happy flow to completion`() {
+		whenever(blockchainSource.blockchainVersion).thenReturn(KinSdkVersion.NEW_KIN_SDK)
+		externalEarnOrderCall.run()
+		val paymentCaptor = argumentCaptor<Observer<Payment>>()
+		inOrder(orderDataSource, blockchainSource, eventLogger, externalOrderCallbacks).apply {
+			verify(orderDataSource).createExternalOrderSync(orderJwt)
+			verify(eventLogger).send(any<EarnOrderCreationReceived>())
+			verify(blockchainSource).addPaymentObservable(paymentCaptor.capture())
+			verify(blockchainSource).blockchainVersion
+			argumentCaptor<KinCallback<Order>>().apply {
+				verify(orderDataSource).submitEarnOrder(any(), isNull(), any(), capture())
+				firstValue.onResponse(order)
+			}
+			verify(eventLogger).send(any<EarnOrderCompletionSubmitted>())
+			paymentCaptor.firstValue.onChanged(payment)
+			verify(blockchainSource).removePaymentObserver(any())
+			argumentCaptor<KinCallback<Order>>().apply {
+				verify(orderDataSource).getOrder(any(), capture())
+				whenever(order.status).doReturn(Order.Status.COMPLETED)
+				firstValue.onResponse(order)
+
+			}
+			verify(externalOrderCallbacks).onOrderConfirmed(jwtBodyPaymentConfirmationResult.jwt, order)
+		}
+	}
+
 	companion object {
 		private const val orderJwt = "eyJraWQiOiJyczUxMl8xIiwidHlwIjoiand0IiwiYWxnIjoiUlM1MTIifQ.eyJpYXQiOjE1NTkxMzIzNzYsImlzcyI6InNtcGwiLCJleHAiOjE1NTkyMjIzNzYsInN1YiI6ImVhcm4iLCJvZmZlciI6eyJhbW91bnQiOjEwLCJpZCI6IjE4MTkwMCJ9LCJyZWNpcGllbnQiOnsiZGVzY3JpcHRpb24iOiJVcGxvYWQgcHJvZmlsZSBwaWN0dXJlIiwiZGV2aWNlX2lkIjoiNTNmNmM2Zjc5NjEzMWY0NiIsInRpdGxlIjoiUmVjZWl2ZWQgS2luIGZyb20gQXZpc2h5IiwidXNlcl9pZCI6InVzZXJfMTQxNzQ5In19.bY_c-mpDzUPNKOajfnAH4To1-9-tl_IekWHVeCSKMByF3dTUbywu4bOe2drlbX4Grd29fb538TlBCaZSMU9ask7LhVIf7YPoiU-PfkAoX4OWByyKTRp_gVRtsee560O26G-7Bh-5l524mGAJgYsEkvMsojVLcSYwZ9HMZTlVurM"
 		private const val offerId = "181900"
