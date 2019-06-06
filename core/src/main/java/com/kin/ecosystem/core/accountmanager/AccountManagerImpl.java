@@ -1,6 +1,7 @@
 package com.kin.ecosystem.core.accountmanager;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.ObservableData;
@@ -89,6 +90,7 @@ public class AccountManagerImpl implements AccountManager {
 	}
 
 	@Override
+	@Nullable
 	public KinEcosystemException getError() {
 		return error;
 	}
@@ -186,7 +188,7 @@ public class AccountManagerImpl implements AccountManager {
 
 	private void updateWalletAddressProcess(final String address, final int accountIndex,
 		final KinCallback<Boolean> callback) {
-		blockchainSource.getMigrationInfo(address, new Callback<MigrationInfo, ApiException>() {
+		blockchainSource.getMigrationInfo(address, new KinCallback<MigrationInfo>() {
 			@Override
 			public void onResponse(MigrationInfo migrationInfo) {
 				boolean isRestorable = migrationInfo.isRestorable();
@@ -194,17 +196,15 @@ public class AccountManagerImpl implements AccountManager {
 				if (isRestorable) {
 					startMigrationProcess(migrationInfo, address, accountIndex, callback);
 				} else {
-					// TODO: 02/04/2019 is there another normal to send that error to onFailure?
-					onFailure(new ApiException(ServiceException.WALLET_WAS_NOT_CREATED_IN_THIS_APP,
-						ErrorUtil.createWalletWasNotCreatedInThisAppException()));
+					onFailure(ErrorUtil.createWalletWasNotCreatedInThisAppException());
 				}
 			}
 
 			@Override
-			public void onFailure(ApiException exception) {
+			public void onFailure(KinEcosystemException exception) {
 				Logger.log(new Log().priority(Log.ERROR).withTag(TAG).text("getMigrationInfo: onFailure"));
 				deleteRestoredAccount(accountIndex);
-				callback.onFailure(ErrorUtil.fromApiException(exception));
+				callback.onFailure(exception);
 			}
 		});
 	}

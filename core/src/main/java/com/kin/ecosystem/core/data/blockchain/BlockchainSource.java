@@ -25,7 +25,7 @@ public interface BlockchainSource {
 	 * @param publicAddress the address associated with the migration information.
 	 * @param callback a callback for this method call.
 	 */
-	void getMigrationInfo(String publicAddress, Callback<MigrationInfo, ApiException> callback);
+	void getMigrationInfo(String publicAddress, KinCallback<MigrationInfo> callback);
 
 	/**
 	 * Set the migration manager
@@ -42,13 +42,6 @@ public interface BlockchainSource {
 	 * @param listener
 	 */
 	void startMigrationProcess(final MigrationProcessListener listener);
-
-	/**
-	 * Starts the migration process using the migration module for a specific public address
-	 * @param publicAddress
-	 * @param listener
-	 */
-	void startMigrationProcess(final String publicAddress, final MigrationProcessListener listener);
 
 	/**
 	 * Starts the migration process using the migration module for a specific public address and with a migration info object.
@@ -212,8 +205,6 @@ public interface BlockchainSource {
 		KinSdkVersion getBlockchainVersion() throws ApiException; // synced and blocking
 
 		void getBlockchainVersion(@NonNull final Callback<KinSdkVersion, ApiException> callback);
-
-		MigrationInfo getMigrationInfo(String publicAddress)  throws ApiException; // synced and blocking
 
 		void getMigrationInfo(String publicAddress, @NonNull final Callback<MigrationInfo, ApiException> callback);
 

@@ -58,4 +58,8 @@ public class StringUtil {
 	public static boolean isEmpty(String text) {
 		return text == null || text.isEmpty();
 	}
+
+	public static String safeGuardNullString(String text) {
+		return isEmpty(text) ? "null" : text;
+	}
 }
