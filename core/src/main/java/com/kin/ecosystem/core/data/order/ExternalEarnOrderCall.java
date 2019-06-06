@@ -51,17 +51,17 @@ class ExternalEarnOrderCall extends CreateExternalOrderCall {
 	}
 
 	@Override
-	void sendKin2Order(final String orderId, final String offerId, final String address, final BigDecimal amount) {
-		submitOrder(offerId, orderId);
+	void sendKin2Order(final String orderId, final String offerId, final String address, final BigDecimal amount, final String title) {
+		submitOrder(offerId, orderId, title);
 	}
 
 	@Override
-	void sendKin3Order(String orderId, String offerId, String address, BigDecimal amount) {
-		submitOrder(offerId, orderId);
+	void sendKin3Order(String orderId, String offerId, String address, BigDecimal amount, final String title) {
+		submitOrder(offerId, orderId, title);
 	}
 
-	private void submitOrder(final String offerId, final String orderId) {
-		orderRepository.submitEarnOrder(offerId, null, orderId, new KinCallback<Order>() {
+	private void submitOrder(final String offerId, final String orderId, final String title) {
+		orderRepository.submitEarnOrder(offerId, null, orderId, title, new KinCallback<Order>() {
 			@Override
 			public void onResponse(Order order) {
 				onSubmissionSucceed(order.getOrderId());

@@ -55,8 +55,8 @@ class ExternalSpendOrderCall extends CreateExternalOrderCall {
 	}
 
 	@Override
-	void sendKin2Order(final String orderId, final String offerId, final String address, final BigDecimal amount) {
-		orderRepository.submitSpendOrder(offerId, null, orderId, new KinCallback<Order>() {
+	void sendKin2Order(final String orderId, final String offerId, final String address, final BigDecimal amount, final String title) {
+		orderRepository.submitSpendOrder(offerId, null, orderId, title, new KinCallback<Order>() {
 			@Override
 			public void onResponse(Order order) {
 				blockchainSource.sendTransaction(address, amount, orderId, offerId);
@@ -71,12 +71,12 @@ class ExternalSpendOrderCall extends CreateExternalOrderCall {
 	}
 
 	@Override
-	void sendKin3Order(final String orderId,final  String offerId, final String address, final  BigDecimal amount) {
+	void sendKin3Order(final String orderId,final  String offerId, final String address, final  BigDecimal amount, final String title) {
 		try {
 			blockchainSource.signTransaction(address, amount, orderId, offerId, new SignTransactionListener() {
 				@Override
 				public void onTransactionSigned(@NonNull String transaction) {
-					orderRepository.submitSpendOrder(offerId, transaction, orderId, new KinCallback<Order>() {
+					orderRepository.submitSpendOrder(offerId, transaction, orderId, title, new KinCallback<Order>() {
 						@Override
 						public void onResponse(Order order) {
 							onSubmissionSucceed(order.getOrderId());
