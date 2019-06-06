@@ -19,14 +19,13 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import java.math.BigDecimal
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class ExternalEarnOrderCallTest : BaseTestClass() {
 
 	private val orderDataSource: OrderDataSource = mock {
-		on { createExternalOrderSync(any()) } doAnswer { openOrder}
+		on { createExternalOrderSync(any()) } doAnswer { openOrder }
 	}
 	private val blockchainSource: BlockchainSource = mock {
 		on { blockchainVersion } doAnswer { KinSdkVersion.OLD_KIN_SDK }
@@ -35,10 +34,11 @@ class ExternalEarnOrderCallTest : BaseTestClass() {
 	private val externalOrderCallbacks: CreateExternalOrderCall.ExternalOrderCallbacks = mock()
 
 	private val openOrder: OpenOrder = mock {
-		on { offerId } doAnswer  { offerId }
+		on { offerId } doAnswer { offerId }
 		on { id } doAnswer { orderId }
 		on { amount } doAnswer { 10 }
 		on { blockchainData } doAnswer { blockchainData }
+		on { title } doAnswer { "some_title"}
 	}
 
 	private val blockchainData: BlockchainData = mock {
@@ -61,7 +61,6 @@ class ExternalEarnOrderCallTest : BaseTestClass() {
 	private val jwtBodyPaymentConfirmationResult: JWTBodyPaymentConfirmationResult = mock {
 		on { jwt } doAnswer { "jwt_confirmation" }
 	}
-
 
 	private lateinit var externalEarnOrderCall: ExternalEarnOrderCall
 

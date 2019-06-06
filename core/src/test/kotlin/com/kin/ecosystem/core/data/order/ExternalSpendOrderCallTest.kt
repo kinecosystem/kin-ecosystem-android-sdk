@@ -46,6 +46,7 @@ class ExternalSpendOrderCallTest : BaseTestClass() {
 		on { id } doAnswer { orderId }
 		on { amount } doAnswer { 10 }
 		on { blockchainData } doAnswer { blockchainData }
+		on { title } doAnswer { "some_title"}
 	}
 
 	private val blockchainData: BlockchainData = mock {
