@@ -110,13 +110,14 @@ abstract class CreateExternalOrderCall extends Thread {
 		final String offerId = openOrder.getOfferId();
 		final BigDecimal amount = new BigDecimal(openOrder.getAmount());
 		final String address = openOrder.getBlockchainData().getRecipientAddress();
+		final String title = openOrder.getTitle();
 
 		createPaymentObserver(offerId, orderId);
 		blockchainSource.addPaymentObservable(paymentObserver);
 		if (blockchainSource.getBlockchainVersion() == KinSdkVersion.NEW_KIN_SDK) {
-			sendKin3Order(orderId, offerId, address, amount);
+			sendKin3Order(orderId, offerId, address, amount , title);
 		} else {
-			sendKin2Order(orderId, offerId, address, amount);
+			sendKin2Order(orderId, offerId, address, amount, title);
 		}
 
 		sendCompletionSubmittedEvent(offerId, orderId);
@@ -151,7 +152,7 @@ abstract class CreateExternalOrderCall extends Thread {
 		};
 	}
 
-	abstract void sendKin2Order(final String orderId, final String offerId, final String address, final BigDecimal amount);
+	abstract void sendKin2Order(final String orderId, final String offerId, final String address, final BigDecimal amount, final String title);
 
 	void onSubmissionSucceed(final String orderId) {
 		scheduleTimeoutTimer(orderId);
@@ -162,7 +163,7 @@ abstract class CreateExternalOrderCall extends Thread {
 		onOrderFailed(offerId, orderId, e);
 	}
 
-	abstract void sendKin3Order(final String orderId, final String offerId, final String address, final BigDecimal amount);
+	abstract void sendKin3Order(final String orderId, final String offerId, final String address, final BigDecimal amount, final String title);
 
 	private void scheduleTimeoutTimer(final String orderId) {
 		sseTimeoutTimer.schedule(new TimerTask() {

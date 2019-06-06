@@ -163,18 +163,18 @@ public class OrderRepository implements OrderDataSource {
 	}
 
 	@Override
-	public void submitEarnOrder(@NonNull final String offerID, @Nullable String content, @NonNull final String orderID,
+	public void submitEarnOrder(@NonNull final String offerID, @Nullable String content, @NonNull final String orderID, final String title,
 		@Nullable final KinCallback<Order> callback) {
 		listenForCompletedPayment();
-		remoteData.submitEarnOrder(content, orderID, createSubmitOrderCallback(callback, orderID, offerID));
+		remoteData.submitEarnOrder(content, orderID, createSubmitOrderCallback(callback, orderID, offerID, title, OfferType.EARN));
 	}
 
 	@Override
 	public void submitSpendOrder(@NonNull final String offerID, @Nullable String transaction,
-		@NonNull final String orderID,
+		@NonNull final String orderID, final String title,
 		@Nullable final KinCallback<Order> callback) {
 		listenForCompletedPayment();
-		remoteData.submitSpendOrder(transaction, orderID, createSubmitOrderCallback(callback, orderID, offerID));
+		remoteData.submitSpendOrder(transaction, orderID, createSubmitOrderCallback(callback, orderID, offerID, title, OfferType.SPEND));
 	}
 
 	@Override
@@ -235,7 +235,7 @@ public class OrderRepository implements OrderDataSource {
 	}
 
 	private Callback<Order, ApiException> createSubmitOrderCallback(final KinCallback<Order> callback,
-		final String orderID, final String offerID) {
+		final String orderID, final String offerID, final String title, final OfferType offerType) {
 		return new Callback<Order, ApiException>() {
 			@Override
 			public void onResponse(Order response) {
@@ -248,8 +248,7 @@ public class OrderRepository implements OrderDataSource {
 
 			@Override
 			public void onFailure(ApiException e) {
-				//TODO should not be executed at all, the order is not pending
-				getOrderWatcher().postValue(new Order().orderId(orderID).offerId(offerID).status(Status.FAILED).error(e.getResponseBody()));
+				getOrderWatcher().postValue(new Order().title(title).offerType(offerType).orderId(orderID).offerId(offerID).status(Status.FAILED));
 				removeCachedOpenOrderByID(orderID);
 				if (callback != null) {
 					callback.onFailure(ErrorUtil.fromApiException(e));

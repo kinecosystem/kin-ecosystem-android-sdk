@@ -24,7 +24,10 @@ class PollWebViewPresenter(private val pollJsonString: String, private val offer
     private var isOrderSubmitted = false
 
     private val orderId: String
-        get() = if (openOrder != null) openOrder!!.id else "null"
+        get() = openOrder?.id ?: "null"
+
+    private val offerTitle: String
+        get() = openOrder?.title ?: "Transaction"
 
     override fun onAttach(view: IPollWebView) {
         super.onAttach(view)
@@ -101,7 +104,7 @@ class PollWebViewPresenter(private val pollJsonString: String, private val offer
             isOrderSubmitted = true
             val orderId = openOrder.id
             eventLogger.send(EarnOrderCompletionSubmitted.create(offerID, orderId, EarnOrderCompletionSubmitted.Origin.MARKETPLACE))
-            orderRepository.submitEarnOrder(offerID, result, orderId, object : KinCallback<Order> {
+            orderRepository.submitEarnOrder(offerID, result, orderId, offerTitle ,object : KinCallback<Order> {
                 override fun onResponse(response: Order) {}
 
                 override fun onFailure(exception: KinEcosystemException) {
