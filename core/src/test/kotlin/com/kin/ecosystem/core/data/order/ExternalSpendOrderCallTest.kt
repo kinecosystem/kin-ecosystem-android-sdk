@@ -89,7 +89,7 @@ class ExternalSpendOrderCallTest : BaseTestClass() {
 			verify(blockchainSource).addPaymentObservable(paymentCaptor.capture())
 			verify(blockchainSource).blockchainVersion
 			argumentCaptor<KinCallback<Order>>().apply {
-				verify(orderDataSource).submitSpendOrder(any(), isNull(), any(), capture())
+				verify(orderDataSource).submitSpendOrder(any(), isNull(), any(), any(), capture())
 				firstValue.onResponse(order)
 			}
 
@@ -122,7 +122,7 @@ class ExternalSpendOrderCallTest : BaseTestClass() {
 			signTransactionCaptor.firstValue.onTransactionSigned(transactionId)
 			verify(eventLogger).send(any<SpendOrderCompletionSubmitted>())
 			argumentCaptor<KinCallback<Order>>().apply {
-				verify(orderDataSource).submitSpendOrder(any(), any(), any(), capture())
+				verify(orderDataSource).submitSpendOrder(any(), any(), any(), any(),capture())
 				firstValue.onResponse(order)
 			}
 

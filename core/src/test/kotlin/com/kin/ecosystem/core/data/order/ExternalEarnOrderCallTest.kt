@@ -81,7 +81,7 @@ class ExternalEarnOrderCallTest : BaseTestClass() {
 			verify(blockchainSource).addPaymentObservable(paymentCaptor.capture())
 			verify(blockchainSource).blockchainVersion
 			argumentCaptor<KinCallback<Order>>().apply {
-				verify(orderDataSource).submitEarnOrder(any(), isNull(), any(), capture())
+				verify(orderDataSource).submitEarnOrder(any(), isNull(), any(), any(), capture())
 				firstValue.onResponse(order)
 			}
 			verify(eventLogger).send(any<EarnOrderCompletionSubmitted>())
@@ -108,7 +108,7 @@ class ExternalEarnOrderCallTest : BaseTestClass() {
 			verify(blockchainSource).addPaymentObservable(paymentCaptor.capture())
 			verify(blockchainSource).blockchainVersion
 			argumentCaptor<KinCallback<Order>>().apply {
-				verify(orderDataSource).submitEarnOrder(any(), isNull(), any(), capture())
+				verify(orderDataSource).submitEarnOrder(any(), isNull(), any(), any(), capture())
 				firstValue.onResponse(order)
 			}
 			verify(eventLogger).send(any<EarnOrderCompletionSubmitted>())
