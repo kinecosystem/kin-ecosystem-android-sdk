@@ -527,6 +527,11 @@ public class OrderRepository implements OrderDataSource {
 	@Override
 	public void logout() {
 		cachedOrderList = null;
+		getOrderWatcher().removeAllObservers();
+		cachedOpenOrder.removeAllObservers();
+		getOrderWatcher().postValue(null);
+		cachedOpenOrder.postValue(null);
+
 	}
 
 	private void decrementCount() {
