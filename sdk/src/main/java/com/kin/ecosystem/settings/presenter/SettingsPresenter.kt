@@ -2,7 +2,6 @@ package com.kin.ecosystem.settings.presenter
 
 import android.content.Intent
 import com.kin.ecosystem.base.BaseFragmentPresenter
-import com.kin.ecosystem.base.BasePresenter
 import com.kin.ecosystem.common.Observer
 import com.kin.ecosystem.common.exception.ClientException
 import com.kin.ecosystem.common.model.Balance
@@ -11,7 +10,11 @@ import com.kin.ecosystem.core.Logger
 import com.kin.ecosystem.core.bi.EventLogger
 import com.kin.ecosystem.core.bi.RecoveryBackupEvents
 import com.kin.ecosystem.core.bi.RecoveryRestoreEvents
-import com.kin.ecosystem.core.bi.events.*
+import com.kin.ecosystem.core.bi.events.APageViewed
+import com.kin.ecosystem.core.bi.events.BackupWalletFailed
+import com.kin.ecosystem.core.bi.events.ContinueButtonTapped
+import com.kin.ecosystem.core.bi.events.PageCloseTapped
+import com.kin.ecosystem.core.data.auth.AuthDataSource
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource
 import com.kin.ecosystem.core.data.settings.SettingsDataSource
 import com.kin.ecosystem.main.INavigator
@@ -24,6 +27,7 @@ import com.kin.ecosystem.settings.view.ISettingsView.Item
 import java.math.BigDecimal
 
 class SettingsPresenter(private val settingsDataSource: SettingsDataSource,
+                        private val authDataSource: AuthDataSource,
                         private val blockchainSource: BlockchainSource,
                         private var backupManager: BackupManager,
                         navigator: INavigator?,
@@ -87,6 +91,7 @@ class SettingsPresenter(private val settingsDataSource: SettingsDataSource,
                 changeIconColor(Item.ITEM_BACKUP, IconColor.PRIMARY)
                 changeTouchIndicator(Item.ITEM_BACKUP, false)
             }
+            changeTouchIndicator(Item.ITEM_TRANSFER, !settingsDataSource.hasSeenTransfer(authDataSource.ecosystemUserID))
         }
     }
 
@@ -105,6 +110,11 @@ class SettingsPresenter(private val settingsDataSource: SettingsDataSource,
         } catch (e: ClientException) {
             // Could not happen in this case.
         }
+    }
+
+    override fun transferClicked() {
+        settingsDataSource.setSeenTransfer(authDataSource.ecosystemUserID)
+        //TODO
     }
 
     override fun restoreClicked() {

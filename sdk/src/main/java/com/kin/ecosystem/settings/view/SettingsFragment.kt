@@ -1,9 +1,9 @@
 package com.kin.ecosystem.settings.view
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.ColorRes
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
@@ -14,6 +14,7 @@ import com.kin.ecosystem.R
 import com.kin.ecosystem.base.KinEcosystemBaseFragment
 import com.kin.ecosystem.core.accountmanager.AccountManagerImpl
 import com.kin.ecosystem.core.bi.EventLoggerImpl
+import com.kin.ecosystem.core.data.auth.AuthRepository
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl
 import com.kin.ecosystem.core.data.internal.ConfigurationImpl
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceImpl
@@ -28,15 +29,15 @@ class SettingsFragment : KinEcosystemBaseFragment<ISettingsPresenter, ISettingsV
 
     private lateinit var backupItem: SettingsItem
     private lateinit var restoreItem: SettingsItem
+    private lateinit var transferItem: SettingsItem
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.kinecosystem_activity_settings, container, false)
         initViews(root)
-        val settingsDataSource = SettingsDataSourceImpl(
-                SettingsDataSourceLocal(context))
-        presenter = SettingsPresenter(settingsDataSource, BlockchainSourceImpl.getInstance(),
-                BackupManagerImpl(activity, AccountManagerImpl.getInstance(), EventLoggerImpl.getInstance(),
-                        BlockchainSourceImpl.getInstance(), settingsDataSource, ConfigurationImpl.getInstance()), navigator ,EventLoggerImpl.getInstance())
+        val settingsDataSource = SettingsDataSourceImpl(SettingsDataSourceLocal(context!!))
+        presenter = SettingsPresenter(settingsDataSource, AuthRepository.getInstance(), BlockchainSourceImpl.getInstance(),
+                BackupManagerImpl(activity as Activity, AccountManagerImpl.getInstance(), EventLoggerImpl.getInstance(),
+                        BlockchainSourceImpl.getInstance(), settingsDataSource, ConfigurationImpl.getInstance()), navigator, EventLoggerImpl.getInstance())
         presenter?.onAttach(this@SettingsFragment)
         return root
     }
@@ -49,6 +50,9 @@ class SettingsFragment : KinEcosystemBaseFragment<ISettingsPresenter, ISettingsV
             setOnClickListener(this@SettingsFragment)
         }
         restoreItem = root.findViewById<SettingsItem>(R.id.restore_prev_wallet).apply {
+            setOnClickListener(this@SettingsFragment)
+        }
+        transferItem = root.findViewById<SettingsItem>(R.id.transfer_kin).apply {
             setOnClickListener(this@SettingsFragment)
         }
     }
@@ -71,14 +75,15 @@ class SettingsFragment : KinEcosystemBaseFragment<ISettingsPresenter, ISettingsV
 
     override fun onClick(v: View) {
         val vId = v.id
-        when(vId) {
+        when (vId) {
             R.id.back_btn -> presenter?.backClicked()
             R.id.keep_your_kin_safe -> presenter?.backupClicked()
             R.id.restore_prev_wallet -> presenter?.restoreClicked()
+            R.id.transfer_kin -> presenter?.transferClicked()
         }
     }
 
-    override fun setIconColor(item: ISettingsView.Item , color: ISettingsView.IconColor) {
+    override fun setIconColor(item: ISettingsView.Item, color: ISettingsView.IconColor) {
         getSettingsItem(item)?.let {
             @ColorRes val colorRes = getColorRes(color)
             if (colorRes != -1) {
@@ -87,7 +92,7 @@ class SettingsFragment : KinEcosystemBaseFragment<ISettingsPresenter, ISettingsV
         }
     }
 
-    override fun changeTouchIndicatorVisibility(item: ISettingsView.Item , isVisible: Boolean) {
+    override fun changeTouchIndicatorVisibility(item: ISettingsView.Item, isVisible: Boolean) {
         val settingsItem = getSettingsItem(item)
         settingsItem?.setTouchIndicatorVisibility(isVisible)
     }
@@ -100,6 +105,7 @@ class SettingsFragment : KinEcosystemBaseFragment<ISettingsPresenter, ISettingsV
         return when (item) {
             ISettingsView.Item.ITEM_BACKUP -> backupItem
             ISettingsView.Item.ITEM_RESTORE -> restoreItem
+            ISettingsView.Item.ITEM_TRANSFER -> transferItem
         }
     }
 

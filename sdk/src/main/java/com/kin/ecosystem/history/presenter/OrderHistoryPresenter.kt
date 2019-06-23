@@ -11,6 +11,7 @@ import com.kin.ecosystem.core.bi.EventLogger
 import com.kin.ecosystem.core.bi.events.APageViewed
 import com.kin.ecosystem.core.bi.events.ContinueButtonTapped
 import com.kin.ecosystem.core.bi.events.PageCloseTapped
+import com.kin.ecosystem.core.data.auth.AuthDataSource
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource
 import com.kin.ecosystem.core.data.order.OrderDataSource
 import com.kin.ecosystem.core.data.settings.SettingsDataSource
@@ -27,6 +28,7 @@ import java.math.BigDecimal
 class OrderHistoryPresenter(private val orderRepository: OrderDataSource,
                             private val blockchainSource: BlockchainSource,
                             private val settingsDataSource: SettingsDataSource,
+                            private val authDataSource: AuthDataSource,
                             navigator: INavigator?,
                             private val eventLogger: EventLogger) : BaseFragmentPresenter<IOrderHistoryView>(navigator), IOrderHistoryPresenter {
 
@@ -259,10 +261,10 @@ class OrderHistoryPresenter(private val orderRepository: OrderDataSource,
                         removeBalanceObserver()
                     } else {
                         addBalanceObserver()
-                        view?.showMenuTouchIndicator(false)
+                        view?.showMenuTouchIndicator(!settingsDataSource.hasSeenTransfer(authDataSource.ecosystemUserID))
                     }
                 } else {
-                    view?.showMenuTouchIndicator(false)
+                    view?.showMenuTouchIndicator(!settingsDataSource.hasSeenTransfer(authDataSource.ecosystemUserID))
                 }
             }
         }

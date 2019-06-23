@@ -28,7 +28,7 @@ public class KinDashView extends View {
             dashLength = styledAttributes.getDimensionPixelSize(R.styleable.KinEcosystemDashView_dashLength, 5);
             dashThickness = styledAttributes.getDimensionPixelSize(R.styleable.KinEcosystemDashView_dashThickness, 3);
             color = styledAttributes.getColor(R.styleable.KinEcosystemDashView_color, 0xff000000);
-            orientation = styledAttributes.getInt(R.styleable.KinEcosystemDashView_orientation, ORIENTATION_HORIZONTAL);
+            orientation = styledAttributes.getInt(R.styleable.KinEcosystemDashView_orientationValue, ORIENTATION_HORIZONTAL);
         } finally {
             styledAttributes.recycle();
         }
