@@ -7,6 +7,7 @@
         <item name="menuSettingsIcon" >@drawable/kinecosystem_ic_settings</item>
         <item name="settingsBackupIcon">@drawable/kinecosystem_ic_backup</item>
         <item name="settingsRestoreIcon">@drawable/kinecosystem_ic_restore</item>
+        <item name="settingsKinTransferIcon">@drawable/kinecosystem_ic_kin_transfer</item>
         <item name="tabDeselectedBackgroundColor">@color/kinecosystem_tab_deselected_background_light</item>
         <item name="offerBackground">@drawable/kinecosystem_offer_item_bg_light</item>
         <item name="separatorColor">@color/settings_separator_light</item>
@@ -19,6 +20,7 @@
         <item name="menuSettingsIcon" >@drawable/kinecosystem_ic_settings_dark</item>
         <item name="settingsBackupIcon">@drawable/kinecosystem_ic_backup_dark</item>
         <item name="settingsRestoreIcon">@drawable/kinecosystem_ic_restore_dark</item>
+        <item name="settingsKinTransferIcon">@drawable/kinecosystem_ic_kin_transfer_dark</item>
         <item name="tabDeselectedBackgroundColor">@color/kinecosystem_tab_deselected_background_dark</item>
         <item name="offerBackground">@drawable/kinecosystem_offer_item_bg_dark</item>
         <item name="separatorColor">@color/settings_separator_dark</item>

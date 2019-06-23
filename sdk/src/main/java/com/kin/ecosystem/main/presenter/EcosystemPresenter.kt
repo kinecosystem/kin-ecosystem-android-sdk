@@ -61,7 +61,7 @@ class EcosystemPresenter(private val authDataSource: AuthDataSource,
     override fun onAttach(view: IEcosystemView) {
         super.onAttach(view)
         val kinUserId = authDataSource.ecosystemUserID
-        if (!settingsDataSource.isSawOnboarding(kinUserId)) {
+        if (!settingsDataSource.hasSeenOnboarding(kinUserId)) {
             navigateToVisibleScreen(ScreenId.ONBOARDING)
         } else {
             if (experience == EcosystemExperience.ORDER_HISTORY) {

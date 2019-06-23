@@ -13,6 +13,7 @@ import com.kin.ecosystem.R
 import com.kin.ecosystem.base.KinEcosystemBaseFragment
 import com.kin.ecosystem.common.exception.ClientException
 import com.kin.ecosystem.core.bi.EventLoggerImpl
+import com.kin.ecosystem.core.data.auth.AuthRepository
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl
 import com.kin.ecosystem.core.data.offer.OfferRepository
 import com.kin.ecosystem.core.data.order.OrderRepository
@@ -40,7 +41,8 @@ class MarketplaceFragment : KinEcosystemBaseFragment<IMarketplacePresenter, IMar
         presenter = MarketplacePresenter(OfferRepository.getInstance(),
                 OrderRepository.getInstance(),
                 BlockchainSourceImpl.getInstance(),
-                SettingsDataSourceImpl(SettingsDataSourceLocal(context)),
+                SettingsDataSourceImpl(SettingsDataSourceLocal(context!!)),
+                AuthRepository.getInstance(),
                 navigator,
                 EventLoggerImpl.getInstance())
         presenter?.onAttach(this@MarketplaceFragment)
@@ -86,12 +88,14 @@ class MarketplaceFragment : KinEcosystemBaseFragment<IMarketplacePresenter, IMar
     }
 
     override fun showOfferActivity(pollBundle: PollBundle) {
-        try {
-            val intent = PollWebViewActivity.createIntent(context, pollBundle)
-            startActivity(intent)
-            activity.overridePendingTransition(R.anim.kinecosystem_slide_in_right, R.anim.kinecosystem_slide_out_left)
-        } catch (e: ClientException) {
-            presenter?.showOfferActivityFailed()
+        context?.let {
+            try {
+                val intent = PollWebViewActivity.createIntent(it, pollBundle)
+                startActivity(intent)
+                activity?.overridePendingTransition(R.anim.kinecosystem_slide_in_right, R.anim.kinecosystem_slide_out_left)
+            } catch (e: ClientException) {
+                presenter?.showOfferActivityFailed()
+            }
         }
     }
 
@@ -128,7 +132,9 @@ class MarketplaceFragment : KinEcosystemBaseFragment<IMarketplacePresenter, IMar
     }
 
     override fun setupEmptyItemView() {
-        offersRecyclerAdapter.setEmptyView(OffersEmptyView(context))
+        context?.let {
+            offersRecyclerAdapter.setEmptyView(OffersEmptyView(it))
+        }
     }
 
     override fun notifyOfferItemRemoved(index: Int) {
