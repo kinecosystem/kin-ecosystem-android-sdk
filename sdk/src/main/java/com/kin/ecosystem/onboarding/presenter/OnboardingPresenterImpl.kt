@@ -5,7 +5,6 @@ import com.kin.ecosystem.EcosystemExperience
 import com.kin.ecosystem.Kin.KEY_ECOSYSTEM_EXPERIENCE
 import com.kin.ecosystem.R
 import com.kin.ecosystem.base.BaseFragmentPresenter
-import com.kin.ecosystem.base.BasePresenter
 import com.kin.ecosystem.base.customAnimation
 import com.kin.ecosystem.common.Observer
 import com.kin.ecosystem.core.Log
@@ -28,7 +27,7 @@ class OnboardingPresenterImpl(private val accountManager: AccountManager,
                               private val settingsDataSource: SettingsDataSource,
                               navigator: INavigator?,
                               private val eventLogger: EventLogger,
-                              private val timer: Timer, extras: Bundle) : BaseFragmentPresenter<IOnboardingView>(navigator), OnboardingPresenter {
+                              private val timer: Timer, extras: Bundle?) : BaseFragmentPresenter<IOnboardingView>(navigator), OnboardingPresenter {
 
     @EcosystemExperience
     private val nextExperience: Int
