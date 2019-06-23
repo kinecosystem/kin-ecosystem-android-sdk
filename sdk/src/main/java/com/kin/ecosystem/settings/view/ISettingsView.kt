@@ -6,7 +6,8 @@ interface ISettingsView : IBaseView {
 
     enum class Item {
         ITEM_BACKUP,
-        ITEM_RESTORE
+        ITEM_RESTORE,
+        ITEM_TRANSFER
     }
 
     enum class IconColor {
