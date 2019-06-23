@@ -22,6 +22,7 @@ import com.kin.ecosystem.R
 import com.kin.ecosystem.base.KinEcosystemBaseFragment
 import com.kin.ecosystem.base.widget.withActions
 import com.kin.ecosystem.core.bi.EventLoggerImpl
+import com.kin.ecosystem.core.data.auth.AuthRepository
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl
 import com.kin.ecosystem.core.data.order.OrderRepository
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceImpl
@@ -50,9 +51,9 @@ open class OrderHistoryFragment : KinEcosystemBaseFragment<IOrderHistoryPresente
         val root = inflater.inflate(R.layout.kinecosystem_fragment_order_history, container, false)
         initColors()
         initViews(root)
-        presenter = OrderHistoryPresenter(OrderRepository.getInstance(), BlockchainSourceImpl.getInstance(),
-                SettingsDataSourceImpl(SettingsDataSourceLocal(context)), navigator, EventLoggerImpl.getInstance())
-        presenter?.onAttach(this@OrderHistoryFragment)
+            presenter = OrderHistoryPresenter(OrderRepository.getInstance(), BlockchainSourceImpl.getInstance(),
+                    SettingsDataSourceImpl(SettingsDataSourceLocal(context!!)), AuthRepository.getInstance() , navigator, EventLoggerImpl.getInstance())
+            presenter?.onAttach(this@OrderHistoryFragment)
         return root
     }
 
@@ -104,13 +105,13 @@ open class OrderHistoryFragment : KinEcosystemBaseFragment<IOrderHistoryPresente
 
     private fun initColors() {
         if (colorOrange == NOT_INITIALIZED) {
-            colorOrange = ContextCompat.getColor(context, R.color.kinecosystem_orange)
+            colorOrange = ContextCompat.getColor(context!!, R.color.kinecosystem_orange)
         }
         if (colorPrimary == NOT_INITIALIZED) {
-            colorPrimary = com.kin.ecosystem.base.ThemeUtil.themeAttributeToColor(context, R.attr.primaryTextColor, R.color.kinecosystem_subtitle_gray)
+            colorPrimary = com.kin.ecosystem.base.ThemeUtil.themeAttributeToColor(context!!, R.attr.primaryTextColor, R.color.kinecosystem_subtitle_gray)
         }
         if (colorFailed == NOT_INITIALIZED) {
-            colorFailed = ContextCompat.getColor(context, R.color.kinecosystem_failed)
+            colorFailed = ContextCompat.getColor(context!!, R.color.kinecosystem_failed)
         }
     }
 

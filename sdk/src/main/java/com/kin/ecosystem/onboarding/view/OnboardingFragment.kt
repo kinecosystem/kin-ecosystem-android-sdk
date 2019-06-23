@@ -38,7 +38,7 @@ class OnboardingFragment : KinEcosystemBaseFragment<OnboardingPresenter, IOnboar
         val root = inflater.inflate(R.layout.kinecosystem_fragment_onboarding, container, false)
         presenter = OnboardingPresenterImpl(AccountManagerImpl.getInstance(),
                 AuthRepository.getInstance(),
-                SettingsDataSourceImpl(SettingsDataSourceLocal(context.applicationContext)),
+                SettingsDataSourceImpl(SettingsDataSourceLocal(context!!.applicationContext)),
                 navigator, EventLoggerImpl.getInstance(), Timer(), arguments)
         presenter?.onAttach(this)
         initViews(root)
@@ -78,7 +78,7 @@ class OnboardingFragment : KinEcosystemBaseFragment<OnboardingPresenter, IOnboar
 
     @SuppressLint("NewApi")
     override fun stopLoading(reset: Boolean) {
-        activity.runOnUiThread {
+        activity?.runOnUiThread {
             with(loadingText) {
                 animate().alpha(AnimConsts.Value.ALPHA_0)
                         .setDuration(AnimConsts.Duration.FADE_ANIM)
@@ -102,7 +102,7 @@ class OnboardingFragment : KinEcosystemBaseFragment<OnboardingPresenter, IOnboar
     }
 
     override fun showToast(msg: OnboardingPresenter.Message) {
-        activity.runOnUiThread {
+        activity?.runOnUiThread {
             Toast.makeText(context, getMessageResId(msg), Toast.LENGTH_SHORT).show()
         }
     }
@@ -122,7 +122,7 @@ class OnboardingFragment : KinEcosystemBaseFragment<OnboardingPresenter, IOnboar
 
     companion object {
 
-        fun getInstance(extras: Bundle, navigator: INavigator): OnboardingFragment {
+        fun getInstance(extras: Bundle?, navigator: INavigator): OnboardingFragment {
             return OnboardingFragment().apply {
                 this.arguments = extras
                 this.navigator = navigator
