@@ -6,9 +6,13 @@ interface SettingsDataSource {
 
     fun isBackedUp(publicAddress: String): Boolean
 
+    fun hasSeenTransfer(kinUserId: String): Boolean
+
+    fun setSeenTransfer(kinUserId: String)
+
     fun setSawOnboarding(kinUserId: String)
 
-    fun isSawOnboarding(kinUserId: String) : Boolean
+    fun hasSeenOnboarding(kinUserId: String) : Boolean
 
     interface Local {
 
@@ -16,8 +20,12 @@ interface SettingsDataSource {
 
         fun isBackedUp(publicAddress: String): Boolean
 
-        fun setSawOnboarding(kinUserId: String)
+        fun setSeenOnboarding(kinUserId: String)
 
-        fun isSawOnboarding(kinUserId: String) : Boolean
+        fun hasSeenOnboarding(kinUserId: String) : Boolean
+
+        fun setSeenTransfer(kinUserId: String)
+
+        fun hasSeenTransfer(kinUserId: String) : Boolean
     }
 }

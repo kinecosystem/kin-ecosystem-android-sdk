@@ -6,6 +6,7 @@
         <attr format="integer" name="menuSettingsIcon"/>
         <attr format="integer" name="settingsBackupIcon"/>
         <attr format="integer" name="settingsRestoreIcon"/>
+        <attr format="integer" name="settingsKinTransferIcon"/>
         <attr format="color" name="tabDeselectedBackgroundColor"/>
         <attr format="integer" name="offerBackground"/>
         <attr format="color" name="separatorColor"/>
@@ -18,7 +19,7 @@
         <attr format="dimension" name="dashLength"/>
         <attr format="dimension" name="dashGap"/>
         <attr format="dimension" name="dashThickness"/>
-        <attr format="enum" name="orientation">
+        <attr format="enum" name="orientationValue">
             <enum name="horizontal" value="0"/>
             <enum name="vertical" value="1"/>
         </attr>

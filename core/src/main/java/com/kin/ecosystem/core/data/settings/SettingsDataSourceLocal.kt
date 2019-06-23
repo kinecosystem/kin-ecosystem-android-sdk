@@ -19,12 +19,20 @@ class SettingsDataSourceLocal(context: Context) : SettingsDataSource.Local {
         return settingsDataSourceSharedPref.getBoolean(IS_BACKED_UP_KEY + publicAddress, false)
     }
 
-    override fun setSawOnboarding(kinUserId: String) {
+    override fun setSeenOnboarding(kinUserId: String) {
         settingsDataSourceSharedPref.edit().putBoolean(kinUserId, true).apply()
     }
 
-    override fun isSawOnboarding(kinUserId: String): Boolean {
+    override fun hasSeenOnboarding(kinUserId: String): Boolean {
         return settingsDataSourceSharedPref.getBoolean(kinUserId, false)
+    }
+
+    override fun setSeenTransfer(kinUserId: String) {
+        settingsDataSourceSharedPref.edit().putBoolean(SEEN_TRANSFER_KEY + kinUserId, true).apply()
+    }
+
+    override fun hasSeenTransfer(kinUserId: String): Boolean {
+        return settingsDataSourceSharedPref.getBoolean(SEEN_TRANSFER_KEY + kinUserId, false)
     }
 
     companion object {
@@ -32,5 +40,8 @@ class SettingsDataSourceLocal(context: Context) : SettingsDataSource.Local {
         private const val SETTINGS_PREF_NAME_FILE_KEY = "kinecosystem_settings_data_source"
 
         private const val IS_BACKED_UP_KEY = "backed_up_key"
+
+        private const val SEEN_TRANSFER_KEY = "seen_transfer_key"
+
     }
 }

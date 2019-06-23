@@ -23,7 +23,7 @@ class NotEnoughKinFragment : KinEcosystemBaseFragment<INotEnoughKinPresenter, IN
 		initViews(root)
 		presenter = NotEnoughKinPresenter(navigator, EventLoggerImpl.getInstance(),
 				AuthRepository.getInstance(),
-				SettingsDataSourceImpl(SettingsDataSourceLocal(context)))
+				SettingsDataSourceImpl(SettingsDataSourceLocal(context!!)))
 		return root
 	}
 
