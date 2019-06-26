@@ -33,6 +33,9 @@ dependencies {
     implementation devDependencies.constraintLayout
     implementation devDependencies.picasso
     implementation devDependencies.kotlin
+    implementation ('org.kin.ecosystem.appreciation.options.menu:ui:1.0.0') {
+        transitive = false
+    }
 
     testImplementation project(':test-base')
     testImplementation testingDependencies.junit

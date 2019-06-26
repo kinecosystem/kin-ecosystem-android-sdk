@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.ecosystem.kin.app.BuildConfig;
 import com.ecosystem.kin.app.JwtUtil;
+import com.ecosystem.kin.app.KinJwtProvider;
 import com.ecosystem.kin.app.R;
 import com.ecosystem.kin.app.login.LoginActivity;
 import com.ecosystem.kin.app.model.SignInRepo;
@@ -33,6 +34,7 @@ import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.Observer;
+import com.kin.ecosystem.common.Subscription;
 import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.exception.ServiceException;
@@ -42,13 +44,13 @@ import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.NativeSpendOfferBuilder;
 import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.common.model.UserStats;
+import com.kin.ecosystem.gifting.GiftingManager;
 import com.kin.ecosystem.recovery.BackupAndRestore;
 import com.kin.ecosystem.recovery.BackupAndRestoreCallback;
 import com.kin.ecosystem.recovery.exception.BackupAndRestoreException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -81,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
 	private NativeOffer nativeEarnOffer;
 
 	private BackupAndRestore backupAndRestore;
+	private GiftingManager giftingManager;
+	private Subscription<OrderConfirmation> giftingOrderConfirmation;
 
 	private NativeOffer getNativeSpendOffer() {
 		return new NativeSpendOfferBuilder(String.valueOf(getRandomID()))
@@ -107,6 +111,9 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		userID = SignInRepo.getUserId(getApplicationContext());
+		deviceID = SignInRepo.getDeviceId(getApplicationContext());
 
 		try {
 			backupAndRestore = Kin.getBackupAndRestoreManager(this);
@@ -135,8 +142,6 @@ public class MainActivity extends AppCompatActivity {
 			e.printStackTrace();
 		}
 
-		userID = SignInRepo.getUserId(getApplicationContext());
-		deviceID = SignInRepo.getDeviceId(getApplicationContext());
 		containerLayout = findViewById(R.id.container);
 		balanceView = findViewById(R.id.get_balance);
 		nativeSpendTextView = findViewById(R.id.native_spend_button);
@@ -584,30 +589,35 @@ public class MainActivity extends AppCompatActivity {
 		payToUserDialog.setOnDismissListener(new OnDismissListener() {
 			@Override
 			public void onDismiss(DialogInterface dialog) {
-				if (payToUserDialog.getUserId() != null) {
-					showSnackbar("Pay to user flow started", false);
-					final String userId = payToUserDialog.getUserId();
-					try {
-						Kin.hasAccount(userId, new KinCallback<Boolean>() {
-							@Override
-							public void onResponse(Boolean hasAccount) {
-								if (hasAccount != null && hasAccount) {
-									createPayToUserOffer(userId);
-								} else {
-									showSnackbar("Account not found", true);
+				final String userId = payToUserDialog.getRecipientId();
+				if (userId != null) {
+					if (payToUserDialog.getOpenGifting()) {
+						enableView(v, true);
+						openGiftingDialog(userId);
+					} else {
+						showSnackbar("Pay to user flow started", false);
+						try {
+							Kin.hasAccount(userId, new KinCallback<Boolean>() {
+								@Override
+								public void onResponse(Boolean hasAccount) {
+									if (hasAccount != null && hasAccount) {
+										createPayToUserOffer(userId);
+									} else {
+										showSnackbar("Account not found", true);
+										enableView(v, true);
+									}
+								}
+
+								@Override
+								public void onFailure(KinEcosystemException exception) {
+									showSnackbar("Failed - " + exception.getMessage(), true);
 									enableView(v, true);
 								}
-							}
-
-							@Override
-							public void onFailure(KinEcosystemException exception) {
-								showSnackbar("Failed - " + exception.getMessage(), true);
-								enableView(v, true);
-							}
-						});
-					} catch (ClientException e) {
-						showSnackbar("ClientException  " + e.getMessage(), true);
-						e.printStackTrace();
+							});
+						} catch (ClientException e) {
+							showSnackbar("ClientException  " + e.getMessage(), true);
+							e.printStackTrace();
+						}
 					}
 
 				} else {
@@ -616,6 +626,41 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 		payToUserDialog.show();
+	}
+
+	private void openGiftingDialog(String recipientId) {
+		try {
+			giftingOrderConfirmation = getGiftingManager().addOrderConfirmationObserver(
+				new Observer<OrderConfirmation>() {
+					@Override
+					public void onChanged(OrderConfirmation confirmation) {
+						switch(confirmation.getStatus()) {
+							case COMPLETED:
+								showSnackbar("Gifting Succeed", false);
+								Log.d(TAG, "Jwt confirmation: \n" + confirmation.getJwtConfirmation());
+								getBalance();
+								break;
+							case FAILED:
+								showSnackbar("Gifting Failed: " + confirmation.getException().getMessage(), true);
+								confirmation.getException().printStackTrace();
+								break;
+						}
+						if (giftingOrderConfirmation != null) {
+							giftingOrderConfirmation.remove();
+						}
+					}
+				});
+			getGiftingManager().showDialog(this, recipientId);
+		} catch (ClientException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private GiftingManager getGiftingManager() throws ClientException {
+		if (giftingManager == null) {
+			giftingManager = Kin.getGiftingManager(new KinJwtProvider(BuildConfig.SAMPLE_APP_ID, userID, deviceID));
+		}
+		return giftingManager;
 	}
 
 	/**

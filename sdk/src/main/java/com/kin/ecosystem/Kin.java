@@ -64,6 +64,8 @@ import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
 import com.kin.ecosystem.core.util.Validator;
+import com.kin.ecosystem.gifting.GiftingManager;
+import com.kin.ecosystem.gifting.GiftingManagerImpl;
 import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.recovery.BackupAndRestore;
 import com.kin.ecosystem.recovery.BackupAndRestoreImpl;
@@ -716,11 +718,34 @@ public class Kin {
 		return OfferRepository.getInstance().removeNativeOffer(nativeOffer);
 	}
 
+	/**
+	 * Creates a {@link BackupAndRestore} to be able to show backup or restore flow directly, without entering to marketplace.
+	 *
+	 * @param activity the parent activity, used to start backup or restore flows and receive results.
+	 * @return a {@link BackupAndRestore} implementation
+	 * @throws ClientException - sdk not initialized.
+	 */
 	public static BackupAndRestore getBackupAndRestoreManager(@NonNull final Activity activity) throws ClientException {
 		checkInstanceNotNull();
 		return new BackupAndRestoreImpl(activity, AccountManagerImpl.getInstance(),
 			eventLogger, BlockchainSourceImpl.getInstance(),
 			new SettingsDataSourceImpl(new SettingsDataSourceLocal(activity.getApplicationContext())),
 			ConfigurationImpl.getInstance());
+	}
+
+	/**
+	 * Creates a {@link GiftingManager} to be able to show a gifting dialog and listen for gifting orders
+	 * confirmation.
+	 *
+	 * @param jwtProvider to provide a valid jwt for gifting purpose,
+	 * {@link JwtProvider#getPayToUserJwt(String, double)} will be call from a worker thread, so it can be a sync network call.
+	 * @return a {@link GiftingManager} implementation.
+	 * @throws ClientException - sdk not initialized or account not logged in.
+	 */
+	public static GiftingManager getGiftingManager(JwtProvider jwtProvider) throws ClientException {
+		checkInstanceNotNull();
+		checkAccountIsLoggedIn();
+		return new GiftingManagerImpl(jwtProvider, BlockchainSourceImpl.getInstance(),
+			OrderRepository.getInstance(), eventLogger, ConfigurationImpl.getInstance());
 	}
 }

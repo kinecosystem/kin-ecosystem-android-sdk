@@ -77,6 +77,17 @@ public class JwtUtil {
 			.signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
 	}
 
+	public static String generateGiftOfferExampleJWT(String appID, String userID, String deviceId,
+		String recipientUserID, int amount) {
+		return getBasicJWT(appID)
+			.setSubject(JWT_SUBJECT_PAY_TO_USER)
+			.claim(JWT_CLAIM_OBJECT_OFFER_PART, createOfferPartExampleObject(amount))
+			.claim(JWT_CLAIM_OBJECT_SENDER_PART, new JWTSenderPart(userID, deviceId, "Tip to someone", "Code review"))
+			.claim(JWT_CLAIM_OBJECT_RECIPIENT_PART,
+				new JWTRecipientPart(recipientUserID, "Tip from someone", "Code review"))
+			.signWith(SignatureAlgorithm.RS512, getRS512PrivateKey()).compact();
+	}
+
 	@NonNull
 	private static String getPrivateKeyForJWT() {
 		return BuildConfig.RS512_PRIVATE_KEY;
@@ -109,6 +120,11 @@ public class JwtUtil {
 	private static JWTOfferPart createOfferPartExampleObject() {
 		int randomID = getRandomID();
 		return new JWTOfferPart(String.valueOf(randomID), 10);
+	}
+
+	private static JWTOfferPart createOfferPartExampleObject(int amount) {
+		int randomID = getRandomID();
+		return new JWTOfferPart(String.valueOf(randomID), amount);
 	}
 
 	private static JWTOfferPart createOfferPartExampleObject(String offerId) {
