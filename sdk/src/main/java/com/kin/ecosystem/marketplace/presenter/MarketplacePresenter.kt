@@ -3,7 +3,6 @@ package com.kin.ecosystem.marketplace.presenter
 
 import com.kin.ecosystem.R
 import com.kin.ecosystem.base.BaseFragmentPresenter
-import com.kin.ecosystem.base.BasePresenter
 import com.kin.ecosystem.base.customAnimation
 import com.kin.ecosystem.common.KinCallback
 import com.kin.ecosystem.common.NativeOfferClickEvent
@@ -13,6 +12,7 @@ import com.kin.ecosystem.common.exception.KinEcosystemException
 import com.kin.ecosystem.common.model.Balance
 import com.kin.ecosystem.core.bi.EventLogger
 import com.kin.ecosystem.core.bi.events.*
+import com.kin.ecosystem.core.data.auth.AuthDataSource
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource
 import com.kin.ecosystem.core.data.offer.OfferDataSource
 import com.kin.ecosystem.core.data.order.OrderDataSource
@@ -36,6 +36,7 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
                            private val orderRepository: OrderDataSource,
                            private val blockchainSource: BlockchainSource,
                            private val settingsDataSource: SettingsDataSource,
+                           private val authDataSource: AuthDataSource,
                            navigator: INavigator?,
                            private val eventLogger: EventLogger) : BaseFragmentPresenter<IMarketplaceView>(navigator), IMarketplacePresenter {
 
@@ -132,10 +133,10 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
                         removeBalanceObserver()
                     } else {
                         addBalanceObserver()
-                        view?.showMenuTouchIndicator(false)
+                        view?.showMenuTouchIndicator(!settingsDataSource.hasSeenTransfer(authDataSource.ecosystemUserID))
                     }
                 } else {
-                    view?.showMenuTouchIndicator(false)
+                    view?.showMenuTouchIndicator(!settingsDataSource.hasSeenTransfer(authDataSource.ecosystemUserID))
                 }
             }
         }
