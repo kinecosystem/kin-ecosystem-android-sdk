@@ -12,20 +12,19 @@ import com.google.gson.annotations.SerializedName;
 
 
 /**
- * User views page in new UI
+ * when a user complete a gifting experience 
  * 
  */
-public class APageViewed implements Event {
-    public static final String EVENT_NAME = "a_page_viewed";
-    public static final String EVENT_TYPE = "analytics";
+public class GiftingFlowCompleted implements Event {
+    public static final String EVENT_NAME = "gifting_flow_completed";
+    public static final String EVENT_TYPE = "business";
 
     // Augmented by script
-    public static APageViewed create(PageName pageName) {
-        return new APageViewed(
+    public static GiftingFlowCompleted create() {
+        return new GiftingFlowCompleted(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
-            (Client) EventsStore.client(),
-            pageName);
+            (Client) EventsStore.client());
     }
 
     /**
@@ -68,20 +67,12 @@ public class APageViewed implements Event {
     @SerializedName("client")
     @Expose
     private Client client;
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    @SerializedName("page_name")
-    @Expose
-    private PageName pageName;
 
     /**
      * No args constructor for use in serialization
      * 
      */
-    public APageViewed() {
+    public GiftingFlowCompleted() {
     }
 
     /**
@@ -91,14 +82,12 @@ public class APageViewed implements Event {
      * @param client
 
      * @param user
-     * @param pageName
      */
-    public APageViewed(Common common, User user, Client client, PageName pageName) {
+    public GiftingFlowCompleted(Common common, User user, Client client) {
         super();
         this.common = common;
         this.user = user;
         this.client = client;
-        this.pageName = pageName;
     }
 
     /**
@@ -189,73 +178,6 @@ public class APageViewed implements Event {
      */
     public void setClient(Client client) {
         this.client = client;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public PageName getPageName() {
-        return pageName;
-    }
-
-    /**
-     * 
-     * (Required)
-     * 
-     */
-    public void setPageName(PageName pageName) {
-        this.pageName = pageName;
-    }
-
-    public enum PageName {
-
-        @SerializedName("onboarding")
-        ONBOARDING("onboarding"),
-        @SerializedName("main_page")
-        MAIN_PAGE("main_page"),
-        @SerializedName("my_kin_page")
-        MY_KIN_PAGE("my_kin_page"),
-        @SerializedName("settings ")
-        SETTINGS("settings "),
-        @SerializedName("dialogs_not_enough_kin")
-        DIALOGS_NOT_ENOUGH_KIN("dialogs_not_enough_kin"),
-        @SerializedName("dialogs_spend_confirmation_screen")
-        DIALOGS_SPEND_CONFIRMATION_SCREEN("dialogs_spend_confirmation_screen"),
-        @SerializedName("gifting_dialog")
-        GIFTING_DIALOG("gifting_dialog");
-        private final String value;
-        private final static Map<String, PageName> CONSTANTS = new HashMap<String, PageName>();
-
-        static {
-            for (PageName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private PageName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static PageName fromValue(String value) {
-            PageName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
     }
 
 }

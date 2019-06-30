@@ -11,6 +11,10 @@ import com.kin.ecosystem.common.Observer
 import com.kin.ecosystem.common.exception.KinEcosystemException
 import com.kin.ecosystem.common.model.OrderConfirmation
 import com.kin.ecosystem.core.bi.EventLogger
+import com.kin.ecosystem.core.bi.events.APageViewed
+import com.kin.ecosystem.core.bi.events.GiftingButtonTapped
+import com.kin.ecosystem.core.bi.events.GiftingFlowCompleted
+import com.kin.ecosystem.core.bi.events.PageCloseTapped
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource
 import com.kin.ecosystem.core.data.internal.Configuration
 import com.kin.ecosystem.core.data.order.OrderDataSource
@@ -28,7 +32,7 @@ internal class GiftingManagerImpl(private val jwtProvider: JwtProvider,
 	private val orderConfirmation: ObservableData<OrderConfirmation> = ObservableData.create()
 	private var currentRecipientUserID: String? = null
 	private var isShowing = false
-	private val mainHandler = object: Handler(Looper.getMainLooper()) {
+	private val mainHandler = object : Handler(Looper.getMainLooper()) {
 		override fun handleMessage(msg: Message?) {
 			super.handleMessage(msg)
 			when (msg?.what) {
@@ -65,14 +69,20 @@ internal class GiftingManagerImpl(private val jwtProvider: JwtProvider,
 
 	override fun onDialogClosed(closeType: CloseType) {
 		isShowing = false
-//		eventLogger.send()
+		when (closeType) {
+			CloseType.CLOSE_BUTTON -> eventLogger.send(PageCloseTapped.create(PageCloseTapped.ExitType.X_BUTTON, PageCloseTapped.PageName.GIFTING_DIALOG))
+			CloseType.TOUCH_OUTSIDE -> eventLogger.send(PageCloseTapped.create(PageCloseTapped.ExitType.BACKGROUND_APP, PageCloseTapped.PageName.GIFTING_DIALOG))
+			CloseType.BACK_NAV_BUTTON -> eventLogger.send(PageCloseTapped.create(PageCloseTapped.ExitType.ANDROID_NAVIGATOR, PageCloseTapped.PageName.GIFTING_DIALOG))
+			CloseType.ITEM_SELECTED -> eventLogger.send(GiftingFlowCompleted.create())
+		}
 	}
 
 	override fun onDialogOpened() {
-//		eventLogger.send()
+		eventLogger.send(APageViewed.create(APageViewed.PageName.GIFTING_DIALOG))
 	}
 
 	override fun onItemSelected(itemIndex: Int, amount: Int) {
+		eventLogger.send(GiftingButtonTapped.create(amount.toDouble()))
 		currentRecipientUserID?.let { recipient ->
 			SendGiftCall(mainHandler, orderDataSource, jwtProvider, recipient, amount).apply {
 				mainHandler.post(this)
