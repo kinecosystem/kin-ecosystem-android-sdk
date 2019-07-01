@@ -24,6 +24,8 @@ dependencies {
     api project(':recovery')
 
     api devDependencies.kinMigration
+    implementation devDependencies.supportAnnotations
+    implementation devDependencies.gson
     implementation devDependencies.okhttp3
     implementation devDependencies.loginInterceptor3
     implementation devDependencies.kotlin

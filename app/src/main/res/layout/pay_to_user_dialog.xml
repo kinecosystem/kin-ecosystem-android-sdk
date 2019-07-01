@@ -51,4 +51,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/user_id_edit_text"/>
 
+    <TextView
+        android:id="@+id/gift_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/kinecosystem_main_margin"
+        android:text="@string/gift"
+        android:padding="@dimen/kinecosystem_block_medium_margin"
+        android:textSize="18sp"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintTop_toTopOf="@id/pay_button"
+        app:layout_constraintEnd_toStartOf="@id/pay_button"
+        />
+
 </android.support.constraint.ConstraintLayout>

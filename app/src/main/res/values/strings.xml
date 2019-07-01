@@ -8,7 +8,7 @@
     <string name="native_spend_buy_a_sticker"><u>Native Spend - Buy A Sticker</u></string>
     <string name="copy_public_address"><u>Copy Public Address</u></string>
     <string name="native_earn"><u>Native Earn</u></string>
-    <string name="pay_to_user"><u>Pay to User</u></string>
+    <string name="gift_pay_to_user"><u>Gift / Pay to User</u></string>
     <string name="get_user_stats"><u>Get User Stats</u></string>
     <string name="logout_user"><u>Logout User</u></string>
     <string name="user_id"><u>User ID: %s</u></string>
@@ -27,4 +27,5 @@
     <string name="order_history">Order History</string>
     <string name="backup_flow">Backup Flow</string>
     <string name="restore_flow">Restore Flow</string>
+    <string name="gift">Gift</string>
 </resources>

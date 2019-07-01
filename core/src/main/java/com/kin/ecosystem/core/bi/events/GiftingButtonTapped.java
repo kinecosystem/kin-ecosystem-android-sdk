@@ -12,20 +12,20 @@ import com.google.gson.annotations.SerializedName;
 
 
 /**
- * User views page in new UI
+ * User click on gifting dialog button 
  * 
  */
-public class APageViewed implements Event {
-    public static final String EVENT_NAME = "a_page_viewed";
+public class GiftingButtonTapped implements Event {
+    public static final String EVENT_NAME = "gifting_button_tapped";
     public static final String EVENT_TYPE = "analytics";
 
     // Augmented by script
-    public static APageViewed create(PageName pageName) {
-        return new APageViewed(
+    public static GiftingButtonTapped create(Double kinAmount) {
+        return new GiftingButtonTapped(
             (Common) EventsStore.common(),
             (User) EventsStore.user(),
             (Client) EventsStore.client(),
-            pageName);
+            kinAmount);
     }
 
     /**
@@ -73,15 +73,15 @@ public class APageViewed implements Event {
      * (Required)
      * 
      */
-    @SerializedName("page_name")
+    @SerializedName("kin_amount")
     @Expose
-    private PageName pageName;
+    private Double kinAmount;
 
     /**
      * No args constructor for use in serialization
      * 
      */
-    public APageViewed() {
+    public GiftingButtonTapped() {
     }
 
     /**
@@ -89,16 +89,16 @@ public class APageViewed implements Event {
      * @param common
 
      * @param client
+     * @param kinAmount
 
      * @param user
-     * @param pageName
      */
-    public APageViewed(Common common, User user, Client client, PageName pageName) {
+    public GiftingButtonTapped(Common common, User user, Client client, Double kinAmount) {
         super();
         this.common = common;
         this.user = user;
         this.client = client;
-        this.pageName = pageName;
+        this.kinAmount = kinAmount;
     }
 
     /**
@@ -196,8 +196,8 @@ public class APageViewed implements Event {
      * (Required)
      * 
      */
-    public PageName getPageName() {
-        return pageName;
+    public Double getKinAmount() {
+        return kinAmount;
     }
 
     /**
@@ -205,57 +205,8 @@ public class APageViewed implements Event {
      * (Required)
      * 
      */
-    public void setPageName(PageName pageName) {
-        this.pageName = pageName;
-    }
-
-    public enum PageName {
-
-        @SerializedName("onboarding")
-        ONBOARDING("onboarding"),
-        @SerializedName("main_page")
-        MAIN_PAGE("main_page"),
-        @SerializedName("my_kin_page")
-        MY_KIN_PAGE("my_kin_page"),
-        @SerializedName("settings ")
-        SETTINGS("settings "),
-        @SerializedName("dialogs_not_enough_kin")
-        DIALOGS_NOT_ENOUGH_KIN("dialogs_not_enough_kin"),
-        @SerializedName("dialogs_spend_confirmation_screen")
-        DIALOGS_SPEND_CONFIRMATION_SCREEN("dialogs_spend_confirmation_screen"),
-        @SerializedName("gifting_dialog")
-        GIFTING_DIALOG("gifting_dialog");
-        private final String value;
-        private final static Map<String, PageName> CONSTANTS = new HashMap<String, PageName>();
-
-        static {
-            for (PageName c: values()) {
-                CONSTANTS.put(c.value, c);
-            }
-        }
-
-        private PageName(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-
-        public String value() {
-            return this.value;
-        }
-
-        public static PageName fromValue(String value) {
-            PageName constant = CONSTANTS.get(value);
-            if (constant == null) {
-                throw new IllegalArgumentException(value);
-            } else {
-                return constant;
-            }
-        }
-
+    public void setKinAmount(Double kinAmount) {
+        this.kinAmount = kinAmount;
     }
 
 }

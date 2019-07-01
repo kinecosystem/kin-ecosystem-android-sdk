@@ -34,6 +34,7 @@ public class ErrorUtil {
 	private static final String ACCOUNT_HAS_NO_WALLET = "Account has no wallet";
 	private static final String MIGRATION_NEEDED = "Migration to new kin blockchain is needed";
 	private static final String WALLET_WAS_NOT_CREATED_IN_THIS_APP = "This wallet was not created in this app";
+	private static final String JWT_PROVIDED_IS_WRONG_OR_NULL = "The jwt is wrong or null";
 
 
 	// Server Error codes
@@ -188,6 +189,9 @@ public class ErrorUtil {
 				break;
 			case ClientException.ACCOUNT_NOT_LOGGED_IN:
 				exception = new ClientException(ClientException.ACCOUNT_NOT_LOGGED_IN, ACCOUNT_IS_NOT_LOGGED_IN, e);
+				break;
+			case ClientException.WRONG_JWT:
+				exception = new ClientException(ClientException.WRONG_JWT, JWT_PROVIDED_IS_WRONG_OR_NULL, e);
 				break;
 			case ClientException.INTERNAL_INCONSISTENCY:
 			default:

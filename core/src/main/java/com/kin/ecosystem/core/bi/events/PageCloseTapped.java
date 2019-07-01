@@ -245,7 +245,9 @@ public class PageCloseTapped implements Event {
         @SerializedName("X_button")
         X_BUTTON("X_button"),
         @SerializedName("Android_navigator")
-        ANDROID_NAVIGATOR("Android_navigator");
+        ANDROID_NAVIGATOR("Android_navigator"),
+        @SerializedName("host_app")
+        HOST_APP("host_app");
         private final String value;
         private final static Map<String, PageCloseTapped.ExitType> CONSTANTS = new HashMap<String, PageCloseTapped.ExitType>();
 
@@ -292,7 +294,9 @@ public class PageCloseTapped implements Event {
         @SerializedName("dialogs_not_enough_kin")
         DIALOGS_NOT_ENOUGH_KIN("dialogs_not_enough_kin"),
         @SerializedName("dialogs_spend_confirmation_screen")
-        DIALOGS_SPEND_CONFIRMATION_SCREEN("dialogs_spend_confirmation_screen");
+        DIALOGS_SPEND_CONFIRMATION_SCREEN("dialogs_spend_confirmation_screen"),
+        @SerializedName("gifting_dialog")
+        GIFTING_DIALOG("gifting_dialog");
         private final String value;
         private final static Map<String, PageCloseTapped.PageName> CONSTANTS = new HashMap<String, PageCloseTapped.PageName>();
 
