@@ -26,8 +26,8 @@ ext {
     //Testing Version
     junitVersion = '4.12'
     mockitoVersion = '2.13.0'
-    robolectricVersion = '3.6.1'
-    mokitoKotlinVersion = '2.0.0-RC1'
+    robolectricVersion = '4.3'
+    mokitoKotlinVersion = '2.1.0'
     mockitoAndroidVersion = '2.10.0'
     androidTestVersion = '1.0.1'
 
