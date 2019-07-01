@@ -19,4 +19,8 @@ interface ISettingsView : IBaseView {
     fun changeTouchIndicatorVisibility(item: Item, isVisible: Boolean)
 
     fun showCouldNotImportAccount()
+
+    fun startTransferFlow()
+
+    fun showTransferItem(show: Boolean)
 }
