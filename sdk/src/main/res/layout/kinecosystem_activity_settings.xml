@@ -44,6 +44,7 @@
         app:kinecosystem_src="?attr/settingsRestoreIcon"
         app:kinecosystem_indicatorVisibility="false"
         app:top_separator="true"
+        app:bottom_separator="true"
         app:kinecosysem_text="@string/kinecosystem_restore_previous_wallet"
         android:layout_height="@dimen/kinecosystem_settings_item_height"
         app:layout_constraintTop_toBottomOf="@id/keep_your_kin_safe"/>
@@ -54,9 +55,10 @@
         android:layout_height="@dimen/kinecosystem_settings_item_height"
         app:kinecosystem_src="?attr/settingsKinTransferIcon"
         app:kinecosystem_indicatorVisibility="false"
-        app:top_separator="true"
+        app:top_separator="false"
         app:bottom_separator="true"
         app:kinecosysem_text="@string/kinecosystem_transfer_kin"
-        app:layout_constraintTop_toBottomOf="@id/restore_prev_wallet"/>
+        app:layout_constraintTop_toBottomOf="@id/restore_prev_wallet"
+        android:visibility="gone"/>
 
 </android.support.constraint.ConstraintLayout>
