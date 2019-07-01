@@ -24,6 +24,7 @@ import com.kin.ecosystem.settings.BackupManager
 import com.kin.ecosystem.settings.view.ISettingsView
 import com.kin.ecosystem.settings.view.ISettingsView.IconColor
 import com.kin.ecosystem.settings.view.ISettingsView.Item
+import kin.sdk.migration.common.KinSdkVersion
 import java.math.BigDecimal
 
 class SettingsPresenter(private val settingsDataSource: SettingsDataSource,
@@ -49,6 +50,7 @@ class SettingsPresenter(private val settingsDataSource: SettingsDataSource,
 
     override fun onResume() {
         updateSettingsIcon()
+        view?.showTransferItem(blockchainSource.blockchainVersion == KinSdkVersion.NEW_KIN_SDK)
     }
 
     override fun onPause() {
@@ -114,7 +116,7 @@ class SettingsPresenter(private val settingsDataSource: SettingsDataSource,
 
     override fun transferClicked() {
         settingsDataSource.setSeenTransfer(authDataSource.ecosystemUserID)
-        //TODO
+        view?.startTransferFlow()
     }
 
     override fun restoreClicked() {
