@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnClickListener
+import android.view.View.*
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
@@ -23,10 +23,9 @@ import com.kin.ecosystem.main.INavigator
 import com.kin.ecosystem.settings.BackupManagerImpl
 import com.kin.ecosystem.settings.presenter.ISettingsPresenter
 import com.kin.ecosystem.settings.presenter.SettingsPresenter
+import org.kinecosystem.appstransfer.view.AppsTransferActivity
 
 class SettingsFragment : KinEcosystemBaseFragment<ISettingsPresenter, ISettingsView>(), ISettingsView, OnClickListener {
-
-
     private lateinit var backupItem: SettingsItem
     private lateinit var restoreItem: SettingsItem
     private lateinit var transferItem: SettingsItem
@@ -83,6 +82,10 @@ class SettingsFragment : KinEcosystemBaseFragment<ISettingsPresenter, ISettingsV
         }
     }
 
+    override fun showTransferItem(show: Boolean) {
+        transferItem.visibility = if (show) VISIBLE else GONE
+    }
+
     override fun setIconColor(item: ISettingsView.Item, color: ISettingsView.IconColor) {
         getSettingsItem(item)?.let {
             @ColorRes val colorRes = getColorRes(color)
@@ -117,6 +120,13 @@ class SettingsFragment : KinEcosystemBaseFragment<ISettingsPresenter, ISettingsV
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         presenter?.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun startTransferFlow() {
+        context?.let {
+            startActivity(AppsTransferActivity.getIntent(it))
+            activity?.overridePendingTransition(R.anim.kinecosystem_slide_in_right, R.anim.kinecosystem_slide_out_left)
+        }
     }
 
     companion object {
