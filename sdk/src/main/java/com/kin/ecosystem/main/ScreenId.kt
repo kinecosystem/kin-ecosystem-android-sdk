@@ -5,5 +5,6 @@ enum class ScreenId {
         MARKETPLACE,
         ORDER_HISTORY,
         SETTINGS,
-        ONBOARDING
+        ONBOARDING,
+        NOT_ENOUGH_KIN
 }

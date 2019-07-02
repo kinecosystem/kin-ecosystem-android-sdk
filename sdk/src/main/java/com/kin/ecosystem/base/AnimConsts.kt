@@ -1,5 +1,6 @@
 package com.kin.ecosystem.base
 
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 
 object AnimConsts {
@@ -24,5 +25,6 @@ object AnimConsts {
 
     object Interpolator {
         @JvmField internal val DECELERATE = DecelerateInterpolator()
+        @JvmField internal val ACCELERATE_DECELERATE = AccelerateDecelerateInterpolator()
     }
 }

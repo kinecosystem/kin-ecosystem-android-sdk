@@ -1,5 +1,6 @@
 package com.kin.ecosystem.gifting
 
+import com.kin.ecosystem.FakeActivity
 import com.kin.ecosystem.JwtProvider
 import com.kin.ecosystem.common.KinCallback
 import com.kin.ecosystem.common.KinTheme
@@ -21,8 +22,8 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.kin.ecosystem.appreciation.options.menu.ui.CloseType
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import java.math.BigDecimal
 
@@ -56,12 +57,12 @@ class GiftingManagerImplTest: BaseTestClass() {
 
 	@Test
 	fun `show dialog only once, if is showing already`() {
-		val context = RuntimeEnvironment.application.applicationContext
-		giftingManager.showDialog(context, recipientUserID)
+		val activity = Robolectric.buildActivity(FakeActivity::class.java).get()
+		giftingManager.showDialog(activity, recipientUserID)
 		verify(blockchainSource).balance
 		verify(configuration).kinTheme
 
-		giftingManager.showDialog(context, recipientUserID)
+		giftingManager.showDialog(activity, recipientUserID)
 		verifyNoMoreInteractions(blockchainSource)
 		verifyNoMoreInteractions(configuration)
 	}
@@ -99,14 +100,14 @@ class GiftingManagerImplTest: BaseTestClass() {
 			status = OrderConfirmation.Status.COMPLETED
 			jwtConfirmation = validJwtConfirmation
 		}
-		val context = RuntimeEnvironment.application.applicationContext
+		val activity = Robolectric.buildActivity(FakeActivity::class.java).get()
 		val purchaseCaptor = argumentCaptor<KinCallback<OrderConfirmation>>()
 		whenever(jwtProvider.getPayToUserJwt(recipientUserID, 10.0)).thenReturn(validJWT)
 
 
 		val confirmObserver: Observer<OrderConfirmation> = mock()
 		giftingManager.addOrderConfirmationObserver(confirmObserver)
-		giftingManager.showDialog(context, recipientUserID)
+		giftingManager.showDialog(activity, recipientUserID)
 		giftingManager.onItemSelected(1, 10)
 		verify(orderDataSource).purchase(any(), purchaseCaptor.capture())
 		purchaseCaptor.firstValue.onResponse(orderConfirmation)
@@ -117,14 +118,14 @@ class GiftingManagerImplTest: BaseTestClass() {
 	fun `on item selected, order failed, handler notify for failure`() {
 		val validJWT = "some_valid_jwt"
 		val serviceException = ServiceException(ServiceException.NETWORK_ERROR, "some error msg", null)
-		val context = RuntimeEnvironment.application.applicationContext
+		val activity = Robolectric.buildActivity(FakeActivity::class.java).get()
 		val purchaseCaptor = argumentCaptor<KinCallback<OrderConfirmation>>()
 		whenever(jwtProvider.getPayToUserJwt(recipientUserID, 10.0)).thenReturn(validJWT)
 
 
 		val confirmObserver: Observer<OrderConfirmation> = mock()
 		giftingManager.addOrderConfirmationObserver(confirmObserver)
-		giftingManager.showDialog(context, recipientUserID)
+		giftingManager.showDialog(activity, recipientUserID)
 		giftingManager.onItemSelected(1, 10)
 		verify(orderDataSource).purchase(any(), purchaseCaptor.capture())
 		purchaseCaptor.firstValue.onFailure(serviceException)
