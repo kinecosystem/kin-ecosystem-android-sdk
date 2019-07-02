@@ -47,13 +47,13 @@ class OnboardingFragment : KinEcosystemBaseFragment<OnboardingPresenter, IOnboar
 
     @SuppressLint("NewApi")
     private fun initViews(root: View) {
-        welcomeImage = root.findViewById(R.id.welcome_image)
+        welcomeImage = root.findViewById(R.id.earn_more_image)
         loadingText = root.findViewById(R.id.loading_text)
         loadingAVD = root.findViewById(R.id.loading_image);
         closeButton = root.findViewById<ImageView>(R.id.close_button).apply {
             setOnClickListener { presenter?.closeButtonPressed() }
         }
-        letsGetStartedBtn = root.findViewById<Button>(R.id.lets_start_button).apply {
+        letsGetStartedBtn = root.findViewById<Button>(R.id.earn_kin_button).apply {
             setOnClickListener { presenter?.getStartedClicked() }
         }
     }

@@ -1,10 +1,14 @@
 package com.kin.ecosystem.gifting
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import com.kin.ecosystem.EcosystemExperience
 import com.kin.ecosystem.JwtProvider
+import com.kin.ecosystem.Kin.KEY_ECOSYSTEM_EXPERIENCE
 import com.kin.ecosystem.common.KinTheme
 import com.kin.ecosystem.common.ObservableData
 import com.kin.ecosystem.common.Observer
@@ -18,6 +22,9 @@ import com.kin.ecosystem.core.bi.events.PageCloseTapped
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource
 import com.kin.ecosystem.core.data.internal.Configuration
 import com.kin.ecosystem.core.data.order.OrderDataSource
+import com.kin.ecosystem.main.ScreenId
+import com.kin.ecosystem.main.presenter.EcosystemPresenter
+import com.kin.ecosystem.main.view.EcosystemActivity
 import org.kin.ecosystem.appreciation.options.menu.ui.CloseType
 import org.kin.ecosystem.appreciation.options.menu.ui.DialogTheme
 import org.kin.ecosystem.appreciation.options.menu.ui.EventsListener
@@ -55,16 +62,30 @@ internal class GiftingManagerImpl(private val jwtProvider: JwtProvider,
 
 	override fun addOrderConfirmationObserver(observer: Observer<OrderConfirmation>) = orderConfirmation.subscribe(observer)!!
 
-	override fun showDialog(context: Context, recipientUserID: String) {
+	override fun showDialog(activity: Activity, recipientUserID: String) {
 		if (isShowing) return
+		val balance = getBalance()
+		if (balance == 0L) {
+			showNotEnoughKin(activity)
+			return
+		}
+
 		isShowing = true
 		currentRecipientUserID = recipientUserID
-		GiftingDialog.Builder(context)
-				.balance(getBalance())
+		GiftingDialog.Builder(activity.applicationContext)
+				.balance(balance)
 				.eventsListener(this)
 				.theme(getDialogTheme())
 				.build()
 				.show()
+	}
+
+	private fun showNotEnoughKin(activity: Activity) {
+		Intent(activity, EcosystemActivity::class.java).apply {
+			putExtra(EcosystemPresenter.KEY_SCREEN_ID, ScreenId.NOT_ENOUGH_KIN.name)
+			activity.startActivity(this)
+			activity.overridePendingTransition(0, 0)
+		}
 	}
 
 	override fun onDialogClosed(closeType: CloseType) {

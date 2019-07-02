@@ -56,7 +56,7 @@ class OnboardingPresenterImpl(private val accountManager: AccountManager,
     }
 
     private fun getExperience(extras: Bundle?): Int {
-        return extras?.getInt(KEY_ECOSYSTEM_EXPERIENCE, EcosystemExperience.NONE) ?: EcosystemExperience.NONE
+        return extras?.getInt(KEY_ECOSYSTEM_EXPERIENCE, EcosystemExperience.MARKETPLACE) ?: EcosystemExperience.MARKETPLACE
     }
 
     override fun onAttach(view: IOnboardingView) {
