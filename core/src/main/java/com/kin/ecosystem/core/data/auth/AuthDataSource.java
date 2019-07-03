@@ -39,6 +39,8 @@ public interface AuthDataSource {
 
 	void logout();
 
+	boolean isCurrentAuthTokenExpired();
+
 	interface Local {
 
 		void setJWT(@NonNull final JwtBody jwtBody);
