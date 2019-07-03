@@ -44,7 +44,6 @@
         android:id="@+id/kin_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/kinecosystem_tiny_margin"
         app:layout_constraintBottom_toBottomOf="@id/title"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/title"

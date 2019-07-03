@@ -20,6 +20,8 @@ import java.util.List;
 class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
 
     private static final float WIDTH_RATIO = 0.205f;
+    private static final int AMOUNT_SPACE_EARN = 0;
+    private static int AMOUNT_SPACE_SPEND = -1;
 
     OfferRecyclerAdapter() {
         super(R.layout.kinecosystem_offer_recycler_item);
@@ -62,6 +64,9 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
             imageSize = (int) (DeviceUtils.getScreenWidth() * WIDTH_RATIO);
             earnColor = ContextCompat.getColor(context, R.color.kinecosystem_purple);
             spendColor = ContextCompat.getColor(context, R.color.kinecosystem_green);
+			if(AMOUNT_SPACE_SPEND == -1) {
+				AMOUNT_SPACE_SPEND = context.getResources().getDimensionPixelSize(R.dimen.kinecosystem_offer_title_char_space);
+			}
         }
 
         @Override
@@ -70,9 +75,18 @@ class OfferRecyclerAdapter extends BaseRecyclerAdapter<Offer, ViewHolder> {
             setTitle(item);
             setAmountText(item);
             setText(R.id.sub_title, item.getDescription());
+            setSpaceAmount(item.getOfferType());
 
             if (item.getOfferType() == OfferType.EARN && item.getContentType() == ContentTypeEnum.POLL) {
                 setOnItemClickListener(getOnItemClickListener());
+            }
+        }
+
+        private void setSpaceAmount(OfferType offerType) {
+            if (offerType == OfferType.EARN) {
+				setViewLeftMargin(R.id.kin_logo, AMOUNT_SPACE_EARN);
+            } else {
+				setViewLeftMargin(R.id.kin_logo, AMOUNT_SPACE_SPEND);
             }
         }
 
