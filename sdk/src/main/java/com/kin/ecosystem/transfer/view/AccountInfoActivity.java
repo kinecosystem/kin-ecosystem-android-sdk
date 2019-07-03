@@ -1,93 +1,44 @@
 package com.kin.ecosystem.transfer.view;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.view.View;
-import android.widget.TextView;
 import com.kin.ecosystem.R;
-import com.kin.ecosystem.base.KinEcosystemBaseActivity;
-import com.kin.ecosystem.transfer.AccountInfoManager;
-import com.kin.ecosystem.transfer.presenter.AccountInfoPresenter;
-import com.kin.ecosystem.transfer.presenter.IAccountInfoPresenter;
+import com.kin.ecosystem.common.exception.BlockchainException;
+import com.kin.ecosystem.core.Log;
+import com.kin.ecosystem.core.Logger;
+import com.kin.ecosystem.core.data.auth.AuthRepository;
+import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 
-public class AccountInfoActivity extends KinEcosystemBaseActivity implements IAccountInfoView {
-    private IAccountInfoPresenter presenter;
+import org.kinecosystem.transfer.receiver.manager.AccountInfoException;
+import org.kinecosystem.transfer.receiver.presenter.IErrorActionClickListener;
+import org.kinecosystem.transfer.receiver.view.AccountInfoActivityBase;
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        presenter = new AccountInfoPresenter(new AccountInfoManager(this), this, getIntent());
-        presenter.onAttach(this);
-    }
+public class AccountInfoActivity extends AccountInfoActivityBase {
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        presenter.onPause();
-    }
+    private static final String TAG = AccountInfoActivity.class.getSimpleName();
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        presenter.onResume();
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (presenter != null) {
-            presenter.backButtonPressed();
-        }
-        super.onBackPressed();
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (presenter != null) {
-            presenter.onDetach();
-        }
-        super.onDestroy();
-    }
-
-    @Override
-    public void enabledAgreeButton() {
-        findViewById(R.id.confirm_button).setEnabled(true);
-    }
-
-    @Override
-    public void close() {
-        finish();
-    }
-
-    @Override
-    public void updateSourceApp(String sourceApp) {
-        TextView title = findViewById(R.id.transfer_title);
-        final CharSequence destinationApp = getApplicationInfo().loadLabel(getPackageManager());
-        title.setText(getString(R.string.kinecosystem_transfer_title, sourceApp, destinationApp));
-    }
-
-    @Override
-    protected int getLayoutRes() {
-        return R.layout.kinecosystem_activity_account_info;
-    }
-
-    @Override
-    protected void initViews() {
-        findViewById(R.id.confirm_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (presenter != null) {
-                    presenter.agreeClicked();
-                }
+    public String getData() throws AccountInfoException {
+        try {
+            final AuthRepository authRepository = AuthRepository.getInstance();
+            if (authRepository != null && !authRepository.isCurrentAuthTokenExpired()
+                    && BlockchainSourceImpl.getInstance() != null) {
+                return BlockchainSourceImpl.getInstance().getPublicAddress();
             }
-        });
+        } catch (BlockchainException e) {
+            throwExceptionOnDataError();
+        }
+        return null;
+    }
 
-        findViewById(R.id.close_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (presenter != null) {
-                    presenter.closeClicked();
-                }
-            }
-        });
+    private void throwExceptionOnDataError() throws AccountInfoException {
+        String appName = getApplicationInfo().loadLabel(getPackageManager()).toString();
+        throw new AccountInfoException(IErrorActionClickListener.ActionType.LaunchMainActivity, getString(R.string.kinecosystem_transfer_account_info_error_relogin_title, appName));
+    }
+
+    @Override
+    public void updateTransactionInfo(String senderAppId, String senderAppName, String receiverAppId, String memo) {
+        super.updateTransactionInfo(senderAppId, senderAppName, receiverAppId, memo);
+        //server needs to check transaction got with that memo on the blockchain
+        //if found add senderAppName to transaction history
+        Logger.log(new Log().withTag(TAG).put(TAG, "AccountInfoActivity Validate memo " + memo + " on blockChain and if valid add to transaction history sender App Name " + senderAppName + " sender app id: " + senderAppId + " receiver ppp Id: " + receiverAppId));
     }
 }

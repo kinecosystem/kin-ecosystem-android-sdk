@@ -41,6 +41,8 @@ public interface AuthDataSource {
 
 	void logout();
 
+	boolean isCurrentAuthTokenExpired();
+
 	interface Local {
 
 		String getSdkInitDate();

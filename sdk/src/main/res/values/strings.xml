@@ -46,6 +46,8 @@
     <string name="kinecosystem_transfer_title">In order to send Kin, %1$s would like to receive your Kin account information (i.e. your public address) from %2$s.</string>
 
     <string name="kinecosystem_kin_is_a_digital_currency_that_makes">Kin is a digital currency that makes\nyour favorite apps even better.</string>
+    <string name="kinecosystem_transfer_account_info_error_relogin_title"><![CDATA[You need to log out & back into %1$s before transferring Kin.]]></string>
+
 
     <!--Environments-->
     <string name="kinecosystem_environment_beta">beta</string>
