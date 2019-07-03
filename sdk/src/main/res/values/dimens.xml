@@ -12,4 +12,6 @@
     <dimen name="kinecosystem_transfer_header_size">18sp</dimen>
     <dimen name="kinecosystem_transfer_title_size">16sp</dimen>
 
+    <dimen name="kinecosystem_offer_title_char_space">3dp</dimen>
+
 </resources>
