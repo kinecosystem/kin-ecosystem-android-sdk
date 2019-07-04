@@ -25,7 +25,7 @@ class Environment implements KinEnvironment {
 		"https://horizon-testnet.kininfrastructure.com",
 		"Kin Testnet ; December 2018",
 		"https://migration-service.kinecosystembeta.com/migrate?address=",
-		"http://api.kinecosystembeta.com/" + API_VERSION,
+		"http://10.0.2.2:3000/" + API_VERSION,
 		"https://s3.amazonaws.com/assets.kinecosystembeta.com/web-offers/cards-based/index.html",
 		"https://bi.kinecosystembi.com/eco_play_");
 
@@ -36,7 +36,7 @@ class Environment implements KinEnvironment {
 		"https://horizon-testnet.kininfrastructure.com",
 		"Kin Testnet ; December 2018",
 		"https://migration-service.kinecosystemtest.com/migrate?address=",
-		"http://api.kinecosystemtest.com/" + API_VERSION,
+		"http://10.0.2.2:3000/" + API_VERSION,
 		"https://s3.amazonaws.com/assets.kinecosystemtest.com/web-offers/cards-based/index.html",
 		"https://bi.kinecosystembi.com/eco_play_");
 
