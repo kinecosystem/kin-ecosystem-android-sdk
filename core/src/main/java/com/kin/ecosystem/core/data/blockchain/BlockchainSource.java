@@ -11,6 +11,7 @@ import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.MigrationInfo;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,6 +99,13 @@ public interface BlockchainSource {
 	 */
 	void sendTransaction(@NonNull String publicAddress, @NonNull BigDecimal amount, @NonNull String orderID,
 		@NonNull String offerID);
+
+	/**
+	 *
+	 * @param transactionEnvelope
+	 * @return
+	 */
+	String extractTransactionId(String transactionEnvelope);
 
 	/**
 	 * @return the cached balance.
