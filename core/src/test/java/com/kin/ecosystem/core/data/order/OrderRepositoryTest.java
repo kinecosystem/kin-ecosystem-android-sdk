@@ -43,6 +43,7 @@ import com.kin.ecosystem.core.network.model.Order.Origin;
 import com.kin.ecosystem.core.network.model.Order.Status;
 import com.kin.ecosystem.core.network.model.OrderList;
 import com.kin.ecosystem.core.network.model.OrderSpendResult.TypeEnum;
+import com.kin.ecosystem.core.network.model.OutgoingTransferRequest;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -71,6 +72,15 @@ public class OrderRepositoryTest extends BaseTestClass {
 	private static String offerID = "1";
 	private static String orderID = "2";
 	private static final  String title = "some_title";
+
+	private static final OutgoingTransferRequest outgoingTransferRequest =
+		new OutgoingTransferRequest()
+			.amount(5)
+			.appId("smp1")
+			.description("the order description")
+			.title("the order title")
+			.memo("1-smp1-xapp_smp2_123456")
+			.walletAddress("abcd");
 
 	@Mock
 	private BlockchainSource blockchainSource;
@@ -184,6 +194,27 @@ public class OrderRepositoryTest extends BaseTestClass {
 		verify(openOrderCallback, never()).onResponse(any(OpenOrder.class));
 	}
 
+	@Test
+	public void createTransferOrder_Succeed() {
+		orderRepository.createOutgoingTransferOrder(outgoingTransferRequest, openOrderCallback);
+		verify(remote).createOutgoingTransferOrder(any(OutgoingTransferRequest.class), createOrderCapture.capture());
+
+		createOrderCapture.getValue().onResponse(openOrder);
+		assertEquals(openOrder, orderRepository.getOpenOrder().getValue());
+		verify(openOrderCallback).onResponse(openOrder);
+		verify(openOrderCallback, never()).onFailure(any(KinEcosystemException.class));
+	}
+
+	@Test
+	public void createTransferOrder_Failed() {
+		orderRepository.createOutgoingTransferOrder(outgoingTransferRequest, openOrderCallback);
+		verify(remote).createOutgoingTransferOrder(any(OutgoingTransferRequest.class), createOrderCapture.capture());
+
+		createOrderCapture.getValue().onFailure(getApiException());
+		assertNull(orderRepository.getOpenOrder().getValue());
+		verify(openOrderCallback).onFailure(any(KinEcosystemException.class));
+		verify(openOrderCallback, never()).onResponse(any(OpenOrder.class));
+	}
 
 	@Test
 	public void submitOrder_Succeed_EarnOrder() throws Exception {
