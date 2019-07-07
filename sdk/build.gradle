@@ -38,10 +38,6 @@ dependencies {
         transitive = false
     }
 
-    //adding send only module
-    //TODO change version
-    implementation 'com.github.kinecosystem.move-kin-android:appsTransfer:e2a4f21119ad4626f299cfccb6b062545626eddf'
-
     testImplementation project(':test-base')
     testImplementation testingDependencies.junit
     testImplementation testingDependencies.mockito

@@ -124,7 +124,9 @@ class SettingsFragment : KinEcosystemBaseFragment<ISettingsPresenter, ISettingsV
 
     override fun startTransferFlow() {
         context?.let {
-            startActivity(AppsTransferActivity.getIntent(it, true))
+            //TODO remove before release
+            val isDebugMode = true
+            startActivity(AppsTransferActivity.getIntent(it, isDebugMode))
             activity?.overridePendingTransition(R.anim.kinecosystem_slide_in_right, R.anim.kinecosystem_slide_out_left)
         }
     }
