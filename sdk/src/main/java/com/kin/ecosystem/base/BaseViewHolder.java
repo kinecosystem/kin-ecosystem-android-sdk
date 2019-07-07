@@ -83,6 +83,14 @@ class BaseViewHolder<T> extends RecyclerView.ViewHolder {
 		}
 	}
 
+	protected void setViewLeftMargin(@IdRes int viewId, int leftMargin) {
+		View view = getView(viewId);
+		if (view != null) {
+			ViewGroup.MarginLayoutParams params = (MarginLayoutParams)view.getLayoutParams();
+			params.leftMargin = leftMargin;
+		}
+	}
+
 	/**
 	 * @param viewId The view id.
 	 * @param value The text to put in the text view.
