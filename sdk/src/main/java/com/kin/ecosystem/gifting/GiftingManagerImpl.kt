@@ -72,7 +72,7 @@ internal class GiftingManagerImpl(private val jwtProvider: JwtProvider,
 
 		isShowing = true
 		currentRecipientUserID = recipientUserID
-		GiftingDialog.Builder(activity.applicationContext)
+		GiftingDialog.Builder(activity)
 				.balance(balance)
 				.eventsListener(this)
 				.theme(getDialogTheme())
