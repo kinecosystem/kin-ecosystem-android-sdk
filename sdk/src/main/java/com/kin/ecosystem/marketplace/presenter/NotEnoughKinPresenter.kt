@@ -23,7 +23,7 @@ class NotEnoughKinPresenter(override var navigator: INavigator?,
 				ContinueButtonTapped.PageContinue.NOT_ENOUGH_KIN_CONTINUE_BUTTON, null))
 
 		val kinUserId = authDataSource.ecosystemUserID
-		if (!settingsDataSource.isSawOnboarding(kinUserId)) {
+		if (!settingsDataSource.hasSeenOnboarding(kinUserId)) {
 			navigator?.navigateToOnboarding()
 		} else {
 			navigator?.navigateToMarketplace(customAnimation = customAnimation {
