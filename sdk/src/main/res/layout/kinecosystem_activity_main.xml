@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="?attr/backgroundCardImage"
-        app:layout_constraintHeight_percent="0.8"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/guideline"
         app:layout_constraintWidth_default="percent">
 

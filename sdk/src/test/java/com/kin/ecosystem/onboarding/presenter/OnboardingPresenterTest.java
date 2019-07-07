@@ -71,7 +71,7 @@ public class OnboardingPresenterTest extends BaseTestClass {
 		super.setUp();
 		MockitoAnnotations.initMocks(this);
 		when(authDataSource.getEcosystemUserID()).thenReturn("some_id");
-		when(extras.getInt(Kin.KEY_ECOSYSTEM_EXPERIENCE, EcosystemExperience.NONE)).thenReturn(EcosystemExperience.MARKETPLACE);
+		when(extras.getInt(Kin.KEY_ECOSYSTEM_EXPERIENCE, EcosystemExperience.MARKETPLACE)).thenReturn(EcosystemExperience.MARKETPLACE);
 		splashPresenter = new OnboardingPresenterImpl(accountManager, authDataSource, settingsDataSource, navigator, eventLogger, timer, extras);
 		splashPresenter.onAttach(splashView);
 		assertNotNull(splashPresenter.getView());

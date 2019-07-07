@@ -252,7 +252,7 @@ class MarketplacePresenter(private val offerRepository: OfferDataSource,
 
                 if (balance < amount.toInt()) {
                     eventLogger.send(APageViewed.create(APageViewed.PageName.DIALOGS_NOT_ENOUGH_KIN))
-                    showToast(Message.NOT_ENOUGH_KIN)
+                    navigator?.showNotEnoughKin()
                     return
                 }
             }

@@ -4,6 +4,8 @@ import com.kin.ecosystem.base.CustomAnimation
 
 interface INavigator {
 
+    fun showNotEnoughKin(withAnimation: Boolean = true)
+
     fun navigateToOnboarding()
 
     fun navigateToMarketplace(customAnimation: CustomAnimation = com.kin.ecosystem.base.customAnimation {  })
