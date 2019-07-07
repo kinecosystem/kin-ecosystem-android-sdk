@@ -195,28 +195,6 @@ public class OrderRepositoryTest extends BaseTestClass {
 	}
 
 	@Test
-	public void createTransferOrder_Succeed() {
-		orderRepository.createOutgoingTransferOrder(outgoingTransferRequest, openOrderCallback);
-		verify(remote).createOutgoingTransferOrder(any(OutgoingTransferRequest.class), createOrderCapture.capture());
-
-		createOrderCapture.getValue().onResponse(openOrder);
-		assertEquals(openOrder, orderRepository.getOpenOrder().getValue());
-		verify(openOrderCallback).onResponse(openOrder);
-		verify(openOrderCallback, never()).onFailure(any(KinEcosystemException.class));
-	}
-
-	@Test
-	public void createTransferOrder_Failed() {
-		orderRepository.createOutgoingTransferOrder(outgoingTransferRequest, openOrderCallback);
-		verify(remote).createOutgoingTransferOrder(any(OutgoingTransferRequest.class), createOrderCapture.capture());
-
-		createOrderCapture.getValue().onFailure(getApiException());
-		assertNull(orderRepository.getOpenOrder().getValue());
-		verify(openOrderCallback).onFailure(any(KinEcosystemException.class));
-		verify(openOrderCallback, never()).onResponse(any(OpenOrder.class));
-	}
-
-	@Test
 	public void submitOrder_Succeed_EarnOrder() throws Exception {
 		KinCallback<Order> orderCallback = mock(KinCallback.class);
 		ArgumentCaptor<Callback<Order, ApiException>> submitOrderCapture = ArgumentCaptor.forClass(Callback.class);

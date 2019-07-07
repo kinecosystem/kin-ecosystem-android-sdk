@@ -2,27 +2,19 @@ package com.kin.ecosystem.core.data.order;
 
 
 import android.support.annotation.NonNull;
-import android.util.Log;
-import com.kin.ecosystem.common.KinCallback;
-import com.kin.ecosystem.common.exception.BlockchainException;
+
 import com.kin.ecosystem.common.exception.KinEcosystemException;
-import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
-import com.kin.ecosystem.core.data.blockchain.BlockchainSource.SignTransactionListener;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
-import com.kin.ecosystem.core.data.order.OutoingTransferCall.OutgoingTransferCallback;
-import com.kin.ecosystem.core.network.ApiException;
+import com.kin.ecosystem.core.data.order.OutgoingTransferCall.OutgoingTransferCallback;
 import com.kin.ecosystem.core.network.model.OpenOrder;
-import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.OutgoingTransferRequest;
-import com.kin.ecosystem.core.util.ErrorUtil;
-import com.kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
-import java.math.BigDecimal;
-import kin.sdk.migration.common.exception.OperationFailedException;
+
 import org.kinecosystem.transfer.repositories.KinTransferCallback;
 import org.kinecosystem.transfer.sender.service.SendKinServiceBase;
 
-public class OutgoingTransferService extends SendKinServiceBase {
+import java.math.BigDecimal;
 
+public class OutgoingTransferService extends SendKinServiceBase {
 
 	@Override
 	public KinTransferComplete transferKin(final @NonNull String receiverAppId, final @NonNull String receiverAppName,
@@ -34,41 +26,39 @@ public class OutgoingTransferService extends SendKinServiceBase {
 	@Override
 	public void transferKinAsync(@NonNull final String receiverAppId, @NonNull final String receiverAppName,
 		final @NonNull String toAddress, final int amount, @NonNull final String memo, @NonNull final KinTransferCallback callback) {
-
-		// TODO add the correct title & description in strings.xml and use it
+		String transferInfo = "Sent "+ amount + " Kin to " + receiverAppName;
+		String description = "Transferred on";
 		OutgoingTransferRequest request = new OutgoingTransferRequest()
 			.amount(amount)
 			.appId(receiverAppId)
-			.title("Transfer to " + receiverAppName)
-			.description("Detailed description")
+			.title(transferInfo)
+			.description(description)
 			.memo(memo)
 			.walletAddress(toAddress);
 
-		new OutoingTransferCall(OrderRepository.getInstance(), BlockchainSourceImpl.getInstance(), request,
+		new OutgoingTransferCall(request, transferInfo,
 			new OutgoingTransferCallback() {
 				@Override
-				public void onOutgoingTransferSucccess(OutgoingTransferRequest request, OpenOrder order,
-					String transactionId) {
+				public void onOutgoingTransferSuccess(OutgoingTransferRequest request, OpenOrder order,
+													  String transactionId) {
 					callback.onSuccess(new KinTransferComplete(request.getWalletAddress(), transactionId, request.getMemo()));
 				}
 
 				@Override
-				public void onOutgoingTransferFailed(OutgoingTransferRequest request, OpenOrder order,
-					KinEcosystemException exception) {
-					callback.onError(new KinTransferException(request.getWalletAddress(), "error"));
+				public void onOutgoingTransferFailed(OutgoingTransferRequest request, String errorMessage) {
+					callback.onError(new KinTransferException(request.getWalletAddress(), errorMessage));
 				}
 			}).start();
 	}
 
 	@Override
 	public BigDecimal getCurrentBalance() throws BalanceException {
+		//need to get the updated balance every call not the cached
 		try {
-			//TODO maybe use cached balance instead of real
 			return BlockchainSourceImpl.getInstance().getBalanceSync().getAmount();
 		} catch (Exception e) {
-			// TODO use ErrorUtil
 			throw new BalanceException(
-				"Exception " + e + " ocurred while retrieving users balance. Message: " + e.getMessage());
+				"Exception " + e + " occurred while retrieving users balance. Message: " + e.getMessage());
 		}
 	}
 

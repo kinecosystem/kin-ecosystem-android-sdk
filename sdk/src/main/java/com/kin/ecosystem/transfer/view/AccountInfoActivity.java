@@ -1,10 +1,13 @@
 package com.kin.ecosystem.transfer.view;
 
+import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.common.exception.BlockchainException;
+import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
+import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 
 import org.kinecosystem.transfer.receiver.manager.AccountInfoException;
@@ -18,12 +21,16 @@ public class AccountInfoActivity extends AccountInfoActivityBase {
     @Override
     public String getData() throws AccountInfoException {
         try {
+            Kin.initialize(getApplicationContext(), null);
             final AuthRepository authRepository = AuthRepository.getInstance();
+            final BlockchainSource blockchainSource = BlockchainSourceImpl.getInstance();
             if (authRepository != null && !authRepository.isCurrentAuthTokenExpired()
-                    && BlockchainSourceImpl.getInstance() != null) {
-                return BlockchainSourceImpl.getInstance().getPublicAddress();
+                    && blockchainSource != null) {
+                return blockchainSource.getPublicAddress();
             }
         } catch (BlockchainException e) {
+            throwExceptionOnDataError();
+        } catch (ClientException e) {
             throwExceptionOnDataError();
         }
         return null;
