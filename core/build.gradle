@@ -19,7 +19,8 @@ android {
 }
 
 dependencies {
-    implementation 'com.github.kinecosystem.move-kin-android:appsTransfer:6c911d626f48e9a116d9682c82d2a651e46a399c'
+    //TODO need to update last version
+    implementation 'com.github.kinecosystem.move-kin-android:appsTransfer:202f69f95e0447def46cb4fb4cdbab40a035d637'
     implementation project(':common')
     api project(':recovery')
 

@@ -77,7 +77,7 @@ class NotEnoughKinPresenterTest: BaseTestClass() {
 
 	@Test
 	fun `earn more kin clicked, user didn't see onboarding, navigate to onboarding`() {
-		whenever(settingsDataSource.isSawOnboarding(any())).thenReturn(false)
+		whenever(settingsDataSource.hasSeenOnboarding(any())).thenReturn(false)
 		notEnoughKinPresenter.onEarnMoreKinClicked()
 		verify(navigator).navigateToOnboarding()
 		verifyNoMoreInteractions(navigator)
@@ -85,7 +85,7 @@ class NotEnoughKinPresenterTest: BaseTestClass() {
 
 	@Test
 	fun `earn more kin clicked, user saw onboarding, navigate to marketplace`() {
-		whenever(settingsDataSource.isSawOnboarding(any())).thenReturn(true)
+		whenever(settingsDataSource.hasSeenOnboarding(any())).thenReturn(true)
 		notEnoughKinPresenter.onEarnMoreKinClicked()
 		verify(navigator).navigateToMarketplace(any())
 		verifyNoMoreInteractions(navigator)
