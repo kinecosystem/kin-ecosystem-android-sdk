@@ -29,6 +29,8 @@ dependencies {
     implementation devDependencies.okhttp3
     implementation devDependencies.loginInterceptor3
     implementation devDependencies.kotlin
+    implementation 'com.github.kinecosystem.move-kin-android:appsTransfer:e2a4f21119ad4626f299cfccb6b062545626eddf'
+
 
     testImplementation project(':test-base')
     testImplementation testingDependencies.mockitoKotlin

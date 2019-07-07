@@ -1,1 +1,7 @@
-<manifest package="kin.ecosystem.core"/>
+<manifest package="kin.ecosystem.core" xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <service
+            android:exported="false"
+            android:name="com.kin.ecosystem.core.data.order.OutgoingTransferService"/>
+    </application>
+</manifest>
