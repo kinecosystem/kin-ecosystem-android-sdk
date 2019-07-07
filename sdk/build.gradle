@@ -40,7 +40,7 @@ dependencies {
 
     //adding send only module
     //TODO change version
-    implementation 'com.github.kinecosystem.move-kin-android:appsTransfer:e2a4f21119ad4626f299cfccb6b062545626eddf'
+    implementation 'com.github.kinecosystem.move-kin-android:appsTransfer:c73605f4dafc8c80895a359a8d55e71ae4e3fdb8'
 
     testImplementation project(':test-base')
     testImplementation testingDependencies.junit
