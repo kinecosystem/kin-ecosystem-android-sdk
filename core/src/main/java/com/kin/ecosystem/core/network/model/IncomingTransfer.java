@@ -16,10 +16,10 @@ import java.util.Objects;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * IncomingTransferRequest
+ * IncomingTransfer
  */
 
-public class IncomingTransferRequest {
+public class IncomingTransfer {
 
 	@SerializedName("title")
 	private String title = null;
@@ -36,7 +36,7 @@ public class IncomingTransferRequest {
 	@SerializedName("app_id")
 	private String appId = null;
 
-	public IncomingTransferRequest title(String title) {
+	public IncomingTransfer title(String title) {
 		this.title = title;
 		return this;
 	}
@@ -54,7 +54,7 @@ public class IncomingTransferRequest {
 		this.title = title;
 	}
 
-	public IncomingTransferRequest description(String description) {
+	public IncomingTransfer description(String description) {
 		this.description = description;
 		return this;
 	}
@@ -72,7 +72,7 @@ public class IncomingTransferRequest {
 		this.description = description;
 	}
 
-	public IncomingTransferRequest memo(String memo) {
+	public IncomingTransfer memo(String memo) {
 		this.memo = memo;
 		return this;
 	}
@@ -90,7 +90,7 @@ public class IncomingTransferRequest {
 		this.memo = memo;
 	}
 
-	public IncomingTransferRequest walletAddress(String walletAddress) {
+	public IncomingTransfer walletAddress(String walletAddress) {
 		this.walletAddress = walletAddress;
 		return this;
 	}
@@ -108,7 +108,7 @@ public class IncomingTransferRequest {
 		this.walletAddress = walletAddress;
 	}
 
-	public IncomingTransferRequest appId(String appId) {
+	public IncomingTransfer appId(String appId) {
 		this.appId = appId;
 		return this;
 	}
@@ -135,7 +135,7 @@ public class IncomingTransferRequest {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		IncomingTransferRequest incomingTransferRequest = (IncomingTransferRequest) o;
+		IncomingTransfer incomingTransferRequest = (IncomingTransfer) o;
 		return Objects.equals(this.title, incomingTransferRequest.title) &&
 			Objects.equals(this.description, incomingTransferRequest.description) &&
 			Objects.equals(this.memo, incomingTransferRequest.memo) &&
@@ -152,7 +152,7 @@ public class IncomingTransferRequest {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("class IncomingTransferRequest {\n");
+		sb.append("class IncomingTransfer {\n");
 
 		sb.append("    title: ").append(toIndentedString(title)).append("\n");
 		sb.append("    description: ").append(toIndentedString(description)).append("\n");

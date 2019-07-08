@@ -22,7 +22,7 @@ import com.kin.ecosystem.core.network.model.ExternalOrderRequest;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.OrderList;
-import com.kin.ecosystem.core.network.model.OutgoingTransferRequest;
+import com.kin.ecosystem.core.network.model.OutgoingTransfer;
 import com.kin.ecosystem.core.network.model.SpendOrderPayload;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -934,7 +934,7 @@ public class OrdersApi extends Api {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 */
-	public Call createOutgoingTransferOrderCall(OutgoingTransferRequest body, String X_REQUEST_ID) throws ApiException {
+	public Call createOutgoingTransferOrderCall(OutgoingTransfer body, String X_REQUEST_ID) throws ApiException {
 		Object localVarPostBody = body;
 
 		// create path and map variables
@@ -966,7 +966,7 @@ public class OrdersApi extends Api {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private Call createOutgoingTransferOrderValidateBeforeCall(OutgoingTransferRequest body, String X_REQUEST_ID) throws ApiException {
+	private Call createOutgoingTransferOrderValidateBeforeCall(OutgoingTransfer body, String X_REQUEST_ID) throws ApiException {
 		// verify the required parameter 'body' is set
 		if (body == null) {
 			throw new ApiException("Missing the required parameter 'body' when calling createOutgoingTransferOrder(Async)");
@@ -988,7 +988,7 @@ public class OrdersApi extends Api {
 	 * @return OpenOrder
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 */
-	public OpenOrder createOutgoingTransferOrder(OutgoingTransferRequest body, String X_REQUEST_ID) throws ApiException {
+	public OpenOrder createOutgoingTransferOrder(OutgoingTransfer body, String X_REQUEST_ID) throws ApiException {
 		ApiResponse<OpenOrder> resp = createOutgoingTransferOrderWithHttpInfo(body, X_REQUEST_ID);
 		return resp.getData();
 	}
@@ -1000,7 +1000,7 @@ public class OrdersApi extends Api {
 	 * @return ApiResponse&lt;OpenOrder&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 */
-	public ApiResponse<OpenOrder> createOutgoingTransferOrderWithHttpInfo(OutgoingTransferRequest body, String X_REQUEST_ID) throws ApiException {
+	public ApiResponse<OpenOrder> createOutgoingTransferOrderWithHttpInfo(OutgoingTransfer body, String X_REQUEST_ID) throws ApiException {
 
 		Call call = createOutgoingTransferOrderValidateBeforeCall(body, X_REQUEST_ID);
 		Type localVarReturnType = new TypeToken<OpenOrder>(){}.getType();
@@ -1015,7 +1015,7 @@ public class OrdersApi extends Api {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 */
-	public Call createOutgoingTransferOrderAsync(OutgoingTransferRequest body, String X_REQUEST_ID, final ApiCallback<OpenOrder> callback) throws ApiException {
+	public Call createOutgoingTransferOrderAsync(OutgoingTransfer body, String X_REQUEST_ID, final ApiCallback<OpenOrder> callback) throws ApiException {
 
 		Call call = createOutgoingTransferOrderValidateBeforeCall(body, X_REQUEST_ID);
 		Type localVarReturnType = new TypeToken<OpenOrder>(){}.getType();
