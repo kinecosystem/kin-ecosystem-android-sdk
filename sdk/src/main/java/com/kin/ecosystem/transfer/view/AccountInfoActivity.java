@@ -21,9 +21,7 @@ public class AccountInfoActivity extends AccountInfoActivityBase {
     @Override
     public String getData() throws AccountInfoException {
         try {
-            //TODO how to do init if user is loggedin while activity came from background
-            //how will it be in kik - is there caching of address
-            Kin.initialize(getApplicationContext(), null);
+            initKin();
             final AuthRepository authRepository = AuthRepository.getInstance();
             final BlockchainSource blockchainSource = BlockchainSourceImpl.getInstance();
             if (authRepository != null && !authRepository.isCurrentAuthTokenExpired()
@@ -38,11 +36,6 @@ public class AccountInfoActivity extends AccountInfoActivityBase {
         return null;
     }
 
-    private void throwExceptionOnDataError() throws AccountInfoException {
-        String appName = getApplicationInfo().loadLabel(getPackageManager()).toString();
-        throw new AccountInfoException(IErrorActionClickListener.ActionType.LaunchMainActivity, getString(R.string.kinecosystem_transfer_account_info_error_relogin_title, appName));
-    }
-
     @Override
     public void updateTransactionInfo(String senderAppId, String senderAppName, String receiverAppId, String memo) {
         super.updateTransactionInfo(senderAppId, senderAppName, receiverAppId, memo);
@@ -50,4 +43,16 @@ public class AccountInfoActivity extends AccountInfoActivityBase {
         //if found add senderAppName to transaction history
         Logger.log(new Log().withTag(TAG).put(TAG, "AccountInfoActivity Validate memo " + memo + " on blockChain and if valid add to transaction history sender App Name " + senderAppName + " sender app id: " + senderAppId + " receiver ppp Id: " + receiverAppId));
     }
+
+    private void initKin() throws ClientException {
+        if (AuthRepository.getInstance() == null || BlockchainSourceImpl.getInstance() == null) {
+            Kin.initialize(this, null);
+        }
+    }
+
+    private void throwExceptionOnDataError() throws AccountInfoException {
+        String appName = getApplicationInfo().loadLabel(getPackageManager()).toString();
+        throw new AccountInfoException(IErrorActionClickListener.ActionType.LaunchMainActivity, getString(R.string.kinecosystem_transfer_account_info_error_relogin_title, appName));
+    }
+
 }

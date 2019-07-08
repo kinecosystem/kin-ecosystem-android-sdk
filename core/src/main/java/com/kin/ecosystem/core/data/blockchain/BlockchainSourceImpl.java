@@ -141,7 +141,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		updateKinClient(migrationManager.getKinClient(sdkVersion));
 	}
 
-
 	@Override
 	public String extractTransactionId(String transactionEnvelope) {
 		try {
@@ -153,7 +152,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			return sb.toString();
 		}
 		catch (IOException e) {
-			e.printStackTrace();
 			return null;
 		}
 	}

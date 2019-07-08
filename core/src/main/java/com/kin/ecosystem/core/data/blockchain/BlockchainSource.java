@@ -100,9 +100,9 @@ public interface BlockchainSource {
 		@NonNull String offerID);
 
 	/**
-	 *
+	 * Parse the transaction envelope in order to retrieve the transaction hash
 	 * @param transactionEnvelope
-	 * @return
+	 * @return transaction id
 	 */
 	String extractTransactionId(String transactionEnvelope);
 
