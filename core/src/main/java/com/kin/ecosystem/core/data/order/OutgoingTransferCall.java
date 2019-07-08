@@ -10,10 +10,10 @@ import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource.SignTransactionListener;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.data.blockchain.Payment;
-import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
-import com.kin.ecosystem.core.network.model.OutgoingTransferRequest;
+import com.kin.ecosystem.core.network.model.OutgoingTransfer;
+import com.kin.ecosystem.core.util.ErrorUtil;
 
 import java.math.BigDecimal;
 import java.util.Timer;
@@ -24,46 +24,46 @@ import kin.sdk.migration.common.exception.OperationFailedException;
 
 public class OutgoingTransferCall extends Thread {
 
-    private static final int SSE_TIMEOUT = 30 * 1000; // 30 seconds
-    private BlockchainSource blockchainSource = BlockchainSourceImpl.getInstance();
-    private OutgoingTransferRequest request;
+    private static final int SSE_TIMEOUT = 15 * 1000; // 15 seconds
+    private OutgoingTransfer payload;
     private OutgoingTransferCallback callback;
-    private String transferInfo;
+    private String transferTitle;
     private final AtomicBoolean isTimeoutTaskCanceled;
     private final Timer sseTimeoutTimer;
     private Observer<Payment> paymentObserver;
+    private OrderRepository orderRepository;
+    private BlockchainSource blockchainSource;
 
 
-    OutgoingTransferCall(@NonNull OutgoingTransferRequest request, String transferInfo, @NonNull OutgoingTransferCallback callback) {
-        this.request = request;
+    OutgoingTransferCall(@NonNull BlockchainSource blockchainSource, @NonNull OrderRepository orderRepository, @NonNull OutgoingTransfer payload, String transferTitle, @NonNull OutgoingTransferCallback callback) {
+        this.payload = payload;
         this.callback = callback;
-        this.transferInfo = transferInfo;
+        this.transferTitle = transferTitle;
         this.isTimeoutTaskCanceled = new AtomicBoolean(false);
         this.sseTimeoutTimer = new Timer();
+        this.orderRepository = orderRepository;
+        this.blockchainSource = blockchainSource;
     }
 
     @Override
     public void run() {
         try {
-            OrderRepository orderRepository = OrderRepository.getInstance();
-            final OpenOrder order = orderRepository.createOutgoingTransferOrderSync(request);
+            final OpenOrder order = orderRepository.createOutgoingTransferOrderSync(payload);
             payForOrder(orderRepository, order);
-        } catch (ApiException e) {
-            callback.onOutgoingTransferFailed(request, e.getMessage());
-        } catch (Exception e) {
-            callback.onOutgoingTransferFailed(request, e.getMessage());
+        } catch (KinEcosystemException exception) {
+            callback.onOutgoingTransferFailed(payload, exception);
         }
     }
 
     private void payForOrder(final OrderRepository orderRepository, final OpenOrder order) {
         try {
-            blockchainSource.signTransaction(request.getWalletAddress(), new BigDecimal(request.getAmount()), request.getMemo(), order.getOfferId(), new SignTransactionListener() {
+            blockchainSource.signTransaction(payload.getWalletAddress(), new BigDecimal(payload.getAmount()), payload.getMemo(), order.getOfferId(), new SignTransactionListener() {
                 @Override
                 public void onTransactionSigned(@NonNull String transaction) {
 
                     listenToPayment(order, transaction);
 
-                    orderRepository.submitSpendOrder(order.getOfferId(), transaction, order.getId(), transferInfo,
+                    orderRepository.submitSpendOrder(order.getOfferId(), transaction, order.getId(), transferTitle,
                             new KinCallback<Order>() {
                                 @Override
                                 public void onResponse(Order order) {
@@ -72,13 +72,13 @@ public class OutgoingTransferCall extends Thread {
 
                                 @Override
                                 public void onFailure(KinEcosystemException exception) {
-                                    callback.onOutgoingTransferFailed(request, exception.getMessage());
+                                    callback.onOutgoingTransferFailed(payload, exception);
                                 }
                             });
                 }
             });
         } catch (OperationFailedException e) {
-            callback.onOutgoingTransferFailed(request, e.getMessage());
+            callback.onOutgoingTransferFailed(payload, ErrorUtil.getBlockchainException(e));
         }
     }
 
@@ -100,11 +100,10 @@ public class OutgoingTransferCall extends Thread {
                     }
 
                     if (payment.isSucceed()) {
-                        callback.onOutgoingTransferSuccess(request, order, transactionId);
+                        callback.onOutgoingTransferSuccess(payload, order, transactionId);
                     } else {
-                        callback.onOutgoingTransferFailed(request, payment.getException().getMessage());
+                        callback.onOutgoingTransferFailed(payload, ErrorUtil.getBlockchainException(payment.getException()));
                     }
-
                 }
             }
         };
@@ -125,15 +124,15 @@ public class OutgoingTransferCall extends Thread {
     }
 
     private boolean isTransferPayment(Payment payment) {
-        return request.getMemo().equals(payment.getOrderID());
+        return payload.getMemo().equals(payment.getOrderID());
     }
 
 
     interface OutgoingTransferCallback {
 
-        void onOutgoingTransferSuccess(OutgoingTransferRequest request, OpenOrder order, String transactionId);
+        void onOutgoingTransferSuccess(OutgoingTransfer request, OpenOrder order, String transactionId);
 
-        void onOutgoingTransferFailed(OutgoingTransferRequest request, String errorMessage);
+        void onOutgoingTransferFailed(OutgoingTransfer request, KinEcosystemException exception);
     }
 
 }
