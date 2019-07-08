@@ -9,10 +9,11 @@ import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
-
 import org.kinecosystem.transfer.receiver.manager.AccountInfoException;
 import org.kinecosystem.transfer.receiver.presenter.IErrorActionClickListener;
 import org.kinecosystem.transfer.receiver.view.AccountInfoActivityBase;
+import kin.sdk.migration.MigrationManager;
+import kin.sdk.migration.common.interfaces.IKinAccount;
 
 public class AccountInfoActivity extends AccountInfoActivityBase {
 
@@ -21,9 +22,7 @@ public class AccountInfoActivity extends AccountInfoActivityBase {
     @Override
     public String getData() throws AccountInfoException {
         try {
-            //TODO how to do init if user is loggedin while activity came from background
-            //how will it be in kik - is there caching of address
-            Kin.initialize(getApplicationContext(), null);
+            initKin();
             final AuthRepository authRepository = AuthRepository.getInstance();
             final BlockchainSource blockchainSource = BlockchainSourceImpl.getInstance();
             if (authRepository != null && !authRepository.isCurrentAuthTokenExpired()
@@ -36,6 +35,20 @@ public class AccountInfoActivity extends AccountInfoActivityBase {
             throwExceptionOnDataError();
         }
         return null;
+    }
+
+    private void initKin() throws ClientException, BlockchainException {
+        if (AuthRepository.getInstance() == null || BlockchainSourceImpl.getInstance() == null) {
+            Kin.initialize(getApplicationContext(), null);
+            IKinAccount account = BlockchainSourceImpl.getInstance().getKinAccount();
+            if (account == null) {
+                final String kinUserId = AuthRepository.getInstance().getEcosystemUserID();
+                MigrationManager migrationManager = Kin.createMigrationManager(getApplicationContext(),
+                        AuthRepository.getInstance().getAppID());
+                BlockchainSourceImpl.getInstance().setMigrationManager(migrationManager);
+                BlockchainSourceImpl.getInstance().loadAccount(kinUserId);
+            }
+        }
     }
 
     private void throwExceptionOnDataError() throws AccountInfoException {

@@ -16,9 +16,9 @@ import java.util.Objects;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * OutgoingTransferRequest
+ * OutgoingTransfer
  */
-public class OutgoingTransferRequest {
+public class OutgoingTransfer {
 
 	@SerializedName("wallet_address")
 	private String walletAddress = null;
@@ -38,7 +38,7 @@ public class OutgoingTransferRequest {
 	@SerializedName("amount")
 	private Integer amount = null;
 
-	public OutgoingTransferRequest walletAddress(String walletAddress) {
+	public OutgoingTransfer walletAddress(String walletAddress) {
 		this.walletAddress = walletAddress;
 		return this;
 	}
@@ -56,7 +56,7 @@ public class OutgoingTransferRequest {
 		this.walletAddress = walletAddress;
 	}
 
-	public OutgoingTransferRequest appId(String appId) {
+	public OutgoingTransfer appId(String appId) {
 		this.appId = appId;
 		return this;
 	}
@@ -74,7 +74,7 @@ public class OutgoingTransferRequest {
 		this.appId = appId;
 	}
 
-	public OutgoingTransferRequest title(String title) {
+	public OutgoingTransfer title(String title) {
 		this.title = title;
 		return this;
 	}
@@ -92,7 +92,7 @@ public class OutgoingTransferRequest {
 		this.title = title;
 	}
 
-	public OutgoingTransferRequest description(String description) {
+	public OutgoingTransfer description(String description) {
 		this.description = description;
 		return this;
 	}
@@ -110,7 +110,7 @@ public class OutgoingTransferRequest {
 		this.description = description;
 	}
 
-	public OutgoingTransferRequest memo(String memo) {
+	public OutgoingTransfer memo(String memo) {
 		this.memo = memo;
 		return this;
 	}
@@ -128,7 +128,7 @@ public class OutgoingTransferRequest {
 		this.memo = memo;
 	}
 
-	public OutgoingTransferRequest amount(Integer amount) {
+	public OutgoingTransfer amount(Integer amount) {
 		this.amount = amount;
 		return this;
 	}
@@ -155,7 +155,7 @@ public class OutgoingTransferRequest {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		OutgoingTransferRequest outgoingTransferRequest = (OutgoingTransferRequest) o;
+		OutgoingTransfer outgoingTransferRequest = (OutgoingTransfer) o;
 		return Objects.equals(this.walletAddress, outgoingTransferRequest.walletAddress) &&
 			Objects.equals(this.appId, outgoingTransferRequest.appId) &&
 			Objects.equals(this.title, outgoingTransferRequest.title) &&
@@ -173,7 +173,7 @@ public class OutgoingTransferRequest {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("class OutgoingTransferRequest {\n");
+		sb.append("class OutgoingTransfer {\n");
 
 		sb.append("    walletAddress: ").append(toIndentedString(walletAddress)).append("\n");
 		sb.append("    appId: ").append(toIndentedString(appId)).append("\n");
