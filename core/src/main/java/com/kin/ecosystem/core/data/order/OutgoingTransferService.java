@@ -7,7 +7,7 @@ import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.data.order.OutgoingTransferCall.OutgoingTransferCallback;
 import com.kin.ecosystem.core.network.model.OpenOrder;
-import com.kin.ecosystem.core.network.model.OutgoingTransferRequest;
+import com.kin.ecosystem.core.network.model.OutgoingTransfer;
 
 import org.kinecosystem.transfer.repositories.KinTransferCallback;
 import org.kinecosystem.transfer.sender.service.SendKinServiceBase;
@@ -26,27 +26,27 @@ public class OutgoingTransferService extends SendKinServiceBase {
 	@Override
 	public void transferKinAsync(@NonNull final String receiverAppId, @NonNull final String receiverAppName,
 		final @NonNull String toAddress, final int amount, @NonNull final String memo, @NonNull final KinTransferCallback callback) {
-		String transferInfo = "Sent to " + receiverAppName;
+		String transferTitle = "Sent to " + receiverAppName;
 		String description = "Transferred on";
-		OutgoingTransferRequest request = new OutgoingTransferRequest()
+		OutgoingTransfer payload = new OutgoingTransfer()
 			.amount(amount)
 			.appId(receiverAppId)
-			.title(transferInfo)
+			.title(transferTitle)
 			.description(description)
 			.memo(memo)
 			.walletAddress(toAddress);
 
-		new OutgoingTransferCall(request, transferInfo,
+		new OutgoingTransferCall(BlockchainSourceImpl.getInstance(), OrderRepository.getInstance(), payload, transferTitle,
 			new OutgoingTransferCallback() {
 				@Override
-				public void onOutgoingTransferSuccess(OutgoingTransferRequest request, OpenOrder order,
+				public void onOutgoingTransferSuccess(OutgoingTransfer payload, OpenOrder order,
 													  String transactionId) {
-					callback.onSuccess(new KinTransferComplete(request.getWalletAddress(), transactionId, request.getMemo()));
+					callback.onSuccess(new KinTransferComplete(payload.getWalletAddress(), transactionId, payload.getMemo()));
 				}
 
 				@Override
-				public void onOutgoingTransferFailed(OutgoingTransferRequest request, String errorMessage) {
-					callback.onError(new KinTransferException(request.getWalletAddress(), errorMessage));
+				public void onOutgoingTransferFailed(OutgoingTransfer payload, KinEcosystemException exception) {
+					callback.onError(new KinTransferException(payload.getWalletAddress(), exception.getMessage()));
 				}
 			}).start();
 	}
@@ -56,9 +56,8 @@ public class OutgoingTransferService extends SendKinServiceBase {
 		//need to get the updated balance every call not the cached
 		try {
 			return BlockchainSourceImpl.getInstance().getBalanceSync().getAmount();
-		} catch (Exception e) {
-			throw new BalanceException(
-				"Exception " + e + " occurred while retrieving users balance. Message: " + e.getMessage());
+		} catch (KinEcosystemException e) {
+			throw new BalanceException("Exception " + e + " occurred while retrieving users balance. Message: " + e.getMessage());
 		}
 	}
 
