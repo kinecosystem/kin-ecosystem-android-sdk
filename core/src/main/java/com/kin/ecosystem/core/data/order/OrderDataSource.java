@@ -10,6 +10,7 @@ import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.model.OrderConfirmation;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.Body;
+import com.kin.ecosystem.core.network.model.IncomingTransfer;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.OrderList;
@@ -41,6 +42,8 @@ public interface OrderDataSource {
     OpenOrder createExternalOrderSync(@NonNull final String orderJwt) throws ApiException;
 
     OpenOrder createOutgoingTransferOrderSync(@NonNull final OutgoingTransfer payload) throws KinEcosystemException;
+
+    OpenOrder createIncomingTransferOrderSync(@NonNull final IncomingTransfer payload) throws KinEcosystemException;
 
     void purchase(String offerJwt, @Nullable final KinCallback<OrderConfirmation> callback);
 
@@ -86,6 +89,8 @@ public interface OrderDataSource {
         OpenOrder createExternalOrderSync(String orderJwt) throws ApiException;
 
         OpenOrder createOutgoingTransferOrderSync(@NonNull final OutgoingTransfer payload) throws ApiException;
+
+        OpenOrder createIncomingTransferOrderSync(@NonNull final IncomingTransfer payload) throws ApiException;
 
         void getFilteredOrderHistory(@Nullable String origin, @NonNull String offerID, @NonNull final Callback<OrderList, ApiException> callback);
 

@@ -2,10 +2,12 @@ package com.kin.ecosystem.core.data.order;
 
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.data.order.OutgoingTransferCall.OutgoingTransferCallback;
+import com.kin.ecosystem.core.network.model.IncomingTransfer;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.OutgoingTransfer;
 

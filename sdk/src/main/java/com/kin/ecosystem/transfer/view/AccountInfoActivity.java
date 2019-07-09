@@ -4,11 +4,16 @@ import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
+import com.kin.ecosystem.core.data.order.OrderRepository;
+import com.kin.ecosystem.core.network.model.IncomingTransfer;
+import com.kin.ecosystem.core.network.model.OpenOrder;
+
 import org.kinecosystem.transfer.receiver.manager.AccountInfoException;
 import org.kinecosystem.transfer.receiver.presenter.IErrorActionClickListener;
 import org.kinecosystem.transfer.receiver.view.AccountInfoActivityBase;
@@ -35,6 +40,17 @@ public class AccountInfoActivity extends AccountInfoActivityBase {
             throwExceptionOnDataError();
         }
         return null;
+    }
+
+    @Override
+    public void updateTransactionInfo(String senderAppId, String senderAppName, String receiverAppId, String memo) {
+        try {
+            IncomingTransfer payload = new IncomingTransfer().appId("").description("").memo(memo).title("").walletAddress(fromAddress);
+            final OpenOrder order = OrderRepository.getInstance().createIncomingTransferOrderSync(payload);
+            android.util.Log.d("#####", "###### IncomingTransferService onTransactionCompleted " + payload.toString() + "  order " + order);
+        } catch (KinEcosystemException exception) {
+
+        }
     }
 
     private void initKin() throws ClientException, BlockchainException {
