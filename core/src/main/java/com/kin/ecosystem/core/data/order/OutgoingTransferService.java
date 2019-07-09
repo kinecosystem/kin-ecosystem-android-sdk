@@ -2,10 +2,13 @@ package com.kin.ecosystem.core.data.order;
 
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
+import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.data.order.OutgoingTransferCall.OutgoingTransferCallback;
+import com.kin.ecosystem.core.network.model.IncomingTransfer;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.OutgoingTransfer;
 
@@ -58,6 +61,15 @@ public class OutgoingTransferService extends SendKinServiceBase {
 			return BlockchainSourceImpl.getInstance().getBalanceSync().getAmount();
 		} catch (KinEcosystemException e) {
 			throw new BalanceException("Exception " + e + " occurred while retrieving users balance. Message: " + e.getMessage());
+		}
+	}
+
+	@Override
+	public String getAddress() throws AccountException {
+		try {
+			return BlockchainSourceImpl.getInstance().getPublicAddress();
+		} catch (BlockchainException e) {
+			throw new BalanceException("Exception " + e + " occurred while retrieving users address. Message: " + e.getMessage());
 		}
 	}
 

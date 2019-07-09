@@ -1,14 +1,18 @@
 package com.kin.ecosystem.transfer.view;
 
+import android.util.Log;
+
 import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
-import com.kin.ecosystem.core.Log;
-import com.kin.ecosystem.core.Logger;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
+import com.kin.ecosystem.core.data.order.OrderRepository;
+import com.kin.ecosystem.core.network.model.IncomingTransfer;
+import com.kin.ecosystem.core.network.model.OpenOrder;
 
 import org.kinecosystem.transfer.receiver.manager.AccountInfoException;
 import org.kinecosystem.transfer.receiver.presenter.IErrorActionClickListener;
@@ -37,11 +41,35 @@ public class AccountInfoActivity extends AccountInfoActivityBase {
     }
 
     @Override
-    public void updateTransactionInfo(String senderAppId, String senderAppName, String receiverAppId, String memo) {
-        super.updateTransactionInfo(senderAppId, senderAppName, receiverAppId, memo);
-        //server needs to check transaction got with that memo on the blockchain
-        //if found add senderAppName to transaction history
-        Logger.log(new Log().withTag(TAG).put(TAG, "AccountInfoActivity Validate memo " + memo + " on blockChain and if valid add to transaction history sender App Name " + senderAppName + " sender app id: " + senderAppId + " receiver ppp Id: " + receiverAppId));
+    public void updateTransactionInfo(final String senderAddress, final String senderAppId, final String senderAppName, final String receiverAppId, final String memo) {
+        //on main thread
+        try {
+            initKin();
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    final OrderRepository orderRepository = OrderRepository.getInstance();
+                    IncomingTransfer payload = new IncomingTransfer().appId(senderAppId).description("some new descriotion2").memo(memo).title("some new title2").walletAddress("");
+                    Log.d("####", "#### update senderAddress " + senderAddress);
+                    Log.d("####", "#### updateTransactionInfo memo " + memo);
+
+                    Log.d("####", "#### update data " + orderRepository);
+                    if (orderRepository != null) {
+                        try {
+                            OpenOrder order = orderRepository.createIncomingTransferOrderSync(payload);
+                            android.util.Log.d("#####", "###### updateTransactionInfo OpenOrder order " + order);
+                        } catch (KinEcosystemException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+            thread.start();
+
+        } catch (KinEcosystemException exception) {
+            android.util.Log.d("#####", "###### KinEcosystemException 5 "+ exception.getMessage());
+
+        }
     }
 
     private void initKin() throws ClientException {
@@ -49,6 +77,7 @@ public class AccountInfoActivity extends AccountInfoActivityBase {
             Kin.initialize(this, null);
         }
     }
+
 
     private void throwExceptionOnDataError() throws AccountInfoException {
         String appName = getApplicationInfo().loadLabel(getPackageManager()).toString();
