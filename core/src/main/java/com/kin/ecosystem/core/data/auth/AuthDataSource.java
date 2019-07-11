@@ -15,6 +15,8 @@ import com.kin.ecosystem.core.network.model.UserProperties;
 
 public interface AuthDataSource {
 
+	String getSdkInitDate();
+
 	@UserLoginState int getUserLoginState(@NonNull final String jwt) throws ClientException;
 
 	void setJWT(@NonNull final String jwt) throws ClientException;
@@ -40,6 +42,8 @@ public interface AuthDataSource {
 	void logout();
 
 	interface Local {
+
+		String getSdkInitDate();
 
 		void setJWT(@NonNull final JwtBody jwtBody);
 

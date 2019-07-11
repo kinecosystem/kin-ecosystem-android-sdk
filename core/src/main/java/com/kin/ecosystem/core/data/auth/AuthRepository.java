@@ -58,6 +58,11 @@ public class AuthRepository implements AuthDataSource {
 	}
 
 	@Override
+	public String getSdkInitDate() {
+		return localData.getSdkInitDate();
+	}
+
+	@Override
 	public @UserLoginState
 	int getUserLoginState(@NonNull String jwt) throws ClientException {
 		final JwtBody jwtBody = getJwtBody(jwt);

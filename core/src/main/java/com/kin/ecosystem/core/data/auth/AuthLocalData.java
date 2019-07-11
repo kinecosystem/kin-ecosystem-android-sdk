@@ -1,5 +1,6 @@
 package com.kin.ecosystem.core.data.auth;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -8,6 +9,7 @@ import android.support.annotation.Nullable;
 import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.network.model.AuthToken;
 import com.kin.ecosystem.core.network.model.User;
+import com.kin.ecosystem.core.util.DateUtil;
 import com.kin.ecosystem.core.util.StringUtil;
 
 
@@ -29,10 +31,21 @@ public class AuthLocalData implements AuthDataSource.Local {
 	private static final String CREATED_DATE_KEY = "created_date";
 	private static final String CURRENT_WALLET_ON_SEVER_KEY = "current_wallet_on_server";
 
+	private static final String SDK_INI_DATE_UTC_KEY = "sdk_init_date_utc";
+
 	private final SharedPreferences signInSharedPreferences;
 
 	private AuthLocalData(Context context) {
 		this.signInSharedPreferences = context.getSharedPreferences(SIGN_IN_PREF_NAME_FILE_KEY, Context.MODE_PRIVATE);
+		setSdkInitDate();
+	}
+
+	@SuppressLint("ApplySharedPref")
+	private void setSdkInitDate() {
+		String initDate = signInSharedPreferences.getString(SDK_INI_DATE_UTC_KEY, null);
+		if(StringUtil.isEmpty(initDate)) {
+			signInSharedPreferences.edit().putString(SDK_INI_DATE_UTC_KEY, DateUtil.getCurrentUtcDate()).commit();
+		}
 	}
 
 	public static AuthLocalData getInstance(@NonNull Context context) {
@@ -45,6 +58,11 @@ public class AuthLocalData implements AuthDataSource.Local {
 		}
 
 		return instance;
+	}
+
+	@Override
+	public String getSdkInitDate() {
+		return signInSharedPreferences.getString(SDK_INI_DATE_UTC_KEY, null);
 	}
 
 	@Override

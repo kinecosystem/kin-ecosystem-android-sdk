@@ -13,8 +13,10 @@ public class DateUtil {
     private static DateFormat utcDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.US);
     private static TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
 
+    private static DateFormat utcDateFormatExtended = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
 	static {
 		utcDateFormat.setTimeZone(utcTimeZone);
+        utcDateFormatExtended.setTimeZone(utcTimeZone);
 
 	}
 
@@ -33,5 +35,9 @@ public class DateUtil {
         } catch (ParseException e) {
             return null;
         }
+    }
+
+    public static String getCurrentUtcDate() {
+        return utcDateFormatExtended.format(new Date());
     }
 }

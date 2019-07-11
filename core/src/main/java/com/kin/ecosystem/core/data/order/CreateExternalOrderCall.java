@@ -186,7 +186,7 @@ class CreateExternalOrderCall extends Thread {
 				});
 			} catch (OperationFailedException e) {
 				blockchainSource.removePaymentObserver(paymentObserver);
-				onOrderFailed(new KinEcosystemException(KinEcosystemException.UNKNOWN, e.getMessage(), e));
+				onOrderFailed(ErrorUtil.getBlockchainException(e));
 			}
 		} else {
 			orderRepository.submitEarnOrder(offerId, null, orderId, callback);
@@ -231,8 +231,7 @@ class CreateExternalOrderCall extends Thread {
 
 	private void sendOrderCreationFailedEvent(final OpenOrder openOrder, ApiException exception) {
 		if (openOrder != null && openOrder.getOfferType() != null) {
-			final Throwable cause = exception.getCause();
-			final String reason = cause != null ? cause.getMessage() : exception.getMessage();
+			final String reason = ErrorUtil.fromApiException(exception).getMessage();
 			switch (openOrder.getOfferType()) {
 				case SPEND:
 					eventLogger.send(SpendOrderCreationFailed

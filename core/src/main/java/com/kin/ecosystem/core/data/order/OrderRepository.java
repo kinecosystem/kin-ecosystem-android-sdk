@@ -37,6 +37,7 @@ import com.kin.ecosystem.core.network.model.Order.Origin;
 import com.kin.ecosystem.core.network.model.Order.Status;
 import com.kin.ecosystem.core.network.model.OrderList;
 import com.kin.ecosystem.core.util.ErrorUtil;
+import com.kin.ecosystem.core.util.StringUtil;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -263,18 +264,24 @@ public class OrderRepository implements OrderDataSource {
 
 	private void sendSpendOrderCompleted(Order order) {
 		if (order.getOfferType() == OfferType.SPEND && order.getOrigin() == Origin.MARKETPLACE) {
-			if (order.getStatus() == Status.COMPLETED) {
-				double amount = (double) order.getAmount();
-				eventLogger.send(SpendOrderCompleted
-					.create(order.getOfferId(), order.getOrderId(), false,
+			switch (order.getStatus()) {
+				case PENDING:
+					break;
+				case COMPLETED:
+					double amount = (double) order.getAmount();
+					eventLogger.send(SpendOrderCompleted.create(order.getOfferId(), order.getOrderId(), false,
 						SpendOrderCompleted.Origin.MARKETPLACE, amount));
-			} else {
-				String reason = "Timed out";
-				if (order.getError() != null) {
-					reason = order.getError().getMessage();
-				}
-				eventLogger.send(SpendOrderFailed.create(reason, order.getOfferId(), order.getOrderId(), false,
-					SpendOrderFailed.Origin.MARKETPLACE));
+					break;
+				case DELAYED:
+					break;
+				case FAILED:
+					String reason = "Timed out";
+					if (order.getError() != null && !StringUtil.isEmpty(order.getError().getMessage())) {
+						reason = order.getError().getMessage();
+					}
+					eventLogger.send(SpendOrderFailed.create(reason, order.getOfferId(), order.getOrderId(), false,
+						SpendOrderFailed.Origin.MARKETPLACE));
+					break;
 			}
 		}
 	}
@@ -367,16 +374,8 @@ public class OrderRepository implements OrderDataSource {
 				}
 
 				private void handleOnFailure(KinEcosystemException exception, String offerId, String orderId) {
-					String reason = "";
-					if (exception != null) {
-						if (exception.getCause() != null) {
-							reason = exception.getCause().getMessage();
-						} else {
-							reason = exception.getMessage();
-						}
-					}
 					eventLogger.send(
-						SpendOrderFailed.create(reason, offerId, orderId, true, SpendOrderFailed.Origin.EXTERNAL));
+						SpendOrderFailed.create(exception.getMessage(), offerId, orderId, true, SpendOrderFailed.Origin.EXTERNAL));
 
 					if (callback != null) {
 						callback.onFailure(exception);

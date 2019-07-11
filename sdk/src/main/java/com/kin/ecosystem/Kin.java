@@ -11,7 +11,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.KinEnvironment;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
@@ -19,6 +18,7 @@ import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
+import com.kin.ecosystem.common.exception.ServiceException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.common.model.NativeOffer;
 import com.kin.ecosystem.common.model.OrderConfirmation;
@@ -32,7 +32,10 @@ import com.kin.ecosystem.core.accountmanager.AccountManagerLocal;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.EventLoggerImpl;
 import com.kin.ecosystem.core.bi.events.EntrypointButtonTapped;
+import com.kin.ecosystem.core.bi.events.GeneralEcosystemSdkError;
 import com.kin.ecosystem.core.bi.events.KinSdkInitiated;
+import com.kin.ecosystem.core.bi.events.MaxWalletsExceededError;
+import com.kin.ecosystem.core.bi.events.SdkLoginStarted;
 import com.kin.ecosystem.core.bi.events.UserLoginFailed;
 import com.kin.ecosystem.core.bi.events.UserLoginRequested;
 import com.kin.ecosystem.core.bi.events.UserLoginSucceeded;
@@ -54,7 +57,6 @@ import com.kin.ecosystem.core.data.order.OrderRemoteData;
 import com.kin.ecosystem.core.data.order.OrderRepository;
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceImpl;
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceLocal;
-import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.core.util.ErrorUtil;
@@ -64,6 +66,7 @@ import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.recovery.BackupAndRestore;
 import com.kin.ecosystem.recovery.BackupAndRestoreImpl;
 import com.kin.ecosystem.splash.view.SplashActivity;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import kin.sdk.migration.MigrationManager;
 import kin.sdk.migration.MigrationNetworkInfo;
@@ -233,16 +236,17 @@ public class Kin {
 		}
 	}
 
-	private static void internalLogin(@NonNull final int loginState, final KinCallback<Void> loginCallback) {
+	private static void internalLogin(final int loginState, final KinCallback<Void> loginCallback) {
+		eventLogger.send(SdkLoginStarted.create(AuthRepository.getInstance().getSdkInitDate()));
 		MigrationManager migrationManager = createMigrationManager(getKinContext(), AuthRepository.getInstance().getAppID());
 		BlockchainSourceImpl.getInstance().setMigrationManager(migrationManager);
-
 		AuthRepository.getInstance().getAccountInfo(new KinCallback<AccountInfo>() {
 			@Override
 			public void onResponse(AccountInfo accountInfo) {
 				String publicAddress;
+				final String ecosystemUserID = accountInfo.getAuthToken().getEcosystemUserID();
 				try {
-					BlockchainSourceImpl.getInstance().loadAccount(accountInfo.getAuthToken().getEcosystemUserID());
+					BlockchainSourceImpl.getInstance().loadAccount(ecosystemUserID);
 					publicAddress = BlockchainSourceImpl.getInstance().getPublicAddress();
 				} catch (final BlockchainException exception) {
 					sendLoginFailed(exception, loginCallback);
@@ -259,6 +263,11 @@ public class Kin {
 
 						@Override
 						public void onFailure(KinEcosystemException exception) {
+							if (exception.getCode() == ServiceException.MAX_WALLETS_EXCEEDED) {
+								final ArrayList<String> wallets = BlockchainSourceImpl.getInstance().getWalletsAddress(ecosystemUserID);
+								final String initSdkDate = AuthRepository.getInstance().getSdkInitDate();
+								eventLogger.send(MaxWalletsExceededError.create(initSdkDate, wallets));
+							}
 							sendLoginFailed(exception, loginCallback);
 						}
 					});
@@ -324,7 +333,7 @@ public class Kin {
 	}
 
 	private static void sendLoginFailed(final KinEcosystemException exception, final KinCallback<Void> loginCallback) {
-		eventLogger.send(UserLoginFailed.create(getMessage(exception)));
+		eventLogger.send(UserLoginFailed.create(ErrorUtil.getMessage(exception, "User login failed with unknown exception ")));
 		isAccountLoggedIn.getAndSet(false);
 		instance.executorsUtil.mainThread().execute(new Runnable() {
 			@Override
@@ -356,10 +365,6 @@ public class Kin {
 			new MigrationEventsListener(EventLoggerImpl.getInstance()), KIN_ECOSYSTEM_STORE_PREFIX_KEY);
 		migrationManager.enableLogs(Logger.isEnabled());
 		return migrationManager;
-	}
-
-	private static String getMessage(KinEcosystemException exception) {
-		return exception.getCause() != null ? exception.getCause().getMessage() : exception.getMessage();
 	}
 
 	private static boolean isInstanceNull() {

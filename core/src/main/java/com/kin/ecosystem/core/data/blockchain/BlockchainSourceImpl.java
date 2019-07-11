@@ -12,6 +12,7 @@ import com.kin.ecosystem.common.ObservableData;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.model.Balance;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
@@ -22,6 +23,7 @@ import com.kin.ecosystem.core.bi.events.MigrationAccountCompleted.BlockchainVers
 import com.kin.ecosystem.core.bi.events.MigrationAccountFailed;
 import com.kin.ecosystem.core.bi.events.MigrationAccountStarted;
 import com.kin.ecosystem.core.bi.events.MigrationModuleStarted;
+import com.kin.ecosystem.core.bi.events.MigrationStatusCheckFailed;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainFailed;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainSubmitted;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainSucceeded;
@@ -36,6 +38,7 @@ import com.kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
 import com.kin.ecosystem.core.util.StringUtil;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import kin.sdk.migration.MigrationManager;
 import kin.sdk.migration.common.KinSdkVersion;
 import kin.sdk.migration.common.WhitelistResult;
@@ -155,7 +158,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
-	public void startMigrationProcess(MigrationProcessListener listener) {
+	public void startMigrationProcess(@Nullable MigrationProcessListener listener) {
 		try {
 			startMigrationProcess(null, getPublicAddress(), listener);
 		} catch (BlockchainException e) {
@@ -166,18 +169,12 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
-	public void startMigrationProcess(String publicAddress, MigrationProcessListener listener) {
-		startMigrationProcess(null, publicAddress, listener);
-	}
-
-	@Override
 	public void startMigrationProcess(MigrationInfo migrationInfo, final String publicAddress,
-		final MigrationProcessListener listener) {
+		@Nullable final MigrationProcessListener listener) {
 		// Check if we have an account, if yes then get the migration info and check if this account should migrate.
 		// If the account should migrate then migrate it, if not update the kinClient to run on this version.
 		// If we don't have an account then check the server for the current version and update the kinClient to run on this version.
 		if (kinClient.hasAccount()) {
-			// TODO: 01/04/2019 Maybe we can make it more efficient by adding a call to the local storage to check if the account is already migrated(locally)?
 			if (migrationInfo != null) {
 				startMigrationIfNeeded(migrationInfo, publicAddress, listener);
 			} else {
@@ -189,42 +186,52 @@ public class BlockchainSourceImpl implements BlockchainSource {
 				public void onResponse(KinSdkVersion sdkVersion) {
 					setBlockchainVersion(sdkVersion);
 					updateKinClient(migrationManager.getKinClient(sdkVersion));
-					listener.onMigrationEnd();
+					if (listener != null) {
+						listener.onMigrationEnd();
+					}
 				}
 
 				@Override
 				public void onFailure(ApiException exception) {
 					if (listener != null) {
-						final String message = exception == null ? "Migration Failed" : exception.getMessage();
-						listener.onMigrationError(
-							new BlockchainException(BlockchainException.MIGRATION_FAILED, message, exception));
+						listener.onMigrationError(ErrorUtil.createMigrationFailedException(exception));
 					}
 				}
 			});
 		}
 	}
 
-	private void handleMigrationInfo(final String publicAddress, final MigrationProcessListener listener) {
-		getMigrationInfo(publicAddress,
-			new Callback<MigrationInfo, ApiException>() {
-				@Override
-				public void onResponse(MigrationInfo migrationInfo) {
-					startMigrationIfNeeded(migrationInfo, publicAddress, listener);
-				}
+	private void handleMigrationInfo(final String publicAddress, @Nullable final MigrationProcessListener listener) {
+		getMigrationInfo(publicAddress, new KinCallback<MigrationInfo>() {
+			@Override
+			public void onResponse(MigrationInfo migrationInfo) {
+				startMigrationIfNeeded(migrationInfo, publicAddress, listener);
+			}
 
-				@Override
-				public void onFailure(ApiException exception) {
-					if (listener != null) {
-						final String message = exception == null ? "Migration Failed" : exception.getMessage();
-						listener.onMigrationError(new BlockchainException(BlockchainException.MIGRATION_FAILED, message, exception));
-					}
+			@Override
+			public void onFailure(KinEcosystemException exception) {
+				if (listener != null) {
+					listener.onMigrationError(ErrorUtil.createMigrationFailedException(exception));
 				}
-			});
+			}
+		});
 	}
 
 	@Override
-	public void getMigrationInfo(String publicAddress, Callback<MigrationInfo, ApiException> callback) {
-		remote.getMigrationInfo(publicAddress, callback);
+	public void getMigrationInfo(final String publicAddress, final KinCallback<MigrationInfo> callback) {
+		remote.getMigrationInfo(publicAddress, new Callback<MigrationInfo, ApiException>() {
+			@Override
+			public void onResponse(MigrationInfo migrationInfo) {
+				callback.onResponse(migrationInfo);
+			}
+
+			@Override
+			public void onFailure(ApiException exception) {
+				final KinEcosystemException finalException = ErrorUtil.fromApiException(exception);
+				eventLogger.send(MigrationStatusCheckFailed.create(publicAddress, finalException.getMessage()));
+				callback.onFailure(finalException);
+			}
+		});
 	}
 
 	private void startMigrationIfNeeded(MigrationInfo migrationInfo, String publicAddress,
@@ -244,7 +251,6 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 	private void startMigration(final String publicAddress, final MigrationProcessListener listener) {
 		eventLogger.send(MigrationModuleStarted.create(publicAddress));
-
 		try {
 			migrationManager.start(publicAddress, new IMigrationManagerCallbacks() {
 				@Override
@@ -270,12 +276,10 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 				@Override
 				public void onError(Exception e) {
-					eventLogger.send(MigrationAccountFailed.create(publicAddress, e.getMessage()));
-
+					BlockchainException migrationException = ErrorUtil.createMigrationFailedException(e);
+					eventLogger.send(MigrationAccountFailed.create(publicAddress, migrationException.getMessage()));
 					if (listener != null) {
-						final String message = e == null ? "Migration Failed" : e.getMessage();
-						listener.onMigrationError(
-							new BlockchainException(BlockchainException.MIGRATION_FAILED, message, e));
+						listener.onMigrationError(migrationException);
 					}
 				}
 			});
@@ -459,6 +463,11 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		if (local.getAccountIndex() < accountIndex) {
 			kinClient.deleteAccount(accountIndex);
 		}
+	}
+
+	@Override
+	public ArrayList<String> getWalletsAddress(String kinUserId) {
+		return local.getWalletsAddress(kinUserId);
 	}
 
 	private void initBalance() {
@@ -683,11 +692,12 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 				@Override
 				public void onFailure(final OperationFailedException e) {
-					eventLogger.send(StellarKinTrustlineSetupFailed.create(e.getMessage()));
+					final KinEcosystemException ecosystemException = ErrorUtil.getBlockchainException(e);
+					eventLogger.send(StellarKinTrustlineSetupFailed.create(ecosystemException.getMessage()));
 					mainThread.execute(new Runnable() {
 						@Override
 						public void run() {
-							callback.onFailure(ErrorUtil.getBlockchainException(e));
+							callback.onFailure(ecosystemException);
 						}
 					});
 				}

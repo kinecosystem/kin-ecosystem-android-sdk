@@ -12,6 +12,7 @@ import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.MigrationInfo;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import kin.sdk.migration.MigrationManager;
 import kin.sdk.migration.common.KinSdkVersion;
 import kin.sdk.migration.common.exception.DeleteAccountException;
@@ -25,7 +26,7 @@ public interface BlockchainSource {
 	 * @param publicAddress the address associated with the migration information.
 	 * @param callback a callback for this method call.
 	 */
-	void getMigrationInfo(String publicAddress, Callback<MigrationInfo, ApiException> callback);
+	void getMigrationInfo(String publicAddress, KinCallback<MigrationInfo> callback);
 
 	/**
 	 * Set the migration manager
@@ -42,13 +43,6 @@ public interface BlockchainSource {
 	 * @param listener
 	 */
 	void startMigrationProcess(final MigrationProcessListener listener);
-
-	/**
-	 * Starts the migration process using the migration module for a specific public address
-	 * @param publicAddress
-	 * @param listener
-	 */
-	void startMigrationProcess(final String publicAddress, final MigrationProcessListener listener);
 
 	/**
 	 * Starts the migration process using the migration module for a specific public address and with a migration info object.
@@ -183,6 +177,8 @@ public interface BlockchainSource {
 
 	void deleteAccount(int accountIndex) throws DeleteAccountException;
 
+	ArrayList<String> getWalletsAddress(String kinUserId);
+
 	interface Local {
 		int getBalance();
 
@@ -192,6 +188,8 @@ public interface BlockchainSource {
 
 		@Nullable
 		String getLastWalletAddress(String kinUserId);
+
+		ArrayList<String> getWalletsAddress(String kinUserId);
 
 		void setActiveUserWallet(String kinUserId, String publicAddress);
 
@@ -212,8 +210,6 @@ public interface BlockchainSource {
 		KinSdkVersion getBlockchainVersion() throws ApiException; // synced and blocking
 
 		void getBlockchainVersion(@NonNull final Callback<KinSdkVersion, ApiException> callback);
-
-		MigrationInfo getMigrationInfo(String publicAddress)  throws ApiException; // synced and blocking
 
 		void getMigrationInfo(String publicAddress, @NonNull final Callback<MigrationInfo, ApiException> callback);
 
