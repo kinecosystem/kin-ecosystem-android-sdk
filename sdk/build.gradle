@@ -32,15 +32,13 @@ dependencies {
     implementation devDependencies.appCompat_v7
     implementation devDependencies.recyclerView_v7
     implementation devDependencies.constraintLayout
+    //TODO need to update last version
+    implementation 'com.github.kinecosystem.move-kin-android:appsTransfer:181f8a462a15074b7141b8b6f50d04a2296dfa36'
     implementation devDependencies.picasso
     implementation devDependencies.kotlin
     implementation ('org.kin.ecosystem.appreciation.options.menu:ui:1.0.0') {
         transitive = false
     }
-
-    //adding send only module
-    //TODO change version
-    implementation 'com.github.kinecosystem.move-kin-android:appsTransfer:e2a4f21119ad4626f299cfccb6b062545626eddf'
 
     testImplementation project(':test-base')
     testImplementation testingDependencies.junit

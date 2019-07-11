@@ -36,6 +36,7 @@ import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.Order.Origin;
 import com.kin.ecosystem.core.network.model.Order.Status;
 import com.kin.ecosystem.core.network.model.OrderList;
+import com.kin.ecosystem.core.network.model.OutgoingTransfer;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.StringUtil;
 import java.util.List;
@@ -160,6 +161,18 @@ public class OrderRepository implements OrderDataSource {
 				}
 			}
 		});
+	}
+
+	@Override
+	public OpenOrder createOutgoingTransferOrderSync(@NonNull final OutgoingTransfer payload) throws KinEcosystemException {
+		OpenOrder openOrder = null;
+		try {
+			openOrder = remoteData.createOutgoingTransferOrderSync(payload);
+		cachedOpenOrder.postValue(openOrder);
+		} catch (ApiException e) {
+			throw ErrorUtil.fromApiException(e);
+		}
+		return openOrder;
 	}
 
 	@Override

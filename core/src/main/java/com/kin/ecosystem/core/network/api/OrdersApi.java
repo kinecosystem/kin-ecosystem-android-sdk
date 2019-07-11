@@ -11,7 +11,6 @@ package com.kin.ecosystem.core.network.api;/*
  */
 
 import com.google.gson.reflect.TypeToken;
-import com.kin.ecosystem.core.data.internal.ConfigurationImpl;
 import com.kin.ecosystem.core.network.ApiCallback;
 import com.kin.ecosystem.core.network.ApiClient;
 import com.kin.ecosystem.core.network.ApiException;
@@ -23,6 +22,7 @@ import com.kin.ecosystem.core.network.model.ExternalOrderRequest;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.OrderList;
+import com.kin.ecosystem.core.network.model.OutgoingTransfer;
 import com.kin.ecosystem.core.network.model.SpendOrderPayload;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -683,8 +683,6 @@ public class OrdersApi extends Api {
 
 		Call call = getOrderCall(orderId, X_REQUEST_ID);
 		return call;
-
-
 	}
 
 	/**
@@ -925,6 +923,102 @@ public class OrdersApi extends Api {
 		Call call = submitSpendOrderValidateBeforeCall(payload, orderId, X_REQUEST_ID);
 		Type localVarReturnType = new TypeToken<Order>() {
 		}.getType();
+		apiClient.executeAsync(call, localVarReturnType, callback);
+		return call;
+	}
+
+	/**
+	 * Build call for createOutgoingTransferOrder
+	 * @param body Outgoing transfer payload (required)
+	 * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
+	 * @return Call to execute
+	 * @throws ApiException If fail to serialize the request body object
+	 */
+	public Call createOutgoingTransferOrderCall(OutgoingTransfer body, String X_REQUEST_ID) throws ApiException {
+		Object localVarPostBody = body;
+
+		// create path and map variables
+		String localVarPath = "/transfers/outgoing/orders";
+
+		List<Pair> localVarQueryParams = new ArrayList<Pair>();
+		List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+
+		Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+		if (X_REQUEST_ID != null)
+			localVarHeaderParams.put("X-REQUEST-ID", apiClient.parameterToString(X_REQUEST_ID));
+
+		Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+		final String[] localVarAccepts = {
+			"application/json",  "application/json"
+		};
+		final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+		if (localVarAccept != null) localVarHeaderParams.put("Accept", localVarAccept);
+
+		final String[] localVarContentTypes = {
+			"application/json"
+		};
+		final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+		localVarHeaderParams.put("Content-Type", localVarContentType);
+
+		String[] localVarAuthNames = new String[]{};
+		return apiClient.buildCall(localVarPath, ApiClient.POST, localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAuthNames);
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Call createOutgoingTransferOrderValidateBeforeCall(OutgoingTransfer body, String X_REQUEST_ID) throws ApiException {
+		// verify the required parameter 'body' is set
+		if (body == null) {
+			throw new ApiException("Missing the required parameter 'body' when calling createOutgoingTransferOrder(Async)");
+		}
+		// verify the required parameter 'X_REQUEST_ID' is set
+		if (X_REQUEST_ID == null) {
+			throw new ApiException("Missing the required parameter 'X_REQUEST_ID' when calling createOutgoingTransferOrder(Async)");
+		}
+
+		Call call = createOutgoingTransferOrderCall(body, X_REQUEST_ID);
+		return call;
+	}
+
+	/**
+	 * create an outgoing transfer order
+	 * create an outgoing transfer order
+	 * @param body Outgoing transfer payload (required)
+	 * @param X_REQUEST_ID A unique id for the request. A retransmitted request will have the same id  (required)
+	 * @return OpenOrder
+	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+	 */
+	public OpenOrder createOutgoingTransferOrder(OutgoingTransfer body, String X_REQUEST_ID) throws ApiException {
+		ApiResponse<OpenOrder> resp = createOutgoingTransferOrderWithHttpInfo(body, X_REQUEST_ID);
+		return resp.getData();
+	}
+
+	/**
+	 * create an outgoing transfer order
+	 * create an outgoing transfer order
+	 * @param body Outgoing transfer payload (required)
+	 * @return ApiResponse&lt;OpenOrder&gt;
+	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+	 */
+	public ApiResponse<OpenOrder> createOutgoingTransferOrderWithHttpInfo(OutgoingTransfer body, String X_REQUEST_ID) throws ApiException {
+
+		Call call = createOutgoingTransferOrderValidateBeforeCall(body, X_REQUEST_ID);
+		Type localVarReturnType = new TypeToken<OpenOrder>(){}.getType();
+		return apiClient.execute(call, localVarReturnType);
+	}
+
+	/**
+	 * create an outgoing transfer order (asynchronously)
+	 * create an outgoing transfer order
+	 * @param body Outgoing transfer payload (required)
+	 * @param callback The callback to be executed when the API call finishes
+	 * @return The request call
+	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+	 */
+	public Call createOutgoingTransferOrderAsync(OutgoingTransfer body, String X_REQUEST_ID, final ApiCallback<OpenOrder> callback) throws ApiException {
+
+		Call call = createOutgoingTransferOrderValidateBeforeCall(body, X_REQUEST_ID);
+		Type localVarReturnType = new TypeToken<OpenOrder>(){}.getType();
 		apiClient.executeAsync(call, localVarReturnType, callback);
 		return call;
 	}

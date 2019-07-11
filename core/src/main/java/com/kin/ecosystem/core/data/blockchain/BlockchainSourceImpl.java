@@ -36,7 +36,9 @@ import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
 import com.kin.ecosystem.core.util.StringUtil;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
+import java.io.IOException;
 import java.math.BigDecimal;
+import kin.base.Transaction;
 import kin.sdk.migration.MigrationManager;
 import kin.sdk.migration.common.KinSdkVersion;
 import kin.sdk.migration.common.WhitelistResult;
@@ -135,6 +137,21 @@ public class BlockchainSourceImpl implements BlockchainSource {
 			sdkVersion = account.getKinSdkVersion();
 		}
 		updateKinClient(migrationManager.getKinClient(sdkVersion));
+	}
+
+	@Override
+	public String extractTransactionId(String transactionEnvelope) {
+		try {
+			kin.base.Transaction transaction = kin.base.Transaction.fromEnvelopeXdr(transactionEnvelope);
+			byte[] hashBytes = transaction.hash();
+			StringBuilder sb = new StringBuilder(hashBytes.length * 2);
+			for (byte b : hashBytes)
+				sb.append(String.format("%02x", b));
+			return sb.toString();
+		}
+		catch (IOException e) {
+			return null;
+		}
 	}
 
 	private void updateKinClient(IKinClient kinClient) {

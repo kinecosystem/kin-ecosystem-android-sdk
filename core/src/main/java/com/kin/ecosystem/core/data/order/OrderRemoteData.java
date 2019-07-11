@@ -14,6 +14,7 @@ import com.kin.ecosystem.core.network.model.ExternalOrderRequest;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.OrderList;
+import com.kin.ecosystem.core.network.model.OutgoingTransfer;
 import com.kin.ecosystem.core.network.model.SpendOrderPayload;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
 import java.util.List;
@@ -241,6 +242,11 @@ public class OrderRemoteData implements OrderDataSource.Remote {
 
     public OpenOrder createExternalOrderSync(String orderJwt) throws ApiException {
         return ordersApi.createExternalOrder(new ExternalOrderRequest().jwt(orderJwt), "");
+    }
+
+    @Override
+    public OpenOrder createOutgoingTransferOrderSync(@NonNull final OutgoingTransfer payload) throws ApiException {
+        return ordersApi.createOutgoingTransferOrder(payload, "");
     }
 
     @Override
