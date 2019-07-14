@@ -167,11 +167,13 @@ public class AuthRepository implements AuthDataSource {
 
     @Override
     public boolean isCurrentAuthTokenExpired() {
-        if (cachedAuthToken != null) {
-            return isAuthTokenExpired(cachedAuthToken);
-        }
-        if (localData.getAuthTokenSync() != null) {
-			return isAuthTokenExpired(localData.getAuthTokenSync());
+		if(localData.isLoggedIn()) {
+			if (cachedAuthToken != null) {
+				return isAuthTokenExpired(cachedAuthToken);
+			}
+			if (localData.getAuthTokenSync() != null) {
+				return isAuthTokenExpired(localData.getAuthTokenSync());
+			}
 		}
         return false;
     }
