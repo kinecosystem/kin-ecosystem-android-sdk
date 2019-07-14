@@ -67,6 +67,7 @@ import com.kin.ecosystem.recovery.BackupAndRestore;
 import com.kin.ecosystem.recovery.BackupAndRestoreImpl;
 import com.kin.ecosystem.splash.view.SplashActivity;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import kin.sdk.migration.MigrationManager;
 import kin.sdk.migration.MigrationNetworkInfo;
@@ -264,8 +265,8 @@ public class Kin {
 						@Override
 						public void onFailure(KinEcosystemException exception) {
 							if (exception.getCode() == ServiceException.MAX_WALLETS_EXCEEDED) {
-								final ArrayList<String> userWallets = BlockchainSourceImpl.getInstance().getWalletAddresses(ecosystemUserID);
-								final ArrayList<String> allWallets = BlockchainSourceImpl.getInstance().getAllWalletAddresses();
+								final List<String> userWallets = BlockchainSourceImpl.getInstance().getWalletAddresses(ecosystemUserID);
+								final List<String> allWallets = BlockchainSourceImpl.getInstance().getAllWalletAddresses();
 								final String initSdkDate = AuthRepository.getInstance().getSdkInitDate();
 								eventLogger.send(MaxWalletsExceededError.create(initSdkDate, allWallets, userWallets));
 							}
