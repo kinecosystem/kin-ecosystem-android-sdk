@@ -177,7 +177,9 @@ public interface BlockchainSource {
 
 	void deleteAccount(int accountIndex) throws DeleteAccountException;
 
-	ArrayList<String> getWalletsAddress(String kinUserId);
+	ArrayList<String> getWalletAddresses(String kinUserId);
+
+	ArrayList<String> getAllWalletAddresses();
 
 	interface Local {
 		int getBalance();
@@ -189,7 +191,7 @@ public interface BlockchainSource {
 		@Nullable
 		String getLastWalletAddress(String kinUserId);
 
-		ArrayList<String> getWalletsAddress(String kinUserId);
+		ArrayList<String> getWalletAddresses(String kinUserId);
 
 		void setActiveUserWallet(String kinUserId, String publicAddress);
 

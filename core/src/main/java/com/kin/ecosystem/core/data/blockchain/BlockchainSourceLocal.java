@@ -59,7 +59,7 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 	}
 
 	@Override
-	public ArrayList<String> getWalletsAddress(final String kinUserId) {
+	public ArrayList<String> getWalletAddresses(final String kinUserId) {
 		return getUserWallets(kinUserId);
 	}
 

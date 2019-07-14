@@ -32,7 +32,6 @@ import com.kin.ecosystem.core.accountmanager.AccountManagerLocal;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.EventLoggerImpl;
 import com.kin.ecosystem.core.bi.events.EntrypointButtonTapped;
-import com.kin.ecosystem.core.bi.events.GeneralEcosystemSdkError;
 import com.kin.ecosystem.core.bi.events.KinSdkInitiated;
 import com.kin.ecosystem.core.bi.events.MaxWalletsExceededError;
 import com.kin.ecosystem.core.bi.events.SdkLoginStarted;
@@ -58,6 +57,7 @@ import com.kin.ecosystem.core.data.order.OrderRepository;
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceImpl;
 import com.kin.ecosystem.core.data.settings.SettingsDataSourceLocal;
 import com.kin.ecosystem.core.network.model.AccountInfo;
+import com.kin.ecosystem.core.util.DateUtil;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
@@ -264,9 +264,10 @@ public class Kin {
 						@Override
 						public void onFailure(KinEcosystemException exception) {
 							if (exception.getCode() == ServiceException.MAX_WALLETS_EXCEEDED) {
-								final ArrayList<String> wallets = BlockchainSourceImpl.getInstance().getWalletsAddress(ecosystemUserID);
+								final ArrayList<String> userWallets = BlockchainSourceImpl.getInstance().getWalletAddresses(ecosystemUserID);
+								final ArrayList<String> allWallets = BlockchainSourceImpl.getInstance().getAllWalletAddresses();
 								final String initSdkDate = AuthRepository.getInstance().getSdkInitDate();
-								eventLogger.send(MaxWalletsExceededError.create(initSdkDate, wallets));
+								eventLogger.send(MaxWalletsExceededError.create(initSdkDate, allWallets, userWallets));
 							}
 							sendLoginFailed(exception, loginCallback);
 						}
@@ -333,7 +334,7 @@ public class Kin {
 	}
 
 	private static void sendLoginFailed(final KinEcosystemException exception, final KinCallback<Void> loginCallback) {
-		eventLogger.send(UserLoginFailed.create(ErrorUtil.getMessage(exception, "User login failed with unknown exception ")));
+		eventLogger.send(UserLoginFailed.create(ErrorUtil.getMessage(exception, "User login failed with unknown exception")));
 		isAccountLoggedIn.getAndSet(false);
 		instance.executorsUtil.mainThread().execute(new Runnable() {
 			@Override

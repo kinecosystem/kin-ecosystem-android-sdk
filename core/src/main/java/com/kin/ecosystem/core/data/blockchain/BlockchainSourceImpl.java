@@ -466,8 +466,21 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
-	public ArrayList<String> getWalletsAddress(String kinUserId) {
-		return local.getWalletsAddress(kinUserId);
+	public ArrayList<String> getWalletAddresses(String kinUserId) {
+		return local.getWalletAddresses(kinUserId);
+	}
+
+	@Override
+	public ArrayList<String> getAllWalletAddresses() {
+		ArrayList<String> wallets = new ArrayList<>();
+		if(kinClient != null) {
+			final int count = kinClient.getAccountCount();
+			for (int i = 0; i < count; i++) {
+				wallets.add(kinClient.getAccount(i).getPublicAddress());
+			}
+		}
+
+		return wallets;
 	}
 
 	private void initBalance() {

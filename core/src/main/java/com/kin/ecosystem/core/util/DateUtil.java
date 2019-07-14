@@ -1,5 +1,6 @@
 package com.kin.ecosystem.core.util;
 
+import android.annotation.SuppressLint;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,11 +14,12 @@ public class DateUtil {
     private static DateFormat utcDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.US);
     private static TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
 
-    private static DateFormat utcDateFormatExtended = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+    @SuppressLint("SimpleDateFormat")
+    private static DateFormat utcDateFormatExtended = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
 	static {
 		utcDateFormat.setTimeZone(utcTimeZone);
         utcDateFormatExtended.setTimeZone(utcTimeZone);
-
 	}
 
     public static String getDateFormatted(String dateStr) {
