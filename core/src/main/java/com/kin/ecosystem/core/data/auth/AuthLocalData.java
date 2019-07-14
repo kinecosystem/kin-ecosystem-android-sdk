@@ -23,6 +23,7 @@ public class AuthLocalData implements AuthDataSource.Local {
 	private static final String USER_ID_KEY = "user_id";
 	private static final String ECOSYSTEM_USER_ID_KEY = "ecosystem_user_id";
 	private static final String APP_ID_KEY = "app_id";
+	private static final String LOGGED_IN_KEY = "logged_in";
 	private static final String DEVICE_ID_KEY = "device_id";
 
 	private static final String TOKEN_KEY = "token";
@@ -87,6 +88,13 @@ public class AuthLocalData implements AuthDataSource.Local {
 		}
 	}
 
+	@Override
+	public void setLoggedIn(boolean loggedIn) {
+		Editor editor = signInSharedPreferences.edit();
+		editor.putBoolean(LOGGED_IN_KEY, loggedIn);
+		editor.apply();
+	}
+
 	private void setUser(User user) {
 		Editor editor = signInSharedPreferences.edit();
 		editor.putString(CREATED_DATE_KEY, user.getCreatedDate());
@@ -115,6 +123,11 @@ public class AuthLocalData implements AuthDataSource.Local {
 	@Override
 	public String getUserID() {
 		return signInSharedPreferences.getString(USER_ID_KEY, null);
+	}
+
+	@Override
+	public boolean isLoggedIn() {
+		return signInSharedPreferences.getBoolean(LOGGED_IN_KEY, false);
 	}
 
 	@Override
@@ -163,6 +176,7 @@ public class AuthLocalData implements AuthDataSource.Local {
 
 	@Override
 	public void logout() {
+		setLoggedIn(false);
 		Editor editor = signInSharedPreferences.edit();
 		editor.remove(JWT_KEY);
 		editor.remove(USER_ID_KEY);

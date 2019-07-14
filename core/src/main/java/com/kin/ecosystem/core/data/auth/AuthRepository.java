@@ -177,6 +177,11 @@ public class AuthRepository implements AuthDataSource {
     }
 
 	@Override
+	public void setLoggedIn(boolean loggedIn) {
+		localData.setLoggedIn(loggedIn);
+	}
+
+	@Override
 	public void hasAccount(@NonNull String userId, @NonNull final KinCallback<Boolean> callback) {
 		remoteData.hasAccount(userId, new Callback<Boolean, ApiException>() {
 			@Override
@@ -219,10 +224,10 @@ public class AuthRepository implements AuthDataSource {
 	public void logout() {
 		final String token = cachedAuthToken.getToken();
 		remoteData.logout(token);
+		localData.logout();
 
 		cachedAuthToken = null;
 		jwt = null;
-		localData.logout();
 	}
 
 	private boolean isAuthTokenExpired(AuthToken authToken) {

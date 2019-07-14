@@ -6,6 +6,7 @@ import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.core.Log;
 import com.kin.ecosystem.core.Logger;
+import com.kin.ecosystem.core.data.auth.AuthLocalData;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
@@ -27,6 +28,8 @@ public class AccountInfoActivity extends AccountInfoActivityBase {
             if (authRepository != null && !authRepository.isCurrentAuthTokenExpired()
                     && blockchainSource != null) {
                 return blockchainSource.getPublicAddress();
+            } else {
+                throwExceptionOnDataError();
             }
         } catch (BlockchainException e) {
             throwExceptionOnDataError();
@@ -45,7 +48,7 @@ public class AccountInfoActivity extends AccountInfoActivityBase {
     }
 
     private void initKin() throws ClientException {
-        if (AuthRepository.getInstance() == null || BlockchainSourceImpl.getInstance() == null) {
+        if (AuthLocalData.getInstance(this).isLoggedIn() && (AuthRepository.getInstance() == null || BlockchainSourceImpl.getInstance() == null)) {
             Kin.initialize(this, null);
         }
     }

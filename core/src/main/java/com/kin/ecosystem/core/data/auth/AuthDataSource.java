@@ -43,6 +43,8 @@ public interface AuthDataSource {
 
 	boolean isCurrentAuthTokenExpired();
 
+	void setLoggedIn(boolean loggedIn);
+
 	interface Local {
 
 		String getSdkInitDate();
@@ -53,11 +55,15 @@ public interface AuthDataSource {
 
 		void setAccountInfo(@NonNull final AccountInfo accountInfo);
 
+		void setLoggedIn(boolean loggedIn);
+
 		String getAppId();
 
 		String getDeviceID();
 
 		String getUserID();
+
+		boolean isLoggedIn();
 
 		String getEcosystemUserID();
 

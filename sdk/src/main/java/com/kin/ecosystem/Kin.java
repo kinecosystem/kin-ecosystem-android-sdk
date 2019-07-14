@@ -170,7 +170,7 @@ public class Kin {
 						BlockchainSourceImpl.getInstance().setMigrationManager(migrationManager);
 						BlockchainSourceImpl.getInstance().loadAccount(kinUserId);
 						isAccountLoggedIn.getAndSet(true);
-
+						AuthRepository.getInstance().setLoggedIn(true);
 					} catch (BlockchainException e) {
 						// Account not found can't load it, client should login again.
 					}
@@ -248,6 +248,7 @@ public class Kin {
 					logout();
 				case UserLoginState.FIRST:
 					isAccountLoggedIn.getAndSet(false);
+					AuthRepository.getInstance().setLoggedIn(false);
 					eventLogger.send(UserLoginRequested.create());
 					break;
 				case UserLoginState.SAME_USER:
@@ -387,6 +388,7 @@ public class Kin {
 			eventLogger.send(UserLoginSucceeded.create());
 		}
 		isAccountLoggedIn.getAndSet(true);
+		AuthRepository.getInstance().setLoggedIn(true);
 		instance.executorsUtil.mainThread().execute(new Runnable() {
 			@Override
 			public void run() {
@@ -398,6 +400,7 @@ public class Kin {
 	private static void sendLoginFailed(final KinEcosystemException exception, final KinCallback<Void> loginCallback) {
 		eventLogger.send(UserLoginFailed.create(ErrorUtil.getMessage(exception, "User login failed with unknown exception")));
 		isAccountLoggedIn.getAndSet(false);
+		AuthRepository.getInstance().setLoggedIn(false);
 		instance.executorsUtil.mainThread().execute(new Runnable() {
 			@Override
 			public void run() {
