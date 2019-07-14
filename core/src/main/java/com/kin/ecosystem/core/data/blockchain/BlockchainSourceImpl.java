@@ -39,6 +39,7 @@ import com.kin.ecosystem.core.util.StringUtil;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 import kin.sdk.migration.MigrationManager;
 import kin.sdk.migration.common.KinSdkVersion;
 import kin.sdk.migration.common.WhitelistResult;
@@ -466,13 +467,13 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
-	public ArrayList<String> getWalletAddresses(String kinUserId) {
+	public List<String> getWalletAddresses(String kinUserId) {
 		return local.getWalletAddresses(kinUserId);
 	}
 
 	@Override
-	public ArrayList<String> getAllWalletAddresses() {
-		ArrayList<String> wallets = new ArrayList<>();
+	public List<String> getAllWalletAddresses() {
+		List<String> wallets = new ArrayList<>();
 		if(kinClient != null) {
 			final int count = kinClient.getAccountCount();
 			for (int i = 0; i < count; i++) {
