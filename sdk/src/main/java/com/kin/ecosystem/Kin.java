@@ -273,31 +273,6 @@ public class Kin {
 		}
 	}
 
-	private static MigrationManager createMigrationManager(Context context, @NonNull String appId) {
-		KinEnvironment kinEnvironment = ConfigurationImpl.getInstance().getEnvironment();
-
-		final String oldNetworkUrl = kinEnvironment.getOldBlockchainNetworkUrl();
-		final String oldNetworkId = kinEnvironment.getOldBlockchainPassphrase();
-
-		final String newNetworkUrl = kinEnvironment.getNewBlockchainNetworkUrl();
-		final String newNetworkId = kinEnvironment.getNewBlockchainPassphrase();
-
-		final String issuer = kinEnvironment.getOldBlockchainIssuer();
-		final String migrationServiceUrl = kinEnvironment.getMigrationServiceUrl();
-
-		MigrationNetworkInfo migrationNetworkInfo = new MigrationNetworkInfo(oldNetworkUrl, oldNetworkId,
-				newNetworkUrl, newNetworkId, issuer, migrationServiceUrl);
-
-		final BlockchainSource.Local local = BlockchainSourceLocal.getInstance(context);
-		final BlockchainSource.Remote remote = BlockchainSourceRemote
-				.getInstance(getInstance(context).executorsUtil, eventLogger);
-		MigrationManager migrationManager = new MigrationManager(context, appId, migrationNetworkInfo,
-				new KinBlockchainVersionProvider(local, remote),
-				new MigrationEventsListener(EventLoggerImpl.getInstance()), KIN_ECOSYSTEM_STORE_PREFIX_KEY);
-		migrationManager.enableLogs(Logger.isEnabled());
-		return migrationManager;
-	}
-
 	private static void internalLogin(final int loginState, final KinCallback<Void> loginCallback) {
 		eventLogger.send(SdkLoginStarted.create(AuthRepository.getInstance().getSdkInitDate()));
 		MigrationManager migrationManager = createMigrationManager(getKinContext(), AuthRepository.getInstance().getAppID());
@@ -407,6 +382,31 @@ public class Kin {
 				loginCallback.onFailure(exception);
 			}
 		});
+	}
+
+	private static MigrationManager createMigrationManager(Context context, @NonNull String appId) {
+		KinEnvironment kinEnvironment = ConfigurationImpl.getInstance().getEnvironment();
+
+		final String oldNetworkUrl = kinEnvironment.getOldBlockchainNetworkUrl();
+		final String oldNetworkId = kinEnvironment.getOldBlockchainPassphrase();
+
+		final String newNetworkUrl = kinEnvironment.getNewBlockchainNetworkUrl();
+		final String newNetworkId = kinEnvironment.getNewBlockchainPassphrase();
+
+		final String issuer = kinEnvironment.getOldBlockchainIssuer();
+		final String migrationServiceUrl = kinEnvironment.getMigrationServiceUrl();
+
+		MigrationNetworkInfo migrationNetworkInfo = new MigrationNetworkInfo(oldNetworkUrl, oldNetworkId,
+			newNetworkUrl, newNetworkId, issuer, migrationServiceUrl);
+
+		final BlockchainSource.Local local = BlockchainSourceLocal.getInstance(context);
+		final BlockchainSource.Remote remote = BlockchainSourceRemote
+			.getInstance(getInstance(context).executorsUtil, eventLogger);
+		MigrationManager migrationManager = new MigrationManager(context, appId, migrationNetworkInfo,
+			new KinBlockchainVersionProvider(local, remote),
+			new MigrationEventsListener(EventLoggerImpl.getInstance()), KIN_ECOSYSTEM_STORE_PREFIX_KEY);
+		migrationManager.enableLogs(Logger.isEnabled());
+		return migrationManager;
 	}
 
 	private static boolean isInstanceNull() {
