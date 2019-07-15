@@ -125,7 +125,7 @@ public class Kin {
 			eventLogger = EventLoggerImpl.getInstance();
 
 			AuthRepository
-				.init(AuthLocalData.getInstance(getKinContext()), AuthRemoteData.getInstance(instance.executorsUtil));
+				.init(AuthLocalData.getInstance(getKinContext()), AuthRemoteData.getInstance(instance.executorsUtil), eventLogger);
 
 			BlockchainSourceImpl.init(eventLogger, BlockchainSourceLocal.getInstance(getKinContext()),
 				BlockchainSourceRemote.getInstance(instance.executorsUtil, eventLogger), AuthRepository.getInstance());
@@ -264,12 +264,6 @@ public class Kin {
 
 						@Override
 						public void onFailure(KinEcosystemException exception) {
-							if (exception.getCode() == ServiceException.MAX_WALLETS_EXCEEDED) {
-								final List<String> userWallets = BlockchainSourceImpl.getInstance().getWalletAddresses(ecosystemUserID);
-								final List<String> allWallets = BlockchainSourceImpl.getInstance().getAllWalletAddresses();
-								final String initSdkDate = AuthRepository.getInstance().getSdkInitDate();
-								eventLogger.send(MaxWalletsExceededError.create(initSdkDate, allWallets, userWallets));
-							}
 							sendLoginFailed(exception, loginCallback);
 						}
 					});
