@@ -3,6 +3,7 @@ package com.kin.ecosystem.core.data.blockchain;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.exception.BlockchainException;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.events.MigrationBCVersionCheckFailed;
 import com.kin.ecosystem.core.bi.events.MigrationBCVersionCheckSucceeded;
@@ -65,8 +66,8 @@ public class BlockchainSourceRemote implements Remote {
 				bcVersion = null;
 			}
 
-			eventLogger.send(MigrationBCVersionCheckFailed.create(
-				ErrorUtil.getMessage(e, "Migration - BC version check failed sync call"),
+			KinEcosystemException exception = ErrorUtil.fromApiException(e);
+			eventLogger.send(MigrationBCVersionCheckFailed.create(exception.getMessage(),
 				getPublicAddress(),
 				bcVersion
 			));
@@ -87,8 +88,9 @@ public class BlockchainSourceRemote implements Remote {
 					} catch (Exception e2) {
 						bcVersion = null;
 					}
+					KinEcosystemException exception = ErrorUtil.fromApiException(e);
 					eventLogger.send(MigrationBCVersionCheckFailed.create(
-						ErrorUtil.getMessage(e, "Migration - BC version check failed async call"),
+						exception.getMessage(),
 						getPublicAddress(),
 						bcVersion
 					));
@@ -126,8 +128,10 @@ public class BlockchainSourceRemote implements Remote {
 				bcVersion = null;
 			}
 
+
+			KinEcosystemException exception = ErrorUtil.fromApiException(e);
 			eventLogger.send(MigrationBCVersionCheckFailed.create(
-				ErrorUtil.getMessage(e, "Migration - BC version check failed async call"),
+				exception.getMessage(),
 				getPublicAddress(),
 				bcVersion
 			));
