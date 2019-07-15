@@ -184,7 +184,6 @@ public class OrderRepositoryTest extends BaseTestClass {
 		verify(openOrderCallback, never()).onResponse(any(OpenOrder.class));
 	}
 
-
 	@Test
 	public void submitOrder_Succeed_EarnOrder() throws Exception {
 		KinCallback<Order> orderCallback = mock(KinCallback.class);

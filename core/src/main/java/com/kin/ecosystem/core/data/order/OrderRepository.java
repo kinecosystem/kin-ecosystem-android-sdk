@@ -29,6 +29,7 @@ import com.kin.ecosystem.core.data.order.CreateExternalOrderCall.ExternalSpendOr
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.Body;
 import com.kin.ecosystem.core.network.model.Error;
+import com.kin.ecosystem.core.network.model.IncomingTransfer;
 import com.kin.ecosystem.core.network.model.JWTBodyPaymentConfirmationResult;
 import com.kin.ecosystem.core.network.model.Offer.OfferType;
 import com.kin.ecosystem.core.network.model.OpenOrder;
@@ -165,10 +166,22 @@ public class OrderRepository implements OrderDataSource {
 
 	@Override
 	public OpenOrder createOutgoingTransferOrderSync(@NonNull final OutgoingTransfer payload) throws KinEcosystemException {
-		OpenOrder openOrder = null;
+		OpenOrder openOrder;
 		try {
 			openOrder = remoteData.createOutgoingTransferOrderSync(payload);
 		cachedOpenOrder.postValue(openOrder);
+		} catch (ApiException e) {
+			throw ErrorUtil.fromApiException(e);
+		}
+		return openOrder;
+	}
+
+	@Override
+	public OpenOrder createIncomingTransferOrderSync(@NonNull IncomingTransfer payload) throws KinEcosystemException {
+		OpenOrder openOrder;
+		try {
+			openOrder = remoteData.createIncomingTransferOrderSync(payload);
+			cachedOpenOrder.postValue(openOrder);
 		} catch (ApiException e) {
 			throw ErrorUtil.fromApiException(e);
 		}
