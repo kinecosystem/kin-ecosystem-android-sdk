@@ -5,6 +5,7 @@ import com.kin.ecosystem.common.Callback
 import com.kin.ecosystem.common.KinCallback
 import com.kin.ecosystem.common.exception.ClientException
 import com.kin.ecosystem.common.exception.KinEcosystemException
+import com.kin.ecosystem.core.bi.EventLogger
 import com.kin.ecosystem.core.network.ApiException
 import com.kin.ecosystem.core.network.model.AccountInfo
 import com.kin.ecosystem.core.network.model.AuthToken
@@ -44,6 +45,8 @@ class AuthRepositoryTest : BaseTestClass() {
         on { authTokenSync } doAnswer { authToken }
     }
     private val remote: AuthDataSource.Remote = mock()
+    private val eventLogger: EventLogger = mock()
+
 
 
     private lateinit var authRepository: AuthDataSource
@@ -63,7 +66,7 @@ class AuthRepositoryTest : BaseTestClass() {
         val instance = AuthRepository::class.java.getDeclaredField("instance")
         instance.isAccessible = true
         instance.set(null, null)
-        AuthRepository.init(local, remote)
+        AuthRepository.init(local, remote, eventLogger)
         authRepository = AuthRepository.getInstance()
     }
 

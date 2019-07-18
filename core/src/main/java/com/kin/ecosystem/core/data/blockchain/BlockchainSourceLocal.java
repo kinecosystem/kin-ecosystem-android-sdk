@@ -59,6 +59,11 @@ public class BlockchainSourceLocal implements BlockchainSource.Local {
 	}
 
 	@Override
+	public List<String> getWalletAddresses(final String kinUserId) {
+		return getUserWallets(kinUserId);
+	}
+
+	@Override
 	public int getAccountIndex() {
 		return blockchainSharedPreferences.contains(ACCOUNT_INDEX_KEY) ? blockchainSharedPreferences
 			.getInt(ACCOUNT_INDEX_KEY, 0) : NOT_EXIST;

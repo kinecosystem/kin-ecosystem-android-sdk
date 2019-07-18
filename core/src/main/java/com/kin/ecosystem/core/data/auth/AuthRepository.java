@@ -6,7 +6,12 @@ import android.text.format.DateUtils;
 import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.exception.ClientException;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
+import com.kin.ecosystem.common.exception.ServiceException;
 import com.kin.ecosystem.common.model.UserStats;
+import com.kin.ecosystem.core.bi.EventLogger;
+import com.kin.ecosystem.core.bi.events.MaxWalletsExceededError;
+import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.AccountInfo;
 import com.kin.ecosystem.core.network.model.AuthToken;
@@ -19,6 +24,7 @@ import com.kin.ecosystem.core.util.JwtDecoder;
 import com.kin.ecosystem.core.util.StringUtil;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import org.json.JSONException;
 
 public class AuthRepository implements AuthDataSource {
@@ -28,26 +34,28 @@ public class AuthRepository implements AuthDataSource {
 
 	private final AuthDataSource.Local localData;
 	private final AuthDataSource.Remote remoteData;
+	private final EventLogger eventLogger;
 
 	private String jwt;
 	private AccountInfo cachedAccountInfo;
 	private AuthToken cachedAuthToken;
 
 	private AuthRepository(@NonNull AuthDataSource.Local local,
-		@NonNull AuthDataSource.Remote remote) {
+		@NonNull AuthDataSource.Remote remote, @NonNull EventLogger eventLogger) {
 		this.localData = local;
 		this.remoteData = remote;
+		this.eventLogger = eventLogger;
 		this.jwt = local.getJWT();
 		this.cachedAuthToken = local.getAuthTokenSync();
 		this.cachedAccountInfo = local.getAccountInfo();
 	}
 
 	public static void init(@NonNull AuthDataSource.Local localData,
-		@NonNull AuthDataSource.Remote remoteData) {
+		@NonNull AuthDataSource.Remote remoteData, @NonNull EventLogger eventLogger) {
 		if (instance == null) {
 			synchronized (AuthRepository.class) {
 				if (instance == null) {
-					instance = new AuthRepository(localData, remoteData);
+					instance = new AuthRepository(localData, remoteData, eventLogger);
 				}
 			}
 		}
@@ -55,6 +63,11 @@ public class AuthRepository implements AuthDataSource {
 
 	public static AuthRepository getInstance() {
 		return instance;
+	}
+
+	@Override
+	public String getSdkInitDate() {
+		return localData.getSdkInitDate();
 	}
 
 	@Override
@@ -104,7 +117,14 @@ public class AuthRepository implements AuthDataSource {
 
 			@Override
 			public void onFailure(ApiException exception) {
-				callback.onFailure(ErrorUtil.fromApiException(exception));
+				KinEcosystemException kinException =  ErrorUtil.fromApiException(exception);
+				callback.onFailure(kinException);
+				if (kinException.getCode() == ServiceException.MAX_WALLETS_EXCEEDED) {
+					final List<String> userWallets = BlockchainSourceImpl.getInstance().getWalletAddresses(getEcosystemUserID());
+					final List<String> allWallets = BlockchainSourceImpl.getInstance().getAllWalletAddresses();
+					final String initSdkDate = AuthRepository.getInstance().getSdkInitDate();
+					eventLogger.send(MaxWalletsExceededError.create(initSdkDate, allWallets, userWallets));
+				}
 			}
 		});
 	}

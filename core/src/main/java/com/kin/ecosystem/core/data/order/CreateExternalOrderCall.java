@@ -158,6 +158,7 @@ abstract class CreateExternalOrderCall extends Thread {
 		scheduleTimeoutTimer(orderId);
 	}
 
+
 	void onSubmissionFailed(final String offerId, final String orderId, KinEcosystemException e) {
 		blockchainSource.removePaymentObserver(paymentObserver);
 		onOrderFailed(offerId, orderId, e);

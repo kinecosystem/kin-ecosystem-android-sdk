@@ -37,6 +37,7 @@ import com.kin.ecosystem.core.bi.EventLogger;
 import com.kin.ecosystem.core.bi.EventLoggerImpl;
 import com.kin.ecosystem.core.bi.events.EntrypointButtonTapped;
 import com.kin.ecosystem.core.bi.events.KinSdkInitiated;
+import com.kin.ecosystem.core.bi.events.SdkLoginStarted;
 import com.kin.ecosystem.core.bi.events.UserLoginFailed;
 import com.kin.ecosystem.core.bi.events.UserLoginRequested;
 import com.kin.ecosystem.core.bi.events.UserLoginSucceeded;
@@ -129,7 +130,7 @@ public class Kin {
 			eventLogger = EventLoggerImpl.getInstance();
 
 			AuthRepository
-				.init(AuthLocalData.getInstance(getKinContext()), AuthRemoteData.getInstance(instance.executorsUtil));
+				.init(AuthLocalData.getInstance(getKinContext()), AuthRemoteData.getInstance(instance.executorsUtil), eventLogger);
 
 			BlockchainSourceImpl.init(eventLogger, BlockchainSourceLocal.getInstance(getKinContext()),
 				BlockchainSourceRemote.getInstance(instance.executorsUtil, eventLogger), AuthRepository.getInstance());
@@ -267,16 +268,16 @@ public class Kin {
 	}
 
 	private static void internalLogin(final int loginState, final KinCallback<Void> loginCallback) {
-		MigrationManager migrationManager = createMigrationManager(getKinContext(),
-			AuthRepository.getInstance().getAppID());
+		eventLogger.send(SdkLoginStarted.create(AuthRepository.getInstance().getSdkInitDate()));
+		MigrationManager migrationManager = createMigrationManager(getKinContext(), AuthRepository.getInstance().getAppID());
 		BlockchainSourceImpl.getInstance().setMigrationManager(migrationManager);
-
 		AuthRepository.getInstance().getAccountInfo(new KinCallback<AccountInfo>() {
 			@Override
 			public void onResponse(AccountInfo accountInfo) {
 				String publicAddress;
+				final String ecosystemUserID = accountInfo.getAuthToken().getEcosystemUserID();
 				try {
-					BlockchainSourceImpl.getInstance().loadAccount(accountInfo.getAuthToken().getEcosystemUserID());
+					BlockchainSourceImpl.getInstance().loadAccount(ecosystemUserID);
 					publicAddress = BlockchainSourceImpl.getInstance().getPublicAddress();
 				} catch (final BlockchainException exception) {
 					sendLoginFailed(exception, loginCallback);
@@ -365,8 +366,7 @@ public class Kin {
 	}
 
 	private static void sendLoginFailed(final KinEcosystemException exception, final KinCallback<Void> loginCallback) {
-		eventLogger
-			.send(UserLoginFailed.create(ErrorUtil.getMessage(exception, "User login failed with unknown exception")));
+		eventLogger.send(UserLoginFailed.create(ErrorUtil.getMessage(exception, "User login failed with unknown exception")));
 		isAccountLoggedIn.getAndSet(false);
 		instance.executorsUtil.mainThread().execute(new Runnable() {
 			@Override

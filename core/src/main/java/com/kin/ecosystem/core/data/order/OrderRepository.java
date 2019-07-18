@@ -376,7 +376,6 @@ public class OrderRepository implements OrderDataSource {
 					final String finalOfferId = StringUtil.safeGuardNullString(offerId);
 					final String finalOrderId = StringUtil.safeGuardNullString(orderId);
 					eventLogger.send(SpendOrderFailed.create(exception.getMessage(), finalOfferId, finalOrderId, true, SpendOrderFailed.Origin.EXTERNAL));
-
 					if (callback != null) {
 						callback.onFailure(exception);
 					}

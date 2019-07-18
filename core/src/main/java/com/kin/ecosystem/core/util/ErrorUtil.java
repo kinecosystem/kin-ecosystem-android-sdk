@@ -8,6 +8,8 @@ import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.common.exception.ServiceException;
 import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.Error;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import kin.sdk.migration.common.exception.AccountNotActivatedException;
 import kin.sdk.migration.common.exception.AccountNotFoundException;
 import kin.sdk.migration.common.exception.CreateAccountException;
@@ -34,7 +36,9 @@ public class ErrorUtil {
 	private static final String ACCOUNT_HAS_NO_WALLET = "Account has no wallet";
 	private static final String MIGRATION_NEEDED = "Migration to new kin blockchain is needed";
 	private static final String WALLET_WAS_NOT_CREATED_IN_THIS_APP = "This wallet was not created in this app";
+	private static final String MAX_WALLETS_EXCEEDED = "Max wallets exceeded";
 	private static final String JWT_PROVIDED_IS_WRONG_OR_NULL = "The jwt is wrong or null";
+
 
 
 	// Server Error codes
@@ -47,6 +51,7 @@ public class ErrorUtil {
 	private static final int ERROR_CODE_INTERNAL_SERVER_ERROR = 500;
 	private static final int ERROR_CODE_TRANSACTION_FAILED_ERROR = 700;
 
+	private static final int ERROR_CODE_MAX_WALLETS_EXCEEDED = 4007;
 	private static final int ERROR_CODE_NO_SUCH_USER = 4046;
 	private static final int ERROR_CODE_USER_HAS_NO_WALLET = 4095;
 	public static final int ERROR_CODE_EXTERNAL_ORDER_ALREADY_COMPLETED = 4091;
@@ -61,6 +66,12 @@ public class ErrorUtil {
 
 			switch (apiCode) {
 				case ERROR_CODE_BAD_REQUEST:
+					if (error != null) {
+						if(error.getCode() == ERROR_CODE_MAX_WALLETS_EXCEEDED) {
+							return new ServiceException(ServiceException.MAX_WALLETS_EXCEEDED,
+								getMessage(error, MAX_WALLETS_EXCEEDED), apiException);
+						}
+					}
 				case ERROR_CODE_UNAUTHORIZED:
 				case ERROR_CODE_NOT_FOUND:
 					if (error != null) {
@@ -133,6 +144,12 @@ public class ErrorUtil {
 			.isEmpty(throwable.getCause().getMessage())) ? throwable.getCause().getMessage() : defaultMsg;
 	}
 
+	public static String getStacktraceString(Throwable throwable) {
+		StringWriter sw = new StringWriter();
+		throwable.printStackTrace(new PrintWriter(sw));
+		return sw.toString();
+	}
+
 	public static ApiException createOrderTimeoutException() {
 		final String errorTitle = "Time out";
 		final String errorMsg = "order timed out";
@@ -168,7 +185,7 @@ public class ErrorUtil {
 	}
 
 	public static BlockchainException createMigrationFailedException(Exception error) {
-		final String errorMsg = getMessage(error, "Migration Failed");
+		String errorMsg = getMessage(error, "Migration Failed") + " " + ErrorUtil.getCauseOrDefault(error, "");
 		return new BlockchainException(BlockchainException.MIGRATION_FAILED, errorMsg, error);
 	}
 

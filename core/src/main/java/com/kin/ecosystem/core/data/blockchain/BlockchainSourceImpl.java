@@ -23,6 +23,7 @@ import com.kin.ecosystem.core.bi.events.MigrationAccountCompleted.BlockchainVers
 import com.kin.ecosystem.core.bi.events.MigrationAccountFailed;
 import com.kin.ecosystem.core.bi.events.MigrationAccountStarted;
 import com.kin.ecosystem.core.bi.events.MigrationModuleStarted;
+import com.kin.ecosystem.core.bi.events.MigrationStatusCheckFailed;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainFailed;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainSubmitted;
 import com.kin.ecosystem.core.bi.events.SpendTransactionBroadcastToBlockchainSucceeded;
@@ -37,6 +38,8 @@ import com.kin.ecosystem.core.util.ExecutorsUtil.MainThreadExecutor;
 import com.kin.ecosystem.core.util.StringUtil;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import kin.sdk.migration.MigrationManager;
 import kin.sdk.migration.common.KinSdkVersion;
 import kin.sdk.migration.common.WhitelistResult;
@@ -216,7 +219,7 @@ public class BlockchainSourceImpl implements BlockchainSource {
 	}
 
 	@Override
-	public void getMigrationInfo(String publicAddress, final KinCallback<MigrationInfo> callback) {
+	public void getMigrationInfo(final String publicAddress, final KinCallback<MigrationInfo> callback) {
 		remote.getMigrationInfo(publicAddress, new Callback<MigrationInfo, ApiException>() {
 			@Override
 			public void onResponse(MigrationInfo migrationInfo) {
@@ -225,7 +228,9 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 			@Override
 			public void onFailure(ApiException exception) {
-				callback.onFailure(ErrorUtil.fromApiException(exception));
+				final KinEcosystemException finalException = ErrorUtil.fromApiException(exception);
+				eventLogger.send(MigrationStatusCheckFailed.create(publicAddress, finalException.getMessage()));
+				callback.onFailure(finalException);
 			}
 		});
 	}
@@ -461,6 +466,24 @@ public class BlockchainSourceImpl implements BlockchainSource {
 		}
 	}
 
+	@Override
+	public List<String> getWalletAddresses(String kinUserId) {
+		return local.getWalletAddresses(kinUserId);
+	}
+
+	@Override
+	public List<String> getAllWalletAddresses() {
+		List<String> wallets = new ArrayList<>();
+		if(kinClient != null) {
+			final int count = kinClient.getAccountCount();
+			for (int i = 0; i < count; i++) {
+				wallets.add(kinClient.getAccount(i).getPublicAddress());
+			}
+		}
+
+		return wallets;
+	}
+
 	private void initBalance() {
 		reconnectBalanceConnection();
 		balance.postValue(getBalance());
@@ -683,11 +706,12 @@ public class BlockchainSourceImpl implements BlockchainSource {
 
 				@Override
 				public void onFailure(final OperationFailedException e) {
-					eventLogger.send(StellarKinTrustlineSetupFailed.create(e.getMessage()));
+					final KinEcosystemException ecosystemException = ErrorUtil.getBlockchainException(e);
+					eventLogger.send(StellarKinTrustlineSetupFailed.create(ecosystemException.getMessage()));
 					mainThread.execute(new Runnable() {
 						@Override
 						public void run() {
-							callback.onFailure(ErrorUtil.getBlockchainException(e));
+							callback.onFailure(ecosystemException);
 						}
 					});
 				}

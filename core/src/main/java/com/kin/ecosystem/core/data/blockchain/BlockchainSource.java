@@ -12,6 +12,8 @@ import com.kin.ecosystem.core.network.ApiException;
 import com.kin.ecosystem.core.network.model.MigrationInfo;
 import com.kin.ecosystem.recovery.KeyStoreProvider;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import kin.sdk.migration.MigrationManager;
 import kin.sdk.migration.common.KinSdkVersion;
 import kin.sdk.migration.common.exception.DeleteAccountException;
@@ -176,6 +178,10 @@ public interface BlockchainSource {
 
 	void deleteAccount(int accountIndex) throws DeleteAccountException;
 
+	List<String> getWalletAddresses(String kinUserId);
+
+	List<String> getAllWalletAddresses();
+
 	interface Local {
 		int getBalance();
 
@@ -185,6 +191,8 @@ public interface BlockchainSource {
 
 		@Nullable
 		String getLastWalletAddress(String kinUserId);
+
+		List<String> getWalletAddresses(String kinUserId);
 
 		void setActiveUserWallet(String kinUserId, String publicAddress);
 
