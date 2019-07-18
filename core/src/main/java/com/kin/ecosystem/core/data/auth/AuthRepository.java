@@ -166,8 +166,8 @@ public class AuthRepository implements AuthDataSource {
 	}
 
     @Override
-    public boolean isCurrentAuthTokenExpired() {
-		if(localData.isLoggedIn()) {
+    public boolean isCurrentAuthTokenExpired() throws ClientException {
+		if(!localData.isLoggedIn()) {
 			if (cachedAuthToken != null) {
 				return isAuthTokenExpired(cachedAuthToken);
 			}
@@ -176,7 +176,7 @@ public class AuthRepository implements AuthDataSource {
 				return isAuthTokenExpired(token);
 			}
 		}
-        return false;
+        throw ErrorUtil.getClientException(ClientException.ACCOUNT_NOT_LOGGED_IN, null);
     }
 
 	@Override

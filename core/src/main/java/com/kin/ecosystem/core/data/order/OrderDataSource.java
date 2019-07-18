@@ -43,7 +43,7 @@ public interface OrderDataSource {
 
     OpenOrder createOutgoingTransferOrderSync(@NonNull final OutgoingTransfer payload) throws KinEcosystemException;
 
-    OpenOrder createIncomingTransferOrderSync(@NonNull final IncomingTransfer payload) throws KinEcosystemException;
+    void createIncomingTransferOrderAsync(@NonNull IncomingTransfer payload);
 
     void purchase(String offerJwt, @Nullable final KinCallback<OrderConfirmation> callback);
 
@@ -90,7 +90,7 @@ public interface OrderDataSource {
 
         OpenOrder createOutgoingTransferOrderSync(@NonNull final OutgoingTransfer payload) throws ApiException;
 
-        OpenOrder createIncomingTransferOrderSync(@NonNull final IncomingTransfer payload) throws ApiException;
+        void createIncomingTransferOrderAsync(@NonNull IncomingTransfer payload, @NonNull final Callback<OpenOrder, ApiException> callback);
 
         void getFilteredOrderHistory(@Nullable String origin, @NonNull String offerID, @NonNull final Callback<OrderList, ApiException> callback);
 

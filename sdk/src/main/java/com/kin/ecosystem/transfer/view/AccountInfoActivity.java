@@ -45,24 +45,14 @@ public class AccountInfoActivity extends AccountInfoActivityBase {
         super.updateTransactionInfo(senderAppId, senderAppName, receiverAppId, memo);
         try {
             initKin();
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    String title = "Received Kin";
-                    String description = "From " + senderAppName;
-                    final OrderRepository orderRepository = OrderRepository.getInstance();
-                    IncomingTransfer payload = new IncomingTransfer().appId(senderAppId).memo(memo).title(title).description(description).walletAddress("");
-                    if (orderRepository != null) {
-                        try {
-                            orderRepository.createIncomingTransferOrderSync(payload);
-                        } catch (KinEcosystemException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-            thread.start();
-        } catch (ClientException exception) {
+            String title = "Received Kin";
+            String description = "From " + senderAppName;
+            final OrderRepository orderRepository = OrderRepository.getInstance();
+            IncomingTransfer payload = new IncomingTransfer().appId(senderAppId).memo(memo).title(title).description(description).walletAddress("");
+            if (orderRepository != null) {
+                orderRepository.createIncomingTransferOrderAsync(payload);
+            }
+        } catch (ClientException e) {
         }
     }
 
