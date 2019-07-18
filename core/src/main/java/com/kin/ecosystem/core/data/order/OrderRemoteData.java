@@ -251,8 +251,27 @@ public class OrderRemoteData implements OrderDataSource.Remote {
     }
 
     @Override
-    public OpenOrder createIncomingTransferOrderSync(@NonNull IncomingTransfer payload) throws ApiException {
-        return ordersApi.createIncomingTransferOrder(payload, "");
+    public void createIncomingTransferOrderAsync(@NonNull IncomingTransfer payload, @NonNull final Callback<OpenOrder, ApiException> callback) {
+        try {
+            ordersApi.createIncomingTransferOrderAsync(payload, "", new ApiCallback<OpenOrder>() {
+                @Override
+                public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+                    callback.onFailure(e);
+                }
+
+                @Override
+                public void onSuccess(OpenOrder result, int statusCode, Map<String, List<String>> responseHeaders) {
+                    callback.onResponse(result);
+                }
+            });
+        } catch (final ApiException e) {
+            executorsUtil.mainThread().execute(new Runnable() {
+                @Override
+                public void run() {
+                    callback.onFailure(e);
+                }
+            });
+        }
     }
 
     @Override

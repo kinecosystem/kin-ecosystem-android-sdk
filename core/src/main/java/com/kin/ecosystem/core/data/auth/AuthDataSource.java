@@ -39,7 +39,7 @@ public interface AuthDataSource {
 
 	void logout();
 
-	boolean isCurrentAuthTokenExpired();
+	boolean isCurrentAuthTokenExpired() throws ClientException;
 
 	void setLoggedIn(boolean loggedIn);
 

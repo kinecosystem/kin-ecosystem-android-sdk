@@ -177,15 +177,17 @@ public class OrderRepository implements OrderDataSource {
 	}
 
 	@Override
-	public OpenOrder createIncomingTransferOrderSync(@NonNull IncomingTransfer payload) throws KinEcosystemException {
-		OpenOrder openOrder;
-		try {
-			openOrder = remoteData.createIncomingTransferOrderSync(payload);
-			cachedOpenOrder.postValue(openOrder);
-		} catch (ApiException e) {
-			throw ErrorUtil.fromApiException(e);
-		}
-		return openOrder;
+	public void createIncomingTransferOrderAsync(@NonNull IncomingTransfer payload) {
+		remoteData.createIncomingTransferOrderAsync(payload, new Callback<OpenOrder, ApiException>() {
+			@Override
+			public void onResponse(OpenOrder openOrder) {
+				cachedOpenOrder.postValue(openOrder);
+			}
+
+			@Override
+			public void onFailure(ApiException exception) {
+			}
+		});
 	}
 
 	@Override

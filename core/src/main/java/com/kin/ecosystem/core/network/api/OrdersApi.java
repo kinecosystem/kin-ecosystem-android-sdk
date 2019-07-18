@@ -1113,6 +1113,13 @@ public class OrdersApi extends Api {
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 */
 	public Call createIncomingTransferOrderAsync(IncomingTransfer body, String X_REQUEST_ID, final ApiCallback<OpenOrder> callback) throws ApiException {
+		if (body == null) {
+			throw new ApiException("Missing the required parameter 'body' when calling createOutgoingTransferOrder(Async)");
+		}
+		// verify the required parameter 'X_REQUEST_ID' is set
+		if (X_REQUEST_ID == null) {
+			throw new ApiException("Missing the required parameter 'X_REQUEST_ID' when calling createOutgoingTransferOrder(Async)");
+		}
 
 		Call call = createIncomingTransferOrderValidateBeforeCall(body, X_REQUEST_ID);
 		Type localVarReturnType = new TypeToken<OpenOrder>(){}.getType();
