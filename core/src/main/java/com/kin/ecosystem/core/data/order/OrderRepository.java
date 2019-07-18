@@ -163,17 +163,18 @@ public class OrderRepository implements OrderDataSource {
 	}
 
 	@Override
-	public void submitEarnOrder(@NonNull final String offerID, @Nullable String content, @NonNull final String orderID,
+	public void submitEarnOrder(@NonNull final String offerID, @Nullable String content, @NonNull final String orderID, final String title,
 		@Nullable final KinCallback<Order> callback) {
 		listenForCompletedPayment();
-		remoteData.submitEarnOrder(content, orderID, createSubmitOrderCallback(callback, orderID, offerID));
+		remoteData.submitEarnOrder(content, orderID, createSubmitOrderCallback(callback, orderID, offerID, title, OfferType.EARN));
 	}
 
 	@Override
-	public void submitSpendOrder(@NonNull final String offerID, @Nullable String transaction, @NonNull final String orderID,
+	public void submitSpendOrder(@NonNull final String offerID, @Nullable String transaction,
+		@NonNull final String orderID, final String title,
 		@Nullable final KinCallback<Order> callback) {
 		listenForCompletedPayment();
-		remoteData.submitSpendOrder(transaction, orderID, createSubmitOrderCallback(callback, orderID, offerID));
+		remoteData.submitSpendOrder(transaction, orderID, createSubmitOrderCallback(callback, orderID, offerID, title, OfferType.SPEND));
 	}
 
 	@Override
@@ -189,12 +190,11 @@ public class OrderRepository implements OrderDataSource {
 					@Override
 					public void onChanged(Payment payment) {
 						if (!payment.isSucceed()) {
-							BlockchainException blockchainException = ErrorUtil
-								.getBlockchainException(payment.getException());
+							BlockchainException blockchainException = ErrorUtil.getBlockchainException(payment.getException());
 							final Error error = new Error("Transaction failed", blockchainException.getMessage(),
 								blockchainException.getCode());
 							final Body body = new Body().error(error);
-							changeOrder(payment.getOrderID(), body, null);
+							changeOrder(payment.getOrderID(), body);
 						}
 
 						sendEarnPaymentConfirmed(payment);
@@ -234,7 +234,8 @@ public class OrderRepository implements OrderDataSource {
 		}
 	}
 
-	private Callback<Order, ApiException> createSubmitOrderCallback(final KinCallback<Order> callback, final String orderID, final String offerID) {
+	private Callback<Order, ApiException> createSubmitOrderCallback(final KinCallback<Order> callback,
+		final String orderID, final String offerID, final String title, final OfferType offerType) {
 		return new Callback<Order, ApiException>() {
 			@Override
 			public void onResponse(Order response) {
@@ -247,8 +248,7 @@ public class OrderRepository implements OrderDataSource {
 
 			@Override
 			public void onFailure(ApiException e) {
-				getOrderWatcher().postValue(
-					new Order().orderId(orderID).offerId(offerID).status(Status.FAILED).error(e.getResponseBody()));
+				getOrderWatcher().postValue(new Order().title(title).offerType(offerType).orderId(orderID).offerId(offerID).status(Status.FAILED));
 				removeCachedOpenOrderByID(orderID);
 				if (callback != null) {
 					callback.onFailure(ErrorUtil.fromApiException(e));
@@ -341,10 +341,9 @@ public class OrderRepository implements OrderDataSource {
 			new ExternalSpendOrderCallbacks() {
 
 				@Override
-				public void onTransactionFailed(final OpenOrder openOrder, final KinEcosystemException exception) {
-					final String orderId = openOrder.getId();
+				public void onTransactionFailed(final String offerId, final String orderId, final KinEcosystemException exception) {
 					removeCachedOpenOrderByID(orderId);
-					handleOnFailure(exception, openOrder.getOfferId(), orderId);
+					handleOnFailure(offerId, orderId, exception);
 				}
 
 				@Override
@@ -366,17 +365,17 @@ public class OrderRepository implements OrderDataSource {
 				}
 
 				@Override
-				public void onOrderFailed(KinEcosystemException exception, OpenOrder openOrder) {
-					if (openOrder != null) { // did not fail before submit
+				public void onOrderFailed(final String offerId, final String orderId, KinEcosystemException exception) {
+					if (!StringUtil.isEmpty(orderId)) { // did not fail before submit
 						decrementCount();
 					}
-					handleOnFailure(exception, getOfferId(openOrder), getOrderId(openOrder));
+					handleOnFailure(offerId, orderId, exception);
 				}
 
-				private void handleOnFailure(KinEcosystemException exception, String offerId, String orderId) {
-					eventLogger.send(
-						SpendOrderFailed.create(exception.getMessage(), offerId, orderId, true, SpendOrderFailed.Origin.EXTERNAL));
-
+				private void handleOnFailure(final String offerId, final String orderId, KinEcosystemException exception) {
+					final String finalOfferId = StringUtil.safeGuardNullString(offerId);
+					final String finalOrderId = StringUtil.safeGuardNullString(orderId);
+					eventLogger.send(SpendOrderFailed.create(exception.getMessage(), finalOfferId, finalOrderId, true, SpendOrderFailed.Origin.EXTERNAL));
 					if (callback != null) {
 						callback.onFailure(exception);
 					}
@@ -385,37 +384,23 @@ public class OrderRepository implements OrderDataSource {
 			}).start();
 	}
 
-	private String getOrderId(OpenOrder openOrder) {
-		return openOrder != null ? openOrder.getId() : "null";
-	}
-
-	private String getOfferId(OpenOrder openOrder) {
-		return openOrder != null ? openOrder.getOfferId() : "null";
-	}
-
 	/**
 	 * Update server with the relevant Body when an error occurred
 	 * or something that the server should know about happened.
 	 *
 	 * @param orderID the Order id that you refer to
 	 * @param body content with the relevant {@link Error}
-	 * @param kinCallback callback to receive the response from server, can be null.
 	 */
-	private void changeOrder(@NonNull String orderID, @NonNull Body body,
-		@Nullable final KinCallback<Order> kinCallback) {
+	private void changeOrder(@NonNull String orderID, @NonNull Body body) {
 		remoteData.changeOrder(orderID, body, new Callback<Order, ApiException>() {
 			@Override
 			public void onResponse(Order response) {
-				if (kinCallback != null) {
-					kinCallback.onResponse(response);
-				}
+				// no-op
 			}
 
 			@Override
 			public void onFailure(ApiException error) {
-				if (kinCallback != null) {
-					kinCallback.onFailure(ErrorUtil.fromApiException(error));
-				}
+				// no-op
 			}
 		});
 	}
@@ -436,19 +421,20 @@ public class OrderRepository implements OrderDataSource {
 			}
 
 			@Override
-			public void onOrderFailed(KinEcosystemException exception, OpenOrder openOrder) {
-				if (openOrder != null) { // did not fail before submit
+			public void onOrderFailed(final String offerId, final String orderId, KinEcosystemException exception) {
+				if (!StringUtil.isEmpty(orderId)) { // did not fail before submit
 					decrementCount();
 				}
-				handleOnFailure(exception, getOfferId(openOrder), getOrderId(openOrder));
+				handleOnFailure(exception, offerId, orderId);
 			}
 
 			private void handleOnFailure(KinEcosystemException exception, final String offerId, final String orderId) {
 				if (callback != null) {
 					callback.onFailure(exception);
 				}
-				eventLogger.send(
-					EarnOrderFailed.create(exception.getMessage(), offerId, orderId, EarnOrderFailed.Origin.EXTERNAL));
+				final String finalOfferId = StringUtil.safeGuardNullString(offerId);
+				final String finalOrderId = StringUtil.safeGuardNullString(orderId);
+				eventLogger.send(EarnOrderFailed.create(exception.getMessage(), finalOfferId, finalOrderId, EarnOrderFailed.Origin.EXTERNAL));
 			}
 		}).start();
 	}
@@ -463,6 +449,10 @@ public class OrderRepository implements OrderDataSource {
 	@Override
 	public void addOrderObserver(@NonNull Observer<Order> observer) {
 		getOrderWatcher().addObserver(observer);
+		final Order currentOrder = getOrderWatcher().getValue();
+		if (currentOrder != null) {
+			observer.onChanged(currentOrder);
+		}
 	}
 
 	@Override
@@ -480,9 +470,8 @@ public class OrderRepository implements OrderDataSource {
 
 			@Override
 			public void onFailure(Void t) {
-				callback
-					.onFailure(ErrorUtil
-						.getClientException(ClientException.INTERNAL_INCONSISTENCY, new DataNotAvailableException()));
+				callback.onFailure(
+					ErrorUtil.getClientException(ClientException.INTERNAL_INCONSISTENCY, new DataNotAvailableException()));
 			}
 		});
 	}
@@ -537,6 +526,11 @@ public class OrderRepository implements OrderDataSource {
 	@Override
 	public void logout() {
 		cachedOrderList = null;
+		getOrderWatcher().removeAllObservers();
+		cachedOpenOrder.removeAllObservers();
+		getOrderWatcher().postValue(null);
+		cachedOpenOrder.postValue(null);
+
 	}
 
 	private void decrementCount() {

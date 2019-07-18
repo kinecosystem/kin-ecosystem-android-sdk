@@ -188,7 +188,7 @@
         android:layout_marginBottom="@dimen/kinecosystem_block_margin"
         android:layout_gravity="bottom"
         android:gravity="center_horizontal"
-        android:text="@string/pay_to_user"
+        android:text="@string/gift_pay_to_user"
         android:textAllCaps="false"
         android:textColor="@color/colorPrimary"
         android:textSize="16sp"

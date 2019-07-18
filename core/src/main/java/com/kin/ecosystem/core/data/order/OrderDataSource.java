@@ -22,10 +22,10 @@ public interface OrderDataSource {
 
     void createOrder(@NonNull final String offerID, final KinCallback<OpenOrder> callback);
 
-	void submitEarnOrder(@NonNull final String offerID, @Nullable String content, @NonNull String orderID,
+	void submitEarnOrder(@NonNull final String offerID, @Nullable String content, @NonNull String orderID, final String title,
 		final KinCallback<Order> callback);
 
-	void submitSpendOrder(@NonNull final String offerID, @Nullable String transaction, @NonNull String orderID,
+	void submitSpendOrder(@NonNull final String offerID, @Nullable String transaction, @NonNull String orderID, final String title,
 		final KinCallback<Order> callback);
 
     void cancelOrderSync(@NonNull final String orderID);

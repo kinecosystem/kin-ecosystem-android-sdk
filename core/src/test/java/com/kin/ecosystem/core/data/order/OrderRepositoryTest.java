@@ -70,6 +70,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 
 	private static String offerID = "1";
 	private static String orderID = "2";
+	private static final  String title = "some_title";
 
 	@Mock
 	private BlockchainSource blockchainSource;
@@ -198,7 +199,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 		assertEquals(openOrder, orderRepository.getOpenOrder().getValue());
 
 		// Submit Order
-		orderRepository.submitEarnOrder(order.getOfferId(), "", order.getOrderId(), orderCallback);
+		orderRepository.submitEarnOrder(order.getOfferId(), "", order.getOrderId(), title, orderCallback);
 		verify(remote).submitEarnOrder(anyString(), anyString(), submitOrderCapture.capture());
 		verify(blockchainSource).addPaymentObservable(paymentCapture.capture());
 
@@ -240,7 +241,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 		assertEquals(openOrder, orderRepository.getOpenOrder().getValue());
 
 		// Submit Order
-		orderRepository.submitSpendOrder(order.getOfferId(), null, order.getOrderId(), orderCallback);
+		orderRepository.submitSpendOrder(order.getOfferId(), null, order.getOrderId(), title, orderCallback);
 		verify(remote).submitSpendOrder((String) isNull(), anyString(), submitOrderCapture.capture());
 		verify(blockchainSource).addPaymentObservable(paymentCapture.capture());
 
@@ -281,7 +282,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 		assertEquals(openOrder, orderRepository.getOpenOrder().getValue());
 
 		// Submit Order
-		orderRepository.submitSpendOrder(order.getOfferId(), null, order.getOrderId(), orderCallback);
+		orderRepository.submitSpendOrder(order.getOfferId(), null, order.getOrderId(), title, orderCallback);
 		verify(remote).submitSpendOrder((String) isNull(), anyString(), submitOrderCapture.capture());
 		verify(blockchainSource).addPaymentObservable(paymentCapture.capture());
 
@@ -317,7 +318,7 @@ public class OrderRepositoryTest extends BaseTestClass {
 		assertEquals(openOrder, orderRepository.getOpenOrder().getValue());
 
 		// Submit Order
-		orderRepository.submitSpendOrder(order.getOfferId(), null, order.getOrderId(), orderCallback);
+		orderRepository.submitSpendOrder(order.getOfferId(), null, order.getOrderId(), title, orderCallback);
 		verify(remote).submitSpendOrder((String) isNull(), anyString(), submitOrderCapture.capture());
 
 		submitOrderCapture.getValue().onFailure(getApiException());

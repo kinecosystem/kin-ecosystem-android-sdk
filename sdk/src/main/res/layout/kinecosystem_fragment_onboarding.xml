@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/screen_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="1">
+
+    <ImageView
+        android:id="@+id/close_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/kinrecovery_margin_main"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="@dimen/kinecosystem_main_medium_margin"
+        app:srcCompat="@drawable/kinecosystem_ic_close_btn"
+        />
+
+    <ImageView
+        android:id="@+id/kin_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/load_up_title"
+        android:layout_marginBottom="@dimen/kinecosystem_main_medium_margin"
+        app:srcCompat="@drawable/kinecosystem_kin_logo_new"/>
+
+    <ImageView
+        android:id="@+id/earn_more_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="?attr/onboardingImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/close_button"
+        app:layout_constraintBottom_toBottomOf="@id/kin_logo"
+        />
+
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
+        android:id="@+id/load_up_title"
+        style="@style/KinecosysTitleMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/kinecosystem_what_is_kin"
+        app:fontExtra="medium"
+        app:layout_constraintBottom_toTopOf="@+id/description"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="@dimen/kinrecovery_margin_medium"
+        />
+
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
+        android:id="@+id/description"
+        style="@style/KinecosysTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/kinecosystem_kin_is_a_digital_currency_that_makes"
+        android:textSize="@dimen/kinecosystem_sub_title_size"
+        app:layout_constraintBottom_toTopOf="@+id/earn_kin_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:lineSpacingMultiplier="1.5"
+        android:layout_marginBottom="@dimen/kinecosystem_main_medium_margin"/>
+
+    <Button
+        android:id="@+id/earn_kin_button"
+        android:layout_width="@dimen/kinecosystem_round_button_width"
+        android:layout_height="@dimen/kinecosystem_round_button_height"
+        android:layout_marginBottom="@dimen/kinecosystem_main_medium_margin"
+        android:background="@drawable/kinecosystem_button_primary_bg_rounded"
+        android:text="@string/kinecosystem_lets_s_go"
+        android:textAllCaps="false"
+        android:textColor="@color/kinecosystem_white"
+        android:textSize="@dimen/kinecosystem_title_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <ImageView
+        android:id="@+id/loading_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinrecovery_margin_main"
+        android:layout_marginBottom="@dimen/kinecosystem_block_margin"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@id/loading_text"
+        app:layout_constraintEnd_toEndOf="@id/loading_text"
+        app:layout_constraintStart_toStartOf="@id/loading_text"
+        app:srcCompat="@drawable/kinecosystem_avd_loading"/>
+
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
+        android:id="@+id/loading_text"
+        style="@style/KinecosysTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/kinecosystem_main_medium_margin"
+        android:text="@string/kinecosystem_creating_your_account"
+        android:textSize="@dimen/kinecosystem_sub_title_size"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+</android.support.constraint.ConstraintLayout>

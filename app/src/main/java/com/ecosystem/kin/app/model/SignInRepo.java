@@ -10,6 +10,7 @@ import android.provider.Settings.Secure;
 import android.support.annotation.NonNull;
 import com.ecosystem.kin.app.BuildConfig;
 import com.ecosystem.kin.app.JwtUtil;
+import com.kin.ecosystem.common.KinTheme;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -18,6 +19,8 @@ public class SignInRepo {
     private final static String USER_PREFERENCE_FILE_KEY = "USER_PREFERENCE_FILE_KEY";
     private final static String USER_UUID_KEY = "USER_UUID_KEY";
     private final static String DEVICE_UUID_KEY = "DEVICE_UUID_KEY";
+
+    private final static String KIN_THEME_KEY = "KIN_THEME_KEY";
 
     public static String getJWT(Context context) {
         return JwtUtil.generateSignInExampleJWT(getAppId(), getUserId(context), getDeviceId(context));
@@ -72,5 +75,13 @@ public class SignInRepo {
 	public static void logout(Context context) {
 		Editor editor = getSharedPreferences(context).edit();
 		editor.remove(USER_UUID_KEY).apply();
+	}
+
+	public static void setKinTheme(Context context, String kinThemeName) {
+		getSharedPreferences(context).edit().putString(KIN_THEME_KEY, kinThemeName).apply();
+	}
+
+	public static KinTheme getKinTheme(Context context) {
+		return KinTheme.valueOf(getSharedPreferences(context).getString(KIN_THEME_KEY, KinTheme.LIGHT.name()));
 	}
 }

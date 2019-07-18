@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<dimen name="kinecosystem_main_xsmall_margin">11dp</dimen>
+	<dimen name="kinecosystem_main_small_margin">13dp</dimen>
+	<dimen name="kinecosystem_main_margin">15dp</dimen>
+	<dimen name="kinecosystem_main_medium_margin">20dp</dimen>
+	<dimen name="kinecosystem_margin_large">25dp</dimen>
+	<dimen name="kinecosystem_margin_xlarge">55dp</dimen>
+
+	<dimen name="kinecosystem_block_margin">8dp</dimen>
+	<dimen name="kinecosystem_block_medium_margin">6dp</dimen>
+	<dimen name="kinecosystem_tiny_margin">1dp</dimen>
+
+	<dimen name="kinecosystem_offer_item_list_space">19dp</dimen>
+
+	<dimen name="kinecosystem_round_button_height">45dp</dimen>
+	<dimen name="kinecosystem_round_button_width">270dp</dimen>
+
+	<dimen name="kinecosystem_bottom_margin">50dp</dimen>
+
+	<!--Text size-->
+	<dimen name="kinecosystem_welcome_text_size">27sp</dimen>
+	<dimen name="kinecosystem_title_xlarge_size">21sp</dimen>
+	<dimen name="kinecosystem_title_large_size">19sp</dimen>
+	<dimen name="kinecosystem_title_medium_size">17sp</dimen>
+	<dimen name="kinecosystem_title_size">15sp</dimen>
+	<dimen name="kinecosystem_sub_title_size">12sp</dimen>
+	<dimen name="kinecosystem_small_title_size">10sp</dimen>
+	<dimen name="kinecosystem_text_line_spacing">6sp</dimen>
+</resources>

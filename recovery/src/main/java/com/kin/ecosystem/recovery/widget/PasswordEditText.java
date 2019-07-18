@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
@@ -29,6 +30,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.kin.ecosystem.base.ThemeUtil;
 import com.kin.ecosystem.recovery.R;
 
 
@@ -48,6 +50,9 @@ public class PasswordEditText extends LinearLayout {
 	private boolean isRevealPressed;
 	private final int passInputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD;
 
+	final int colorGray = ContextCompat.getColor(getContext(), R.color.kinecosystem_subtitle_gray);
+	final int colorPrimary = ContextCompat.getColor(getContext(), R.color.kinecosystem_primary);
+
 	public PasswordEditText(Context context) {
 		super(context, null);
 	}
@@ -62,6 +67,7 @@ public class PasswordEditText extends LinearLayout {
 		String hint;
 		TypedArray styledAttributes = context.getTheme()
 			.obtainStyledAttributes(attrs, R.styleable.KinRecoveryPasswordEditText, 0, 0);
+
 
 		try {
 			addRevealIcon = styledAttributes
@@ -85,7 +91,9 @@ public class PasswordEditText extends LinearLayout {
 	private void setupPasswordField(boolean addRevealIcon, String hint) {
 		final int topBottomPadding = getResources().getDimensionPixelSize(R.dimen.kinrecovery_margin_block);
 		final int textSize = getResources().getDimensionPixelSize(R.dimen.kinrecovery_password_edit_text_size);
-		final int colorGray = ContextCompat.getColor(getContext(), R.color.kinrecovery_gray);
+		Drawable frameDrawable = ThemeUtil.Companion.themeAttributeToDrawable(getContext(), R.attr.editTextFrame,
+			R.drawable.kinrecovery_edittext_frame_dark);
+
 		if (!TextUtils.isEmpty(hint)) {
 			passwordField.setHint(hint);
 		}
@@ -109,7 +117,7 @@ public class PasswordEditText extends LinearLayout {
 			}
 		});
 		passwordField.setGravity(Gravity.CENTER_VERTICAL);
-		passwordField.setBackgroundResource(R.drawable.kinrecovery_edittext_frame);
+		passwordField.setBackground(frameDrawable);
 		passwordField.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -182,12 +190,13 @@ public class PasswordEditText extends LinearLayout {
 
 	private void setupErrorText() {
 		final int textSize = getResources().getDimensionPixelSize(R.dimen.kinrecovery_password_edittext_error_size);
-		final int color = ContextCompat.getColor(getContext(), R.color.kinrecovery_red);
+		final int leftPadding = getResources().getDimensionPixelSize(R.dimen.kinecosystem_main_small_margin);
+		final int color = ContextCompat.getColor(getContext(), R.color.kinecosystem_failed);
 		errorText.setVisibility(GONE);
 		errorText.setTextColor(color);
 		errorText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
 		errorText.setTypeface(Typeface.SANS_SERIF);
-		errorText.setPadding(sidesPadding, 0, 0, 0);
+		errorText.setPadding(leftPadding, 0, 0, 0);
 	}
 
 	private boolean isInRevealIconBounds(MotionEvent event) {
@@ -197,28 +206,36 @@ public class PasswordEditText extends LinearLayout {
 	}
 
 	private void setInputAsPasswordDots() {
-		setRevealIconColor(R.color.kinrecovery_gray);
+		setRevealIconColor(R.color.kinecosystem_subtitle_gray);
 		passwordField.setInputType(passInputType);
 		passwordField.setTransformationMethod(LargePasswordDotsTransformationMethod.getInstance());
 		passwordField.setTypeface(Typeface.SANS_SERIF);
 		passwordField.setSelection(passwordField.getText().length());
+		passwordField.setTextColor(colorGray);
 		isRevealPressed = false;
 	}
 
 	private void setInputAsVisibleChars() {
-		setRevealIconColor(R.color.kinrecovery_bluePrimary);
+		setRevealIconColor(R.color.kinecosystem_purple);
 		passwordField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_FILTER);
 		passwordField.setTransformationMethod(null);
 		passwordField.setTypeface(Typeface.SANS_SERIF);
+		passwordField.setTextColor(colorPrimary);
 		isRevealPressed = true;
 	}
 
-	public void setFrameBackgroundColor(@ColorRes final int colorRes) {
+	public void setFrameBackgroundColorRes(@ColorRes final int colorRes) {
 		GradientDrawable background = (GradientDrawable) passwordField.getBackground();
 		if (background != null) {
 			final int color = ContextCompat.getColor(getContext(), colorRes);
 			background.setStroke(strokeWidth, color);
+		}
+	}
 
+	public void setFrameBackgroundColor(@ColorInt final int color) {
+		GradientDrawable background = (GradientDrawable) passwordField.getBackground();
+		if (background != null) {
+			background.setStroke(strokeWidth, color);
 		}
 	}
 
@@ -227,7 +244,7 @@ public class PasswordEditText extends LinearLayout {
 		if (isVisible) {
 			isRevealIconVisible = true;
 			if (revealDrawable == null) {
-				revealDrawable = ContextCompat.getDrawable(getContext(), R.drawable.kinrecovery_grey_reveal_icon);
+				revealDrawable = ContextCompat.getDrawable(getContext(), R.drawable.kinrecovery_ic_grey_reveal);
 				passwordField.setCompoundDrawablesWithIntrinsicBounds(null, null, revealDrawable, null);
 			} else {
 				revealDrawable.setVisible(true, true);

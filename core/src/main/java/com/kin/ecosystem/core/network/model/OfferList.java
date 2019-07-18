@@ -11,16 +11,12 @@ import java.util.List;
 public class OfferList {
 
     @SerializedName("offers")
-    private List<Offer> offers = null;
+    private List<Offer> offers;
     @SerializedName("paging")
     private Paging paging = null;
 
     public OfferList() {
         this.offers = new ArrayList<>();
-    }
-
-    public OfferList(@NonNull List<Offer> offers) {
-        this.offers = offers;
     }
 
     public boolean addAtIndex(final int index, @NonNull final Offer offer) {
@@ -32,11 +28,16 @@ public class OfferList {
         }
     }
 
-    public OfferList addAll(@NonNull final OfferList offerList) {
-        List<Offer> offers = offerList.getOffers();
+    public boolean add(final Offer offer) {
         if (offers != null) {
-            this.offers.addAll(offers);
+            this.offers.add(offer);
+            return true;
         }
+        return false;
+    }
+
+    public OfferList addAll(@NonNull final List<Offer> offerList) {
+        this.offers.addAll(offerList);
         return this;
     }
 
@@ -64,6 +65,10 @@ public class OfferList {
 
     public void setOffers(List<Offer> offers) {
         this.offers = offers;
+    }
+
+    public boolean isEmpty() {
+        return offers != null && offers.isEmpty();
     }
 
     public OfferList paging(Paging paging) {

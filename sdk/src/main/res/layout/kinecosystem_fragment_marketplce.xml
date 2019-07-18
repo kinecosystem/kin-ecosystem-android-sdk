@@ -1,96 +1,64 @@
-<LinearLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="1">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_weight="1">
 
-    <LinearLayout
-        android:id="@+id/earn_container"
+    <ImageView
+        android:id="@+id/close_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/kinecosystem_ic_close_btn"
+        android:layout_marginTop="@dimen/kinecosystem_main_medium_margin"
+        android:layout_marginLeft="@dimen/kinrecovery_margin_main"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <com.kin.ecosystem.balance.view.BalanceView
+        android:id="@+id/balance_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="@id/close_btn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+    <com.kin.ecosystem.widget.TouchIndicatorIcon
+        android:id="@+id/my_kin_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/kinrecovery_margin_main"
+        app:src="?attr/menuMyKinIcon"
+        app:layout_constraintTop_toTopOf="@id/close_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinecosystem_main_medium_margin"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@+id/close_btn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:lineSpacingMultiplier="1.5"
+        android:maxLines="2"
+        style="@style/KinecosysTitleMedium"
+        app:fontExtra="medium"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/offers_recycler"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.52"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layoutAnimation="@anim/kinecosystem_recycler_layout_animation_slide_from_bottom"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="@dimen/kinecosystem_main_medium_margin"/>
 
-
-        <LinearLayout
-            android:id="@+id/earn_title_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/kinecosystem_block_margin"
-            android:layout_marginLeft="@dimen/kinecosystem_main_margin"
-            android:layout_marginRight="@dimen/kinecosystem_main_margin"
-            android:orientation="vertical"
-            >
-
-            <TextView
-                android:id="@+id/earn_title"
-                style="@style/KinecosysTitleTextMedium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/kinecosystem_tiny_margin"
-                android:text="@string/kinecosystem_earn"/>
-
-            <TextView
-                android:id="@+id/earn_subtitle"
-                style="@style/KinecosysSubTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-        </LinearLayout>
-
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/earn_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/kinecosystem_main_small_margin"/>
-
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/kinecosystem_gray_darker"/>
-
-    <LinearLayout
-        android:id="@+id/spend_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.48"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:id="@+id/spend_title_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/kinecosystem_block_margin"
-            android:layout_marginLeft="@dimen/kinecosystem_main_margin"
-            android:layout_marginRight="@dimen/kinecosystem_main_margin"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/spend_title"
-                style="@style/KinecosysTitleTextMedium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/kinecosystem_tiny_margin"
-                android:text="@string/kinecosystem_spend"/>
-
-            <TextView
-                android:id="@+id/spend_subtitle"
-                style="@style/KinecosysSubTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/spend_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/kinecosystem_main_small_margin"/>
-    </LinearLayout>
-
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

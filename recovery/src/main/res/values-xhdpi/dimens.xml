@@ -10,10 +10,10 @@
     <dimen name="button_margin_bottom">33dp</dimen>
     <dimen name="kinrecovery_line_spacing">4dp</dimen>
     <dimen name="kinrecovery_btn_width">280dp</dimen>
-    <dimen name="kinrecovery_edittext_margin">14dp</dimen>
+    <dimen name="kinrecovery_edittext_margin">16dp</dimen>
     <dimen name="kinrecovery_edittext_height">36dp</dimen>
     <dimen name="kinrecovery_edittext_stroke_width">1dp</dimen>
-    <dimen name="kinrecovery_edittext_corners_radius">18dp</dimen>
+    <dimen name="kinrecovery_edittext_corners_radius">2dp</dimen>
     <dimen name="kinrecovery_password_edit_text_size">13sp</dimen>
     <dimen name="kinrecovery_password_edittext_error_size">12sp</dimen>
     <dimen name="kinrecovery_text_align_top_checkbox_margin">5dp</dimen>

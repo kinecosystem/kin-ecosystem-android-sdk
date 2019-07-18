@@ -126,8 +126,9 @@ class RestorePresenterImplTest {
         }
 
         inOrder(callbackManager, view).apply {
-            verify(view, times(3)).navigateBack()
+            verify(view, times(2)).navigateBack()
             verify(view).closeKeyboard()
+            verify(view).navigateBack()
             verify(view).close()
         }
     }

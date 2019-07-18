@@ -6,6 +6,7 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
+        vectorDrawables.useSupportLibrary = true
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -19,6 +20,7 @@ android {
 }
 
 dependencies {
+    implementation project(':base')
 
     implementation devDependencies.constraintLayout
     implementation devDependencies.supportAnnotations

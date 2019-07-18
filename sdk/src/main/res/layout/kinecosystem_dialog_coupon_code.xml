@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/kinecosystem_main_margin"
         android:layout_marginRight="@dimen/kinecosystem_main_margin"
-        android:src="@drawable/kinecosystem_close_icon"
+        app:srcCompat="@drawable/kinecosystem_ic_close_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
@@ -31,7 +31,7 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/KinecosysLargeTitleText"
+        style="@style/KinecosysTitleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"

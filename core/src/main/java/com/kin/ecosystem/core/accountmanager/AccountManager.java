@@ -2,6 +2,7 @@ package com.kin.ecosystem.core.accountmanager;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
@@ -45,6 +46,7 @@ public interface AccountManager {
 
 	void removeAccountStateObserver(@NonNull final Observer<Integer> observer);
 
+	@Nullable
 	KinEcosystemException getError();
 
 	interface Local {

@@ -9,7 +9,9 @@ public interface SaveAndShareView extends BaseView {
 
 	void showSendIntent(Uri qrURI);
 
-	void showIHaveSavedCheckBox();
+	void showIHaveSavedQRState();
+
+	void setActionButtonEnabled(boolean isEnabled);
 
 	void showErrorTryAgainLater();
 }

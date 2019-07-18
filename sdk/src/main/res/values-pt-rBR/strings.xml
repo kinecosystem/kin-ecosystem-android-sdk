@@ -30,11 +30,7 @@
     <string name="kinecosystem_copied_to_your_clipboard">Copiado para a área de transferência</string>
     <string name="kinecosystem_copied_text">texto copiado</string>
     <string name="kinecosystem_transaction_failed">A transação falhou</string>
+    <string name="kinecosystem_failed">Falhou</string>
     <string name="kinecosystem_you_dont_have_enough_kin">Você não tem suficiente Kin</string>
     <string name="kinecosystem_order_submission_failed">A submissão do pedido falhou</string>
-
-    <!--Menu-->
-    <string name="kinecosystem_info_menu">Informações</string>
-
-
 </resources>

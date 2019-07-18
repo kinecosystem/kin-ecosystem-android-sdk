@@ -24,7 +24,7 @@ public abstract class BaseRecyclerAdapter<T, VH extends BaseViewHolder> extends 
 	private FrameLayout emptyLayout;
 	private RecyclerView recyclerView;
 
-	private List<T> data;
+	protected List<T> data;
 
 	public BaseRecyclerAdapter(@LayoutRes int layoutResId) {
 		this.layoutResId = layoutResId;
@@ -106,6 +106,10 @@ public abstract class BaseRecyclerAdapter<T, VH extends BaseViewHolder> extends 
 
 	protected int getDataCount() {
 		return data == null ? 0 : data.size();
+	}
+
+	public List<T> getData() {
+		return data != null ? data : new ArrayList<T>();
 	}
 
 	@Nullable

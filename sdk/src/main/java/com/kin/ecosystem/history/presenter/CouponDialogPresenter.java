@@ -37,15 +37,15 @@ public class CouponDialogPresenter extends BaseDialogPresenter<ICouponDialog> im
     }
 
     private void loadInfo() {
-        if (view != null && coupon != null) {
+        if (getView() != null && coupon != null) {
             CouponInfo info = coupon.getCouponInfo();
-            view.setupImage(info.getImage());
-            view.setupTitle(info.getTitle());
-            view.setUpRedeemDescription(info.getDescription(), info.getLink(), createUrl(info.getLink()));
+            getView().setupImage(info.getImage());
+            getView().setupTitle(info.getTitle());
+            getView().setUpRedeemDescription(info.getDescription(), info.getLink(), createUrl(info.getLink()));
             if(coupon.getCouponCode() != null) {
-                view.setupCouponCode(coupon.getCouponCode().getCode());
+                getView().setupCouponCode(coupon.getCouponCode().getCode());
             }
-            view.setUpButtonText(R.string.kinecosystem_copy_code);
+            getView().setUpButtonText(R.string.kinecosystem_copy_code);
         }
     }
 
@@ -74,17 +74,17 @@ public class CouponDialogPresenter extends BaseDialogPresenter<ICouponDialog> im
     }
 
     private void copyCouponCodeToClipboard() {
-        if (view != null && coupon.getCouponCode() != null) {
-            view.copyCouponCode(coupon.getCouponCode().getCode());
+        if (getView() != null && coupon.getCouponCode() != null) {
+            getView().copyCouponCode(coupon.getCouponCode().getCode());
         }
     }
 
     @Override
     public void redeemUrlClicked() {
         eventLogger.send(RedeemUrlTapped.create());
-        if(view != null) {
+        if(getView() != null) {
             String url = createUrl(coupon.getCouponInfo().getLink());
-            view.openUrl(url);
+            getView().openUrl(url);
         }
     }
 }

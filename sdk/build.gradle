@@ -9,16 +9,22 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
+        vectorDrawables.useSupportLibrary = true
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "${KIN_ECOSYSTEM_SDK_VERSION_NAME}"
         consumerProguardFiles 'proguard-rules.pro'
     }
+
+    testOptions.unitTests.includeAndroidResources = true
+    sourceSets {
+        test.java.srcDirs += 'src/test/kotlin'
+    }
 }
 
 dependencies {
-
+    implementation project(':base')
     implementation project(':core')
     api project(':common')
     implementation project(':transfer')
@@ -28,12 +34,15 @@ dependencies {
     implementation devDependencies.constraintLayout
     implementation devDependencies.picasso
     implementation devDependencies.kotlin
+    implementation ('org.kin.ecosystem.appreciation.options.menu:ui:1.0.0') {
+        transitive = false
+    }
 
     testImplementation project(':test-base')
     testImplementation testingDependencies.junit
     testImplementation testingDependencies.mockito
+    testImplementation testingDependencies.mockitoKotlin
     testImplementation testingDependencies.robolectric
-
 }
 repositories {
     mavenCentral()

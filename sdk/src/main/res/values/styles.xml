@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="KinecosysNoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/kinecosystem_white</item>
-        <item name="colorPrimaryDark">@color/kinecosystem_gray</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name = "android:windowBackground">@color/kinecosystem_white</item>
+    <style name="KinEcosystem.Light" parent="KinEcosystemTranslucent.Light">
+        <item name="backgroundCardImage">@drawable/kinecosystem_screen_bg_light</item>
+        <item name="menuMyKinIcon">@drawable/kinecosystem_ic_my_kin</item>
+        <item name="menuSettingsIcon" >@drawable/kinecosystem_ic_settings</item>
+        <item name="settingsBackupIcon">@drawable/kinecosystem_ic_backup</item>
+        <item name="settingsRestoreIcon">@drawable/kinecosystem_ic_restore</item>
+        <item name="tabDeselectedBackgroundColor">@color/kinecosystem_tab_deselected_background_light</item>
+        <item name="offerBackground">@drawable/kinecosystem_offer_item_bg_light</item>
+        <item name="separatorColor">@color/settings_separator_light</item>
+        <item name="onboardingImage">@drawable/kinecosystem_onboarding_image_light</item>
+    </style>
+
+    <style name="KinEcosystem.Dark" parent="KinEcosystemTranslucent.Dark">
+        <item name="backgroundCardImage">@drawable/kinecosystem_screen_bg_dark</item>
+        <item name="menuMyKinIcon">@drawable/kinecosystem_ic_my_kin_dark</item>
+        <item name="menuSettingsIcon" >@drawable/kinecosystem_ic_settings_dark</item>
+        <item name="settingsBackupIcon">@drawable/kinecosystem_ic_backup_dark</item>
+        <item name="settingsRestoreIcon">@drawable/kinecosystem_ic_restore_dark</item>
+        <item name="tabDeselectedBackgroundColor">@color/kinecosystem_tab_deselected_background_dark</item>
+        <item name="offerBackground">@drawable/kinecosystem_offer_item_bg_dark</item>
+        <item name="separatorColor">@color/settings_separator_dark</item>
+        <item name="onboardingImage">@drawable/kinecosystem_onboarding_image_dark</item>
     </style>
 
     <style name="KinecosysToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -26,35 +42,17 @@
         <item name="android:fontFamily">sans-serif</item>
     </style>
 
-    <style name="KinecosysTextBase">
-        <item name="android:textColor">@color/kinecosystem_title</item>
-        <item name="android:ellipsize">end</item>
-    </style>
 
-    <style name="KinecosysLargeTitleText" parent="KinecosysTextBase">
-        <item name="android:textSize">@dimen/kinecosystem_title_large_size</item>
-    </style>
-
-    <style name="KinecosysTitleText" parent="KinecosysTextBase">
+    <style name="KinecosysBalanceTextSmall">
         <item name="android:textSize">@dimen/kinecosystem_title_size</item>
+        <item name="android:textColor">@color/kinecosystem_primary</item>
     </style>
 
-    <style name="KinecosysTitleTextMedium" parent="KinecosysTitleText">
-        <item name="android:fontFamily">sans-serif-medium</item>
+    <style name="KinecosysBalanceTextLarge">
+        <item name="android:textSize">@dimen/kinecosystem_title_xlarge_size</item>
+        <item name="android:textColor">@color/kinecosystem_primary</item>
     </style>
 
-    <style name="KinecosysSubTitle" parent="KinecosysTitleText">
-        <item name="android:textSize">@dimen/kinecosystem_sub_title_size</item>
-        <item name="android:textColor">@color/kinecosystem_subtitle</item>
-    </style>
-
-    <style name="KinecosysSubTitleMedium" parent="KinecosysSubTitle">
-        <item name="android:fontFamily">sans-serif-medium</item>
-    </style>
-
-    <style name="KinecosysSmallTitle" parent="KinecosysTitleText">
-        <item name="android:textSize">@dimen/kinecosystem_small_title_size</item>
-    </style>
 
     <style name="KinecosysFullScreenDialogStyle">
         <item name="android:windowNoTitle">true</item>

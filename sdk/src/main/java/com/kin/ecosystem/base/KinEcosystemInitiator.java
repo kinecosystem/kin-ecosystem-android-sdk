@@ -19,14 +19,8 @@ final class KinEcosystemInitiator {
 
 	protected static void init(Context context) {
 		try {
-			Kin.initialize(context);
-			// If we had process restart we should load the account.
-			IKinAccount account = BlockchainSourceImpl.getInstance().getKinAccount();
-			if (account == null) {
-				final String kinUserId = AuthRepository.getInstance().getEcosystemUserID();
-				BlockchainSourceImpl.getInstance().loadAccount(kinUserId);
-			}
-		} catch (ClientException | BlockchainException e) {
+			Kin.initialize(context,  null);
+		} catch (ClientException e) {
 			Logger.log(new Log().withTag(TAG).text("KinEcosystem sdk auto initialize failed"));
 		}
 	}

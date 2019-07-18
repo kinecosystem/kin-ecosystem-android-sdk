@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.util.AttributeSet;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import com.kin.ecosystem.common.KinTheme;
 import com.kin.ecosystem.core.data.internal.ConfigurationImpl;
 
 public class EcosystemWebView extends WebView {
@@ -61,26 +62,31 @@ public class EcosystemWebView extends WebView {
         nativeApi.setListener(listener);
     }
 
-    public void render(final String pollJsonData) {
+    public void renderJs(final String jsData) {
         if (Looper.myLooper() != Looper.getMainLooper()) {
             mainThreadHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    render(pollJsonData);
+                    renderJs(jsData);
                 }
             });
 
             return;
         }
 
-        final StringBuilder js = new StringBuilder("kin.renderPoll(");
-        js.append(pollJsonData).append(")");
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            evaluateJavascript(js.toString(), null);
+            evaluateJavascript(jsData, null);
         } else {
-            loadUrl(js.toString());
+            loadUrl(jsData);
         }
+    }
+
+    public void renderPoll(final String pollJsonData) {
+        renderJs("kin.renderPoll(" + pollJsonData + ")");
+    }
+
+    public void setTheme(final String kinTheme) {
+        renderJs("kin.setTheme(\"" + kinTheme + "\")");
     }
 
     public void release() {

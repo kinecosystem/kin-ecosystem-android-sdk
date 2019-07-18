@@ -2,6 +2,7 @@ package com.kin.ecosystem;
 
 import static com.kin.ecosystem.common.exception.ClientException.ACCOUNT_NOT_LOGGED_IN;
 import static com.kin.ecosystem.common.exception.ClientException.BAD_CONFIGURATION;
+import static com.kin.ecosystem.common.exception.ClientException.INTERNAL_INCONSISTENCY;
 import static com.kin.ecosystem.common.exception.ClientException.SDK_NOT_STARTED;
 
 import android.app.Activity;
@@ -11,8 +12,12 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatDelegate;
+import com.kin.ecosystem.base.FontUtil;
+import com.kin.ecosystem.base.KinEcosystemBaseActivity;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.KinEnvironment;
+import com.kin.ecosystem.common.KinTheme;
 import com.kin.ecosystem.common.NativeOfferClickEvent;
 import com.kin.ecosystem.common.Observer;
 import com.kin.ecosystem.common.exception.BlockchainException;
@@ -47,6 +52,7 @@ import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceLocal;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceRemote;
 import com.kin.ecosystem.core.data.internal.ConfigurationImpl;
+import com.kin.ecosystem.core.data.internal.ConfigurationLocalImpl;
 import com.kin.ecosystem.core.data.offer.OfferRemoteData;
 import com.kin.ecosystem.core.data.offer.OfferRepository;
 import com.kin.ecosystem.core.data.order.OrderLocalData;
@@ -59,14 +65,17 @@ import com.kin.ecosystem.core.util.DeviceUtils;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.ExecutorsUtil;
 import com.kin.ecosystem.core.util.Validator;
+import com.kin.ecosystem.gifting.GiftingManager;
+import com.kin.ecosystem.gifting.GiftingManagerImpl;
 import com.kin.ecosystem.main.view.EcosystemActivity;
 import com.kin.ecosystem.recovery.BackupAndRestore;
 import com.kin.ecosystem.recovery.BackupAndRestoreImpl;
-import com.kin.ecosystem.splash.view.SplashActivity;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import kin.sdk.migration.MigrationManager;
 import kin.sdk.migration.MigrationNetworkInfo;
 import kin.sdk.migration.common.KinSdkVersion;
+import kin.sdk.migration.common.interfaces.IKinAccount;
 
 public class Kin {
 
@@ -86,7 +95,6 @@ public class Kin {
 		executorsUtil = new ExecutorsUtil();
 		// use application context to avoid leaks.
 		kinContext = new KinContext(appContext.getApplicationContext());
-
 	}
 
 	private static Kin getInstance(Context appContext) {
@@ -108,15 +116,17 @@ public class Kin {
 	 * @param appContext application context.
 	 * @throws ClientException - The sdk could not be initiated.
 	 */
-	public synchronized static void initialize(Context appContext) throws ClientException {
+	public synchronized static void initialize(Context appContext, KinTheme kinTheme) throws ClientException {
 		if (isInstanceNull()) {
 			instance = getInstance(appContext);
+
+			AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
 			//Load data from manifest, can throw ClientException if no data available.
 			loadDefaultsFromMetadata(getKinContext());
 
 			//Set Environment
-			ConfigurationImpl.init(environmentName);
+			ConfigurationImpl.init(environmentName, new ConfigurationLocalImpl(getKinContext()));
 			eventLogger = EventLoggerImpl.getInstance();
 
 			AuthRepository
@@ -141,10 +151,35 @@ public class Kin {
 			OfferRepository.init(OfferRemoteData.getInstance(instance.executorsUtil), OrderRepository.getInstance());
 
 			DeviceUtils.init(getKinContext());
+			FontUtil.Companion.init(getKinContext().getAssets());
 
 			if (AuthRepository.getInstance().getAppID() != null) {
 				eventLogger.send(KinSdkInitiated.create());
 			}
+
+			if (appContext instanceof KinEcosystemBaseActivity) {
+				// The app is after process restart and the sdk's views are visible.
+				// load the account.
+				IKinAccount account = BlockchainSourceImpl.getInstance().getKinAccount();
+				if (account == null) {
+					try {
+						final String kinUserId = AuthRepository.getInstance().getEcosystemUserID();
+						MigrationManager migrationManager = createMigrationManager(getKinContext(),
+							AuthRepository.getInstance().getAppID());
+						BlockchainSourceImpl.getInstance().setMigrationManager(migrationManager);
+						BlockchainSourceImpl.getInstance().loadAccount(kinUserId);
+						isAccountLoggedIn.getAndSet(true);
+
+					} catch (BlockchainException e) {
+						// Account not found can't load it, client should login again.
+					}
+				}
+			}
+		}
+
+		//Instance not null, update KinTheme
+		if (kinTheme != null) {
+			ConfigurationImpl.getInstance().setKinTheme(kinTheme);
 		}
 	}
 
@@ -276,19 +311,20 @@ public class Kin {
 
 	private static void migrate(final KinCallback<Void> loginCallback, final int loginState) {
 		BlockchainSourceImpl.getInstance().startMigrationProcess(new MigrationProcessListener() {
-				@Override
-				public void onMigrationStart() {}
+			@Override
+			public void onMigrationStart() {
+			}
 
-				@Override
-				public void onMigrationEnd() {
-					onboard(loginCallback, loginState);
-				}
+			@Override
+			public void onMigrationEnd() {
+				onboard(loginCallback, loginState);
+			}
 
-				@Override
-				public void onMigrationError(BlockchainException error) {
-					sendLoginFailed(error, loginCallback);
-				}
-			});
+			@Override
+			public void onMigrationError(BlockchainException error) {
+				sendLoginFailed(error, loginCallback);
+			}
+		});
 	}
 
 	private static void onboard(final KinCallback<Void> loginCallback, final int loginState) {
@@ -298,10 +334,16 @@ public class Kin {
 				switch (accountState) {
 					case AccountManager.CREATION_COMPLETED:
 						sendLoginSucceed(loginCallback, loginState);
+						OfferRepository.getInstance().getOffers(null);
 						AccountManagerImpl.getInstance().removeAccountStateObserver(this);
 						break;
 					case AccountManager.ERROR:
-						sendLoginFailed(AccountManagerImpl.getInstance().getError(), loginCallback);
+						final KinEcosystemException onboardingException = AccountManagerImpl.getInstance().getError();
+						if (onboardingException != null) {
+							sendLoginFailed(onboardingException, loginCallback);
+						} else {
+							sendLoginFailed(ErrorUtil.getClientException(INTERNAL_INCONSISTENCY, null), loginCallback);
+						}
 						AccountManagerImpl.getInstance().removeAccountStateObserver(this);
 						break;
 				}
@@ -334,7 +376,7 @@ public class Kin {
 		});
 	}
 
-	private static MigrationManager createMigrationManager(Context context,@NonNull String appId) {
+	private static MigrationManager createMigrationManager(Context context, @NonNull String appId) {
 		KinEnvironment kinEnvironment = ConfigurationImpl.getInstance().getEnvironment();
 
 		final String oldNetworkUrl = kinEnvironment.getOldBlockchainNetworkUrl();
@@ -350,7 +392,8 @@ public class Kin {
 			newNetworkUrl, newNetworkId, issuer, migrationServiceUrl);
 
 		final BlockchainSource.Local local = BlockchainSourceLocal.getInstance(context);
-		final BlockchainSource.Remote remote = BlockchainSourceRemote.getInstance(getInstance(context).executorsUtil, eventLogger);
+		final BlockchainSource.Remote remote = BlockchainSourceRemote
+			.getInstance(getInstance(context).executorsUtil, eventLogger);
 		MigrationManager migrationManager = new MigrationManager(context, appId, migrationNetworkInfo,
 			new KinBlockchainVersionProvider(local, remote),
 			new MigrationEventsListener(EventLoggerImpl.getInstance()), KIN_ECOSYSTEM_STORE_PREFIX_KEY);
@@ -426,17 +469,7 @@ public class Kin {
 		checkInstanceNotNull();
 		checkAccountIsLoggedIn();
 		eventLogger.send(EntrypointButtonTapped.create());
-		boolean isAccountCreated = AccountManagerImpl.getInstance().isAccountCreated();
-		if (isAccountCreated) {
-			navigateToExperience(activity, experience);
-		} else {
-			navigateToSplash(activity, experience);
-		}
-	}
-
-	private static void navigateToSplash(@NonNull final Activity activity, @EcosystemExperience final int experience) {
-		Intent splashIntent = new Intent(activity, SplashActivity.class);
-		launchIntent(activity, splashIntent, experience);
+		navigateToExperience(activity, experience);
 	}
 
 	private static void navigateToExperience(@NonNull final Activity activity,
@@ -449,7 +482,7 @@ public class Kin {
 		@EcosystemExperience final int experience) {
 		intentToLaunch.putExtra(KEY_ECOSYSTEM_EXPERIENCE, experience);
 		activity.startActivity(intentToLaunch);
-		activity.overridePendingTransition(R.anim.kinecosystem_slide_in_right, R.anim.kinecosystem_slide_out_left);
+		activity.overridePendingTransition(0, 0);
 	}
 
 	/**
@@ -628,18 +661,49 @@ public class Kin {
 	}
 
 	/**
-	 * Adds an {@link NativeOffer} to spend or earn offer list on Kin Marketplace activity.
-	 * The offer will be added at index 0 in the spend list.
-	 *
 	 * @param nativeOffer The spend or earn offer you want to add to the spend list.
 	 * @param dismissOnTap An indication if the sdk should close the marketplace when this offer tapped.
 	 * @return true if the offer added successfully, the list was changed.
 	 * @throws ClientException - sdk not initialized.
+	 * @deprecated use {@link Kin#addNativeOffer(NativeOffer) instead and set dismissOnTap as value inside the {@link NativeOffer} object}
+	 * Adds an {@link NativeOffer} to spend or earn offer list on Kin Marketplace activity.
+	 * The offer will be added at index 0 in the spend list.
 	 */
+	@Deprecated
 	public static boolean addNativeOffer(@NonNull NativeOffer nativeOffer, boolean dismissOnTap)
 		throws ClientException {
 		checkInstanceNotNull();
-		return OfferRepository.getInstance().addNativeOffer(nativeOffer, dismissOnTap);
+		nativeOffer.setDismissOnTap(dismissOnTap);
+		return OfferRepository.getInstance().addNativeOffer(nativeOffer);
+	}
+
+	/**
+	 * Adds an {@link NativeOffer} to spend or earn offer list on Kin Marketplace activity.
+	 * The offer will be added at index 0 in the spend list.
+	 *
+	 * @param nativeOffer The spend or earn offer you want to add to the spend list.
+	 * @return true if the offer added successfully, the list was changed.
+	 * @throws ClientException - sdk not initialized.
+	 */
+	public static boolean addNativeOffer(@NonNull NativeOffer nativeOffer)
+		throws ClientException {
+		checkInstanceNotNull();
+		return OfferRepository.getInstance().addNativeOffer(nativeOffer);
+	}
+
+	/**
+	 * Adds an {@link NativeOffer} to spend or earn offer list on Kin Marketplace activity.
+	 * The offer will be added at index 0 in the spend list.
+	 *
+	 * @param nativeOfferList The native offers list you want to add.
+	 * @return true the list was added successfully, the list was changed.
+	 * false if one or more offers was not added successfully.
+	 * @throws ClientException - sdk not initialized.
+	 */
+	public static boolean addAllNativeOffers(@NonNull List<NativeOffer> nativeOfferList)
+		throws ClientException {
+		checkInstanceNotNull();
+		return OfferRepository.getInstance().addAllNativeOffers(nativeOfferList);
 	}
 
 	/**
@@ -654,10 +718,34 @@ public class Kin {
 		return OfferRepository.getInstance().removeNativeOffer(nativeOffer);
 	}
 
+	/**
+	 * Creates a {@link BackupAndRestore} to be able to show backup or restore flow directly, without entering to marketplace.
+	 *
+	 * @param activity the parent activity, used to start backup or restore flows and receive results.
+	 * @return a {@link BackupAndRestore} implementation
+	 * @throws ClientException - sdk not initialized.
+	 */
 	public static BackupAndRestore getBackupAndRestoreManager(@NonNull final Activity activity) throws ClientException {
 		checkInstanceNotNull();
 		return new BackupAndRestoreImpl(activity, AccountManagerImpl.getInstance(),
 			eventLogger, BlockchainSourceImpl.getInstance(),
-			new SettingsDataSourceImpl(new SettingsDataSourceLocal(activity.getApplicationContext())));
+			new SettingsDataSourceImpl(new SettingsDataSourceLocal(activity.getApplicationContext())),
+			ConfigurationImpl.getInstance());
+	}
+
+	/**
+	 * Creates a {@link GiftingManager} to be able to show a gifting dialog and listen for gifting orders
+	 * confirmation.
+	 *
+	 * @param jwtProvider to provide a valid jwt for gifting purpose,
+	 * {@link JwtProvider#getPayToUserJwt(String, double)} will be call from a worker thread, so it can be a sync network call.
+	 * @return a {@link GiftingManager} implementation.
+	 * @throws ClientException - sdk not initialized or account not logged in.
+	 */
+	public static GiftingManager getGiftingManager(JwtProvider jwtProvider) throws ClientException {
+		checkInstanceNotNull();
+		checkAccountIsLoggedIn();
+		return new GiftingManagerImpl(jwtProvider, BlockchainSourceImpl.getInstance(),
+			OrderRepository.getInstance(), eventLogger, ConfigurationImpl.getInstance());
 	}
 }

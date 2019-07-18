@@ -40,6 +40,11 @@ public class ObservableData<T> {
         return new ObservableData<>(defaultValue);
     }
 
+    public Subscription<T> subscribe(Observer<T> observer) {
+        addObserver(observer);
+        return new Subscription<>(this, observer);
+    }
+
     public boolean addObserver(Observer<T> observer) {
         Observer<T>[] oldList = observers.get();
 

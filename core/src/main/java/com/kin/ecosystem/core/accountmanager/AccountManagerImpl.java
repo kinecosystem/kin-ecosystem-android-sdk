@@ -1,6 +1,7 @@
 package com.kin.ecosystem.core.accountmanager;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.kin.ecosystem.common.Callback;
 import com.kin.ecosystem.common.KinCallback;
 import com.kin.ecosystem.common.ObservableData;
@@ -89,6 +90,7 @@ public class AccountManagerImpl implements AccountManager {
 	}
 
 	@Override
+	@Nullable
 	public KinEcosystemException getError() {
 		return error;
 	}

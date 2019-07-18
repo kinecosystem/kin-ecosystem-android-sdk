@@ -3,7 +3,7 @@ package com.kin.ecosystem.history.view;
 import com.kin.ecosystem.base.IBottomDialog;
 import com.kin.ecosystem.history.presenter.ICouponDialogPresenter;
 
-public interface ICouponDialog extends IBottomDialog<ICouponDialogPresenter> {
+public interface ICouponDialog extends IBottomDialog {
 
 	void copyCouponCode(String couponCode);
 

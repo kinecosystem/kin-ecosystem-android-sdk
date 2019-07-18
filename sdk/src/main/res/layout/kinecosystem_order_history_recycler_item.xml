@@ -9,72 +9,108 @@
         android:id="@+id/dash_line"
         android:layout_width="1dp"
         android:layout_height="match_parent"
-        app:color="@color/kinecosystem_gray_light"
-        app:layout_constraintEnd_toEndOf="@+id/dot"
-        app:layout_constraintStart_toStartOf="@+id/dot"
+        app:color="@color/kinecosystem_subtitle_gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/kin_logo"
+        app:layout_constraintStart_toStartOf="@+id/kin_logo"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0"
         app:orientation="vertical"/>
 
     <ImageView
-        android:id="@+id/dot"
+        android:id="@+id/kin_logo"
         android:layout_width="@dimen/kinecosystem_main_margin"
         android:layout_height="@dimen/kinecosystem_main_margin"
         android:layout_marginLeft="@dimen/kinecosystem_main_margin"
         android:src="@drawable/kinecosystem_transaction_time_dot"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/kinecosystem_kin_earn_icon_active_small"/>
 
 
-    <TextView
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
         android:id="@+id/title"
-        style="@style/KinecosysTitleText"
+        style="@style/KinecosysTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/kinecosystem_block_margin"
-        app:layout_constraintBottom_toBottomOf="@+id/dot"
-        app:layout_constraintStart_toEndOf="@+id/dot"
-        app:layout_constraintTop_toTopOf="@+id/dot"
-        tools:text="Spotify - "/>
+        android:maxEms="12"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        app:fontExtra="medium"
+        app:layout_constraintBottom_toBottomOf="@+id/kin_logo"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@+id/kin_logo"
+        app:layout_constraintTop_toTopOf="@+id/kin_logo"
+        tools:text="Spotify"/>
 
-    <TextView
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
+        android:id="@+id/delimiter"
+        style="@style/KinecosysTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" - "
+        android:visibility="gone"
+        app:fontExtra="medium"
+        app:layout_constraintBottom_toBottomOf="@+id/kin_logo"
+        app:layout_constraintStart_toEndOf="@+id/title"
+        app:layout_constraintTop_toTopOf="@+id/kin_logo"
+        tools:visibility="visible"/>
+
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
         android:id="@+id/action_text"
         style="@style/KinecosysSubTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/kinecosystem_block_margin"
+        android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="@+id/title"
-        app:layout_constraintStart_toEndOf="@+id/title"
+        app:layout_constraintEnd_toStartOf="@id/amount_text"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@+id/delimiter"
         app:layout_constraintTop_toTopOf="@+id/title"
         tools:text="tap to reveal your code"/>
 
-    <TextView
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
         android:id="@+id/sub_title"
         style="@style/KinecosysSubTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:maxEms="12"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:textColor="@color/kinecosystem_subtitle_gray"
         app:layout_constraintStart_toStartOf="@+id/title"
         app:layout_constraintTop_toBottomOf="@+id/title"
-        tools:text="Completed poll - 23.1.18"/>
+        app:layout_constraintEnd_toStartOf="@id/date"
+        tools:text="Completed poll"/>
 
-    <ImageView
-        android:id="@+id/amount_ico"
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
+        android:id="@+id/date"
+        style="@style/KinecosysSubTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/kinecosystem_main_medium_margin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.4"
-        tools:src="@drawable/kinecosystem_invoice"/>
+        android:maxEms="12"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:textColor="@color/kinecosystem_subtitle_gray"
+        app:layout_constraintStart_toEndOf="@id/sub_title"
+        app:layout_constraintTop_toTopOf="@id/sub_title"
+        app:layout_constraintBottom_toBottomOf="@id/sub_title"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        tools:text=" - 23.1.18"/>
 
-    <TextView
+    <com.kin.ecosystem.base.widget.KinEcosystemTextView
         android:id="@+id/amount_text"
-        style="@style/KinecosysSubTitleMedium"
+        style="@style/KinecosysSubTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintHorizontal_bias="0.4"
-        app:layout_constraintTop_toBottomOf="@id/amount_ico"
-        app:layout_constraintRight_toRightOf="@id/amount_ico"
-        app:layout_constraintLeft_toLeftOf="@+id/amount_ico"
-        tools:text="+8"/>
+        android:layout_marginRight="@dimen/kinecosystem_main_margin"
+        app:fontExtra="medium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="+30"/>
 
 </android.support.constraint.ConstraintLayout>

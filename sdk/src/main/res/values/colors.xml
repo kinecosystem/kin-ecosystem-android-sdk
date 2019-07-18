@@ -1,31 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="kinecosystem_bluePrimary">#047CFC</color>
-    <color name="kinecosystem_bluePrimaryDark">#0365ce</color>
-    <color name="kinecosystem_hot_blue">#0000ff</color>
+    <color name="kinecosystem_tab_deselected_text">#8c8c8c</color>
+    <color name="kinecosystem_tab_deselected_background_light">#e7e7e7</color>
+    <color name="kinecosystem_tab_deselected_background_dark">#2b2b2b</color>
 
-    <color name="kinecosystem_title">#5C6786</color>
-    <color name="kinecosystem_subtitle">@color/kinecosystem_gray_dark</color>
+    <color name="touchIndicatorStroke">?attr/kinBackgroundColor</color>
+    <color name="tabsShapeDeselectedBackground">?attr/tabDeselectedBackgroundColor</color>
 
-
-    <color name="kinecosystem_white">#fff</color>
-
-    <color name="kinecosystem_black">#000</color>
-
-    <color name="kinecosystem_gray">#CFD0D4</color>
-    <color name="kinecosystem_gray_light">#d7dce9</color>
-    <color name="kinecosystem_gray_darker">#aaa</color>
-    <color name="kinecosystem_gray_dark">#7884a5</color>
-
-    <color name="kinecosystem_transparent">#00000000</color>
-
-    <color name="kinecosystem_orange">#ff862e</color>
-    <color name="kinecosystem_red">#ff0232</color>
-    <color name="kinecosystem_light_red">#ff5e77</color>
-
-    <color name="kinecosystem_dark_blue">#047efb</color>
-    <color name="kinecosystem_light_blue">#07b6f3</color>
-
-    <color name="kinecosystem_cyan">#82ffee</color>
-
+    <color name="settings_separator_light">#e7e7e7</color>
+    <color name="settings_separator_dark">#2b2b2b</color>
 </resources>

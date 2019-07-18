@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import com.kin.ecosystem.common.KinCallback;
+import com.kin.ecosystem.common.KinTheme;
 import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
 import com.kin.ecosystem.common.exception.KinEcosystemException;
@@ -15,6 +16,7 @@ import com.kin.ecosystem.core.bi.events.BackupWalletCompleted;
 import com.kin.ecosystem.core.bi.events.GeneralEcosystemSdkError;
 import com.kin.ecosystem.core.bi.events.RestoreWalletCompleted;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
+import com.kin.ecosystem.core.data.internal.Configuration;
 import com.kin.ecosystem.core.data.settings.SettingsDataSource;
 import com.kin.ecosystem.core.util.Validator;
 import com.kin.ecosystem.recovery.exception.BackupAndRestoreException;
@@ -31,22 +33,24 @@ public class BackupAndRestoreImpl implements BackupAndRestore {
 	private final EventLogger eventLogger;
 	private final SettingsDataSource settingsDataSource;
 	private final BlockchainSource blockchainSource;
+	private final Configuration configuration;
 
 	public BackupAndRestoreImpl(@NonNull final Activity activity, @NonNull AccountManager accountManager,
 		@NonNull EventLogger eventLogger, @NonNull BlockchainSource blockchainSource,
-		SettingsDataSource settingsDataSource) {
+		SettingsDataSource settingsDataSource, Configuration configuration) {
 		this.activity = activity;
 		this.blockchainSource = blockchainSource;
 		this.backupManager = getNewBackupManager();
 		this.accountManager = accountManager;
 		this.eventLogger = eventLogger;
 		this.settingsDataSource = settingsDataSource;
+		this.configuration = configuration;
 	}
 
 	@Override
 	public void backupFlow() throws ClientException {
 		if (blockchainSource.getKinAccount() != null) {
-			backupManager.backupFlow();
+			backupManager.backupFlow(getTheme());
 		} else {
 			throw new ClientException(ClientException.ACCOUNT_NOT_LOGGED_IN,
 				"Account should be logged in before backup.", null);
@@ -56,10 +60,20 @@ public class BackupAndRestoreImpl implements BackupAndRestore {
 	@Override
 	public void restoreFlow() throws ClientException {
 		if (blockchainSource.getKinAccount() != null) {
-			backupManager.restoreFlow();
+			backupManager.restoreFlow(getTheme());
 		} else {
 			throw new ClientException(ClientException.ACCOUNT_NOT_LOGGED_IN,
 				"Account should be logged in before restore.", null);
+		}
+	}
+
+	private KinRecoveryTheme getTheme() {
+		switch (configuration.getKinTheme()) {
+			default:
+			case LIGHT:
+				return KinRecoveryTheme.LIGHT;
+			case DARK:
+				return KinRecoveryTheme.DARK;
 		}
 	}
 

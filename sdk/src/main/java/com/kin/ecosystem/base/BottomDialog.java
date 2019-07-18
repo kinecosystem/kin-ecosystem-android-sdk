@@ -26,8 +26,7 @@ import com.kin.ecosystem.R;
 import com.kin.ecosystem.core.util.DeviceUtils;
 import com.squareup.picasso.Picasso;
 
-public abstract class BottomDialog<T extends IBottomDialogPresenter> extends Dialog
-    implements IBottomDialog<T>, OnClickListener {
+public abstract class BottomDialog<T extends IBottomDialogPresenter> extends Dialog implements IBottomDialog, OnClickListener {
 
     protected T presenter;
 
@@ -47,7 +46,7 @@ public abstract class BottomDialog<T extends IBottomDialogPresenter> extends Dia
     private static int imageHeight = NOT_INITIALIZED;
     protected static int colorBlue = NOT_INITIALIZED;
 
-    private int layoutRes = R.layout.kinecosystem_dialog_base_bottom_layout;
+    private int layoutRes;
 
     protected abstract void initViews();
 
@@ -91,7 +90,7 @@ public abstract class BottomDialog<T extends IBottomDialogPresenter> extends Dia
         setContentView(layoutRes);
         initBaseViews();
         initViews();
-        attachPresenter(presenter);
+        presenter.onAttach(this);
     }
 
     private void initBaseViews() {
@@ -111,14 +110,14 @@ public abstract class BottomDialog<T extends IBottomDialogPresenter> extends Dia
     }
 
     @Override
-    public void attachPresenter(T presenter) {
-        this.presenter = presenter;
-        this.presenter.onAttach(this);
+    public void closeDialog() {
+        dismiss();
     }
 
     @Override
-    public void closeDialog() {
-        dismiss();
+    public void dismiss() {
+        presenter.onDetach();
+        super.dismiss();
     }
 
     public void setupImage(String image) {
