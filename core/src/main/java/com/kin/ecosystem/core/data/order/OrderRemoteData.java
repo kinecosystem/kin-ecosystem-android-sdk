@@ -11,6 +11,7 @@ import com.kin.ecosystem.core.network.api.OrdersApi;
 import com.kin.ecosystem.core.network.model.Body;
 import com.kin.ecosystem.core.network.model.EarnSubmission;
 import com.kin.ecosystem.core.network.model.ExternalOrderRequest;
+import com.kin.ecosystem.core.network.model.IncomingTransfer;
 import com.kin.ecosystem.core.network.model.OpenOrder;
 import com.kin.ecosystem.core.network.model.Order;
 import com.kin.ecosystem.core.network.model.OrderList;
@@ -247,6 +248,30 @@ public class OrderRemoteData implements OrderDataSource.Remote {
     @Override
     public OpenOrder createOutgoingTransferOrderSync(@NonNull final OutgoingTransfer payload) throws ApiException {
         return ordersApi.createOutgoingTransferOrder(payload, "");
+    }
+
+    @Override
+    public void createIncomingTransferOrderAsync(@NonNull IncomingTransfer payload, @NonNull final Callback<OpenOrder, ApiException> callback) {
+        try {
+            ordersApi.createIncomingTransferOrderAsync(payload, "", new ApiCallback<OpenOrder>() {
+                @Override
+                public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+                    callback.onFailure(e);
+                }
+
+                @Override
+                public void onSuccess(OpenOrder result, int statusCode, Map<String, List<String>> responseHeaders) {
+                    callback.onResponse(result);
+                }
+            });
+        } catch (final ApiException e) {
+            executorsUtil.mainThread().execute(new Runnable() {
+                @Override
+                public void run() {
+                    callback.onFailure(e);
+                }
+            });
+        }
     }
 
     @Override

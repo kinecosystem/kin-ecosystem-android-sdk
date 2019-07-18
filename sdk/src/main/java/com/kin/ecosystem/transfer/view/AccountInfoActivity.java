@@ -4,12 +4,13 @@ import com.kin.ecosystem.Kin;
 import com.kin.ecosystem.R;
 import com.kin.ecosystem.common.exception.BlockchainException;
 import com.kin.ecosystem.common.exception.ClientException;
-import com.kin.ecosystem.core.Log;
-import com.kin.ecosystem.core.Logger;
+import com.kin.ecosystem.common.exception.KinEcosystemException;
 import com.kin.ecosystem.core.data.auth.AuthLocalData;
 import com.kin.ecosystem.core.data.auth.AuthRepository;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSource;
 import com.kin.ecosystem.core.data.blockchain.BlockchainSourceImpl;
+import com.kin.ecosystem.core.data.order.OrderRepository;
+import com.kin.ecosystem.core.network.model.IncomingTransfer;
 
 import org.kinecosystem.transfer.receiver.manager.AccountInfoException;
 import org.kinecosystem.transfer.receiver.presenter.IErrorActionClickListener;
@@ -40,11 +41,19 @@ public class AccountInfoActivity extends AccountInfoActivityBase {
     }
 
     @Override
-    public void updateTransactionInfo(String senderAppId, String senderAppName, String receiverAppId, String memo) {
+    public void updateTransactionInfo(final String senderAppId, final String senderAppName, final String receiverAppId, final String memo) {
         super.updateTransactionInfo(senderAppId, senderAppName, receiverAppId, memo);
-        //server needs to check transaction got with that memo on the blockchain
-        //if found add senderAppName to transaction history
-        Logger.log(new Log().withTag(TAG).put(TAG, "AccountInfoActivity Validate memo " + memo + " on blockChain and if valid add to transaction history sender App Name " + senderAppName + " sender app id: " + senderAppId + " receiver ppp Id: " + receiverAppId));
+        try {
+            initKin();
+            String title = "Received Kin";
+            String description = "From " + senderAppName;
+            final OrderRepository orderRepository = OrderRepository.getInstance();
+            IncomingTransfer payload = new IncomingTransfer().appId(senderAppId).memo(memo).title(title).description(description).walletAddress("");
+            if (orderRepository != null) {
+                orderRepository.createIncomingTransferOrderAsync(payload);
+            }
+        } catch (ClientException e) {
+        }
     }
 
     private void initKin() throws ClientException {
