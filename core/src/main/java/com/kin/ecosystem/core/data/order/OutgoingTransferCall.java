@@ -31,31 +31,31 @@ public class OutgoingTransferCall extends Thread {
     private final AtomicBoolean isTimeoutTaskCanceled;
     private final Timer sseTimeoutTimer;
     private Observer<Payment> paymentObserver;
-    private OrderRepository orderRepository;
+    private OrderDataSource orderDataSource;
     private BlockchainSource blockchainSource;
 
 
-    OutgoingTransferCall(@NonNull BlockchainSource blockchainSource, @NonNull OrderRepository orderRepository, @NonNull OutgoingTransfer payload, String transferTitle, @NonNull OutgoingTransferCallback callback) {
+    OutgoingTransferCall(@NonNull BlockchainSource blockchainSource, @NonNull OrderDataSource orderDataSource, @NonNull OutgoingTransfer payload, String transferTitle, @NonNull OutgoingTransferCallback callback) {
         this.payload = payload;
         this.callback = callback;
         this.transferTitle = transferTitle;
         this.isTimeoutTaskCanceled = new AtomicBoolean(false);
         this.sseTimeoutTimer = new Timer();
-        this.orderRepository = orderRepository;
+        this.orderDataSource = orderDataSource;
         this.blockchainSource = blockchainSource;
     }
 
     @Override
     public void run() {
         try {
-            final OpenOrder order = orderRepository.createOutgoingTransferOrderSync(payload);
-            payForOrder(orderRepository, order);
+            final OpenOrder order = orderDataSource.createOutgoingTransferOrderSync(payload);
+            payForOrder(orderDataSource, order);
         } catch (KinEcosystemException exception) {
             callback.onOutgoingTransferFailed(payload, exception);
         }
     }
 
-    private void payForOrder(final OrderRepository orderRepository, final OpenOrder order) {
+    private void payForOrder(final OrderDataSource orderRepository, final OpenOrder order) {
         try {
             blockchainSource.signTransaction(payload.getWalletAddress(), new BigDecimal(payload.getAmount()), payload.getMemo(), order.getOfferId(), new SignTransactionListener() {
                 @Override
