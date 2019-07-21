@@ -27,13 +27,11 @@ dependencies {
     implementation project(':base')
     implementation project(':core')
     api project(':common')
-    implementation project(':transfer')
-
     implementation devDependencies.appCompat_v7
     implementation devDependencies.recyclerView_v7
     implementation devDependencies.constraintLayout
     //TODO need to update last version
-    implementation 'com.github.kinecosystem.move-kin-android:appsTransfer:8a960868efe83e29033824d7c5281e7685e54da7'
+    implementation 'com.github.kinecosystem.move-kin-android:appsTransfer:9d733e0850e135348e5fb07ebfa0d35541f60d6c'
     implementation devDependencies.picasso
     implementation devDependencies.kotlin
     implementation ('org.kin.ecosystem.appreciation.options.menu:ui:1.0.0') {

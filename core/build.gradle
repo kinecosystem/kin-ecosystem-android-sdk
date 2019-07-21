@@ -20,7 +20,7 @@ android {
 
 dependencies {
     //TODO need to update last version
-    implementation 'com.github.kinecosystem.move-kin-android:appsTransfer:8a960868efe83e29033824d7c5281e7685e54da7'
+    implementation 'com.github.kinecosystem.move-kin-android:appsTransfer:9d733e0850e135348e5fb07ebfa0d35541f60d6c'
     implementation project(':common')
     api project(':recovery')
 
