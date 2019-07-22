@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Backup-->
+    <string name="kinrecovery_keep_your_kin_safe">Mantenha seu Kin seguro</string>
+    <string name="kinrecovery_backup_description">Fazendo o backup do seu saldo atual irá lhe permitir\n recuperá-lo, caso você troque o telefone, apague o app\n ou seus dados.</string>
+    <string name="kinrecovery_let_s_go">Vamos lá</string>
+    <string name="kinrecovery_create_password">Criar uma Senha</string>
+    <string name="kinrecovery_create_password_description">Para fazer o backup do seu Kin.\n crie uma senha forte. Ela deve ter:\n (9 caracters, 1 maiúscula, 1 caracter especial (#, !, @) e 1 número)</string>
+    <string name="kinrecovery_enter_password">Digite a Senha</string>
+    <string name="kinrecovery_confirm_password">Confirme a Senha</string>
+    <string name="kinrecovery_i_understand_password_description">Eu entendo que essa senha é necessária\n para restaurar o meu Kin, e que ela não pode\n ser restaurada caso perdida.</string>
+    <string name="kinrecovery_next">Próximo</string>
+    <string name="kinrecovery_password_does_not_match">As senhas não combinam</string>
+    <string name="kinrecovery_password_does_not_meet_req_above">A senha não está atende aos requisitos</string>
+    <string name="kinrecovery_save_your_qr_code">Salve o seu código QR</string>
+    <string name="kinrecovery_you_will_need_it_to_restore_your_kin_send_it_to_yourself_by_email">Agora, salvo seu código QR único enviando por\n email para você mesmo(a).Você precisará dele\n para recuperar seu Kin eventualmente.</string>
+    <string name="kinrecovery_send_qr_code_via_email">Enviar código QR por email</string>
+    <string name="kinrecovery_i_ve_saved_my_qr">Eu copiei meu código QR</string>
+    <string name="kinrecovery_done">Feito</string>
+    <string name="kinrecovery_well_done_your_kin_is_safe">Seu Kin está backup e seguro!</string>
+    <string name="kinrecovery_in_order_to_restore_your_kin_you_will_need_the_qr">Para recuperar seu Kin de um backup mais tarde,\n você precisará da sua senha e do código QR.</string>
+    <string name="kinrecovery_keep_your_password_in_a_safe_place_and_the_qr_handy">Certifique-se de salvar a sua senha\n e tenha o código QR acessível</string>
+
+    <!--Restore-->
+    <string name="kinrecovery_load_your_kin_from_backup">Restaurar Kin de um backup</string>
+    <string name="kinrecovery_upload_qr_description">Primeiro, carregue o código QR que você salvou\n(Dica: Cheque o seu email para achá-lo)</string>
+    <string name="kinrecovery_upload_qr_btn">Carregar código QR</string>
+    <string name="kinrecovery_restore_consent_title">Você tem certeza que deseja restaurar o seu saldo anterior?</string>
+    <string name="kinrecovery_consent_message">Restaurar o saldo anterior irá substituir o seu saldo atual.</string>
+    <string name="kinrecovery_password_recovery_content">Agora, insira a sua senha</string>
+    <string name="kinrecovery_thank_you">Pronto!\nO Seu saldo Kin está atualizado</string>
+    <string name="kinrecovery_restore_completed_title">Seu saldo Kin está atualizado</string>
+    <string name="kinrecovery_try_again">Tente novamente</string>
+    <string name="kinrecovery_cancel">Cancelar</string>
+
+</resources>

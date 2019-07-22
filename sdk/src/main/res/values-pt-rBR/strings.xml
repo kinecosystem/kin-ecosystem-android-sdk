@@ -1,7 +1,9 @@
 <resources>
     <!--Activity Name-->
-    <string name="kinecosystem_kin_marketplace">Kin Marketplace (Beta)</string>
+    <string name="kinecosystem_kin_marketplace">Kin Marketplace</string>
     <string name="kinecosystem_transaction_history">Histórico de Transação</string>
+    <string name="kinecosystem_settings">Ajustes</string>
+    <string name="kinecosystem_transfer_activity_title">Kin Ecosystem</string>
 
     <!--Button-->
     <string name="kinecosystem_more">MAIS</string>
@@ -33,4 +35,17 @@
     <string name="kinecosystem_failed">Falhou</string>
     <string name="kinecosystem_you_dont_have_enough_kin">Você não tem suficiente Kin</string>
     <string name="kinecosystem_order_submission_failed">A submissão do pedido falhou</string>
+    <string name="kinecosystem_what_is_kin">O que é Kin?</string>
+    <string name="kinecosystem_balance">Saldo</string>
+    <string name="kinecosystem_my_kin">Meu Kin</string>
+    <string name="kinecosystem_well_done_check_back_soon">Muito bem!\nVolte mais para checar</string>
+    <string name="kinecosystem_what_are_you_in_the_mood_for">O que você está a fim de fazer?</string>
+    <string name="kinecosystem_lets_s_go">Vamos lá</string>
+    <string name="kinecosystem_transfer_agree">Eu Concordo</string>
+    <string name="kinecosystem_keep_your_kin_safe">Mantenha seu Kin seguro</string>
+    <string name="kinecosystem_restore_previous_wallet">Restaurar carteira</string>
+    <string name="kinecosystem_transfer_title">Para mandar Kin, %1$s precisa ter acesso à informação da sua conta Kin (o endereço público) de %2$s.</string>
+    <string name="kinecosystem_earned">Ganhou</string>
+    <string name="kinecosystem_used">Usava</string>
+
 </resources>
