@@ -45,7 +45,10 @@
     <string name="kinecosystem_keep_your_kin_safe">Mantenha seu Kin seguro</string>
     <string name="kinecosystem_restore_previous_wallet">Restaurar carteira</string>
     <string name="kinecosystem_transfer_title">Para mandar Kin, %1$s precisa ter acesso à informação da sua conta Kin (o endereço público) de %2$s.</string>
-    <string name="kinecosystem_earned">Ganhou</string>
-    <string name="kinecosystem_used">Usava</string>
+    <string name="kinecosystem_kin_is_a_digital_currency_that_makes">Kin é uma moeda digital que faz os seus aplicativos melhores ainda.</string>
+    <string name="kinecosystem_could_not_restore_the_wallet">Não foi possível restaurar a sua carteira. Por favor, tente novamente.</string>
+    <string name="kinecosystem_creating_your_account">Criando a sua conta…</string>
+    <string name="kinecosystem_earned">Ganho</string>
+    <string name="kinecosystem_used">Usado</string>
 
 </resources>
