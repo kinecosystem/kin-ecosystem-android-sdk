@@ -40,6 +40,7 @@
     <string name="kinecosystem_order_submission_failed">Order submission failed</string>
     <string name="kinecosystem_keep_your_kin_safe">Keep your Kin Safe</string>
     <string name="kinecosystem_restore_previous_wallet">Restore previous wallet</string>
+    <string name="kinecosystem_settings_row_restore">Restore Kin from backup</string>
     <string name="kinecosystem_could_not_restore_the_wallet">Could not restore the wallet, try again later.</string>
     <string name="kinecosystem_transfer_title">In order to send Kin, %1$s would like to receive your Kin account information (i.e. your public address) from %2$s.</string>
     <string name="kinecosystem_kin_is_a_digital_currency_that_makes">Kin is a digital currency that makes\nyour favorite apps even better.</string>

@@ -50,5 +50,6 @@
     <string name="kinecosystem_creating_your_account">Criando a sua conta…</string>
     <string name="kinecosystem_earned">Ganho</string>
     <string name="kinecosystem_used">Usado</string>
+    <string name="kinecosystem_settings_row_restore">Restaurar Kin de um backup</string>
 
 </resources>
