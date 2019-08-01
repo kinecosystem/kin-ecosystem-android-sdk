@@ -10,19 +10,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/kinrecovery_margin_xlarge"
-        app:srcCompat="@drawable/kinrecovery_safe_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/kinrecovery_safe_icon"/>
 
     <com.kin.ecosystem.base.widget.KinEcosystemTextView
         android:id="@+id/save_qr_tile"
         style="@style/KinecosysTitleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:fontExtra="medium"
         android:layout_marginTop="@dimen/kinecosystem_margin_large"
+        android:gravity="center"
         android:text="@string/kinrecovery_well_done_your_kin_is_safe"
+        app:fontExtra="medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/safe_image"/>
@@ -30,13 +31,13 @@
     <com.kin.ecosystem.base.widget.KinEcosystemTextView
         android:id="@+id/save_qr_description"
         style="@style/KinecosysTitleMedium"
-        android:textSize="@dimen/kinecosystem_sub_title_size"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/kinecosystem_main_margin"
         android:gravity="center"
         android:lineSpacingExtra="@dimen/kinrecovery_line_spacing"
         android:text="@string/kinrecovery_in_order_to_restore_your_kin_you_will_need_the_qr"
+        android:textSize="@dimen/kinecosystem_sub_title_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/save_qr_tile"/>
@@ -46,15 +47,15 @@
         style="@style/KinecosysTitleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/kinecosystem_margin_large"
+        android:layout_marginBottom="@dimen/kinrecovery_margin_xlarge"
         android:gravity="center"
         android:lineSpacingExtra="@dimen/kinrecovery_line_spacing"
-        android:textColor="@color/kinecosystem_failed"
-        android:layout_marginTop="@dimen/kinecosystem_margin_large"
         android:text="@string/kinrecovery_keep_your_password_in_a_safe_place_and_the_qr_handy"
-        app:layout_constraintTop_toBottomOf="@id/save_qr_description"
+        android:textColor="@color/kinecosystem_failed"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="@dimen/kinrecovery_margin_xlarge"
+        app:layout_constraintTop_toBottomOf="@id/save_qr_description"
         />
 
 </android.support.constraint.ConstraintLayout>
