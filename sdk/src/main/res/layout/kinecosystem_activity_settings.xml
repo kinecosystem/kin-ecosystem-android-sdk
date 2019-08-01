@@ -47,7 +47,7 @@
         app:kinecosystem_indicatorVisibility="false"
         app:top_separator="true"
         app:bottom_separator="true"
-        app:kinecosysem_text="@string/kinecosystem_restore_previous_wallet"
+        app:kinecosysem_text="@string/kinecosystem_settings_row_restore"
         app:layout_constraintTop_toBottomOf="@id/keep_your_kin_safe"/>
 
 </android.support.constraint.ConstraintLayout>

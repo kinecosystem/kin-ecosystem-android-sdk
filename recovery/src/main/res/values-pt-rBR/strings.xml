@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="kinrecovery_restore">Restaurar</string>
+    <string name="kinrecovery_backup">Backup</string>
+
+    <!--Backup-->
+    <string name="kinrecovery_keep_your_kin_safe">Mantenha seu Kin seguro</string>
+    <string name="kinrecovery_backup_description">Fazendo o backup do seu saldo atual irá lhe permitir\nrecuperá-lo, caso você troque o telefone, apague o app\nou seus dados.</string>
+    <string name="kinrecovery_let_s_go">Vamos lá</string>
+    <string name="kinrecovery_create_password">Criar uma Senha</string>
+    <string name="kinrecovery_create_password_description">Para fazer o backup do seu Kin.\nprimeiro crie uma senha forte. Ela deve ter:\n(9 caracters, 1 maiúscula, 1 caracter especial (#, !, @) e 1 número)</string>
+    <string name="kinrecovery_enter_password">Digite a Senha</string>
+    <string name="kinrecovery_confirm_password">Confirme a Senha</string>
+    <string name="kinrecovery_i_understand_password_description">Eu entendo que essa senha é necessária\npara restaurar o meu Kin, e que ela não pode\nser restaurada caso perdida.</string>
+    <string name="kinrecovery_next">Próximo</string>
+    <string name="kinrecovery_password_does_not_match">As senhas não combinam</string>
+    <string name="kinrecovery_password_does_not_meet_req_above">A senha não está atende aos requisitos</string>
+    <string name="kinrecovery_save_your_qr_code">Salve o seu código QR</string>
+    <string name="kinrecovery_you_will_need_it_to_restore_your_kin_send_it_to_yourself_by_email">Agora, salvo seu código QR único enviando por\nemail para você mesmo(a).Você precisará dele\npara recuperar seu Kin eventualmente.</string>
+    <string name="kinrecovery_send_qr_code_via_email">Enviar código QR por email</string>
+    <string name="kinrecovery_i_ve_saved_my_qr">Eu copiei meu código QR</string>
+    <string name="kinrecovery_done">Próximo</string>
+    <string name="kinrecovery_well_done_your_kin_is_safe">O Backup foi feito e seu Kin está seguro!</string>
+    <string name="kinrecovery_in_order_to_restore_your_kin_you_will_need_the_qr">Para recuperar seu Kin de um backup mais tarde,\nvocê precisará da sua senha e do código QR.</string>
+    <string name="kinrecovery_keep_your_password_in_a_safe_place_and_the_qr_handy">Certifique-se de salvar a sua senha\ne tenha o código QR acessível</string>
+    <string name="kinrecovery_we_had_some_issues_to_create_backup">Houve algum problema criando o seu backup.</string>
+
+    <!--Restore-->
+    <string name="kinrecovery_load_your_kin_from_backup">Restaurar Kin de um backup</string>
+    <string name="kinrecovery_upload_qr_description">Primeiro, carregue o código QR que você salvou\n(Dica: Cheque o seu email para achá-lo)</string>
+    <string name="kinrecovery_upload_qr_btn">Carregar código QR</string>
+    <string name="kinrecovery_restore_consent_title">Você tem certeza que deseja restaurar o seu saldo anterior?</string>
+    <string name="kinrecovery_consent_message">Restaurar o saldo anterior irá substituir o seu saldo atual.</string>
+    <string name="kinrecovery_password_recovery_content">Agora, insira a sua senha</string>
+    <string name="kinrecovery_thank_you">Pronto!\nO Seu saldo Kin está atualizado</string>
+    <string name="kinrecovery_restore_completed_title">Seu saldo Kin está atualizado</string>
+    <string name="kinrecovery_try_again">Tente novamente</string>
+    <string name="kinrecovery_cancel">Cancelar</string>
+    <string name="kinrecovery_loading_file_error">Erro ao Carregar Código QR</string>
+    <string name="kinrecovery_error_decoding_QR">Erro ao Processar Código QR</string>
+    <string name="kinrecovery_restore_password_error">A senha não corresponde com o código QR.\nPor favor, tente novamente.</string>
+    <string name="kinrecovery_restore_invalid_qr">Oops, parece que este código QR não é válido.\nPor favor, tente novamente.</string>
+    <string name="kinrecovery_my_kin_wallet_qr_code">Código QR da Minha Carteira Kin</string>
+    <string name="kinrecovery_backup_created_on">Backup criado em:</string>
+    <string name="kinrecovery_send_email">Enviar email…</string>
+    <string name="kinrecovery_something_went_wrong_title">Algo deu errado</string>
+    <string name="kinrecovery_could_not_load_the_qr_please_try_again_later">Não foi possível carregar o código QR. Por favor, tente novamente.</string>
+    <string name="kinrecovery_choose_qr_image">Escolher imagem QR…</string>
+
+</resources>

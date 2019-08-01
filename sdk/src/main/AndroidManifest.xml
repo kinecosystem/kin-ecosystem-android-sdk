@@ -4,7 +4,7 @@
 
     <application>
         <activity
-            android:label="@string/kinecosystem"
+            android:label="@string/kinecosystem_kin_marketplace"
             android:name=".main.view.EcosystemActivity"
             android:windowSoftInputMode="adjustNothing"
             android:theme="@style/KinEcosystemTranslucent"/>
