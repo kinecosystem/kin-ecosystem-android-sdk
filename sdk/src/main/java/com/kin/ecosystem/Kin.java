@@ -424,6 +424,7 @@ public class Kin {
 	 */
 	public static void logout() throws ClientException {
 		checkInstanceNotNull();
+		isAccountLoggedIn.set(false);
 		eventLogger.send(UserLogoutRequested.create());
 		Logger.log(new Log().withTag("Kin.java").text("logout").put("isAccountLoggedIn", isAccountLoggedIn));
 		AuthRepository.getInstance().logout();
