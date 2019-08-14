@@ -112,7 +112,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
 			public void onResponse(Void response) {
 				showSnackbar("login succeed jwt", false);
 				Log.d(TAG, "JWT onResponse: login");
-
+				stopLoading();
 				navigateToMainActivity();
 			}
 
@@ -158,7 +158,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
 	private void navigateToMainActivity() {
 		Intent mainIntent = new Intent(this, MainActivity.class);
 		startActivity(mainIntent);
-		finish();
 	}
 
 	private void showSnackbar(String msg, boolean isError) {
