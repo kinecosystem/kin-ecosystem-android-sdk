@@ -552,7 +552,8 @@ public class OrderRepository implements OrderDataSource {
 		cachedOpenOrder.removeAllObservers();
 		getOrderWatcher().postValue(null);
 		cachedOpenOrder.postValue(null);
-
+		spendQueue.clear();
+		isExternalSpendInProcess = false;
 	}
 
 	private void decrementCount() {
