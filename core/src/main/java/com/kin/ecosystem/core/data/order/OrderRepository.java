@@ -62,7 +62,7 @@ public class OrderRepository implements OrderDataSource {
 
 	private volatile AtomicInteger pendingOrdersCount = new AtomicInteger(0);
 	private Queue<String> spendQueue = new LinkedList<>();
-	private boolean isExternalSpendInProcess = false;
+	private volatile boolean isExternalSpendInProcess = false;
 
 	private final Object paymentObserversLock = new Object();
 	private int paymentObserverCount;
