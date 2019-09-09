@@ -38,7 +38,9 @@ import com.kin.ecosystem.core.network.model.Order.Status;
 import com.kin.ecosystem.core.network.model.OrderList;
 import com.kin.ecosystem.core.util.ErrorUtil;
 import com.kin.ecosystem.core.util.StringUtil;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrderRepository implements OrderDataSource {
@@ -59,6 +61,8 @@ public class OrderRepository implements OrderDataSource {
 	private Observer<Payment> paymentObserver;
 
 	private volatile AtomicInteger pendingOrdersCount = new AtomicInteger(0);
+	private Queue<String> spendQueue = new LinkedList<>();
+	private volatile boolean isExternalSpendInProcess = false;
 
 	private final Object paymentObserversLock = new Object();
 	private int paymentObserverCount;
@@ -336,7 +340,19 @@ public class OrderRepository implements OrderDataSource {
 
 	@Override
 	public void purchase(String offerJwt, @Nullable final KinCallback<OrderConfirmation> callback) {
+		spendQueue.add(offerJwt);
+		checkSpendQueue(callback);
+	}
+
+	private synchronized void checkSpendQueue(KinCallback<OrderConfirmation> callback) {
+		if (!spendQueue.isEmpty() && !isExternalSpendInProcess) {
+			startExternalSpendProcess(spendQueue.poll(), callback);
+		}
+	}
+
+	private void startExternalSpendProcess(String offerJwt, final KinCallback<OrderConfirmation> callback) {
 		eventLogger.send(SpendOrderCreationRequested.create("", true, SpendOrderCreationRequested.Origin.EXTERNAL));
+		isExternalSpendInProcess = true;
 		new ExternalSpendOrderCall(this, blockchainSource, offerJwt, eventLogger,
 			new ExternalSpendOrderCallbacks() {
 
@@ -362,6 +378,8 @@ public class OrderRepository implements OrderDataSource {
 					if (callback != null) {
 						callback.onResponse(createOrderConfirmation(confirmationJwt));
 					}
+					isExternalSpendInProcess = false;
+					checkSpendQueue(callback);
 				}
 
 				@Override
@@ -372,13 +390,17 @@ public class OrderRepository implements OrderDataSource {
 					handleOnFailure(offerId, orderId, exception);
 				}
 
-				private void handleOnFailure(final String offerId, final String orderId, KinEcosystemException exception) {
+				private void handleOnFailure(final String offerId, final String orderId,
+					KinEcosystemException exception) {
 					final String finalOfferId = StringUtil.safeGuardNullString(offerId);
 					final String finalOrderId = StringUtil.safeGuardNullString(orderId);
-					eventLogger.send(SpendOrderFailed.create(exception.getMessage(), finalOfferId, finalOrderId, true, SpendOrderFailed.Origin.EXTERNAL));
+					eventLogger.send(SpendOrderFailed.create(exception.getMessage(), finalOfferId, finalOrderId, true,
+						SpendOrderFailed.Origin.EXTERNAL));
 					if (callback != null) {
 						callback.onFailure(exception);
 					}
+					isExternalSpendInProcess = false;
+					checkSpendQueue(callback);
 				}
 
 			}).start();
@@ -530,7 +552,8 @@ public class OrderRepository implements OrderDataSource {
 		cachedOpenOrder.removeAllObservers();
 		getOrderWatcher().postValue(null);
 		cachedOpenOrder.postValue(null);
-
+		spendQueue.clear();
+		isExternalSpendInProcess = false;
 	}
 
 	private void decrementCount() {
