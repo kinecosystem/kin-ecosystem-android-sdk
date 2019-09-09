@@ -172,7 +172,6 @@ public class MainActivity extends AppCompatActivity {
 			@Override
 			public void onClick(View v) {
 				showSnackbar("Native spend flow started", false);
-				enableView(v, false);
 				createNativeSpendOffer();
 			}
 		});
