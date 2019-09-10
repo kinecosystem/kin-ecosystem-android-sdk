@@ -15,7 +15,7 @@ class ThemeUtil {
             val theme = context.theme
             val wasResolved = theme.resolveAttribute(themeAttributeId, outValue, true)
             return if (wasResolved) {
-                ContextCompat.getColor(context, outValue.resourceId)
+                outValue.data
             } else {
                 // fallback color
                 ContextCompat.getColor(context, defaultColorRes)
