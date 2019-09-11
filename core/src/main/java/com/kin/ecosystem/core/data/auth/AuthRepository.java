@@ -207,8 +207,10 @@ public class AuthRepository implements AuthDataSource {
 
 	@Override
 	public void logout() {
-		final String token = cachedAuthToken.getToken();
-		remoteData.logout(token);
+		if (cachedAuthToken != null) {
+			final String token = cachedAuthToken.getToken();
+			remoteData.logout(token);
+		}
 
 		cachedAuthToken = null;
 		jwt = null;
