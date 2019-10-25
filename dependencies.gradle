@@ -5,11 +5,11 @@ ext {
     constraintLayoutVersion = '1.1.3'
     supportVersion = '26.1.0'
     picassoVersion = '2.71828'
-    okhttp3Version = '3.9.1'
+    okhttp3Version = '3.12.6'
     gsonVersion = '2.8.2'
     hamcrestVersion = '1.3'
     zxingVersion = '3.3.3'
-    kinMigrationVersion = '1.0.9'
+    kinMigrationVersion = '29b8c884bb'
     kotlinVersion = kotlin_version
 
     //Packages
